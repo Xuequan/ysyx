@@ -64,6 +64,14 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
+	/*
+	{"si", "Step one instruction exactly", cmd_si},
+	{"info", "Generic command for showing things about the porgram being debugged", cmd_info},
+	{"x", "Display infromation", cmd_x},
+	{"p", "Print value of expression", cmd_p},
+	{"w", "Set watchpoint", cmd_w},
+	{"d", "Delete watchpoint", cmd_d},
+	*/
 
 };
 
