@@ -92,7 +92,7 @@ static struct {
 
   /* TODO: Add more commands */
 	{"si", "Step one instruction exactly", cmd_si},
-	{"info", "Generic command for showing things about the porgram being debugged", cmd_info},
+	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r' two commands", cmd_info},
 	/*
 	{"x", "Display infromation", cmd_x},
 	{"p", "Print value of expression", cmd_p},
