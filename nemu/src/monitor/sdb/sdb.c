@@ -64,6 +64,22 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+static int cmd_info(char *args) {
+	if (args == NULL) {
+		printf("Please input arguments 'r' or 'w' of command 'info'.\n");
+	}else if (*args == 'r') {
+		// nemu/src/isa/$ISA/reg.c
+		isa_reg_display();
+
+	/* }else if (*args == 'w') {  //info watchpoint */
+
+	}else{
+		printf("Unknown command argument, please input 'info r' or 'info 'w' again.\n");
+	}
+
+	return 0;
+}
+
 static struct {
   const char *name;
   const char *description;
@@ -75,8 +91,8 @@ static struct {
 
   /* TODO: Add more commands */
 	{"si", "Step one instruction exactly", cmd_si},
-	/*
 	{"info", "Generic command for showing things about the porgram being debugged", cmd_info},
+	/*
 	{"x", "Display infromation", cmd_x},
 	{"p", "Print value of expression", cmd_p},
 	{"w", "Set watchpoint", cmd_w},
