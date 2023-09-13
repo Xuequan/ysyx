@@ -53,7 +53,16 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
-static int cmd_si(char *args);
+
+/* chuan */
+static int cmd_si(char *args) {
+	/* chuan, if no number, set 1 */
+	if (args == NULL) 
+		cpu_exec(1);
+	else
+  	cpu_exec(*args);
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -101,15 +110,6 @@ static int cmd_help(char *args) {
   return 0;
 }
 
-/* chuan */
-static int cmd_si(char *args) {
-	/* chuan, if no number, set 1 */
-	if (args == NULL) 
-		cpu_exec(1);
-	else
-  	cpu_exec(*args);
-  return 0;
-}
 
 void sdb_set_batch_mode() {
   is_batch_mode = true;
