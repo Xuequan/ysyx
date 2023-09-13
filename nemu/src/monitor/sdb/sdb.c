@@ -71,7 +71,8 @@ static int cmd_info(char *args) {
 		// nemu/src/isa/$ISA/reg.c
 		isa_reg_display();
 
-	/* }else if (*args == 'w') {  //info watchpoint */
+	}else if (*args == 'w') {  //info watchpoint 
+		printf("'info w' needs added, please wait.\n");
 
 	}else{
 		printf("Unknown command argument, please input 'info r' or 'info w' again.\n");
