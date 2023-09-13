@@ -74,7 +74,7 @@ static int cmd_info(char *args) {
 	/* }else if (*args == 'w') {  //info watchpoint */
 
 	}else{
-		printf("Unknown command argument, please input 'info r' or 'info 'w' again.\n");
+		printf("Unknown command argument, please input 'info r' or 'info w' again.\n");
 	}
 
 	return 0;
