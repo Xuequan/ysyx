@@ -53,6 +53,7 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
+static int cmd_si(char *args);
 
 static struct {
   const char *name;
@@ -64,8 +65,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-	/*
 	{"si", "Step one instruction exactly", cmd_si},
+	/*
 	{"info", "Generic command for showing things about the porgram being debugged", cmd_info},
 	{"x", "Display infromation", cmd_x},
 	{"p", "Print value of expression", cmd_p},
@@ -97,6 +98,12 @@ static int cmd_help(char *args) {
     }
     printf("Unknown command '%s'\n", arg);
   }
+  return 0;
+}
+
+/* chuan */
+static int cmd_si(char *args) {
+  cpu_exec(*args);
   return 0;
 }
 
