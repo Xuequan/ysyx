@@ -103,7 +103,11 @@ static int cmd_help(char *args) {
 
 /* chuan */
 static int cmd_si(char *args) {
-  cpu_exec(*args);
+	/* chuan, if no number, set 1 */
+	if (args == NULL) 
+		cpu_exec(1);
+	else
+  	cpu_exec(*args);
   return 0;
 }
 
