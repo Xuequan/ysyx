@@ -86,13 +86,12 @@ static int cmd_x(char *args) {
 	char *num = NULL;
 	char *addr = NULL;
 	int  whitespace_num = 0;
-	printf("args = %s, str = %s\n ", args, str);
 
 	if (args == NULL) {
 		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
 	}else {
-		// parse args
-		//for (; *str++ != '\0'; ) {
+		// 1. parse args
+		// for (; *str++ != '\0'; ) { // This doesnt work, why?
 		for (; *str != '\0'; str++) {   
 			if (*str == ' ' && whitespace_num == 0) {
 				num = args;
@@ -101,14 +100,15 @@ static int cmd_x(char *args) {
 			}else if (*str == ' ' && whitespace_num == 1) {
 				continue;
 			}else if (*str != ' ' && whitespace_num == 1) {
-				printf("here\n");
 				addr = str;
 				break;
 			}
 		}	
 	}
-	printf("x  %s  %s, str = %s\n", num, addr, str);
 	
+	/* 2. show data */
+	printf("number = %d, memory address = %xd\n", (int)atof(num), (int)atof(addr));	
+
 	return 0;
 }
 /* chuan, end */
