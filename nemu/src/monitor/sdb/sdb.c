@@ -92,14 +92,15 @@ static int cmd_x(char *args) {
 		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
 	}else {
 		// parse args
-		for (; *str++ != '\0'; ){
-			if (*str == ' ' && whitespace_num == 0){
+		for (; *str++ != '\0'; ) {
+			if (*str == ' ' && whitespace_num == 0) {
 				num = args;
 				*str = '\0';	
 				whitespace_num = 1;
-			}else if (*str == ' ' && whitespace_num == 1){
+			}else if (*str == ' ' && whitespace_num == 1) {
 				continue;
-			}else if (*str != ' ' && whitespace_num == 1){
+			}else if (*str != ' ' && whitespace_num == 1) {
+				printf("here\n");
 				addr = str;
 				break;
 			}
