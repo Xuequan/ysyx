@@ -94,7 +94,7 @@ static int cmd_x(char *args) {
 			if (*str == ' '){
 				num = args;
 				*str = '\0';	
-				addr = args + 1;
+				addr = str + 1;
 				break;
 			}
 		}	
