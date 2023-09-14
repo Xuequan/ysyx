@@ -94,12 +94,12 @@ static int cmd_x(char *args) {
 			if (*str == ' '){
 				num = args;
 				*str = '\0';	
-				addr = str + 1;
+				if (*(str + 1) != ' ') addr = str + 1;
 				break;
 			}
 		}	
 	}
-	printf("args = %s, %s\n", num, addr);
+	printf("args = %s  %s\n", num, addr);
 	
 	return 0;
 }
