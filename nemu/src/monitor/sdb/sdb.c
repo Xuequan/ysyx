@@ -113,9 +113,7 @@ static int cmd_x(char *args) {
 	/* 2. show data */
 	int print_num = (int)atof(num);
 	vaddr_t print_addr = (vaddr_t)atof(addr); 
-	
-	printf("number = %d, memory address = %#x\n", (int)atof(num), (int)atof(addr));	
-	
+	//printf("number = %d, memory address = %#x\n", (int)atof(num), (int)atof(addr));	
 	word_t data;
 	for (int i = 0; i < print_num; i++) {
 		print_addr = print_addr + sizeof(word_t);
