@@ -92,7 +92,7 @@ static int cmd_x(char *args) {
 		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
 	}else {
 		// parse args
-		for (; *str++ != '\0'; ) {
+		for (; *(str++) != '\0'; ) {
 		// for (; *str != '\0'; str++) {   
 			if (*str == ' ' && whitespace_num == 0) {
 				num = args;
