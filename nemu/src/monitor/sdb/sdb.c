@@ -118,9 +118,9 @@ static int cmd_x(char *args) {
 	
 	word_t data;
 	for (int i = 0; i < print_num; i++) {
-		print_addr = print_addr + i;
+		print_addr = print_addr + i * sizeof(word_t);
 		data = vaddr_read(print_addr, 4);
-		printf("%#x, %#x\n", print_addr, data); 
+		printf("%#x		%#x\n", print_addr, data); 
 	}
 
 	return 0;
