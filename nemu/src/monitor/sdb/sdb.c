@@ -107,7 +107,7 @@ static int cmd_x(char *args) {
 	}
 	
 	/* 2. show data */
-	printf("number = %d, memory address = %xd\n", (int)atof(num), (int)atof(addr));	
+	printf("number = %d, memory address = %#x\n", (int)atof(num), (int)atof(addr));	
 
 	return 0;
 }
