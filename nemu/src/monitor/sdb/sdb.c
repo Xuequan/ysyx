@@ -54,7 +54,7 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
-/* chuan */
+/* chuan, start*/
 static int cmd_si(char *args) {
 	/* chuan, if no number, set 1 */
 	if (args == NULL) 
@@ -81,6 +81,30 @@ static int cmd_info(char *args) {
 	return 0;
 }
 
+static int cmd_x(char *args) {
+	char *str = args;
+	char *num = NULL;
+	char *addr = NULL;
+
+	if (args == NULL) {
+		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
+	}else {
+		// parse args
+		for (; *str++ != '\0'; ){
+			if (*str == ' '){
+				num = args;
+				*str = '\0';	
+				addr = args + 1;
+				break;
+			}
+		}	
+	}
+	printf("args = %s, %s\n", num, addr);
+	
+	return 0;
+}
+/* chuan, end */
+
 static struct {
   const char *name;
   const char *description;
@@ -93,8 +117,8 @@ static struct {
   /* TODO: Add more commands */
 	{"si", "Step one instruction exactly", cmd_si},
 	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r' two commands", cmd_info},
+	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
 	/*
-	{"x", "Display infromation", cmd_x},
 	{"p", "Print value of expression", cmd_p},
 	{"w", "Set watchpoint", cmd_w},
 	{"d", "Delete watchpoint", cmd_d},
