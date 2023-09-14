@@ -24,8 +24,13 @@ enum {
   TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-	TK_NUM,
-
+	TK_VAL,   // number
+	TK_PLUS,  // plus
+	TK_MINUS,	// minus
+	TK_MUL,		// mul
+	TK_DIV,		// div
+	TK_OPAREN, // open parenthesis
+	TK_CPAREN, // close parenthesis
 };
 
 static struct rule {
@@ -38,18 +43,17 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
+  {"\\+", TK_PLUS},         // plus
   {"==", TK_EQ},        // equal
 
 	/* chuan start */
-	{"[0-9]+", TK_NUM},  // numbers
-	{"\\-", '-'},          // minus
-	{"\\*", '*'},					// mul
-	{"\\/", '/'},					// div
-	{"\\(", '('},					// open parenthesis	
-	{"\\)", ')'},					// close parenthesis
+	{"[0-9]+", TK_VAL},  				// numbers
+	{"\\-", TK_MINUS},          // minus
+	{"\\*", TK_MUL},					// mul
+	{"\\/", TK_DIV},					// div
+	{"\\(", TK_OPAREN},					// open parenthesis	
+	{"\\)", TK_CPAREN},					// close parenthesis
 	/* end */
-	
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -105,8 +109,36 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
+				/* copy the new token to a buffer token_str */
+				if (substr_len > 32) {
+					printf("token is too long.\n");
+					assert(0);
+				}
+				//char token_str[substr_len];
+				strncpy(tokens[nr_token++].str, substr_start, substr_len);
+				tokens[nr_token].str[substr_len - 1] = '\0';	
+
         switch (rules[i].token_type) {
-          default: TODO();
+					case TK_NOTYPE: nr_token--; break;				// if spaces, do not record
+					case TK_PLUS: tokens[nr_token].type = TK_PLUS;
+												break;
+					case TK_EQ: 	tokens[nr_token].type = TK_EQ;  
+												break;
+					case TK_VAL: 	tokens[nr_token].type = TK_VAL;  
+												break;
+					case TK_MINUS: tokens[nr_token].type = TK_MINUS;  
+												break;
+					case TK_MUL: tokens[nr_token].type = TK_MUL;  
+												break;
+					case TK_DIV: tokens[nr_token].type = TK_DIV;  
+												break;
+					case TK_OPAREN: tokens[nr_token].type = TK_OPAREN;  
+												break;
+					case TK_CPAREN: tokens[nr_token].type = TK_CPAREN;  
+												break;
+				
+          default: printf("unknown token_type \"%d\"\n", rules[i].token_type);
+												break;
         }
 
         break;
