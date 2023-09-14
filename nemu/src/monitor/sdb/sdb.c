@@ -105,7 +105,7 @@ static int cmd_x(char *args) {
 			}
 		}	
 	}
-	printf("args = %s  %s\n", num, addr);
+	printf("x  %s  %s, str = %s\n", num, addr, str);
 	
 	return 0;
 }
