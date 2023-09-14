@@ -19,6 +19,9 @@
 #include <readline/history.h>
 #include "sdb.h"
 
+/*chuan */
+#include <memory/vaddr.h>
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -81,6 +84,7 @@ static int cmd_info(char *args) {
 	return 0;
 }
 
+
 static int cmd_x(char *args) {
 	char *str = args;
 	char *num = NULL;
@@ -107,7 +111,16 @@ static int cmd_x(char *args) {
 	}
 	
 	/* 2. show data */
+	int print_num = (int)atof(num);
+	vaddr_t print_addr = (vaddr_t)atof(addr); 
+	
 	printf("number = %d, memory address = %#x\n", (int)atof(num), (int)atof(addr));	
+	
+	word_t data;
+	for (int i = 0; i < print_num; i++) {
+		data = vaddr_read((print_addr + i), 4);
+		printf("%#x, %#x\n", print_addr, data); 
+	}
 
 	return 0;
 }
