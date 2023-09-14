@@ -118,7 +118,8 @@ static int cmd_x(char *args) {
 	
 	word_t data;
 	for (int i = 0; i < print_num; i++) {
-		data = vaddr_read((print_addr + i), 4);
+		print_addr = print_addr + i;
+		data = vaddr_read(print_addr, 4);
 		printf("%#x, %#x\n", print_addr, data); 
 	}
 
