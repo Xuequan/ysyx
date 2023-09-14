@@ -86,7 +86,7 @@ static int cmd_x(char *args) {
 	char *num = NULL;
 	char *addr = NULL;
 	int  whitespace_num = 0;
-	printf("args = %s ", args);
+	printf("args = %s, str = %s\n ", args, str);
 
 	if (args == NULL) {
 		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
