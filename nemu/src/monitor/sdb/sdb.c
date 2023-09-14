@@ -85,16 +85,21 @@ static int cmd_x(char *args) {
 	char *str = args;
 	char *num = NULL;
 	char *addr = NULL;
+	int  whitespace_num = 0;
 
 	if (args == NULL) {
 		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
 	}else {
 		// parse args
 		for (; *str++ != '\0'; ){
-			if (*str == ' '){
+			if (*str == ' ' && whitespace_num == 0){
 				num = args;
 				*str = '\0';	
-				if (*(str + 1) != ' ') addr = str + 1;
+				whitespace_num = 1;
+			}else if (*str == ' ' && whitespace_num == 1){
+				continue;
+			}else if (*str != ' ' && whitespace_num == 1){
+				addr = str;
 				break;
 			}
 		}	
