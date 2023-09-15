@@ -226,6 +226,7 @@ int cal_expr() {
 		assert(0);
 	}
 	
+	printf("cal_expr: idx1=%d, vals[0] = %d\n", idx1, vals[0]);
 	return vals[0];
 }
 				
