@@ -179,8 +179,10 @@ int cal_expr() {
 	
 	for (int k = 0; k < nr_token; k++) {
 		printf("%d: tokens[%d].type = %d,", k, k, tokens[k].type);
-		for (int j = 0; tokens[k].str[j] != '\0'; j++)
+		for (int j = 0; tokens[k].str[j] != '\0'; j++) {
+				printf(" ===============\n");
 				printf("tokens[%d].str = %c", k, tokens[k].str[j]);
+		}
 		printf("\n");
 	}
 	
