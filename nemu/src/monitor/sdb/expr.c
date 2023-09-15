@@ -118,6 +118,9 @@ static bool make_token(char *e) {
 				strncpy(tokens[nr_token].str, substr_start, substr_len);
 				tokens[nr_token].str[substr_len - 1] = '\0';	
 
+				char * tmp = tokens[nr_token].str;
+				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
+
         switch (rules[i].token_type) {
 					case TK_NOTYPE: nr_token--; break;				// if spaces, do not record
 					case TK_PLUS: tokens[nr_token].type = TK_PLUS;
