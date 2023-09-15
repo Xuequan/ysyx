@@ -138,10 +138,10 @@ static bool make_token(char *e) {
 					case TK_CPAREN: tokens[nr_token].type = TK_CPAREN;  
 												break;
 				
-          default: printf("unknown token_type \"%d\"\n", rules[i].token_type);
+          default: printf("make_token(): unknown token_type \"%d\"\n", 
+																				rules[i].token_type);
 									 assert(0);
         }
-
         break;
       }
     }
@@ -176,6 +176,10 @@ int cal_expr() {
 	int ops[nr_token];
 	int idx2 = 0;
 	int tmp = 0;
+	
+	for (int k = 0; k < nr_token; k++)
+		printf("%d: tokens[%d].type = %d, tokens[%d].str = %s\n",
+						k, k, tokens[k].type, k, tokens[k].str);
 	
 	for ( ;i < nr_token; i++){
 		switch (tokens[i].type) {
