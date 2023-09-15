@@ -24,7 +24,7 @@ enum {
   TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-	TK_VAL,   // number
+	TK_VAL,   // decimal number
 	TK_PLUS,  // plus
 	TK_MINUS,	// minus
 	TK_MUL,		// mul
@@ -42,15 +42,15 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", TK_PLUS},         // plus
-  {"==", TK_EQ},        // equal
+  {" +", TK_NOTYPE},    			// spaces
+  {"\\+", TK_PLUS},     			// plus
+  {"==", TK_EQ},        			// equal
 
 	/* chuan start */
-	{"[0-9]+", TK_VAL},  				// numbers
+	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_MINUS},          // minus
-	{"\\*", TK_MUL},					// mul
-	{"\\/", TK_DIV},					// div
+	{"\\*", TK_MUL},					  // mul
+	{"\\/", TK_DIV},					  // div
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
 	/* end */
@@ -115,7 +115,8 @@ static bool make_token(char *e) {
 					assert(0);
 				}
 				//char token_str[substr_len];
-				strncpy(tokens[nr_token++].str, substr_start, substr_len);
+				nr_token++;
+				strncpy(tokens[nr_token].str, substr_start, substr_len);
 				tokens[nr_token].str[substr_len - 1] = '\0';	
 
         switch (rules[i].token_type) {
@@ -138,7 +139,7 @@ static bool make_token(char *e) {
 												break;
 				
           default: printf("unknown token_type \"%d\"\n", rules[i].token_type);
-												break;
+									 assert(0);
         }
 
         break;
@@ -166,3 +167,48 @@ word_t expr(char *e, bool *success) {
 
   return 0;
 }
+
+int cal_expr() {
+	int i = 0;
+	int vals[nr_token];
+	int idx1 = 0;
+	int ops[nr_token];
+	int idx2 = 0;
+	int tmp = 0;
+	
+	for ( ;i < nr_token; i++){
+		switch (tokens[i].type) {
+			case TK_PLUS: 	ops[idx2++] = TK_PLUS; break;
+			case TK_EQ:		break;    // need to do sth in future
+			case TK_VAL:		vals[idx1++] = atoi(tokens[i].str); break;
+			case TK_MINUS:  ops[idx2++]  = TK_MINUS; break;
+			case TK_MUL:		ops[idx2++]  = TK_MUL;	 break;
+			case TK_DIV:		ops[idx2++]  = TK_DIV;   break;
+			case TK_OPAREN:														break;
+
+			case TK_CPAREN: { 
+				switch (ops[idx2--]) {
+					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	break;
+					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	break;
+					case TK_MUL:		tmp = vals[idx1-1] * vals[idx1-2]; idx1 -= 2; 	break;
+					case TK_DIV:		tmp = vals[idx1-1] / vals[idx1-2]; idx1 -= 2; 	break;
+					default:	printf("cal_expr: unknow ops[]\n");
+										assert(0);
+					}
+				}
+			default:	printf("cal_expr: unknow tokens[].type\n");
+								assert(0);
+		}
+		ops[idx1++] = tmp;
+
+	}
+	if (idx1 != 0){
+		printf("cal_expr: vals[] not end.\n");
+		assert(0);
+	}
+	return vals[0];
+}
+				
+				
+					
+	
