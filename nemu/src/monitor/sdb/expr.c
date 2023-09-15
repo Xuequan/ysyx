@@ -186,8 +186,9 @@ int cal_expr() {
 	int idx2 = 0;
 	int tmp = 0;
 	
+	/* print tokens[] */
 	for (int k = 0; k < nr_token; k++) {
-		printf("%d: tokens[%d].type = %d,", k, k, tokens[k].type);
+		printf("%d: tokens[%d].type = %d, ", k, k, tokens[k].type);
 		for (int j = 0; tokens[k].str[j] != '\0'; j++) {
 				printf("tokens[%d].str = %c", k, tokens[k].str[j]);
 		}
@@ -218,7 +219,7 @@ int cal_expr() {
 													i, tokens[i].type);
 								assert(0);
 		}
-		ops[idx1++] = tmp;
+		vals[idx1++] = tmp;
 
 	}
 	if (idx1 != 1){
