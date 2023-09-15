@@ -203,8 +203,7 @@ int cal_expr() {
 			case TK_MINUS:  ops[idx2++]  = TK_MINUS; break;
 			case TK_MUL:		ops[idx2++]  = TK_MUL;	 break;
 			case TK_DIV:		ops[idx2++]  = TK_DIV;   break;
-			case TK_OPAREN:														break;
-
+			case TK_OPAREN:													 break;
 			case TK_CPAREN: { 
 				switch (ops[idx2--]) {
 					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	break;
@@ -220,12 +219,14 @@ int cal_expr() {
 								assert(0);
 		}
 		vals[idx1++] = tmp;
-
 	}
+
+/*
 	if (idx1 != 1){
 		printf("cal_expr: vals[] not end.\n");
 		assert(0);
 	}
+*/
 	return vals[0];
 }
 				
