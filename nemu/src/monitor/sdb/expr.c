@@ -221,12 +221,11 @@ int cal_expr() {
 		vals[idx1++] = tmp;
 	}
 
-/*
 	if (idx1 != 1){
-		printf("cal_expr: vals[] not end.\n");
+		printf("cal_expr: vals[] not end. idx1=%d, vals[0] = %d\n", idx1, vals[0]);
 		assert(0);
 	}
-*/
+	
 	return vals[0];
 }
 				
