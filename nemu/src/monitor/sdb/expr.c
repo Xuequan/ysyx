@@ -115,7 +115,6 @@ static bool make_token(char *e) {
 					assert(0);
 				}
 				//char token_str[substr_len];
-				nr_token++;
 				strncpy(tokens[nr_token].str, substr_start, substr_len);
 				tokens[nr_token].str[substr_len - 1] = '\0';	
 
@@ -142,6 +141,7 @@ static bool make_token(char *e) {
 																				rules[i].token_type);
 									 assert(0);
         }
+				nr_token++;
         break;
       }
     }
