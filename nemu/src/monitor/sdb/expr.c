@@ -193,11 +193,12 @@ int cal_expr() {
 					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	break;
 					case TK_MUL:		tmp = vals[idx1-1] * vals[idx1-2]; idx1 -= 2; 	break;
 					case TK_DIV:		tmp = vals[idx1-1] / vals[idx1-2]; idx1 -= 2; 	break;
-					default:	printf("cal_expr: unknow ops[]\n");
+					default:	printf("cal_expr: unknown ops[]\n");
 										assert(0);
 					}
 				}
-			default:	printf("cal_expr: unknow tokens[].type\n");
+			default:	printf("cal_expr: unknown tokens[%d].type = %d\n", 
+													i, tokens[i].type);
 								assert(0);
 		}
 		ops[idx1++] = tmp;
