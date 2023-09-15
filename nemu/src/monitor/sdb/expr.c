@@ -156,6 +156,8 @@ static bool make_token(char *e) {
 }
 
 
+int cal_expr();
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
@@ -163,9 +165,8 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+	*success = true;
+	return (word_t)cal_expr();
 }
 
 int cal_expr() {
@@ -202,7 +203,7 @@ int cal_expr() {
 		ops[idx1++] = tmp;
 
 	}
-	if (idx1 != 0){
+	if (idx1 != 1){
 		printf("cal_expr: vals[] not end.\n");
 		assert(0);
 	}
