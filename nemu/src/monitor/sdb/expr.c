@@ -207,7 +207,7 @@ int cal_expr() {
 			case TK_CPAREN: { 
 				printf("======= ops[%d]= %d\n", idx2-1, ops[idx2-1]);
 				idx2--;
-				if (idx1 == 1) break;
+				if (idx1 == 1) break;    // for extra parenthesis, eg,((1+4))
 
 				if 			 (ops[idx2] == TK_PLUS) {
 					tmp = vals[idx1-1] + vals[idx1-2];
