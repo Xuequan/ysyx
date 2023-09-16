@@ -195,7 +195,7 @@ int cal_expr() {
 	}
 	
 	for (int i = 0 ;i < nr_token; i++){
-		printf("for %d: tokens[%d].type = %d\n", i, i, tokens[i].type);
+		printf("==============%d: tokens[%d].type = %d========\n", i, i, tokens[i].type);
 		switch (tokens[i].type) {
 			case TK_PLUS: 	ops[idx2++] = TK_PLUS; break;
 			case TK_EQ:		break;    // need to do sth in future
