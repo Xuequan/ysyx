@@ -218,6 +218,7 @@ int cal_expr() {
 					default:	printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
 										assert(0);
 					}
+				break;
 			}
 			default:	printf("cal_expr: unknown tokens[%d].type = %d\n", 
 													i, tokens[i].type);
