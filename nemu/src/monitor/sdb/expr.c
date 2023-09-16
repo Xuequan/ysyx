@@ -219,8 +219,14 @@ int cal_expr() {
 					printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
 			   	assert(0);
 				}
+				// pop two vals 
 				idx1 -= 2;
+				// push the result
 				vals[idx1++] = tmp;
+		for (int ii = 0; ii < idx1; ii++)
+			printf("%d: vals[%d] = %d\n", i, ii, vals[ii]); 
+		for (int jj = 0; jj < idx2; jj++)
+			printf("%d: ops[%d] = %d\n", i, jj, ops[jj]); 
 				break;
 			}
 				
