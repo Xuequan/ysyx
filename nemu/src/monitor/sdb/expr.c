@@ -179,7 +179,6 @@ word_t expr(char *e, bool *success) {
 }
 
 int cal_expr() {
-	int i = 0;
 	int vals[nr_token];
 	int idx1 = 0;
 	int ops[nr_token];
@@ -196,7 +195,8 @@ int cal_expr() {
 	}
 	
 	printf("start: idx1=%d, idx2=%d\n", idx1, idx2);
-	for ( ;i < nr_token; i++){
+	for (int i = 0 ;i < nr_token; i++){
+		printf("%d: tokens[%d].type = %d\n", i, i, tokens[i].type);
 		switch (tokens[i].type) {
 			case TK_PLUS: 	ops[idx2++] = TK_PLUS; break;
 			case TK_EQ:		break;    // need to do sth in future
@@ -218,7 +218,7 @@ int cal_expr() {
 					default:	printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
 										assert(0);
 					}
-				}
+			}
 			default:	printf("cal_expr: unknown tokens[%d].type = %d\n", 
 													i, tokens[i].type);
 								assert(0);
