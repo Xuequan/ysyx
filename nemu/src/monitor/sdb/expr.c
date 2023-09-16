@@ -195,6 +195,7 @@ int cal_expr() {
 		printf("\n");
 	}
 	
+	printf("start: idx1=%d, idx2=%d\n", idx1, idx2);
 	for ( ;i < nr_token; i++){
 		switch (tokens[i].type) {
 			case TK_PLUS: 	ops[idx2++] = TK_PLUS; break;
