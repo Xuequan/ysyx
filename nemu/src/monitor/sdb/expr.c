@@ -206,13 +206,14 @@ int cal_expr() {
 			case TK_OPAREN:													 break;
 			case TK_CPAREN: { 
 				printf("=====ops[%d]= %d\n", idx2-1, ops[idx2-1]);
-				if (ops[--idx2] == TK_PLUS) {
+				idx2--;
+				if (ops[idx2] == TK_PLUS) {
 					tmp = vals[idx1-1] + vals[idx1-2];
-				}else if (ops[--idx2] == TK_MINUS) {
+				}else if (ops[idx2] == TK_MINUS) {
 					tmp = vals[idx1-1] - vals[idx1-2];
-				}else if (ops[--idx2] == TK_MUL) {
-					tmp = vals[idx1-1] * vals[idx1-2];
-				}else if (ops[--idx2] == TK_DIV) {
+				}else if (ops[idx2] == TK_MUL) {
+					tmp = vals[idx1-2] * vals[idx1-1];
+				}else if (ops[idx2] == TK_DIV) {
 					tmp = vals[idx1-2] / vals[idx1-1];
 				}else {
 					printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
