@@ -224,12 +224,8 @@ int cal_expr() {
 				// push the result
 				vals[idx1++] = tmp;
 
-		for (int ii = 0; ii < idx1; ii++)
-			printf("===%d: vals[%d] = %d\n", i, ii, vals[ii]); 
-		for (int jj = 0; jj < idx2; jj++)
-			printf("===%d: ops[%d] = %d\n", i, jj, ops[jj]); 
 				break;
-			}
+			} // case TK_CPAREN end
 				
 			/*
 				switch (ops[--idx2]) {
@@ -252,7 +248,12 @@ int cal_expr() {
 													i, tokens[i].type);
 								assert(0);
 							}
-		}
+		} // switch tokes.type[] end
+
+		for (int ii = 0; ii < idx1; ii++)
+			printf("===%d: vals[%d] = %d\n", i, ii, vals[ii]); 
+		for (int jj = 0; jj < idx2; jj++)
+			printf("===%d: ops[%d] = %d\n", i, jj, ops[jj]); 
 		/*
 		for (int ii = 0; ii < sizeof(vals)/sizeof(vals[0]); ii++)
 			printf("%d: vals[%d] = %d\n", i, ii, vals[ii]); 
@@ -261,7 +262,7 @@ int cal_expr() {
 		*/
 		
 		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
-	}
+	} // for end
 
 	if (idx1 != 1){
 		printf("cal_expr: vals[] not end. idx1=%d, vals[0] = %d\n", idx1, vals[0]);
