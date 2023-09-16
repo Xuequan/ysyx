@@ -208,7 +208,6 @@ int cal_expr() {
 				printf("=====ops[%d]= %d\n", idx2-1, ops[idx2-1]);
 				switch (ops[--idx2]) {
 					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 
-													printf("here\n");
 													vals[idx1++] = tmp; break;
 					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	
 													vals[idx1++] = tmp; break;
@@ -219,7 +218,6 @@ int cal_expr() {
 					default:	printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
 										assert(0);
 					}
-					break;
 			}
 			default:	printf("cal_expr: unknown tokens[%d].type = %d\n", 
 													i, tokens[i].type);
@@ -234,7 +232,7 @@ int cal_expr() {
 		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
 	}
 
-	if (idx1 != 2){
+	if (idx1 != 1){
 		printf("cal_expr: vals[] not end. idx1=%d, vals[0] = %d\n", idx1, vals[0]);
 		assert(0);
 	}
