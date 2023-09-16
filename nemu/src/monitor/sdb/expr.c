@@ -215,7 +215,7 @@ int cal_expr() {
 													vals[idx1++] = tmp; break;
 					case TK_DIV:		tmp = vals[idx1-1] / vals[idx1-2]; idx1 -= 2; 	
 													vals[idx1++] = tmp; break;
-					default:	printf("cal_expr: unknown ops[]\n");
+					default:	printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
 										assert(0);
 					}
 				}
