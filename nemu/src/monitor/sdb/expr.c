@@ -205,7 +205,7 @@ int cal_expr() {
 			case TK_DIV:		ops[idx2++]  = TK_DIV;   break;
 			case TK_OPAREN:													 break;
 			case TK_CPAREN: { 
-				switch (ops[idx2--]) {
+				switch (ops[--idx2]) {
 					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 
 													vals[idx1++] = tmp; break;
 					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	
