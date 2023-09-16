@@ -206,6 +206,24 @@ int cal_expr() {
 			case TK_OPAREN:													 break;
 			case TK_CPAREN: { 
 				printf("=====ops[%d]= %d\n", idx2-1, ops[idx2-1]);
+				if (ops[--idx2] == TK_PLUS) {
+					tmp = vals[idx1-1] + vals[idx1-2];
+				}else if (ops[--idx2] == TK_MINUS) {
+					tmp = vals[idx1-1] - vals[idx1-2];
+				}else if (ops[--idx2] == TK_MUL) {
+					tmp = vals[idx1-1] * vals[idx1-2];
+				}else if (ops[--idx2] == TK_DIV) {
+					tmp = vals[idx1-2] / vals[idx1-1];
+				}else {
+					printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
+			   	assert(0);
+				}
+				idx1 -= 2;
+				vals[idx1++] = tmp;
+				break;
+			}
+				
+			/*
 				switch (ops[--idx2]) {
 					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 
 													vals[idx1++] = tmp; break;
@@ -220,15 +238,17 @@ int cal_expr() {
 					}
 				break;
 			}
-			default:	printf("cal_expr: unknown tokens[%d].type = %d\n", 
+			*/
+			default:	{
+								printf("cal_expr: unknown tokens[%d].type = %d\n", 
 													i, tokens[i].type);
 								assert(0);
-
+							}
+		}
 		for (int ii = 0; ii < sizeof(vals)/sizeof(vals[0]); ii++)
 			printf("%d: vals[%d] = %d\n", i, ii, vals[ii]); 
 		for (int jj = 0; jj < sizeof(ops)/sizeof(ops[0]); jj++)
 			printf("%d: ops[%d] = %d\n", i, jj, ops[jj]); 
-		}
 		
 		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
 	}
