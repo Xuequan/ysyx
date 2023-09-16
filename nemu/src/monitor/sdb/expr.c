@@ -219,6 +219,8 @@ int cal_expr() {
 								assert(0);
 		}
 		vals[idx1++] = tmp;
+		
+		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
 	}
 
 	if (idx1 != 1){
