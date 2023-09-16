@@ -252,11 +252,11 @@ int cal_expr() {
 
 			printf(" //////\n");
 		for (int ii = 0; ii < idx1; ii++){
-			printf("vals[%d] = %d",ii, vals[ii]); 
+			printf("vals[%d] = %d  ",ii, vals[ii]); 
 		}
 			printf(" \n");
 		for (int jj = 0; jj < idx2; jj++)
-			printf("ops[%d] = %d", jj, ops[jj]); 
+			printf("ops[%d] = %d  ", jj, ops[jj]); 
 		printf(" \n");
 		printf(" //////\n");
 		/*
