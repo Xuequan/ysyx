@@ -227,7 +227,7 @@ int cal_expr() {
 		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
 	}
 
-	if (idx1 != 1){
+	if (idx1 != 2){
 		printf("cal_expr: vals[] not end. idx1=%d, vals[0] = %d\n", idx1, vals[0]);
 		assert(0);
 	}
