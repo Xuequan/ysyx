@@ -207,10 +207,14 @@ int cal_expr() {
 			case TK_OPAREN:													 break;
 			case TK_CPAREN: { 
 				switch (ops[idx2--]) {
-					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	break;
-					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	break;
-					case TK_MUL:		tmp = vals[idx1-1] * vals[idx1-2]; idx1 -= 2; 	break;
-					case TK_DIV:		tmp = vals[idx1-1] / vals[idx1-2]; idx1 -= 2; 	break;
+					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 
+													vals[idx1++] = tmp; break;
+					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	
+													vals[idx1++] = tmp; break;
+					case TK_MUL:		tmp = vals[idx1-1] * vals[idx1-2]; idx1 -= 2; 	
+													vals[idx1++] = tmp; break;
+					case TK_DIV:		tmp = vals[idx1-1] / vals[idx1-2]; idx1 -= 2; 	
+													vals[idx1++] = tmp; break;
 					default:	printf("cal_expr: unknown ops[]\n");
 										assert(0);
 					}
@@ -219,7 +223,6 @@ int cal_expr() {
 													i, tokens[i].type);
 								assert(0);
 		}
-		vals[idx1++] = tmp;
 		
 		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
 	}
