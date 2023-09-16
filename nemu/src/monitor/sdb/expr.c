@@ -205,7 +205,7 @@ int cal_expr() {
 			case TK_DIV:		ops[idx2++]  = TK_DIV;   break;
 			case TK_OPAREN:													 break;
 			case TK_CPAREN: { 
-				printf("=======ps[%d]= %d\n", idx2-1, ops[idx2-1]);
+				printf("======= ops[%d]= %d\n", idx2-1, ops[idx2-1]);
 				idx2--;
 				if 			 (ops[idx2] == TK_PLUS) {
 					tmp = vals[idx1-1] + vals[idx1-2];
@@ -250,10 +250,15 @@ int cal_expr() {
 							}
 		} // switch tokes.type[] end
 
-		for (int ii = 0; ii < idx1; ii++)
-			printf("===%d: vals[%d] = %d\n", i, ii, vals[ii]); 
+		for (int ii = 0; ii < idx1; ii++){
+			printf(" //////\n");
+			printf("vals[%d] = %d",ii, vals[ii]); 
+		}
+			printf(" \n");
 		for (int jj = 0; jj < idx2; jj++)
-			printf("===%d: ops[%d] = %d\n", i, jj, ops[jj]); 
+			printf("ops[%d] = %d", jj, ops[jj]); 
+		printf(" \n");
+		printf(" //////\n");
 		/*
 		for (int ii = 0; ii < sizeof(vals)/sizeof(vals[0]); ii++)
 			printf("%d: vals[%d] = %d\n", i, ii, vals[ii]); 
