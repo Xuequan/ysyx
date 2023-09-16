@@ -222,6 +222,10 @@ int cal_expr() {
 			default:	printf("cal_expr: unknown tokens[%d].type = %d\n", 
 													i, tokens[i].type);
 								assert(0);
+		for (int ii = 0; ii < sizeof(vals)/sizeof(vals[0]); ii++)
+			printf("%d: vals[%d] = %d\n", i, ii, vals[ii]); 
+		for (int jj = 0; jj < sizeof(ops)/sizeof(ops[0]); jj++)
+			printf("%d: ops[%d] = %d\n", i, jj, ops[jj]); 
 		}
 		
 		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
