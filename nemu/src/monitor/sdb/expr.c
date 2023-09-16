@@ -250,8 +250,8 @@ int cal_expr() {
 							}
 		} // switch tokes.type[] end
 
-		for (int ii = 0; ii < idx1; ii++){
 			printf(" //////\n");
+		for (int ii = 0; ii < idx1; ii++){
 			printf("vals[%d] = %d",ii, vals[ii]); 
 		}
 			printf(" \n");
