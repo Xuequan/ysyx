@@ -208,6 +208,7 @@ int cal_expr() {
 				printf("=====ops[%d]= %d\n", idx2-1, ops[idx2-1]);
 				switch (ops[--idx2]) {
 					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 
+													printf("here\n");
 													vals[idx1++] = tmp; break;
 					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	
 													vals[idx1++] = tmp; break;
