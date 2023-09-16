@@ -207,10 +207,10 @@ int cal_expr() {
 			case TK_CPAREN: { 
 				printf("=====ops[%d]= %d\n", idx2-1, ops[idx2-1]);
 				idx2--;
-				if (ops[idx2] == TK_PLUS) {
+				if 			 (ops[idx2] == TK_PLUS) {
 					tmp = vals[idx1-1] + vals[idx1-2];
 				}else if (ops[idx2] == TK_MINUS) {
-					tmp = vals[idx1-1] - vals[idx1-2];
+					tmp = vals[idx1-2] - vals[idx1-1];
 				}else if (ops[idx2] == TK_MUL) {
 					tmp = vals[idx1-2] * vals[idx1-1];
 				}else if (ops[idx2] == TK_DIV) {
