@@ -294,6 +294,7 @@ static bool check_parentheses(int p, int q, int option) {
 		switch(tokens[p].type) {
 			case TK_OPAREN: 
 				push(TK_OPAREN);
+				printf("push ---here!!!!!\n");
 				break;
 			case TK_CPAREN: 
 				if (is_empty() || top() != TK_OPAREN) {
@@ -303,7 +304,7 @@ static bool check_parentheses(int p, int q, int option) {
 				}
 				pop();
 				if (is_empty())
-					printf("here!!!!!\n");
+					printf("pop ---here!!!!!\n");
 				break;
 			default:;
 		}//end switch
