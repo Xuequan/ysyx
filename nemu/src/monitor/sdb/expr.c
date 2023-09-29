@@ -309,7 +309,8 @@ static bool check_parentheses(int p, int q, int option) {
 
 	if (p == q) {
 		if ( !is_empty() ) {
-			destroy_stack();
+			print_stack();	
+			//destroy_stack();
 			printf("check_paren()2: bad expression\n");
 			return false;
 		}

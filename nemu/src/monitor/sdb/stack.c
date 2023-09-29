@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <malloc.h>
 #include "stack.h"
 
@@ -54,4 +55,16 @@ int is_empty(void) {
 int is_full(void) { 
 	return 0;
 }
+
+void print_stack(void) {
+	while(!is_empty()) {
+		printf("====\n");
+		printf("%d", top());
+		pop();
+	}
+	printf("\n");
+	printf("==========\n");
+}
+		
+		
 

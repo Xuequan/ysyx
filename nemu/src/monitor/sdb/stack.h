@@ -46,4 +46,5 @@ int is_empty(void);
 */
 int is_full(void);
 
+void print_stack(void);
 #endif
