@@ -14,7 +14,8 @@
 ***************************************************************************************/
 
 #include <isa.h>
-#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.c"
+#include "stack.h"
+//#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
 //#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.c"
 
 /* We use the POSIX regex functions to process regular expressions.

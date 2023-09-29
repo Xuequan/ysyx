@@ -4,16 +4,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <malloc.h>
-#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
 #include <stddef.h>
+//#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
+#include "stack.h"
 
+/*
 typedef struct StackNode {
 	STACK_TYPE value;
 	struct StackNode *next;
 } StackNode;
 
-/* stack pointer to the first element */
+// stack pointer to the first element 
 static StackNode *stack;  
+*/
 
 void create_stack(size_t size) {
 }
