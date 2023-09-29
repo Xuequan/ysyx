@@ -178,6 +178,7 @@ word_t expr(char *e, bool *success) {
 
 // chuan, p < q
 word_t eval (int p, int q) {
+	printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
 	word_t val1 = 0;
 	word_t val2 = 0;
