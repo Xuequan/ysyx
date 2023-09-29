@@ -185,22 +185,19 @@ word_t eval (int p, int q) {
 		// bad expression
 		printf("bad expression\n");
 		assert(0);
-	} 
-	else if (p == q) {
+	} else if (p == q) {
 		/* Single token.
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
 
 		return atoi(tokens[p].str);
-	}
-	else if (check_parentheses(p, q, 1) == true) {
+	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
 		 */
 		return eval(p + 1, q - 1);
-	}
-	else {
+	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_oper(p, q);
 		val1 = eval(p, op - 1);
 		val2 = eval(op + 1, q);
@@ -212,6 +209,12 @@ word_t eval (int p, int q) {
 			case TK_DIV: return val1 / val2;
 			default: assert(0);
 		}//end switch
+	} else if (check_parentheses(p, q, 0) == false) {
+		printf("parentheses are not matched.\n");
+		assert(0);
+	} else {
+		printf("eval(): unknown error!\n");
+		assert(0);
 	}
 }
 
