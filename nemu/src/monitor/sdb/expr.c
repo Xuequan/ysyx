@@ -158,7 +158,7 @@ static bool make_token(char *e) {
     }
   }//end while
 
-	printf("====nr_token = %d\n", nr_token);
+	nr_token -= 1;
   return true;
 }
 
@@ -250,8 +250,8 @@ int find_main_oper(int p, int q) {
 		return index[cnt-1];
 	} else {
 		for ( i = 0; i < cnt; i++) {
-			if (tokens[index[cnt]].type == TK_PLUS || 
-					tokens[index[cnt]].type == TK_MINUS) {
+			if (tokens[index[i]].type == TK_PLUS || 
+					tokens[index[i]].type == TK_MINUS) {
 				plus_sub_index = index[i];
 			} else { 
 				mul_div_index = index[i];
@@ -289,6 +289,7 @@ static bool check_parentheses(int p, int q, int option) {
 		}
 		p++;
 	}
+
 	for(; p < q; p++) {
 		switch(tokens[p].type) {
 			case TK_OPAREN: 
