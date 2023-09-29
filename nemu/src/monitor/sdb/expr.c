@@ -313,6 +313,8 @@ static bool check_parentheses(int p, int q, int option) {
 		}//end switch
 	}// end for
 
+	print_stack();
+
 	if (p == q) {
 		if ( !is_empty() ) {
 			//print_stack();	
