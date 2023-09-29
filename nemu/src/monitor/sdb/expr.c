@@ -305,9 +305,6 @@ static bool check_parentheses(int p, int q, int option) {
 					return false;
 				}
 				pop();
-				printf("stack = %p\n", stack);
-				//if (is_empty())
-					printf("pop ---here!!!!!\n");
 				break;
 			default:;
 		}//end switch
