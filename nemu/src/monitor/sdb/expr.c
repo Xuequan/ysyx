@@ -174,7 +174,7 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 	*success = true;
-	return eval(0, nr_token - 1);
+	return eval(0, nr_token);
 }
 
 // chuan, p < q
@@ -310,7 +310,7 @@ static bool check_parentheses(int p, int q, int option) {
 	if (p == q) {
 		if ( !is_empty() ) {
 			destroy_stack();
-			printf("bad expression\n");
+			printf("check_paren()2: bad expression\n");
 			return false;
 		}
 	}
