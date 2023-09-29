@@ -292,7 +292,7 @@ static bool check_parentheses(int p, int q, int option) {
 		p++;
 	}
 
-	for(; p < q; p++) {
+	for(; p <= q; p++) {
 		switch(tokens[p].type) {
 			case TK_OPAREN: 
 				push(TK_OPAREN);
