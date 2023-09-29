@@ -276,6 +276,11 @@ int find_main_oper(int p, int q) {
 **		the expr no need surrounded by a matched parentheses 
 */
 static bool check_parentheses(int p, int q, int option) { 
+	printf("check_parentheses(%d,%d,%d)\n", p, q, option);
+	if (p == q) {
+		printf("This is a number.\n");
+		return true;
+	}
 	if (option == 1) {
 		if (tokens[p].type != TK_OPAREN || tokens[q].type != TK_CPAREN) { 
 			printf("Leftmost '(' and rightmost ')' are not matched.\n");
