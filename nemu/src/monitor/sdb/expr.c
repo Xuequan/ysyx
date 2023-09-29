@@ -225,6 +225,7 @@ word_t eval (int p, int q) {
 ** find the position of 主运算符
 */
 int find_main_oper(int p, int q) {
+	printf("find_main_oper(%d, %d)\n", p, q);
 	int i = 0;
 	int cnt = 0;
 	int index[q - p];
