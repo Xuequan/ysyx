@@ -173,6 +173,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
+	*success = true;
 	return eval(0, nr_token - 1);
 }
 
@@ -201,7 +202,7 @@ word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_oper(p, q);
-		printf("op = %d\n", op);
+		printf("============op = %d\n", op);
 		val1 = eval(p, op - 1);
 		val2 = eval(op + 1, q);
 		
