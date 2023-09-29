@@ -27,10 +27,10 @@ enum {
   /* TODO: Add more token types */
 	TK_VAL,   // decimal number
 	TK_PLUS,  // plus
-	TK_MINUS,	// minus
+	TK_MINUS,	// minus 260
 	TK_MUL,		// mul
 	TK_DIV,		// div
-	TK_OPAREN, // open parenthesis
+	TK_OPAREN, // open parenthesis 263
 	TK_CPAREN, // close parenthesis
 };
 
@@ -309,8 +309,8 @@ static bool check_parentheses(int p, int q, int option) {
 
 	if (p == q) {
 		if ( !is_empty() ) {
-			print_stack();	
-			//destroy_stack();
+			//print_stack();	
+			destroy_stack();
 			printf("check_paren()2: bad expression\n");
 			return false;
 		}
