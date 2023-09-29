@@ -246,14 +246,14 @@ int find_main_oper(int p, int q) {
 	int mul_div_index = 0;
 	int plus_sub_index = 0;
 	if (cnt == 1) {
-		return index[cnt];
+		return index[cnt-1];
 	} else {
 		for ( i = 0; i < cnt; i++) {
 			if (tokens[index[cnt]].type == TK_PLUS || 
 					tokens[index[cnt]].type == TK_MINUS) {
-				plus_sub_index = index[cnt];
+				plus_sub_index = index[i];
 			} else { 
-				mul_div_index = index[cnt];
+				mul_div_index = index[i];
 			} 
 		}//end for
 	}// end if-else
