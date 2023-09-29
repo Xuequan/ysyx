@@ -58,8 +58,9 @@ int is_full(void) {
 	return 0;
 }
 
-void print_stack(void) {
+void print_stack(char *message) {
 	printf("====start====\n");
+	printf("%s", message);
 	for( StackNode *ptr = stack; ptr != NULL; ptr = ptr->next) {
 		printf(" %d", ptr->value);
 	}

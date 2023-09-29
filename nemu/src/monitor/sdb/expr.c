@@ -249,7 +249,7 @@ int find_main_oper(int p, int q) {
 	int mul_div_index = 0;
 	int plus_sub_index = 0;
 	if (cnt == 1) {
-		return index[cnt-1];
+		return index[0];
 	} else {
 		for ( i = 0; i < cnt; i++) {
 			if (tokens[index[i]].type == TK_PLUS || 
@@ -281,12 +281,12 @@ int find_main_oper(int p, int q) {
 static bool check_parentheses(int p, int q, int option) { 
 	printf("check_parentheses(%d,%d,%d)\n", p, q, option);
 	if (p == q) {
-		printf("This is a number.\n");
+		//printf("This is a number.\n");
 		return true;
 	}
 	if (option == 1) {
 		if (tokens[p].type != TK_OPAREN || tokens[q].type != TK_CPAREN) { 
-			printf("Leftmost '(' and rightmost ')' are not matched.\n");
+			//printf("Leftmost '(' and rightmost ')' are not matched.\n");
 			return false;
 		}
 		p++;
@@ -309,11 +309,9 @@ static bool check_parentheses(int p, int q, int option) {
 		}//end switch
 	}// end for
 
-	print_stack();
-
 	if (p == q) {
 		if ( !is_empty() ) {
-			print_stack();	
+			print_stack("p==q not empty");	
 			destroy_stack();
 			printf("check_paren()2: bad expression\n");
 			return false;

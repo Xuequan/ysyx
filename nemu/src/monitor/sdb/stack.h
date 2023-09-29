@@ -58,5 +58,5 @@ int is_empty(void);
 */
 int is_full(void);
 
-void print_stack(void);
+void print_stack(char *message);
 #endif
