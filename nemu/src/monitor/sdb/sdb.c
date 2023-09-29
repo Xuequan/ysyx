@@ -138,9 +138,9 @@ static int cmd_p(char *args) {
 	if (args == NULL) {
 		printf("please input arguments, for example, 'p 10 + 5'\n");
 	}else {
-			bool succ;
-			word_t expr_result = expr(args, &succ); 
-			if (succ == false) {
+			bool success;
+			word_t expr_result = expr(args, &success); 
+			if (success == false) {
 				printf("cmd_p : expr() failed.\n");
 				//assert(0);
 			}

@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -128,28 +129,24 @@ static bool make_token(char *e) {
 				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
 
         switch (rules[i].token_type) {
-					case TK_NOTYPE: nr_token--; break;				// if spaces, do not record
-					case TK_PLUS: tokens[nr_token].type = TK_PLUS;
-												break;
-					case TK_EQ: 	tokens[nr_token].type = TK_EQ;  
-												break;
-					case TK_VAL: 	tokens[nr_token].type = TK_VAL;  
-												break;
-					case TK_MINUS: tokens[nr_token].type = TK_MINUS;  
-												break;
-					case TK_MUL: tokens[nr_token].type = TK_MUL;  
-												break;
-					case TK_DIV: tokens[nr_token].type = TK_DIV;  
-												break;
-					case TK_OPAREN: tokens[nr_token].type = TK_OPAREN;  
-												break;
-					case TK_CPAREN: tokens[nr_token].type = TK_CPAREN;  
-												break;
+					case TK_NOTYPE:    // if spaces, do not record
+						nr_token--; 
+						break;				
+					case TK_PLUS:  
+					case TK_EQ: 	
+					case TK_VAL: 	
+					case TK_MINUS: 
+					case TK_MUL: 
+					case TK_DIV: 
+					case TK_OPAREN: 
+					case TK_CPAREN: 
+						tokens[nr_token].type = rules[i].token_type;  
+						break;
 				
           default: printf("make_token(): unknown token_type \"%d\"\n", 
 																				rules[i].token_type);
 									 assert(0);
-        }
+        }//end while
 				nr_token++;
         break;
       }
@@ -159,13 +156,14 @@ static bool make_token(char *e) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
-  }
+  }//end while
 
   return true;
 }
 
-
-int cal_expr();
+word_t eval (int p, int q); 
+int find_main_oper(int p, int q);
+static bool check_parentheses(int p, int q, int option);
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -174,10 +172,143 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-	*success = true;
-	return (word_t)cal_expr();
+	return eval(0, nr_token);
 }
 
+// chuan, p < q
+word_t eval (int p, int q) {
+	int op = 0;
+	word_t val1 = 0;
+	word_t val2 = 0;
+
+	if (p > q) {
+		// bad expression
+		printf("bad expression\n");
+		assert(0);
+	} 
+	else if (p == q) {
+		/* Single token.
+		 * For now this token should be a number.
+		 * Return the value of the number.
+		 */
+
+		return atoi(tokens[p].str);
+	}
+	else if (check_parentheses(p, q, 1) == true) {
+		/* The expression is surrounded by a matched pair parentheses.
+		 * If that is the case. just throw away the parentheses exper.
+		 */
+		return eval(p + 1, q - 1);
+	}
+	else {
+		op = find_main_oper(p, q);
+		val1 = eval(p, op - 1);
+		val2 = eval(op + 1, q);
+		
+		switch (tokens[op].type) {
+			case TK_PLUS: return val1 + val2;
+			case TK_MINUS: return val1 - val2;
+			case TK_MUL: return val1 * val2;
+			case TK_DIV: return val1 / val2;
+			default: assert(0);
+		}//end switch
+	}
+}
+
+/*
+** find the position of 主运算符
+*/
+int find_main_oper(int p, int q) {
+	int i = 0;
+	int cnt = 0;
+	int index[q - p];
+	
+	// find the main operator between [p, q]
+	for(i = p; i <= q; i++) {
+		if (tokens[i].type == TK_PLUS || tokens[i].type == TK_MINUS
+		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV) {
+			if( check_parentheses(p, i-1, 0) == true && 
+					check_parentheses(i + 1, q, 0) == true ) {
+					index[cnt] = i;
+					cnt++;
+			}
+		}
+	}//end for
+
+	// figure out which is the main operator
+	int mul_div_index = 0;
+	int plus_sub_index = 0;
+	if (cnt == 1) {
+		return index[cnt];
+	} else {
+		for ( i = 0; i < cnt; i++) {
+			if (tokens[index[cnt]].type == TK_PLUS || 
+					tokens[index[cnt]].type == TK_MINUS) {
+				plus_sub_index = index[cnt];
+			} else { 
+				mul_div_index = index[cnt];
+			} 
+		}//end for
+	}// end if-else
+	
+	if (plus_sub_index != 0) {
+		return plus_sub_index;
+	} else {
+		return mul_div_index;
+	}
+}//end function
+
+
+/* 
+** check if the parentheses in the expr is legal 
+** p and q is the index of tokens[]
+**
+** if argument option = 1, then 
+** 		the expr should be surrounded by a matched parentheses
+** else argument option = 0, then
+**		the expr no need surrounded by a matched parentheses 
+*/
+static bool check_parentheses(int p, int q, int option) { 
+	if (option == 1) {
+		if (tokens[p].type != TK_OPAREN || tokens[q].type != TK_CPAREN) { 
+			printf("Leftmost '(' and rightmost ')' are not matched.\n");
+			return false;
+		}
+		p++;
+	}
+	for(; p < q; p++) {
+		switch(tokens[p].type) {
+			case TK_OPAREN: 
+				push(TK_OPAREN);
+				break;
+			case TK_CPAREN: 
+				if (is_empty() || top() != TK_OPAREN) {
+					printf("bad expression\n");
+					destroy_stack();
+					return false;
+				}
+				pop();
+				break;
+			default:;
+		}//end switch
+	}// end for
+
+	if (p == q) {
+		if ( !is_empty() ) {
+			destroy_stack();
+			printf("bad expression\n");
+			return false;
+		}
+	}
+	destroy_stack();
+	return true;
+
+}//end function
+			
+
+/* chuan - discard this method  */
+// =============================================================
+/*
 int cal_expr() {
 	int vals[nr_token];
 	int idx1 = 0;
@@ -185,7 +316,7 @@ int cal_expr() {
 	int idx2 = 0;
 	int tmp = 0;
 	
-	/* print tokens[] */
+	// print tokens[] 
 	for (int k = 0; k < nr_token; k++) {
 		printf("%d: tokens[%d].type = %d, ", k, k, tokens[k].type);
 		for (int j = 0; tokens[k].str[j] != '\0'; j++) {
@@ -195,7 +326,6 @@ int cal_expr() {
 	}
 	
 	for (int i = 0 ;i < nr_token; i++){
-		printf("==============%d: tokens[%d].type = %d========\n", i, i, tokens[i].type);
 		switch (tokens[i].type) {
 			case TK_PLUS: 	ops[idx2++] = TK_PLUS; break;
 			case TK_EQ:		break;    // need to do sth in future
@@ -205,7 +335,6 @@ int cal_expr() {
 			case TK_DIV:		ops[idx2++]  = TK_DIV;   break;
 			case TK_OPAREN:													 break;
 			case TK_CPAREN: { 
-				printf("======= ops[%d]= %d\n", idx2-1, ops[idx2-1]);
 				idx2--;
 				if (idx1 == 1) break;    // for extra parenthesis, eg,((1+4))
 
@@ -229,22 +358,6 @@ int cal_expr() {
 				break;
 			} // case TK_CPAREN end
 				
-			/*
-				switch (ops[--idx2]) {
-					case TK_PLUS:		tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 
-													vals[idx1++] = tmp; break;
-					case TK_MINUS:	tmp = vals[idx1-1] + vals[idx1-2]; idx1 -= 2; 	
-													vals[idx1++] = tmp; break;
-					case TK_MUL:		tmp = vals[idx1-1] * vals[idx1-2]; idx1 -= 2; 	
-													vals[idx1++] = tmp; break;
-					case TK_DIV:		tmp = vals[idx1-1] / vals[idx1-2]; idx1 -= 2; 	
-													vals[idx1++] = tmp; break;
-					default:	printf("cal_expr: unknown ops[%d]= %d\n", idx2, ops[idx2+1]);
-										assert(0);
-					}
-				break;
-			}
-			*/
 			default:	{
 								printf("cal_expr: unknown tokens[%d].type = %d\n", 
 													i, tokens[i].type);
@@ -252,23 +365,6 @@ int cal_expr() {
 							}
 		} // switch tokes.type[] end
 
-			printf(" //////\n");
-		for (int ii = 0; ii < idx1; ii++){
-			printf("vals[%d] = %d  ",ii, vals[ii]); 
-		}
-			printf(" \n");
-		for (int jj = 0; jj < idx2; jj++)
-			printf("ops[%d] = %d  ", jj, ops[jj]); 
-		printf(" \n");
-		printf(" //////\n");
-		/*
-		for (int ii = 0; ii < sizeof(vals)/sizeof(vals[0]); ii++)
-			printf("%d: vals[%d] = %d\n", i, ii, vals[ii]); 
-		for (int jj = 0; jj < sizeof(ops)/sizeof(ops[0]); jj++)
-			printf("%d: ops[%d] = %d\n", i, jj, ops[jj]); 
-		*/
-		
-		printf("%d: idx1=%d, idx2=%d\n", i,  idx1, idx2);
 	} // for end
 
 	if (idx1 != 1){
@@ -279,7 +375,5 @@ int cal_expr() {
 	printf("cal_expr: idx1=%d, vals[0] = %d\n", idx1, vals[0]);
 	return vals[0];
 }
-				
-				
-					
-	
+// ================discard end ============================================
+*/
