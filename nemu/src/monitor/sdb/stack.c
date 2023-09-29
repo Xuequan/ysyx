@@ -34,7 +34,7 @@ void push(STACK_TYPE value) {
 }
 
 void pop(void) {
-	assert(stack != NULL);
+	assert(!is_empty());
 	
 	StackNode *top = NULL;
 	top = stack;
@@ -43,7 +43,7 @@ void pop(void) {
 }
 
 STACK_TYPE top(void) {
-	assert(stack != NULL);
+	assert(!is_empty());
 	
 	return stack->value;
 }
