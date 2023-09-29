@@ -297,7 +297,7 @@ static bool check_parentheses(int p, int q, int option) {
 				break;
 			case TK_CPAREN: 
 				if (is_empty() || top() != TK_OPAREN) {
-					printf("bad expression\n");
+					printf("check_paren(): bad expression\n");
 					destroy_stack();
 					return false;
 				}
