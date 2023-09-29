@@ -5,6 +5,7 @@
 
 #ifndef stack_type 
 
+#include <stddef.h>
 #define STACK_TYPE int
 
 /* create_stack

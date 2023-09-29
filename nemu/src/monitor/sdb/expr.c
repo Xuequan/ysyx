@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
+#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.c"
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -303,6 +304,7 @@ static bool check_parentheses(int p, int q, int option) {
 					return false;
 				}
 				pop();
+				printf("stack = %p\n", stack);
 				if (is_empty())
 					printf("pop ---here!!!!!\n");
 				break;

@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <malloc.h>
-#include "stack.h"
+#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
+#include <stddef.h>
 
 typedef struct StackNode {
 	STACK_TYPE value;
@@ -57,14 +58,9 @@ int is_full(void) {
 }
 
 void print_stack(void) {
-	while(!is_empty()) {
-		printf("====\n");
-		printf("%d", top());
-		pop();
+	for( StackNode *ptr = stack; ptr != NULL; ptr = ptr->next) {
+		printf(" %d", ptr->value);
 	}
 	printf("\n");
-	printf("==========\n");
 }
-		
-		
 
