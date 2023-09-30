@@ -237,8 +237,8 @@ int find_main_oper(int p, int q) {
 	for(i = p; i <= q; i++) {
 		if (tokens[i].type == TK_PLUS || tokens[i].type == TK_MINUS
 		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV) {
-			if( check_parentheses(p, i-1, 0) == true && 
-					check_parentheses(i + 1, q, 0) == true ) {
+			if( (check_parentheses(p, i-1, 0) == true) && 
+					(check_parentheses(i + 1, q, 0) == true) ) {
 					index[cnt] = i;
 					cnt++;
 			}
@@ -309,14 +309,13 @@ static bool check_parentheses(int p, int q, int option) {
 	}// end for
 
 		if ( !is_empty() ) {
-			print_stack("p==q not empty");	
+			print_stack("not empty");	
 			destroy_stack();
 			printf("check_paren()2: bad expression\n");
 			return false;
 		}
 	destroy_stack();
 	return true;
-
 }//end function
 			
 

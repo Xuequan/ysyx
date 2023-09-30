@@ -141,10 +141,12 @@ static int cmd_p(char *args) {
 			bool success;
 			word_t expr_result = expr(args, &success); 
 			if (success == false) {
+				//printf("cmd_p : expr() failed.\n");
 				printf("cmd_p : expr() failed.\n");
 				//assert(0);
+			} else {
+				printf("%d\n", expr_result);
 			}
-			printf("%d\n", expr_result);
 	}
 	
 	return 0;
