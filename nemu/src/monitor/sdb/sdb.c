@@ -142,7 +142,7 @@ static int cmd_p(char *args) {
 			word_t expr_result = expr(args, &success); 
 			if (success == false) {
 				printf("cmd_p : expr() failed.\n");
-				assert(0);
+				//assert(0);
 			}
 			printf("%d\n", expr_result);
 	}
