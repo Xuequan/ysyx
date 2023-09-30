@@ -280,6 +280,8 @@ int find_main_oper(int p, int q) {
 */
 static bool check_parentheses(int p, int q, int option) { 
 	printf("check_parentheses(%d,%d,%d)\n", p, q, option);
+	int ii = p;
+	int jj = q;
 	if (p == q) {
 		//printf("This is a number.\n");
 		return true;
@@ -298,7 +300,7 @@ static bool check_parentheses(int p, int q, int option) {
 				break;
 			case TK_CPAREN: 
 				if (is_empty() || top() != TK_OPAREN) {
-					printf("check_paren(): bad expression\n");
+					printf("check_paren(%d, %d): bad expression\n", ii, jj);
 					destroy_stack();
 					return false;
 				}
@@ -311,7 +313,7 @@ static bool check_parentheses(int p, int q, int option) {
 		if ( !is_empty() ) {
 			print_stack("not empty");	
 			destroy_stack();
-			printf("check_paren()2: bad expression\n");
+			printf("check_paren2(%d, %d): bad expression\n", ii, jj);
 			return false;
 		}
 	destroy_stack();
