@@ -289,7 +289,6 @@ static bool check_parentheses(int p, int q, int option) {
 			//printf("Leftmost '(' and rightmost ')' are not matched.\n");
 			return false;
 		}
-		p++;
 	}
 
 	for(; p <= q; p++) {
@@ -309,14 +308,12 @@ static bool check_parentheses(int p, int q, int option) {
 		}//end switch
 	}// end for
 
-	if (p == q) {
 		if ( !is_empty() ) {
 			print_stack("p==q not empty");	
 			destroy_stack();
 			printf("check_paren()2: bad expression\n");
 			return false;
 		}
-	}
 	destroy_stack();
 	return true;
 
