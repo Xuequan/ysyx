@@ -54,7 +54,7 @@ void gen_num(void) {
 	char temp[RAND_MAX];
 	uint32_t len = buf_length();	
 	snprintf(temp, sizeof(temp), "%d", num);
-	for (; temp[i] != '/0'; i++) {
+	for (; temp[i] != '\0'; i++) {
 		buf[len + i] = temp[i];
 	}
 	buf[len + i] = '\0';
@@ -67,7 +67,6 @@ void gen(char c) {
 }
 
 void gen_rand_op(void) {
-	uint32_t len = buf_length();
 	char op[] = "+-*/";
 	uint32_t index = choose(5);
 	gen(op[index]);
