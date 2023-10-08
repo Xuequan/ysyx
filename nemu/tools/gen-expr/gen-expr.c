@@ -31,8 +31,60 @@ static char *code_format =
 "  return 0; "
 "}";
 
+uint32_t choose(uint32_t n) {
+	return (uint32_t) (rand() % n);	
+}
+
+// calculate the length of buf[65536];
+uint32_t buf_length(void) {
+	uint32_t i = 0;
+	for(; buf[i] != '\0'; i++) 
+		;
+	return i;
+}
+void gen_num(void) {
+	int i = 0;
+	time_t t;
+	int num = 0;
+
+	srand((unsigned) time(&t));
+	num = rand();
+
+	// add a num to the tail of buf[65535]
+	char temp[RAND_MAX];
+	uint32_t len = buf_length();	
+	snprintf(temp, sizeof(temp), "%d", num);
+	for (; temp[i] != '/0'; i++) {
+		buf[len + i] = temp[i];
+	}
+	buf[len + i] = '\0';
+}
+
+void gen(char c) {
+	uint32_t len = buf_length();
+	buf[len] = c;
+	buf[len + 1] = '\0';
+}
+
+void gen_rand_op(void) {
+	uint32_t len = buf_length();
+	char op[] = "+-*/";
+	uint32_t index = choose(5);
+	gen(op[index]);
+}
+
 static void gen_rand_expr() {
+	time_t t;
+	srand((unsigned) time(&t));
   buf[0] = '\0';
+	switch(choose(3)) {
+		case 0: gen_num(); break;
+		case 1: gen('('); gen_rand_expr(); gen(')'); break;
+		default: gen_rand_expr(); 
+						 gen_rand_op();
+						 gen_rand_expr();
+						 break;
+	}
 }
 
 int main(int argc, char *argv[]) {
