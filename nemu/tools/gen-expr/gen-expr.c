@@ -19,17 +19,30 @@
 #include <time.h>
 #include <assert.h>
 #include <string.h>
+#include <stdbool.h>
 
 // this should be enough
 static char buf[65536] = {};
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
-"int main() { "
-"  unsigned result = %s; "
-"  printf(\"%%u\", result); "
-"  return 0; "
-"}";
+"int main() { \n"
+"  unsigned result = %s; \n"
+"  printf(\"%%u\", result); \n"
+"  return 0; \n"
+"} \n";
+
+static int div_by_zero = 0;
+uint32_t choose(uint32_t n);
+uint32_t buf_length(void); 
+void gen_num(void);
+void gen(char c);
+bool gen_rand_op(void);
+bool check_div_by_zero(uint32_t p, uint32_t q);
+uint32_t eval_expr(uint32_t p, uint32_t q);
+int find_main_op2(uint32_t p, uint32_t q);
+static uint32_t gen_rand_expr();
+
 
 uint32_t choose(uint32_t n) {
 	return (uint32_t) (rand() % n);	
@@ -44,49 +57,187 @@ uint32_t buf_length(void) {
 }
 void gen_num(void) {
 	int i = 0;
-	time_t t;
-	int num = 0;
-
-	srand((unsigned) time(&t));
-	num = rand();
+	//time_t t;
+	//int num = 0;
+	//srand((unsigned) time(&t));
+	uint32_t num = (uint32_t)(rand() % 10);
 
 	// add a num to the tail of buf[65535]
-	char temp[RAND_MAX];
+	/*
+	char *ptr = (char *)&num;
+	uint32_t len = buf_length();
+	memcpy(buf + len, ptr, sizeof(uint32_t));
+	*/
+	
+
+	char temp[11];
 	uint32_t len = buf_length();	
 	snprintf(temp, sizeof(temp), "%d", num);
 	for (; temp[i] != '\0'; i++) {
 		buf[len + i] = temp[i];
 	}
+	/*
+	buf[len + i] = ' ';
+	buf[len + i + 1] = '\0';
+	*/
 	buf[len + i] = '\0';
 }
 
 void gen(char c) {
 	uint32_t len = buf_length();
 	buf[len] = c;
+	//buf[len + 1] = ' ';
+	//buf[len + 2] = '\0';
 	buf[len + 1] = '\0';
 }
 
-void gen_rand_op(void) {
+/* if generated op is div, then return true */
+bool gen_rand_op(void) {
 	char op[] = "+-*/";
-	uint32_t index = choose(5);
+	uint32_t index = choose(4);
 	gen(op[index]);
+	if (index == 3) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
-static void gen_rand_expr() {
+/* if expr (buf[p, q]) == 0, return true */ 
+bool check_div_by_zero(uint32_t p, uint32_t q) {
+	return eval_expr(p, q) == 0;
+}
+
+/* eval_expr(p, q) refer to eval(p, q) which is locate
+** in nemu/src/monitor/sdb/expr.c.
+*/
+uint32_t eval_expr(uint32_t p, uint32_t q) {
+	int op = 0;
+	uint32_t val1 = 0;
+	uint32_t val2 = 0;
+	
+	if (p > q) {
+		printf("eval_expr(): bad expression\n");
+		assert(0);
+	} else if (p == q) {
+		return (uint32_t)buf[p];
+	} else {
+		op = find_main_op2(p, q);
+		val1 = eval_expr(p, op - 1);
+		val2 = eval_expr(op + 1, q);
+		
+		switch (buf[op]) {
+			case '+': return val1 + val2;
+			case '-': return val1 - val2;
+			case '*': return val1 * val2;
+			case '/': return val1 / val2;
+			default: 
+				assert(0);
+		} // end switch
+	} // end if-else-if
+
+}
+
+int find_main_op2(uint32_t p, uint32_t q) {
+  int i = 0;
+  int cnt = 0;
+  int index[q - p];
+
+  // find the operators between buf[p, q]
+  for(i = p; i <= q; i++) {
+		if (buf[i] == '+' || buf[i] == '-' ||
+				buf[i] == '*' || buf[i] == '/') {
+				index[cnt] = i;
+				cnt++;
+		} 
+		/*
+    if (tokens[i].type == TK_PLUS || tokens[i].type == TK_MINUS
+     || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV) {
+      if( (check_parentheses(p, i-1, 0) == true) &&
+          (check_parentheses(i + 1, q, 0) == true) ) {
+          index[cnt] = i;
+          cnt++;
+      }
+    }
+		*/
+  }//end for
+
+  // figure out which is the main operator
+  int mul_div_index = 0;
+  int plus_sub_index = 0;
+  if (cnt == 1) {
+    return index[0];
+  } else {
+    for ( i = 0; i < cnt; i++) {
+			if (buf[index[i]] == '+' || buf[index[i]] == '-') {
+        plus_sub_index = index[i];
+			} else {
+        mul_div_index = index[i];
+      }
+				
+    }//end for
+  }// end if-else
+
+  if (plus_sub_index != 0) {
+    return plus_sub_index;
+  } else {
+    return mul_div_index;
+  }
+
+}
+	
+
+/* return the added length of buf[] 
+** eg: beginning buf[] = {1, 2, 3}
+** after gen_rand_expr() buf[] = {1,2,3,4,5}
+** then return 2
+*/
+static uint32_t gen_rand_expr() {
+	/*
 	time_t t;
 	srand((unsigned) time(&t));
   buf[0] = '\0';
+	*/
+	//printf("buf = %s\n", buf);
+
+	uint32_t len1 = buf_length();
+	bool gen_op_is_div = false;
+	uint32_t len2 = 0;
+
 	switch(choose(3)) {
 		case 0: gen_num(); break;
 		case 1: gen('('); gen_rand_expr(); gen(')'); break;
+		/*
 		default: gen_rand_expr(); 
 						 gen_rand_op();
 						 gen_rand_expr();
 						 break;
-	}
+		*/
+		default: 
+			gen_rand_expr();
+			gen_op_is_div = gen_rand_op();
+			printf("2-buf = %s, length = %d\n", buf, buf_length());
+	
+			len2 = gen_rand_expr();
+			printf("3-buf = %s, length = %d, len2= %d\n", buf, buf_length(), len2);
+
+			if (gen_op_is_div) {
+				if ( check_div_by_zero(buf_length() - len2, buf_length() - 1) ) {
+					printf("div by zero \n");
+					div_by_zero = 1;  // global variable
+				}
+			}
+
+			break;
+	}// end switch 
+
+	return buf_length() - len1;
 }
 
 int main(int argc, char *argv[]) {
+
+	div_by_zero = 0;  // global var
+
   int seed = time(0);
   srand(seed);
   int loop = 1;
@@ -96,6 +247,12 @@ int main(int argc, char *argv[]) {
   int i;
   for (i = 0; i < loop; i ++) {
     gen_rand_expr();
+
+		if (div_by_zero == 1) {
+			continue;
+		}
+
+		printf("buf = %s\n", buf);
 
     sprintf(code_buf, code_format, buf);
 
@@ -115,6 +272,8 @@ int main(int argc, char *argv[]) {
     pclose(fp);
 
     printf("%u %s\n", result, buf);
+		/* chuan */
+		buf[0] = '\0';
   }
   return 0;
 }

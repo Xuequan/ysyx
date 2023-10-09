@@ -165,7 +165,7 @@ static bool make_token(char *e) {
 }
 
 word_t eval (int p, int q); 
-int find_main_oper(int p, int q);
+int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
 
 word_t expr(char *e, bool *success) {
@@ -187,15 +187,13 @@ word_t eval (int p, int q) {
 	word_t val2 = 0;
 
 	if (p > q) {
-		// bad expression
-		printf("bad expression\n");
+		printf("eval(): bad expression\n");
 		assert(0);
 	} else if (p == q) {
 		/* Single token.
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
-
 		return atoi(tokens[p].str);
 	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
@@ -203,7 +201,7 @@ word_t eval (int p, int q) {
 		 */
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
-		op = find_main_oper(p, q);
+		op = find_main_op(p, q);
 		printf("============op = %d\n", op);
 		val1 = eval(p, op - 1);
 		val2 = eval(op + 1, q);
@@ -227,13 +225,13 @@ word_t eval (int p, int q) {
 /*
 ** find the position of 主运算符
 */
-int find_main_oper(int p, int q) {
-	printf("find_main_oper(%d, %d)\n", p, q);
+int find_main_op(int p, int q) {
+	printf("find_main_op(%d, %d)\n", p, q);
 	int i = 0;
 	int cnt = 0;
 	int index[q - p];
 	
-	// find the main operator between [p, q]
+	// find the operators between [p, q]
 	for(i = p; i <= q; i++) {
 		if (tokens[i].type == TK_PLUS || tokens[i].type == TK_MINUS
 		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV) {
