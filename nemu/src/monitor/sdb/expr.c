@@ -210,7 +210,12 @@ word_t eval (int p, int q) {
 			case TK_PLUS: return val1 + val2;
 			case TK_MINUS: return val1 - val2;
 			case TK_MUL: return val1 * val2;
-			case TK_DIV: return val1 / val2;
+			case TK_DIV: 
+				if (val2 == 0) {
+					printf("div by zero error\n");
+					assert(0);
+				}
+				return val1 / val2;
 			default: assert(0);
 		}//end switch
 	} else if (check_parentheses(p, q, 0) == false) {
