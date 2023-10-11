@@ -148,11 +148,11 @@ static bool make_token(char *e) {
           default: printf("make_token(): unknown token_type \"%d\"\n", 
 																				rules[i].token_type);
 									 assert(0);
-        }//end while
+        }//end switch
 				nr_token++;
         break;
-      }
-    }
+      } 
+    } // end for
 
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
