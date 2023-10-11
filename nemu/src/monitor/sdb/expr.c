@@ -40,6 +40,7 @@ enum {
 	TK_OPAREN, // open parenthesis 263
 	TK_CPAREN, // close parenthesis
 	TK_NEWLINE, 
+	TK_REG,
 };
 
 static struct rule {
@@ -63,6 +64,7 @@ static struct rule {
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
+	{"x[0-9]{1,2}", TK_REG},     // register, eg, x0-x31
 	/* end */
 };
 
