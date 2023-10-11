@@ -175,7 +175,7 @@ static bool make_token(char *e) {
 
 	nr_token -= 1;
 
-	print_tokens(nr_token);
+	print_tokens(nr_token + 1);
 		
   return true;
 }
