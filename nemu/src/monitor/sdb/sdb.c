@@ -134,9 +134,38 @@ static int cmd_w(char *args) {
 }
 */
 
+#define TEST_LENGTH (65536 + 11)
 static int cmd_p(char *args) {
 	if (args == NULL) {
-		printf("please input arguments, for example, 'p 10 + 5'\n");
+		//printf("please input arguments, for example, 'p 10 + 5'\n");
+		// 用 nemu/tools/gen-expr 来检查计算是否正确
+		FILE *fp = fopen("/home/chuan/ysyx-workbench/nemu/tools/gen-expr/input", "r");
+		assert(fp != NULL);
+		char buf[TEST_LENGTH] = {};
+		while(fgets(buf, TEST_LENGTH, fp) != NULL) {
+			char *buf_end = buf + strlen(buf);
+			char *test_result = strtok(buf, " ");
+			if (test_result == NULL) {
+				printf("Didn't get the gen-expr result\n");
+				assert(0);
+			}
+			char *expr_buf = test_result + strlen(test_result) + 1;
+			if (expr_buf > buf_end) { assert(0); }
+			if (expr_buf == NULL) {assert(0); }
+			bool success;
+			word_t expr_result = expr(expr_buf, &success);
+			if (success == false) {
+				printf("expr() failed\n");
+				assert(0);
+			}
+			if (expr_result != (word_t)atoi(test_result)) {
+				printf("expr_result = %d, atoi(test_result) = %d\n", 
+								expr_result, (word_t)atoi(test_result));
+				assert(0);
+			} 
+		} // end while
+		fclose(fp);
+		
 	}else {
 			bool success;
 			word_t expr_result = expr(args, &success); 
