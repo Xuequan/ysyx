@@ -156,6 +156,8 @@ static bool make_token(char *e) {
 					case TK_DIV: 
 					case TK_OPAREN: 
 					case TK_CPAREN: 
+					
+					case TK_REG:
 						tokens[nr_token].type = rules[i].token_type;  
 						break;
 				
@@ -176,7 +178,7 @@ static bool make_token(char *e) {
 
 	nr_token -= 1;
 
-	//print_tokens(nr_token + 1);
+	print_tokens(nr_token + 1);
 		
   return true;
 }
