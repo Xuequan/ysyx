@@ -23,6 +23,11 @@
  */
 #include <regex.h>
 
+void print_tokens(int nr_token);
+word_t eval (int p, int q); 
+int find_main_op(int p, int q);
+static bool check_parentheses(int p, int q, int option);
+
 enum {
   TK_NOTYPE = 256, TK_EQ,
 
@@ -107,9 +112,10 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
+				/*
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
-
+				*/
         position += substr_len;
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
@@ -131,9 +137,10 @@ static bool make_token(char *e) {
 					tokens[nr_token].str[j] = *(substr_start + j);
 				tokens[nr_token].str[substr_len] = '\0';	
 			
-				/* print tokens[].str */	
+				/* print tokens[].str 	
 				char * tmp = tokens[nr_token].str;
 				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
+				*/
 
         switch (rules[i].token_type) {
 					case TK_NOTYPE:    // if spaces, do not record
@@ -167,12 +174,18 @@ static bool make_token(char *e) {
   }//end while
 
 	nr_token -= 1;
+
+	print_tokens(nr_token);
+		
   return true;
 }
 
-word_t eval (int p, int q); 
-int find_main_op(int p, int q);
-static bool check_parentheses(int p, int q, int option);
+void print_tokens(int nr_token) {
+	for(int i = 0; i  < nr_token; i++) {
+		printf("%d: tokens[%d].str = %s\n", i, i, tokens[i].str);
+	}
+}
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
