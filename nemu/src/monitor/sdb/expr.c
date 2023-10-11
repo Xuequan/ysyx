@@ -136,6 +136,7 @@ static bool make_token(char *e) {
 
         switch (rules[i].token_type) {
 					case TK_NOTYPE:    // if spaces, do not record
+					case TK_NEWLINE:
 						nr_token--; 
 						break;				
 					case TK_PLUS:  
