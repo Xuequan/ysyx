@@ -307,6 +307,9 @@ static bool check_parentheses(int p, int q, int option) {
 		//printf("This is a number.\n");
 		return true;
 	}
+	// 这里有问题
+	// (76)/(67) 就不是被（）包围，但是这里显示的是 true
+	// 故需要做第二次检查
 	if (option == 1) {
 		if (tokens[p].type != TK_OPAREN || tokens[q].type != TK_CPAREN) { 
 			//printf("Leftmost '(' and rightmost ')' are not matched.\n");
@@ -329,6 +332,14 @@ static bool check_parentheses(int p, int q, int option) {
 				break;
 			default:;
 		}//end switch
+
+		// 第二次检查
+	  if ( option == 1 && p < q) {
+			if (is_empty()) { // 若表达式是被括号包裹，那么不到最后一次永不会为空
+				destroy_stack();
+				return false;
+			}
+		}	
 	}// end for
 
 	if ( !is_empty() ) {
@@ -336,6 +347,8 @@ static bool check_parentheses(int p, int q, int option) {
 		destroy_stack();
 		//printf("check_paren2(%d, %d, %d): bad expression\n", ii, jj, option);
 		return false;
+	}
+	if (option == 1) {
 	}
 	destroy_stack();
 	return true;
