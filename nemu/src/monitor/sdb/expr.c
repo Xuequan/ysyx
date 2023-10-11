@@ -57,7 +57,7 @@ static struct rule {
 	{"\\/", TK_DIV},					  // div
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
-	{"\\n", TK_NEWLINE},        // newline
+	{"\\\n", TK_NEWLINE},        // newline
 	/* end */
 };
 
