@@ -201,8 +201,8 @@ word_t expr(char *e, bool *success) {
 word_t eval (int p, int q) {
 	printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
-	word_t val1 = 0;
-	word_t val2 = 0;
+	int val1 = 0;
+	int val2 = 0;
 
 	if (p > q) {
 		printf("eval(): bad expression\n");
@@ -221,8 +221,8 @@ word_t eval (int p, int q) {
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_op(p, q);
 		printf("============op = %d\n", op);
-		val1 = eval(p, op - 1);
-		val2 = eval(op + 1, q);
+		val1 = (int)eval(p, op - 1);
+		val2 = (int)eval(op + 1, q);
 		
 		switch (tokens[op].type) {
 			case TK_PLUS: return val1 + val2;
@@ -233,7 +233,7 @@ word_t eval (int p, int q) {
 					printf("div by zero error\n");
 					assert(0);
 				}
-				return val1 / val2;
+				return (word_t) (val1 / val2);
 			default: assert(0);
 		}//end switch
 	} else if (check_parentheses(p, q, 0) == false) {
