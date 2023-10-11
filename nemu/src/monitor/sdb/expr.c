@@ -102,7 +102,7 @@ static bool make_token(char *e) {
 
   nr_token = 0;
 	
-	printf("make_token( %s )\n", e);
+	//printf("make_token( %s )\n", e);
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
@@ -174,13 +174,13 @@ static bool make_token(char *e) {
 
 	nr_token -= 1;
 
-	print_tokens(nr_token + 1);
+	//print_tokens(nr_token + 1);
 		
   return true;
 }
 
-void print_tokens(int nr_token) {
-	for(int i = 0; i  < nr_token; i++) {
+void print_tokens(int length) {
+	for(int i = 0; i < length; i++) {
 		printf("%d: tokens[%d].str = %s\n", i, i, tokens[i].str);
 	}
 }
@@ -198,8 +198,10 @@ word_t expr(char *e, bool *success) {
 }
 
 // chuan, p < q
+// only the final result will be word_t
+// intermediate result is int 
 word_t eval (int p, int q) {
-	printf("== eval(%d, %d)\n", p, q);
+	//printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
 	int val1 = 0;
 	int val2 = 0;
@@ -220,7 +222,7 @@ word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_op(p, q);
-		printf("============op = %d\n", op);
+		//printf("============op = %d\n", op);
 		val1 = (int)eval(p, op - 1);
 		val2 = (int)eval(op + 1, q);
 		
@@ -300,7 +302,7 @@ int find_main_op(int p, int q) {
 **		the expr no need surrounded by a matched parentheses 
 */
 static bool check_parentheses(int p, int q, int option) { 
-	printf("check_parentheses(%d,%d,%d)\n", p, q, option);
+	//printf("check_parentheses(%d,%d,%d)\n", p, q, option);
 	int ii = p;
 	int jj = q;
 	if (p == q) {
