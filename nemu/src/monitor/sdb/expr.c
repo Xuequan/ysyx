@@ -34,6 +34,7 @@ enum {
 	TK_DIV,		// div
 	TK_OPAREN, // open parenthesis 263
 	TK_CPAREN, // close parenthesis
+	TK_NEWLINE, 
 };
 
 static struct rule {
@@ -56,6 +57,7 @@ static struct rule {
 	{"\\/", TK_DIV},					  // div
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
+	{"\\n", TK_NEWLINE},        // newline
 	/* end */
 };
 
