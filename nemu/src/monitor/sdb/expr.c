@@ -135,15 +135,15 @@ static bool make_token(char *e) {
 				// maybe tokens[].str is a char array, not a char *
 				//strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				// copy token to tokens[].str
-				for (int j = 0; j < substr_len; j++)
+				for (int j = 0; j < substr_len; j++) {
 					tokens[nr_token].str[j] = *(substr_start + j);
+				}
 				tokens[nr_token].str[substr_len] = '\0';	
 			
 				/* print tokens[].str 	
 				*/
-				char * tmp = tokens[nr_token].str;
+				char *tmp = tokens[nr_token].str;
 				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
-
         switch (rules[i].token_type) {
 					case TK_NOTYPE:    // if spaces, do not record
 					case TK_NEWLINE:
@@ -161,6 +161,7 @@ static bool make_token(char *e) {
 						break;
 					
 					case TK_REG: // if register,get its value in tokens
+						{
 						tokens[nr_token].type = TK_VAL;
 						reg_val = isa_reg_str2val(tokens[nr_token].str, &success);
 						if (success == false) {
@@ -169,20 +170,23 @@ static bool make_token(char *e) {
 						}
 						snprintf(tokens[nr_token].str, sizeof(word_t), "%u", reg_val);
 						break;
+						}
 				
           default: printf("make_token(): unknown token_type \"%d\"\n", 
 																				rules[i].token_type);
 									 assert(0);
         }//end switch
+
 				nr_token++;
         break;
-      } 
-    } // end for
+      } // end if (regexec(&re[i]...) 
+    } // end for ( ; i < NR_REGEX; ...)
 
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
+
   }//end while
 
 	nr_token -= 1;
