@@ -199,7 +199,7 @@ word_t expr(char *e, bool *success) {
 
 // chuan, p < q
 word_t eval (int p, int q) {
-	//printf("== eval(%d, %d)\n", p, q);
+	printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
 	word_t val1 = 0;
 	word_t val2 = 0;
@@ -220,7 +220,7 @@ word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_op(p, q);
-		//printf("============op = %d\n", op);
+		printf("============op = %d\n", op);
 		val1 = eval(p, op - 1);
 		val2 = eval(op + 1, q);
 		
@@ -300,7 +300,7 @@ int find_main_op(int p, int q) {
 **		the expr no need surrounded by a matched parentheses 
 */
 static bool check_parentheses(int p, int q, int option) { 
-	//printf("check_parentheses(%d,%d,%d)\n", p, q, option);
+	printf("check_parentheses(%d,%d,%d)\n", p, q, option);
 	int ii = p;
 	int jj = q;
 	if (p == q) {
