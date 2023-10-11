@@ -101,7 +101,7 @@ void gen_num(void) {
 	
 	char temp[11];
 	int len = buf_length();	
-	snprintf(temp, sizeof(temp), "%d", num);
+	snprintf(temp, sizeof(temp), "%u", num);
 	for (; temp[i] != '\0'; i++) {
 		buf[len + i] = temp[i];
 	}
