@@ -98,7 +98,7 @@ static bool make_token(char *e) {
 
   nr_token = 0;
 	
-	printf("make_token(char %s)\n", e);
+	printf("make_token( %s )\n", e);
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
@@ -187,7 +187,7 @@ word_t expr(char *e, bool *success) {
 
 // chuan, p < q
 word_t eval (int p, int q) {
-	printf("== eval(%d, %d)\n", p, q);
+	//printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
 	word_t val1 = 0;
 	word_t val2 = 0;
@@ -208,7 +208,7 @@ word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_op(p, q);
-		printf("============op = %d\n", op);
+		//printf("============op = %d\n", op);
 		val1 = eval(p, op - 1);
 		val2 = eval(op + 1, q);
 		
@@ -237,7 +237,7 @@ word_t eval (int p, int q) {
 ** find the position of 主运算符
 */
 int find_main_op(int p, int q) {
-	printf("find_main_op(%d, %d)\n", p, q);
+	//printf("find_main_op(%d, %d)\n", p, q);
 	int i = 0;
 	int cnt = 0;
 	int index[q - p];
@@ -288,7 +288,7 @@ int find_main_op(int p, int q) {
 **		the expr no need surrounded by a matched parentheses 
 */
 static bool check_parentheses(int p, int q, int option) { 
-	printf("check_parentheses(%d,%d,%d)\n", p, q, option);
+	//printf("check_parentheses(%d,%d,%d)\n", p, q, option);
 	int ii = p;
 	int jj = q;
 	if (p == q) {
@@ -320,7 +320,7 @@ static bool check_parentheses(int p, int q, int option) {
 	}// end for
 
 	if ( !is_empty() ) {
-		print_stack("not empty");	
+		//print_stack("not empty");	
 		destroy_stack();
 		printf("check_paren2(%d, %d): bad expression\n", ii, jj);
 		return false;
