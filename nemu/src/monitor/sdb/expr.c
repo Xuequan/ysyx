@@ -107,7 +107,7 @@ static bool make_token(char *e) {
 	
   nr_token = 0;
 	
-	//printf("make_token( %s )\n", e);
+	printf("make_token( %s )\n", e);
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
