@@ -32,7 +32,8 @@ static char *code_format =
 "int main() { \n"
 "  unsigned result = %s; \n"
 //"  unsigned long long result = (unsigned long long)%s; \n"
-"  printf(\"%%llu\", result); \n"
+//"  printf(\"%%llu\", result); \n"
+"  printf(\"%%u\", result); \n"
 "  return 0; \n"
 "} \n";
 
