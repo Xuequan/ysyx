@@ -89,8 +89,7 @@ void init_regex() {
 
 typedef struct token {
   int type;
-  //char str[32];
-  char str[168];
+  char str[32];
 } Token;
 
 static Token tokens[32] __attribute__((used)) = {};
@@ -333,9 +332,9 @@ static bool check_parentheses(int p, int q, int option) {
 	}// end for
 
 	if ( !is_empty() ) {
-		print_stack("not empty");	
+		//print_stack("not empty");	
 		destroy_stack();
-		printf("check_paren2(%d, %d, %d): bad expression\n", ii, jj, option);
+		//printf("check_paren2(%d, %d, %d): bad expression\n", ii, jj, option);
 		return false;
 	}
 	destroy_stack();
