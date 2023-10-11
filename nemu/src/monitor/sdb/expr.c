@@ -99,16 +99,19 @@ static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char *e) {
   int position = 0;
-  int i;
+  int i = 0;
   regmatch_t pmatch;
 
+	bool success = false;
+	word_t reg_val = 0;
+	
   nr_token = 0;
 	
 	//printf("make_token( %s )\n", e);
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
-    for (i = 0; i < NR_REGEX; i ++) {
+    for ( ; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
@@ -156,9 +159,17 @@ static bool make_token(char *e) {
 					case TK_DIV: 
 					case TK_OPAREN: 
 					case TK_CPAREN: 
-					
-					case TK_REG:
 						tokens[nr_token].type = rules[i].token_type;  
+						break;
+					
+					case TK_REG: // if register, save its value in tokens
+						tokens[nr_token].type = TK_VAL;
+						reg_val = isa_reg_str2val(tokens[nr_token].str, &success);
+						if (success == false) {
+							printf("isa_reg_str2val() falied\n");
+							assert(0);
+						}
+						snprintf(tokens[nr_token].str, sizeof(word_t), "%u", reg_val);
 						break;
 				
           default: printf("make_token(): unknown token_type \"%d\"\n", 
