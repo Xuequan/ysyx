@@ -212,7 +212,7 @@ word_t eval (int p, int q) {
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
-		return atoi(tokens[p].str);
+		return (word_t)atoi(tokens[p].str);
 	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
