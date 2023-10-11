@@ -335,7 +335,7 @@ static bool check_parentheses(int p, int q, int option) {
 	if ( !is_empty() ) {
 		print_stack("not empty");	
 		destroy_stack();
-		printf("check_paren2(%d, %d): bad expression\n", ii, jj);
+		printf("check_paren2(%d, %d, %d): bad expression\n", ii, jj, option);
 		return false;
 	}
 	destroy_stack();
