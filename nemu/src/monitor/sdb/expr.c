@@ -237,7 +237,7 @@ word_t eval (int p, int q) {
 			default: assert(0);
 		}//end switch
 	} else if (check_parentheses(p, q, 0) == false) {
-		printf("parentheses are not matched.\n");
+		printf("parentheses are not matched. Plese input again\n");
 		assert(0);
 	} else {
 		printf("eval(): unknown error!\n");
