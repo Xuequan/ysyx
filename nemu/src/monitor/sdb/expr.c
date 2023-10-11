@@ -142,9 +142,9 @@ static bool make_token(char *e) {
 				tokens[nr_token].str[substr_len] = '\0';	
 			
 				/* print tokens[].str 	
+				*/
 				char * tmp = tokens[nr_token].str;
 				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
-				*/
 
         switch (rules[i].token_type) {
 					case TK_NOTYPE:    // if spaces, do not record
@@ -162,7 +162,7 @@ static bool make_token(char *e) {
 						tokens[nr_token].type = rules[i].token_type;  
 						break;
 					
-					case TK_REG: // if register, save its value in tokens
+					case TK_REG: // if register,get its value in tokens
 						tokens[nr_token].type = TK_VAL;
 						reg_val = isa_reg_str2val(tokens[nr_token].str, &success);
 						if (success == false) {
