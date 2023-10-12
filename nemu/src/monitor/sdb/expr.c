@@ -105,7 +105,10 @@ static bool make_token(char *e) {
   regmatch_t pmatch;
   nr_token = 0;
 	
-	printf("make_token( %s )\n", e);
+	//printf("make_token( %s )\n", e);
+	for (int mm = 0; e[mm] != '\0'; mm++) {
+		printf("e[%d] = %c\n", mm, e[mm]);
+	}
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
@@ -129,8 +132,6 @@ static bool make_token(char *e) {
 				}
 
 				/* copy the new token to a buffer token_str */
-				// chuan: i donot know why below function cannot copy
-				// maybe tokens[].str is a char array, not a char *
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
 				/*
