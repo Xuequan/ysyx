@@ -147,7 +147,7 @@ static bool make_token(char *e) {
 				assign_tokens_type(rules[i].token_type, &nr_token);
 
 				nr_token++;
-        break;
+        //break;
       } // end if (regexec(&re[i]...) 
     } // end for ( ; i < NR_REGEX; ...)
 
