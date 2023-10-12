@@ -27,7 +27,7 @@ word_t eval (int p, int q);
 int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
 void assign_tokens_type(int type, int *index);
-void assign_tokens_str(int tokens_length);
+void transfer_tokens(int tokens_length);
 void print_tokens(int nr_token);
 
 enum {
@@ -105,10 +105,7 @@ static bool make_token(char *e) {
   regmatch_t pmatch;
   nr_token = 0;
 	
-	//printf("make_token( %s )\n", e);
-	for (int mm = 0; e[mm] != '\0'; mm++) {
-		printf("e[%d] = %c\n", mm, e[mm]);
-	}
+	printf("make_token( %s )\n", e);
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
@@ -134,12 +131,6 @@ static bool make_token(char *e) {
 				/* copy the new token to a buffer token_str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
-				/*
-				for (int j = 0; j < substr_len; j++) {
-					tokens[nr_token].str[j] = *(substr_start + j);
-				}
-				tokens[nr_token].str[substr_len] = '\0';	
-				*/
 			
 				/* print tokens[].str */
 				char *tmp = tokens[nr_token].str;
@@ -162,7 +153,7 @@ static bool make_token(char *e) {
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
 
-	assign_tokens_str(nr_token + 1);
+	transfer_tokens(nr_token + 1);
 	print_tokens(nr_token + 1);
 		
   return true;
@@ -183,7 +174,7 @@ static struct rule {
 ** get it value and copy it to 
 ** tokens[].str
 */ 
-void assign_tokens_str(int tokens_length) {
+void transfer_tokens(int tokens_length) {
 	word_t reg_val = 0;
 	bool success = false;
 	int i = 0;
