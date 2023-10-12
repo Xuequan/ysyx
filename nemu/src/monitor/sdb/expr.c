@@ -238,7 +238,7 @@ void assign_tokens_type(int type, int *index) {
 
 void print_tokens(int length) {
 	for(int i = 0; i < length; i++) {
-		printf("%d: tokens[%d].str = %s\n", i, i, tokens[i].str);
+		printf("print_tokens--%d: tokens[%d].str = %s\n", i, i, tokens[i].str);
 	}
 }
 
