@@ -23,10 +23,12 @@
  */
 #include <regex.h>
 
-void print_tokens(int nr_token);
 word_t eval (int p, int q); 
 int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
+void assign_tokens_type(int type, int *index);
+void assign_tokens_str(int tokens_length);
+void print_tokens(int nr_token);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -101,10 +103,6 @@ static bool make_token(char *e) {
   int position = 0;
   int i = 0;
   regmatch_t pmatch;
-
-	bool success = false;
-	word_t reg_val = 0;
-	
   nr_token = 0;
 	
 	printf("make_token( %s )\n", e);
@@ -133,49 +131,20 @@ static bool make_token(char *e) {
 
 				// chuan: i donot know why below function cannot copy
 				// maybe tokens[].str is a char array, not a char *
-				//strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
+				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				// copy token to tokens[].str
+				/*
 				for (int j = 0; j < substr_len; j++) {
 					tokens[nr_token].str[j] = *(substr_start + j);
 				}
 				tokens[nr_token].str[substr_len] = '\0';	
-			
-				/* print tokens[].str 	
 				*/
+			
+				/* print tokens[].str */
 				char *tmp = tokens[nr_token].str;
 				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
-        switch (rules[i].token_type) {
-					case TK_NOTYPE:    // if spaces, do not record
-					case TK_NEWLINE:
-						nr_token--; 
-						break;				
-					case TK_PLUS:  
-					case TK_EQ: 	
-					case TK_VAL: 	
-					case TK_MINUS: 
-					case TK_MUL: 
-					case TK_DIV: 
-					case TK_OPAREN: 
-					case TK_CPAREN: 
-						tokens[nr_token].type = rules[i].token_type;  
-						break;
-					
-					case TK_REG: // if register,get its value in tokens
-						{
-						tokens[nr_token].type = TK_VAL;
-						reg_val = isa_reg_str2val(tokens[nr_token].str, &success);
-						if (success == false) {
-							printf("isa_reg_str2val() falied\n");
-							assert(0);
-						}
-						snprintf(tokens[nr_token].str, sizeof(word_t), "%u", reg_val);
-						break;
-						}
-				
-          default: printf("make_token(): unknown token_type \"%d\"\n", 
-																				rules[i].token_type);
-									 assert(0);
-        }//end switch
+
+				assign_tokens_type(rules[i].token_type, &nr_token);
 
 				nr_token++;
         break;
@@ -191,10 +160,80 @@ static bool make_token(char *e) {
 
 	nr_token -= 1;
 
+	assign_tokens_str(nr_token + 1);
 	print_tokens(nr_token + 1);
 		
   return true;
 }
+
+/*
+typedef struct token {
+  int type;
+  char str[32];
+} Token;
+static struct rule {
+  const char *regex;
+  int token_type;
+} rules[] = {
+*/
+
+/* if tokens[].type = TK_REG (register,eg, x10)
+** get it value and copy it to 
+** tokens[].str
+*/ 
+void assign_tokens_str(int tokens_length) {
+	word_t reg_val = 0;
+	bool success = false;
+	int i = 0;
+	
+	for(; i < tokens_length; i++) {
+		if (tokens[i].type == TK_REG) {
+			tokens[i].type = TK_VAL;  // transfer register to number
+			reg_val = isa_reg_str2val(tokens[i].str, &success);
+			if (success == false) {
+				printf("isa_reg_str2val() falied\n");
+				assert(0);
+			}
+			snprintf(tokens[nr_token].str, sizeof(word_t), "%u", reg_val);
+		} // end if(tokens[i].type...)
+	} // end for(; i < ...)
+} // end function
+
+
+/* choose rules[].token_type and 
+** assign it to tokens[].type
+*/ 
+
+void assign_tokens_type(int type, int *index) {
+	//switch (rules[i].token_type) {
+	switch (type) {
+		case TK_NOTYPE:    // if spaces, do not record
+		case TK_NEWLINE:
+			{
+				//nr_token--; 
+				(*index)--;
+				break;				
+			}
+
+		case TK_PLUS:  case TK_EQ: 	case TK_VAL: 	
+		case TK_MINUS: case TK_MUL: case TK_DIV: 
+		case TK_OPAREN: case TK_CPAREN:
+		case TK_REG:
+			{ 
+				//tokens[nr_token].type = rules[i].token_type;  
+				//tokens[nr_token].type = type;  
+				tokens[*index].type = type;  
+				break;
+			}
+					
+		default: 
+			{ printf("make_token(): unknown token_type \"%d\"\n", 
+														type);
+				assert(0);
+      }
+
+	} //end switch
+} // end function
 
 void print_tokens(int length) {
 	for(int i = 0; i < length; i++) {
