@@ -29,6 +29,7 @@ static bool check_parentheses(int p, int q, int option);
 void assign_tokens_type(int type, int *index);
 void transfer_tokens(int tokens_length);
 void print_tokens(int nr_token);
+int hex2dec(char *str);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -42,7 +43,8 @@ enum {
 	TK_OPAREN, // open parenthesis 263
 	TK_CPAREN, // close parenthesis
 	TK_NEWLINE, 
-	TK_REG,
+	TK_REG,   // register, like x0-x31
+	TK_HEX,		// hexadecimal-number, like 0x, 0X
 };
 
 static struct rule {
@@ -67,6 +69,7 @@ static struct rule {
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
 	{"x[0-9]{1,2}", TK_REG},     // register, eg, x0-x31
+	{"0[xX]", TK_HEX},
 	/* end */
 };
 
@@ -187,12 +190,21 @@ void transfer_tokens(int tokens_length) {
 				printf("isa_reg_str2val() falied\n");
 				assert(0);
 			}
-			snprintf(tokens[nr_token].str, sizeof(word_t), "%u", reg_val);
+			snprintf(tokens[i].str, sizeof(word_t), "%u", reg_val);
 		} // end if(tokens[i].type...)
+		
+		if (tokens[i].type == TK_HEX) {
+			tokens[i].type = TK_VAL;  // transfer register to number
+			int hex2dec_val = hex2dec(tokens[i].str);
+			snprintf(tokens[i].str, sizeof(int), "%d", hex2dec_val);
+		}
 	} // end for(; i < ...)
 } // end function
 
-
+/* convert hex (eg 0x12345) to dec */ 
+int hex2dec(char *str) {
+	return 2;
+}
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
 */ 
@@ -211,7 +223,7 @@ void assign_tokens_type(int type, int *index) {
 		case TK_PLUS:  case TK_EQ: 	case TK_VAL: 	
 		case TK_MINUS: case TK_MUL: case TK_DIV: 
 		case TK_OPAREN: case TK_CPAREN:
-		case TK_REG:
+		case TK_REG:    case TK_HEX:
 			{ 
 				//tokens[nr_token].type = rules[i].token_type;  
 				//tokens[nr_token].type = type;  
@@ -229,8 +241,10 @@ void assign_tokens_type(int type, int *index) {
 } // end function
 
 void print_tokens(int length) {
+	printf("print_tokens : \n");
+
 	for(int i = 0; i < length; i++) {
-		printf("print_tokens--%d: tokens[%d].type = %d, tokens[%d].str = %s\n", i, i, tokens[i].type, i, tokens[i].str);
+		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
 	}
 }
 
