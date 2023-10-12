@@ -122,18 +122,16 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-
-				/* copy the new token to a buffer token_str */
 				if (substr_len > 32) {
 					printf("token is too long.\n");
 					assert(0);
 				}
 
+				/* copy the new token to a buffer token_str */
 				// chuan: i donot know why below function cannot copy
 				// maybe tokens[].str is a char array, not a char *
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
-				// copy token to tokens[].str
 				/*
 				for (int j = 0; j < substr_len; j++) {
 					tokens[nr_token].str[j] = *(substr_start + j);
@@ -159,6 +157,7 @@ static bool make_token(char *e) {
 
   }//end while
 
+	// nr_token is the last index of tokens[]
 	nr_token -= 1;
 
 	assign_tokens_str(nr_token + 1);
