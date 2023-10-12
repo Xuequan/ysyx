@@ -61,7 +61,7 @@ static struct rule {
   {"==", TK_EQ},        			// equal
 
 	/* chuan start */
-	{"0[xX][0-9]+", TK_HEX},
+	{"0[xX][0-9a-fA-F]+", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_MINUS},          // minus
 	{"\\*", TK_MUL},					  // mul
@@ -205,10 +205,10 @@ void transfer_tokens(int tokens_length) {
 int hex2dec(char *str) {
 	return 2;
 }
+
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
 */ 
-
 void assign_tokens_type(int type, int *index) {
 	//switch (rules[i].token_type) {
 	switch (type) {
