@@ -150,13 +150,13 @@ static bool make_token(char *e) {
         //break;
       } // end if (regexec(&re[i]...) 
     } // end for ( ; i < NR_REGEX; ...)
+  }//end while
 
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
 
-  }//end while
 
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
