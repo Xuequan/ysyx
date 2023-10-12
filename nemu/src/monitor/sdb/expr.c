@@ -69,7 +69,7 @@ static struct rule {
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
 	{"x[0-9]{1,2}", TK_REG},     // register, eg, x0-x31
-	{"0[xX]", TK_HEX},
+	{"0[xX][0-9]+", TK_HEX},
 	/* end */
 };
 
