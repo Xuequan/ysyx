@@ -23,6 +23,8 @@
  */
 #include <regex.h>
 
+#include <math.h>
+
 word_t eval (int p, int q); 
 int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
@@ -30,6 +32,7 @@ void assign_tokens_type(int type, int *index);
 void transfer_tokens(int tokens_length);
 void print_tokens(int nr_token);
 int hex2dec(char *str);
+char* get_num(char c);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -61,7 +64,7 @@ static struct rule {
   {"==", TK_EQ},        			// equal
 
 	/* chuan start */
-	{"0[xX][0-9a-fA-F]+", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	{"0[xX][0-9a-fA-F]{1, 8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_MINUS},          // minus
 	{"\\*", TK_MUL},					  // mul
@@ -203,8 +206,69 @@ void transfer_tokens(int tokens_length) {
 
 /* convert hex (eg 0x12345) to dec */ 
 int hex2dec(char *str) {
-	return 2;
+	int i = 0;
+	int result = 0;
+	int total_result = 0;
+	char *buf = NULL;
+	//char buf[3] = {};
+	int temp = 0;
+	
+
+	// for signed int, 0x1xxx xxxx
+	int len = strlen(str);
+	for( i = len - 1; i >= 2; i--) {
+		buf = get_num( str[i] );	
+		temp = (int)atoi(buf);
+		
+		if ( i == 2 && len == 10 ) {
+			if ( temp == 8 ) { // 0x8xxx xxxx
+				result = (-1) * pow(2, 31);
+			} else if (temp == 9 ) { // 0x9xxx xxxx 
+				result = (-1) * pow(2, 31) + pow(2, 28);
+			} else if (temp == 10 ) { // 0xaxxx xxxx 
+				result = (-1) * pow(2, 31) + pow(2, 29);
+			} else if (temp == 11 ) { // 0xbxxx xxxx 
+				result = (-1) * pow(2, 31) + pow(2, 29) + pow(2, 28);
+			} else if (temp == 12 ) { // 0xcxxx xxxx 
+				result = (-1) * pow(2, 31) + pow(2, 30);
+			} else if (temp == 13 ) { // 0xdxxx xxxx 
+				result = (-1) * pow(2, 31) + pow(2, 30) + pow(2, 28);
+			} else if (temp == 14 ) { // 0xexxx xxxx 
+				result = (-1) * pow(2, 31) + pow(2, 30) + pow(2, 29);
+			} else if (temp == 15 ) { // 0xfxxx xxxx 
+				result = (-1) * pow(2, 31) + pow(2, 30) + pow(2, 29) + pow(2, 28);
+			} else {
+				assert(0);
+			} 
+		} else {
+			result = temp * pow(16, len - 1 - i);
+		} // end if ( i == 2 && len == 10)
+		total_result += result;
+	} // end for ( i = len -1 ...) 
+
+	return total_result;
+} // end function
+
+char* get_num(char c) {
+	switch (c) {
+		case 'a': case 'A':
+			return "10";
+		case 'b': case 'B':
+			return "11";
+		case 'c': case 'C':
+			return "12";
+		case 'd': case 'D':
+			return "13";
+		case 'e': case 'E':
+			return "14";
+		case 'f': case 'F':
+			return "15";
+		default:
+			printf("Unknow hex digite: %c\n", c);
+			assert(0);
+	} // end switch
 }
+	
 
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
@@ -329,7 +393,7 @@ int find_main_op(int p, int q) {
 					cnt++;
 			}
 		}
-	}//end for
+	}//end fo
 
 	// figure out which is the main operator
 	int mul_div_index = 0;
