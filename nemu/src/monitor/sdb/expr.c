@@ -65,7 +65,7 @@ static struct rule {
 
 	/* chuan start */
 	//{"0[xX][0-9a-fA-F]{1, 8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
-	{"0[xX][0-9abcdefABCDEF]{1, 8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	{"0[xX][0-9abcdefABCDEF]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_MINUS},          // minus
 	{"\\*", TK_MUL},					  // mul
