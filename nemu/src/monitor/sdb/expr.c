@@ -64,8 +64,8 @@ static struct rule {
   {"==", TK_EQ},        			// equal
 
 	/* chuan start */
-	//{"0[xX][0-9a-fA-F]{1, 8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
-	{"0[xX][0-9abcdefABCDEF]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	//{"0[xX][0-9abcdefABCDEF]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_MINUS},          // minus
 	{"\\*", TK_MUL},					  // mul
@@ -156,7 +156,6 @@ static bool make_token(char *e) {
       return false;
     }
 
-
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
 
@@ -213,8 +212,6 @@ int hex2dec(char *str) {
 	char *buf = NULL;
 	//char buf[3] = {};
 	int temp = 0;
-	
-
 	// for signed int, 0x1xxx xxxx
 	int len = strlen(str);
 	for( i = len - 1; i >= 2; i--) {
