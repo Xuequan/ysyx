@@ -65,7 +65,6 @@ static struct rule {
 
 	/* chuan start */
 	{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
-	//{"0[xX][0-9abcdefABCDEF]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_MINUS},          // minus
 	{"\\*", TK_MUL},					  // mul
@@ -135,26 +134,26 @@ static bool make_token(char *e) {
 					assert(0);
 				}
 
-				/* copy the new token to a buffer token_str */
+				/* copy the new token to a buffer token.str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
 			
 				/* print tokens[].str */
 				char *tmp = tokens[nr_token].str;
 				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
-
+				/* copy the new token to a buffer token.type */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 
 				nr_token++;
         break;
       } // end if (regexec(&re[i]...) 
     } // end for ( ; i < NR_REGEX; ...)
-  }//end while
 
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
       return false;
     }
+  }//end while
 
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
