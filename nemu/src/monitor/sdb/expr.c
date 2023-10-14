@@ -110,9 +110,7 @@ static bool make_token(char *e) {
   int i = 0;
   regmatch_t pmatch;
   nr_token = 0;
-	
 	printf("make_token( %s )\n", e);
-
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i++) {
@@ -133,17 +131,15 @@ static bool make_token(char *e) {
 					printf("token is too long.\n");
 					assert(0);
 				}
-
 				/* copy the new token to a buffer token.str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
 			
-				/* print tokens[].str */
+				/* print this token */
 				char *tmp = tokens[nr_token].str;
 				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
 				/* copy the new token to a buffer token.type */
 				assign_tokens_type(rules[i].token_type, &nr_token);
-
 				nr_token++;
         break;
       } // end if (regexec(&re[i]...) 
@@ -154,13 +150,10 @@ static bool make_token(char *e) {
       return false;
     }
   }//end while
-
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
-
 	transfer_tokens(nr_token + 1);
 	print_tokens(nr_token + 1);
-		
   return true;
 }
 
@@ -178,6 +171,8 @@ static struct rule {
 /* if tokens[].type = TK_REG (register,eg, x10)
 ** get it value and copy it to 
 ** tokens[].str
+** if tokens[].type == TK_HEX (hexadecimal number)
+** transfer to TK_VAL
 */ 
 void transfer_tokens(int tokens_length) {
 	word_t reg_val = 0;
@@ -341,9 +336,10 @@ word_t expr(char *e, bool *success) {
 	return eval(0, nr_token);
 }
 
-// chuan, p < q
-// only the final result will be word_t
-// intermediate result is int 
+/* chuan, p < q
+** only the final result will be word_t
+** intermediate result is int 
+*/
 word_t eval (int p, int q) {
 	//printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
