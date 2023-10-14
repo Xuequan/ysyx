@@ -201,8 +201,8 @@ void transfer_tokens(int tokens_length) {
 		if (tokens[i].type == TK_HEX) {
 			// convert hexadeximal(eg, 0xf)  to dec (eg, 15)
 			tokens[i].type = TK_VAL;  
-			int hex_val = strtol(tokens[i].str, NULL, 16);
-			snprintf(tokens[i].str, sizeof(int), "%d", hex_val);
+			//int hex_val = strtol(tokens[i].str, NULL, 16);
+			//snprintf(tokens[i].str, sizeof(int), "%d", hex_val);
 		}
 	} // end for(; i < ...)
 
