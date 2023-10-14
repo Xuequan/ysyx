@@ -202,8 +202,9 @@ void transfer_tokens(int tokens_length) {
 		
 		if (tokens[i].type == TK_HEX) {
 			tokens[i].type = TK_VAL;  // transfer register to number
-			int hex2dec_val = hex2dec(tokens[i].str);
-			snprintf(tokens[i].str, sizeof(int), "%d", hex2dec_val);
+			//int hex2dec_val = hex2dec(tokens[i].str);
+			int hex_val = strtol(tokens[i].str, NULL, 16);
+			snprintf(tokens[i].str, sizeof(int), "%d", hex_val);
 		}
 	} // end for(; i < ...)
 
