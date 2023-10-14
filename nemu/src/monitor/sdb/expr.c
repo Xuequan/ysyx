@@ -24,6 +24,7 @@
 #include <regex.h>
 
 #include <math.h>
+#include <memory/vaddr.h>
 
 word_t eval (int p, int q); 
 int find_main_op(int p, int q);
@@ -434,8 +435,8 @@ word_t eval (int p, int q) {
 ** Do not support *variable!!!
 */
 word_t get_defer_val(int address) {
-	return 10;
-
+	// this maybe wrong!!!
+	return vaddr_read(address, sizeof(word_t));;
 } // end function
 
 /*
