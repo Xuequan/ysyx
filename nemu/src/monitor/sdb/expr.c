@@ -337,6 +337,7 @@ word_t eval (int p, int q) {
 				default: assert(0);
 			}//end switch
 		} else {
+			printf("eval(%d, %d)\n", op + 1, q);
 			word_t val3 = eval(op + 1, q);
 			printf("val3 = %u\n", val3);
 			return get_defer_val(val3);
