@@ -32,7 +32,7 @@ static bool check_parentheses(int p, int q, int option);
 void assign_tokens_type(int type, int *index);
 void transfer_tokens(int tokens_length);
 void print_tokens(int nr_token);
-word_t get_defer_val(int address);
+word_t get_defer_val(word_t address);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -334,7 +334,7 @@ word_t eval (int p, int q) {
 			}//end switch
 		} else {
 			val2 = (int)eval(op + 1, q);
-			return get_defer_val(val2);
+			return get_defer_val((word_t)val2);
 		} 
 	} else if (check_parentheses(p, q, 0) == false) {
 		printf("parentheses are not matched. Plese input again\n");
@@ -350,8 +350,9 @@ word_t eval (int p, int q) {
 ** get the val from the address 
 ** Do not support *variable!!!
 */
-word_t get_defer_val(int address) {
+word_t get_defer_val(word_t address) {
 	// this maybe wrong!!!
+	printf("get_defer_val(%u)\n", address);
 	return vaddr_read(address, sizeof(word_t));;
 } // end function
 
