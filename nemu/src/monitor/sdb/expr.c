@@ -32,8 +32,6 @@ static bool check_parentheses(int p, int q, int option);
 void assign_tokens_type(int type, int *index);
 void transfer_tokens(int tokens_length);
 void print_tokens(int nr_token);
-int hex2dec(char *str);
-char* get_num(char c);
 word_t get_defer_val(int address);
 
 enum {
@@ -201,8 +199,8 @@ void transfer_tokens(int tokens_length) {
 		} // end if(tokens[i].type...)
 		
 		if (tokens[i].type == TK_HEX) {
-			tokens[i].type = TK_VAL;  // transfer register to number
-			//int hex2dec_val = hex2dec(tokens[i].str);
+			// convert hexadeximal(eg, 0xf)  to dec (eg, 15)
+			tokens[i].type = TK_VAL;  
 			int hex_val = strtol(tokens[i].str, NULL, 16);
 			snprintf(tokens[i].str, sizeof(int), "%d", hex_val);
 		}
@@ -235,89 +233,6 @@ int eval_follow_expr(int i) {
 	return 0;
 }// end function
 
-/* convert hex (eg 0x12345) to dec */ 
-int hex2dec(char *str) {
-	int i = 0;
-	int result = 0;
-	int total_result = 0;
-	char *buf = NULL;
-	//char buf[3] = {};
-	int temp = 0;
-	// for signed int, 0x1xxx xxxx
-	int len = strlen(str);
-	for( i = len - 1; i >= 2; i--) {
-		buf = get_num( str[i] );	
-		temp = (int)atoi(buf);
-		
-		if ( i == 2 && len == 10 ) {
-			if ( temp == 8 ) { // 0x8xxx xxxx
-				result = (-1) * pow(2, 31);
-			} else if (temp == 9 ) { // 0x9xxx xxxx 
-				result = (-1) * pow(2, 31) + pow(2, 28);
-			} else if (temp == 10 ) { // 0xaxxx xxxx 
-				result = (-1) * pow(2, 31) + pow(2, 29);
-			} else if (temp == 11 ) { // 0xbxxx xxxx 
-				result = (-1) * pow(2, 31) + pow(2, 29) + pow(2, 28);
-			} else if (temp == 12 ) { // 0xcxxx xxxx 
-				result = (-1) * pow(2, 31) + pow(2, 30);
-			} else if (temp == 13 ) { // 0xdxxx xxxx 
-				result = (-1) * pow(2, 31) + pow(2, 30) + pow(2, 28);
-			} else if (temp == 14 ) { // 0xexxx xxxx 
-				result = (-1) * pow(2, 31) + pow(2, 30) + pow(2, 29);
-			} else if (temp == 15 ) { // 0xfxxx xxxx 
-				result = (-1) * pow(2, 31) + pow(2, 30) + pow(2, 29) + pow(2, 28);
-			} else {
-				assert(0);
-			} 
-		} else {
-			result = temp * pow(16, len - 1 - i);
-		} // end if ( i == 2 && len == 10)
-		total_result += result;
-	} // end for ( i = len -1 ...) 
-
-	return total_result;
-} // end function
-
-char* get_num(char c) {
-	switch (c) {
-		case 'a': case 'A':
-			return "10";
-		case 'b': case 'B':
-			return "11";
-		case 'c': case 'C':
-			return "12";
-		case 'd': case 'D':
-			return "13";
-		case 'e': case 'E':
-			return "14";
-		case 'f': case 'F':
-			return "15";
-		case '0': 
-			return "0";
-		case '1':
-			return "1";
-		case '2': 
-			return "2";
-		case '3':
-			return "3";
-		case '4': 
-			return "4";
-		case '5':
-			return "5";
-		case '6': 
-			return "6";
-		case '7':
-			return "7";
-		case '8': 
-			return "8";
-		case '9':
-			return "9";
-		default:
-			printf("Unknow hex digite: %c\n", c);
-			assert(0);
-	} // end switch
-}
-	
 
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
