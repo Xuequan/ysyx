@@ -338,6 +338,7 @@ word_t eval (int p, int q) {
 			}//end switch
 		} else {
 			word_t val3 = eval(op + 1, q);
+			printf("val3 = %u\n", val3);
 			return get_defer_val(val3);
 		} 
 	} else if (check_parentheses(p, q, 0) == false) {
