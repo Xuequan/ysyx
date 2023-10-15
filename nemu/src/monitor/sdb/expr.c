@@ -158,8 +158,6 @@ static bool make_token(char *e) {
   }//end while
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
-	printf("before: ");
-	print_tokens(nr_token + 1);
 	transfer_tokens(nr_token + 1);
 	print_tokens(nr_token + 1);
   return true;
@@ -339,9 +337,9 @@ word_t eval (int p, int q) {
 				default: assert(0);
 			}//end switch
 		} else {
-			printf("eval(%d, %d)\n", op + 1, q);
+			//printf("eval(%d, %d)\n", op + 1, q);
 			word_t val3 = eval(op + 1, q);
-			printf("val3 = %#x\n", val3);
+			//printf("val3 = %#x\n", val3);
 			return get_defer_val(val3);
 		} // end if (tokens[op].type != TK_DEREF) 
 	} else if (check_parentheses(p, q, 0) == false) {

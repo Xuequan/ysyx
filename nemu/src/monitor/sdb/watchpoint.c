@@ -40,4 +40,44 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
+WP* new_wp();
+void free_wp(WP *wp);
 
+
+WP* new_wp() {
+	if (free_->next == NULL) {
+		printf("watchpoint is full used.\n");
+		return NULL;
+	} 
+	// get a wp from free_ tail
+	WP *prev = free_;
+	WP *ptr = prev->next;
+	for ( ; ptr->next != NULL; ptr = ptr->next, prev = prev->next) {
+		;
+	}
+	prev->next = NULL;
+	// add this wp to head
+	WP *ptr2 = head;
+	for (; ptr2->next != NULL; ptr2 = ptr2->next) {
+		;
+	}
+	ptr2->next = ptr;
+	return ptr;	
+}
+
+void free_wp(WP *wp) {
+	// delete wp from head 
+	WP *prev = head;
+	WP *ptr  = prev->next;
+	for ( ;ptr != wp; prev = prev->next, ptr = ptr->next) { ; }
+
+	if (ptr == NULL) {
+		printf("wp is not exist, cannot free!\n");
+		assert(0);
+	}
+	prev->next = ptr->next;	
+	// add wp to free_ tail
+	ptr = free_;
+	for ( ; ptr->next != NULL; ptr = ptr->next ) { ;}
+	ptr->next = wp;
+}
