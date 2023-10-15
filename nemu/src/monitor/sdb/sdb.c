@@ -21,6 +21,7 @@
 
 /*chuan */
 #include <memory/vaddr.h>
+#include "watchpoint.c"
 
 static int is_batch_mode = false;
 
@@ -84,7 +85,6 @@ static int cmd_info(char *args) {
 	return 0;
 }
 
-
 static int cmd_x(char *args) {
 	char *str = args;
 	char *num = NULL;
@@ -110,7 +110,6 @@ static int cmd_x(char *args) {
 			}
 		}	
 	}
-	
 	/* 2. show data */
 	int print_num = (int)atof(num);
 	vaddr_t print_addr = (vaddr_t)atof(addr); 
@@ -125,14 +124,26 @@ static int cmd_x(char *args) {
 	return 0;
 }
 
-/*
 static int cmd_w(char *args) {
 	if (args == NULL) {
-		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
+		printf("Please input arguments, for example, 'w *0x8000000'\n");
 	}
+	WP *wp = new_wp();
+	if (wp == NULL) {
+		printf("cmd_w(): cannot get a new watchpoint\n");
+		assert(0);
+	}
+	strcpy(wp->expr, args);
+	bool success;
+	word_t expr_result = expr(args, &success); 
+	if (success == false) {
+		printf("cmd_w : expr() failed.\n");
+		assert(0);
+	}
+	wp->val = expr_result;
+	
 	return 0;
 }
-*/
 
 #define TEST_LENGTH (65536 + 11)
 static int cmd_p(char *args) {
@@ -202,8 +213,8 @@ static struct {
 	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r' two commands", cmd_info},
 	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
 	{"p", "Print value of expression", cmd_p},
+	{"w", "Set watchpoint, eg 'w expr'", cmd_w},
 	/*
-	{"w", "Set watchpoint", cmd_w},
 	{"d", "Delete watchpoint", cmd_d},
 	*/
 
