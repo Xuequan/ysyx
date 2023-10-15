@@ -158,6 +158,8 @@ static bool make_token(char *e) {
   }//end while
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
+	printf("before: ");
+	print_tokens(nr_token + 1);
 	transfer_tokens(nr_token + 1);
 	print_tokens(nr_token + 1);
   return true;
@@ -176,10 +178,8 @@ static struct rule {
 
 /* 1> if tokens[].type = TK_REG (register,eg, x10)
 ** get it value and copy it to tokens[].str
-** 2> if tokens[].type == TK_HEX (hexadecimal number)
-** transfer to TK_VAL
 ** 3> if tokens[].type == TK_MUL, 
-** check if is TK_DEFER, if so, check the expr behind it
+** check if it is TK_DEFER, if so, check the expr behind it
 ** and conver it to TK_VAL
 */ 
 void transfer_tokens(int tokens_length) {
@@ -343,7 +343,7 @@ word_t eval (int p, int q) {
 			word_t val3 = eval(op + 1, q);
 			printf("val3 = %u\n", val3);
 			return get_defer_val(val3);
-		} 
+		} // end if (tokens[op].type != TK_DEREF) 
 	} else if (check_parentheses(p, q, 0) == false) {
 		printf("parentheses are not matched. Plese input again\n");
 		assert(0);
