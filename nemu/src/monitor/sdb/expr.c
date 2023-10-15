@@ -198,12 +198,14 @@ void transfer_tokens(int tokens_length) {
 			snprintf(tokens[i].str, sizeof(word_t), "%u", reg_val);
 		} // end if(tokens[i].type...)
 		
+	/*
 		if (tokens[i].type == TK_HEX) {
 			// convert hexadeximal(eg, 0xf)  to dec (eg, 15)
 			tokens[i].type = TK_VAL;  
 			//int hex_val = strtol(tokens[i].str, NULL, 16);
 			//snprintf(tokens[i].str, sizeof(int), "%d", hex_val);
 		}
+	*/
 	} // end for(; i < ...)
 
 	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
@@ -306,11 +308,11 @@ word_t eval (int p, int q) {
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
-		if (tokens[p].type == TK_DEREF) {
-			return (word_t)strtol(tokens[p].str, NULL, 16);
-		} else {
-			return (word_t)atoi(tokens[p].str);
-		} 
+			if (tokens[p].type == TK_HEX) {
+				return (word_t)strtol(tokens[p].str, NULL, 16);
+			} else {
+				return (word_t)atoi(tokens[p].str);
+			}
 	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
