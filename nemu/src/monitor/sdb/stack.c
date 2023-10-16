@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stddef.h>
-//#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
 #include "stack.h"
 
 typedef struct StackNode {

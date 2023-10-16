@@ -15,8 +15,6 @@
 
 #include <isa.h>
 #include "stack.h"
-//#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.h"
-//#include "/home/chuan/ysyx-workbench/nemu/src/monitor/sdb/stack.c"
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -26,7 +24,7 @@
 #include <math.h>
 #include <memory/vaddr.h>
 
-word_t eval (int p, int q); 
+word_t eval(int p, int q); 
 int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
 void assign_tokens_type(int type, int *index);

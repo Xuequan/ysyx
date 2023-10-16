@@ -9,16 +9,6 @@
 
 #define STACK_TYPE int
 
-/*
-typedef struct StackNode {
-  STACK_TYPE value;
-  struct StackNode *next;
-} StackNode;
-
-// stack pointer to the first element 
-static StackNode *stack;  
-*/
-
 /* create_stack
 **		No need because of linked list structure stack.
 */
