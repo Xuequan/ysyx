@@ -135,9 +135,8 @@ static int cmd_w(char *args) {
 		assert(0);
 	}
 	printf("wp->NO = %d\n", wp->NO);
-	//strcpy(wp->expr, args);
-	strncpy(wp->expr, args, (size_t)strlen(args));
-	printf("here\n");
+	strcpy(wp->expr, args);
+	//strncpy(wp->expr, args, (size_t)strlen(args));
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {

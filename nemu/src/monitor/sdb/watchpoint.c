@@ -92,8 +92,13 @@ void free_wp(WP *wp) {
 	wp->val = 0;
 
 	// delete wp from head 
+	if (head == NULL) {
+		printf("feee_wp(): head is NULL, error!\n");
+		assert(0);
+	}
 	WP *prev = head;
 	WP *ptr  = prev->next;
+
 	for ( ;ptr != wp; prev = prev->next, ptr = ptr->next) { ; }
 
 	if (ptr == NULL) {
