@@ -16,6 +16,8 @@
 #include "sdb.h"
 
 #define NR_WP 32
+
+// I move this struct WP in sdb.h
 /*
 typedef struct watchpoint {
   int NO;

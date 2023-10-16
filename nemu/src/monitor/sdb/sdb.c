@@ -135,13 +135,14 @@ static int cmd_w(char *args) {
 		assert(0);
 	}
 	strcpy(wp->expr, args);
-	bool success;
+	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
 		printf("cmd_w : expr() failed.\n");
 		assert(0);
 	}
 	wp->val = expr_result;
+	printf("wp->val = %u, wp->expr = %s\n", wp->val, wp->expr);
 	
 	return 0;
 }
