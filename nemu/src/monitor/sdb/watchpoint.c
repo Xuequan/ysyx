@@ -15,6 +15,8 @@
 
 #include "sdb.h"
 
+#include <utils.h>
+
 #define NR_WP 32
 
 // I move this struct WP in sdb.h
@@ -110,4 +112,25 @@ void free_wp(WP *wp) {
 	ptr = free_;
 	for ( ;ptr->next != NULL; ptr = ptr->next) { ;}
 	ptr->next = wp;
+}
+
+/* scan watchpoint and see if the expr value change */
+void scan_wp_pool() {
+  WP* ptr = head;
+  word_t now_result;
+  bool success = false;
+  for( ;ptr != NULL; ptr = ptr->next) {
+    now_result = expr(ptr->expr, &success);
+    if (success == false) {
+      printf("trace_and_difftest(): expr() error\n");
+      assert(0);
+    }
+    if (now_result != ptr->val) {
+      nemu_state.state = NEMU_STOP;
+      printf("Hardware watchpoint %d: val\n", ptr->NO);
+      printf("\n");
+      printf("Old vaule = %d\n", ptr->val);
+      printf("New value = %u\n", now_result);
+    }
+  }// end for (;...)
 }
