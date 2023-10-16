@@ -75,8 +75,7 @@ static int cmd_info(char *args) {
 		isa_reg_display();
 
 	}else if (*args == 'w') {  //info watchpoint 
-		printf("'info w' needs added, please wait.\n");
-
+		print_wp();
 	}else{
 		printf("Unknown command argument, please input 'info r' or 'info w' again.\n");
 	}
