@@ -67,11 +67,13 @@ WP* new_wp() {
 	}
 	prev->next = NULL;
 	// add this wp to head
-	WP *ptr2 = head;
-	for (; ptr2->next != NULL; ptr2 = ptr2->next) {
-		;
+	if (head == NULL) {
+		head = ptr;
+	} else {
+		WP *ptr2 = head;
+		for (; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
+		ptr2->next = ptr;
 	}
-	ptr2->next = ptr;
 	// find this wp in wp_pool
 	int k = 0;
 	for (; ptr->NO != wp_pool[k].NO && k < NR_WP; k++) { ;}
