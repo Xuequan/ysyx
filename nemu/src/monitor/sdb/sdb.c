@@ -135,6 +135,7 @@ static int cmd_w(char *args) {
 		assert(0);
 	}
 	strcpy(wp->expr, args);
+	printf("here\n");
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
