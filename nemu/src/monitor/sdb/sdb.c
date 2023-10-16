@@ -134,6 +134,7 @@ static int cmd_w(char *args) {
 		printf("cmd_w(): cannot get a new watchpoint\n");
 		assert(0);
 	}
+	printf("wp->NO = %d\n", wp->NO);
 	//strcpy(wp->expr, args);
 	strncpy(wp->expr, args, (size_t)strlen(args));
 	printf("here\n");
