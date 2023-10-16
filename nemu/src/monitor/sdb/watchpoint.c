@@ -72,7 +72,14 @@ WP* new_wp() {
 		;
 	}
 	ptr2->next = ptr;
-	return ptr;	
+	// find this wp in wp_pool
+	int k = 0;
+	for (; ptr->NO != wp_pool[k].NO && k < NR_WP; k++) { ;}
+	if ( k == NR_WP) {
+		printf("new_wp(): error\n");
+		assert(0);
+	}
+	return &wp_pool[k];	
 }
 
 void free_wp(WP *wp) {
