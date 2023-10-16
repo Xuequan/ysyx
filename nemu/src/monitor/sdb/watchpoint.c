@@ -37,8 +37,11 @@ void init_wp_pool() {
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
-
-		wp_pool[i].expr = NULL;
+		
+		// initial wp.expr[]
+		for (int m = 0; m < WP_EXPR_LENGTH; m++) {
+			wp_pool[i].expr[m] = '\0';
+		}
 		wp_pool[i].val = 0;
   }
 
@@ -73,6 +76,12 @@ WP* new_wp() {
 }
 
 void free_wp(WP *wp) {
+	// clear wp.expr and val
+	for (int m = 0; m < WP_EXPR_LENGTH; m++) {
+		wp->expr[m] = '\0';
+	}
+	wp->val = 0;
+
 	// delete wp from head 
 	WP *prev = head;
 	WP *ptr  = prev->next;

@@ -161,17 +161,6 @@ static bool make_token(char *e) {
   return true;
 }
 
-/*
-typedef struct token {
-  int type;
-  char str[32];
-} Token;
-static struct rule {
-  const char *regex;
-  int token_type;
-} rules[] = {
-*/
-
 /* 1> if tokens[].type = TK_REG (register,eg, x10)
 ** get it value and copy it to tokens[].str
 ** 3> if tokens[].type == TK_MUL, 

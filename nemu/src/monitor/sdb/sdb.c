@@ -186,7 +186,7 @@ static int cmd_p(char *args) {
 		fclose(fp);
 		
 	}else {
-			bool success;
+			bool success = false;
 			word_t expr_result = expr(args, &success); 
 			if (success == false) {
 				//printf("cmd_p : expr() failed.\n");
