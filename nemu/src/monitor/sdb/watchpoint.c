@@ -67,8 +67,20 @@ void add_wp2_tail(int choose, WP* wp) {
 		list = free_;
 	}
 
+	if (list == NULL && choose == 0) {
+		head = wp;
+		head->next = NULL;
+	} else if (list == NULL && choose == 1) {
+		free_ = wp;
+		free_->next = NULL;
+	} else {
+		WP *ptr = list;
+		for (; ptr->next != NULL; ptr = ptr->next) { ;}
+		ptr->next = wp;
+		wp->next = NULL;
+	}
+	/*
 	if (list == NULL) {
-		printf("i am here\n");
 		list = wp;
 		list->next = NULL;
 	} else {
@@ -77,6 +89,7 @@ void add_wp2_tail(int choose, WP* wp) {
 		ptr->next = wp;
 		wp->next = NULL;
 	}
+	*/
 }
 
 void add_wp2head(WP* wp) {
