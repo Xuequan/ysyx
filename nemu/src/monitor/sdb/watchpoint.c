@@ -122,6 +122,7 @@ WP* new_wp() {
 	//	add_wp2head(ptr);
 		printf("here3 \n");
 		add_wp2_tail(head, ptr);
+		printf("head->NO = %d\n", head->NO);
 		printf("here4 \n");
 		return ptr;
 	}
