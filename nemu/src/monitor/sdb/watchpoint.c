@@ -102,10 +102,10 @@ WP* new_wp() {
 	WP* ptr = free_;
 	// free_ has only 1 wp
 	if (free_->next == NULL) {
-		add_wp2_tail(head, free_);
-		//add_wp2head(free_);
+		//add_wp2_tail(head, free_);
+		add_wp2head(free_);
 		free_ = NULL;		
-		//return ptr; 
+		return ptr; 
 	} 
 	// free_ has more than 1 wp
 	else {
@@ -116,10 +116,11 @@ WP* new_wp() {
 		}
 		prev->next = NULL;
 		// add this wp to head
-		//add_wp2head(ptr);
-		add_wp2_tail(head, ptr);
-		//return ptr;
+		add_wp2head(ptr);
+		//add_wp2_tail(head, ptr);
+		return ptr;
 	}
+	/*
 	// find this wp in wp_pool
 		int k = 0;
 		for (; k < NR_WP; k++) { 
@@ -132,6 +133,7 @@ WP* new_wp() {
 			assert(0);
 		}
 		return &wp_pool[k];	
+	*/
 }
 
 static void clear_wp(WP* wp) {
