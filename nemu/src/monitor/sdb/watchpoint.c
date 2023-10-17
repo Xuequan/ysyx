@@ -102,8 +102,8 @@ WP* new_wp() {
 	WP* ptr = free_;
 	// free_ has only 1 wp
 	if (free_->next == NULL) {
-		//add_wp2_tail(head, free_);
-		add_wp2head(free_);
+		add_wp2_tail(head, free_);
+		//add_wp2head(free_);
 		free_ = NULL;		
 		return ptr; 
 	} 
@@ -116,8 +116,8 @@ WP* new_wp() {
 		}
 		prev->next = NULL;
 		// add this wp to head
-		add_wp2head(ptr);
-		//add_wp2_tail(head, ptr);
+	//	add_wp2head(ptr);
+		add_wp2_tail(head, ptr);
 		return ptr;
 	}
 	/*
