@@ -137,7 +137,7 @@ void scan_wp_pool() {
 
 /* for command "info w" */
 void print_wp() {
-	printf("Num Type          Disp Enb Address   What  \n");
+	printf("Num Type          Disp Enb Address    What  \n");
 	WP* ptr = head;
 	for ( ;ptr != NULL; ptr = ptr->next) {
 		// Num Type Disp Enb Address What
