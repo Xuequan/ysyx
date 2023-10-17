@@ -202,7 +202,7 @@ static int cmd_p(char *args) {
 }
 
 static int cmd_d(char *args) {
-	free_wp_num(args);	
+	free_wp_num2(args);	
   return 0;
 }
 /* chuan, end */

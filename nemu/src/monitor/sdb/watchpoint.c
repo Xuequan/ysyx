@@ -161,6 +161,46 @@ void free_wp_num(char *num) {
 	free_wp(ptr);
 }
 
+void free_wp_num2(char *num) {
+	if (head == NULL) {
+		printf("No breakpoint number %d.\n", atoi(num));
+		return;
+	}
+	WP* ptr = head;
+	for (; ptr != NULL; ptr = ptr->next) { 
+		if (ptr->NO == atoi(num) ) {
+			break;
+		}
+	}
+	if (ptr == NULL) {
+		printf("watchpoint %d is not exist\n", atoi(num));
+		return;
+	}
+	WP* prev = head;
+	// the watchpoints behind head is only 1
+	if (prev->next == NULL) {
+		// add this to free_ tail
+		WP* ptr2 = free_;
+		for( ; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
+		clear_wp(prev);
+		ptr2->next = prev;	
+		head = NULL;
+	}
+	// the watchpoints behind head is nore than 1
+	else {
+		for (; prev != NULL; prev = prev->next) {
+			if (prev->next == ptr) {
+				break;
+			}
+		}	
+		prev->next = ptr->next;
+		WP* ptr2 = free_;
+		for( ; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
+		clear_wp(ptr);
+		ptr2->next = ptr;
+	}
+}
+
 /* scan watchpoint and see if the expr value change */
 void scan_wp_pool() {
   WP* ptr = head;
