@@ -68,6 +68,7 @@ void add_wp2_tail(int choose, WP* wp) {
 	}
 
 	if (list == NULL) {
+		printf("i am here\n");
 		list = wp;
 		list->next = NULL;
 	} else {
