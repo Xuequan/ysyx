@@ -53,37 +53,68 @@ void init_wp_pool() {
 
 /* TODO: Implement the functionality of watchpoint */
 WP* new_wp();
-void free_wp(WP *wp);
+void free_wp(int num);
 
+/* add a wp to free_ tail */
+void add_wp2free_(WP* wp) {
+	if (free_ == NULL) {
+		free_ = wp;
+	} else {
+		WP *ptr = free_;
+		for (; ptr->next != NULL; ptr = ptr->next) { ;}
+		ptr->next = wp;
+	}
+}
+
+void add_wp2head(WP* wp) {
+	if (head == NULL) {
+		head = wp;
+	} else {
+		WP *ptr = head;
+		for (; ptr->next != NULL; ptr = ptr->next) { ;}
+		ptr->next = wp;
+	}
+}
 
 WP* new_wp() {
-	if (free_->next == NULL) {
+	// free_ has no wp
+	if (free_ == NULL) {
 		printf("watchpoint is full used.\n");
 		return NULL;
 	} 
-	// get a wp from free_ tail
+
+	// free_ has only 1 wp
+	if (free_->next == NULL) {
+		WP* ptr = free_;
+		add_wp2head(free_);
+		free_ = NULL;		
+		return ptr; 
+	} 
+
+	// free_ has more than 1 wp
 	WP *prev = free_;
-	WP *ptr = prev->next;
+	WP *ptr  =  prev->next;
 	for ( ; ptr->next != NULL; ptr = ptr->next, prev = prev->next) {
 		;
 	}
 	prev->next = NULL;
 	// add this wp to head
-	if (head == NULL) {
-		head = ptr;
-	} else {
-		WP *ptr2 = head;
-		for (; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
-		ptr2->next = ptr;
-	}
+	add_wp2head(ptr);
 	// find this wp in wp_pool
+	/*
 	int k = 0;
-	for (; ptr->NO != wp_pool[k].NO && k < NR_WP; k++) { ;}
+	for (; k < NR_WP; k++) { 
+		if (ptr->NO == wp_pool[k].No) {
+			break;
+		}
+	}	
 	if ( k == NR_WP) {
 		printf("new_wp(): error\n");
 		assert(0);
 	}
 	return &wp_pool[k];	
+	*/
+	return ptr;
 }
 
 static void clear_wp(WP* wp) {
@@ -97,107 +128,44 @@ static void clear_wp(WP* wp) {
 	wp->val = 0;
 }
 
-void free_wp(WP *wp) {
-	// check if there is a used wp
+/* input num is the NO of wp */
+void free_wp(int num) {
 	if (head == NULL) {
-		printf("feee_wp(): head is NULL, error!\n");
-		assert(0);
-	}
-	// delete wp from head 
-	WP *prev = head;
-	WP *ptr  = prev->next;
-
-	// only one wp behind head
-	if (ptr == NULL) {
-		if (prev->NO == wp->NO) {
-			// add wp to free_ tail
-			clear_wp(prev);
-			WP* ptr2 = free_;
-			for ( ; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
-			ptr2->next = prev;
-			head = NULL;
-			return;
-		} else {
-			printf("wp is not exist, cannot free!\n");
-			return;
-		}
-	// more than 1 wp behind head
-	} else {
-		for ( ; ptr != NULL; prev = prev->next, ptr = ptr->next) { 
-			if (ptr->NO == wp->NO) {
-				break;
-			}
-		}//end for
-		if (ptr == NULL) {
-			printf("wp is not exist, cannot free!\n");
-			assert(0);
-		}
-		clear_wp(ptr);
-		prev->next = ptr->next;	
-	
-		// add wp to free_ tail
-		WP* ptr2 = free_;
-		for ( ;ptr2->next != NULL; ptr2 = ptr2->next) { ;}
-		ptr2->next = wp;
-	}
-}
-
-/* input char *no, no is the number of wp */
-void free_wp_num(char *num) {
-	if (head == NULL) {
-		printf("No breakpoint number %d.\n", atoi(num));
+		printf("No breakpoint number %d.\n", num);
 		return;
 	}
 	WP* ptr = head;
-	for (; ptr != NULL; ptr = ptr->next) { 
-		if (ptr->NO == atoi(num) ) {
-			break;
-		}
-	}
-	if (ptr == NULL) {
-		printf("watchpoint %d is not exist\n", atoi(num));
-		return;
-	}
-	free_wp(ptr);
-}
-
-void free_wp_num2(char *num) {
-	if (head == NULL) {
-		printf("No breakpoint number %d.\n", atoi(num));
-		return;
-	}
-	WP* ptr = head;
-	for (; ptr != NULL; ptr = ptr->next) { 
-		if (ptr->NO == atoi(num) ) {
-			break;
-		}
-	}
-	if (ptr == NULL) {
-		printf("watchpoint %d is not exist\n", atoi(num));
-		return;
-	}
-	WP* prev = head;
 	// the watchpoints behind head is only 1
-	if (prev->next == NULL) {
+	if (ptr->next == NULL) {
+		if (ptr->NO != num ) {
+			printf("watchpoint %d is not exist\n", num);
+			return;
+		}
 		// add this to free_ tail
-		WP* ptr2 = free_;
-		for( ; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
-		clear_wp(prev);
-		ptr2->next = prev;	
+		clear_wp(ptr);
+		add_wp2free_(ptr);
 		head = NULL;
 	}
 	// the watchpoints behind head is nore than 1
 	else {
+		for (; ptr != NULL; ptr = ptr->next) { 
+			if (ptr->NO == num ) {
+				break;
+			}
+		}
+		if (ptr == NULL) {
+			printf("watchpoint %d is not exist\n", num);
+			return;
+		}
+		WP* prev = head;
 		for (; prev != NULL; prev = prev->next) {
 			if (prev->next == ptr) {
 				break;
 			}
 		}	
 		prev->next = ptr->next;
-		WP* ptr2 = free_;
-		for( ; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
 		clear_wp(ptr);
-		ptr2->next = ptr;
+		add_wp2free_(ptr);
 	}
 }
 
