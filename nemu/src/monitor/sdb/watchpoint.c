@@ -59,20 +59,24 @@ void free_wp(int num);
 void add_wp2free_(WP* wp) {
 	if (free_ == NULL) {
 		free_ = wp;
+		free_->next = NULL;
 	} else {
 		WP *ptr = free_;
 		for (; ptr->next != NULL; ptr = ptr->next) { ;}
 		ptr->next = wp;
+		wp->next = NULL;
 	}
 }
 
 void add_wp2head(WP* wp) {
 	if (head == NULL) {
 		head = wp;
+		wp->next = NULL;
 	} else {
 		WP *ptr = head;
 		for (; ptr->next != NULL; ptr = ptr->next) { ;}
 		ptr->next = wp;
+		wp->next = NULL;
 	}
 }
 
