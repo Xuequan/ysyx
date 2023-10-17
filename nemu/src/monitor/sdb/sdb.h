@@ -35,6 +35,7 @@ WP* new_wp();
 void free_wp(WP *wp);
 void scan_wp_pool();
 void print_wp();
+void free_wp_num(char *num);
 /* end */
 
 #endif

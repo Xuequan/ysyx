@@ -200,6 +200,11 @@ static int cmd_p(char *args) {
 	
 	return 0;
 }
+
+static int cmd_d(char *args) {
+	free_wp_num(args);	
+  return 0;
+}
 /* chuan, end */
 
 static struct {
@@ -217,10 +222,7 @@ static struct {
 	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
 	{"p", "Print value of expression", cmd_p},
 	{"w", "Set watchpoint, eg 'w expr'", cmd_w},
-	/*
-	{"d", "Delete watchpoint", cmd_d},
-	*/
-
+	{"d", "Delete watchpoint, eg 'd N'", cmd_d},
 };
 
 #define NR_CMD ARRLEN(cmd_table)

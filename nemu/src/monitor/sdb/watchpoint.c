@@ -114,6 +114,21 @@ void free_wp(WP *wp) {
 	ptr->next = wp;
 }
 
+/* input char *no, no is the number of wp */
+void free_wp_num(char *num) {
+	if (head == NULL) {
+		printf("free_wp_num(): no watchpont now\n");
+		return;
+	}
+	WP* ptr = head;
+	for (;ptr->NO != atoi(num) && ptr != NULL; ptr = ptr->next) { ;	}
+	if (ptr == NULL) {
+		printf("watchpoint %d is not exist\n", atoi(num));
+		return;
+	}
+	free_wp(ptr);
+}
+
 /* scan watchpoint and see if the expr value change */
 void scan_wp_pool() {
   WP* ptr = head;
