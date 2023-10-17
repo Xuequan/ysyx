@@ -92,17 +92,11 @@ void free_wp(WP *wp) {
 		printf("feee_wp(): head is NULL, error!\n");
 		assert(0);
 	}
-	// clear wp.expr and val
-	for (int m = 0; m < WP_EXPR_LENGTH; m++) {
-		wp->expr[m] = '\0';
-	}
-	wp->val = 0;
-
 	// delete wp from head 
 	WP *prev = head;
 	WP *ptr  = prev->next;
 
-	for ( ; ptr->NO != wp->NO && ptr != NULL; prev = prev->next, ptr = ptr->next) { 
+	for ( ; ptr != NULL && ptr->NO != wp->NO; prev = prev->next, ptr = ptr->next) { 
 		; }
 
 	if (ptr == NULL) {
@@ -110,6 +104,13 @@ void free_wp(WP *wp) {
 		assert(0);
 	}
 	prev->next = ptr->next;	
+
+	// clear wp.expr and val
+	for (int m = 0; m < WP_EXPR_LENGTH; m++) {
+		wp->expr[m] = '\0';
+	}
+	wp->val = 0;
+
 	// add wp to free_ tail
 	ptr = free_;
 	for ( ;ptr->next != NULL; ptr = ptr->next) { ;}
