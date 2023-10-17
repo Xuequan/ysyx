@@ -97,8 +97,11 @@ void free_wp(WP *wp) {
 	WP *ptr  = prev->next;
 
 	printf("here\n");
-	for ( ; ptr != NULL && ptr->NO != wp->NO; prev = prev->next, ptr = ptr->next) { 
-		; }
+	for ( ; ptr != NULL; prev = prev->next, ptr = ptr->next) { 
+		if (ptr->NO == wp->NO) {
+			break;
+		}
+	}
 	printf("here2\n");
 
 	if (ptr == NULL) {
@@ -127,7 +130,11 @@ void free_wp_num(char *num) {
 	}
 	//WP* ptr = malloc(sizeof(WP *));
 	WP* ptr = head;
-	for (;ptr->NO != atoi(num) && ptr != NULL; ptr = ptr->next) { ;	}
+	for (; ptr != NULL; ptr = ptr->next) { 
+		if (ptr->NO == atoi(num) ) {
+			break;
+		}
+	}
 	if (ptr == NULL) {
 		printf("watchpoint %d is not exist\n", atoi(num));
 		return;
