@@ -29,7 +29,7 @@ typedef struct watchpoint {
 
   /* TODO: Add more members if necessary */
   char expr[WP_EXPR_LENGTH];  // 128 should be enough
-  word_t val; // expr value
+  word_t val;                 // expr value
 } WP;
 
 WP* new_wp();

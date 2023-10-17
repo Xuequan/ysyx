@@ -55,7 +55,8 @@ void init_wp_pool() {
 WP* new_wp();
 void free_wp(int num);
 
-/* add a wp to free_ or head tail 
+/* 
+** add a wp to free_ or head tail 
 ** choose = 1, then add to free_
 ** choose = 0, then add to head
 */
@@ -79,7 +80,9 @@ void add_wp2_tail(int choose, WP* wp) {
 		ptr->next = wp;
 		wp->next = NULL;
 	}
+}
 	/*
+void add_wp2_tail(WP* list, WP* wp) {
 	if (list == NULL) {
 		list = wp;
 		list->next = NULL;
@@ -89,8 +92,8 @@ void add_wp2_tail(int choose, WP* wp) {
 		ptr->next = wp;
 		wp->next = NULL;
 	}
-	*/
 }
+	*/
 
 void add_wp2head(WP* wp) {
 	if (head == NULL) {
