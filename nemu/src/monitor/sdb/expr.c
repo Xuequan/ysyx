@@ -30,7 +30,7 @@ static bool check_parentheses(int p, int q, int option);
 void assign_tokens_type(int type, int *index);
 void transfer_tokens(int tokens_length);
 void print_tokens(int nr_token);
-word_t get_defer_val(word_t address);
+word_t get_mem_val(word_t address);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -114,7 +114,7 @@ static bool make_token(char *e) {
   int i = 0;
   regmatch_t pmatch;
   nr_token = 0;
-	printf("make_token( %s )\n", e);
+	//printf("make_token( %s )\n", e);
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i++) {
@@ -157,7 +157,7 @@ static bool make_token(char *e) {
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
 	transfer_tokens(nr_token + 1);
-	print_tokens(nr_token + 1);
+	//print_tokens(nr_token + 1);
   return true;
 }
 
@@ -327,7 +327,7 @@ word_t eval (int p, int q) {
 			//printf("eval(%d, %d)\n", op + 1, q);
 			word_t val3 = eval(op + 1, q);
 			//printf("val3 = %#x\n", val3);
-			return get_defer_val(val3);
+			return get_mem_val(val3);
 		} // end if (tokens[op].type != TK_DEREF) 
 	} else if (check_parentheses(p, q, 0) == false) {
 		printf("parentheses are not matched. Plese input again\n");
@@ -338,14 +338,14 @@ word_t eval (int p, int q) {
 	}
 }
 
-/* get_defer_val(int address) 
+/* get_mem_val(int address) 
 ** Now only support *address;
 ** get the val from the address 
 ** Do not support *variable!!!
 */
-word_t get_defer_val(word_t address) {
+word_t get_mem_val(word_t address) {
 	// this maybe wrong!!!
-	printf("get_defer_val(%u)\n", address);
+	printf("get_mem_val(%u)\n", address);
 	return vaddr_read(address, sizeof(word_t));;
 } // end function
 
