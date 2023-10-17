@@ -96,6 +96,11 @@ void free_wp(WP *wp) {
 	WP *prev = head;
 	WP *ptr  = prev->next;
 
+	if (ptr == NULL) {
+		printf("wp is not exist, cannot free!\n");
+		assert(0);
+	}
+
 	printf("here\n");
 	for ( ; ptr != NULL; prev = prev->next, ptr = ptr->next) { 
 		if (ptr->NO == wp->NO) {
@@ -104,10 +109,6 @@ void free_wp(WP *wp) {
 	}
 	printf("here2\n");
 
-	if (ptr == NULL) {
-		printf("wp is not exist, cannot free!\n");
-		assert(0);
-	}
 	prev->next = ptr->next;	
 
 	// clear wp.expr and val
