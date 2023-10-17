@@ -202,7 +202,6 @@ static int cmd_p(char *args) {
 }
 
 static int cmd_d(char *args) {
-	printf("args =%s\n", args);
 	free_wp_num(args);	
   return 0;
 }
