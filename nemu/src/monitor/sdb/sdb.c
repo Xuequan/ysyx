@@ -132,7 +132,7 @@ static int cmd_w(char *args) {
 		printf("cmd_w(): cannot get a new watchpoint\n");
 		assert(0);
 	}
-	printf("wp->NO = %d\n", wp->NO);
+	//printf("wp->NO = %d\n", wp->NO);
 	strcpy(wp->expr, args);
 	//strncpy(wp->expr, args, (size_t)strlen(args));
 	bool success = false;
@@ -142,7 +142,8 @@ static int cmd_w(char *args) {
 		assert(0);
 	}
 	wp->val = expr_result;
-	printf("wp->val = %u, wp->expr = %s\n", wp->val, wp->expr);
+	printf("wp->NO = %d, wp->val = %u, wp->expr = %s\n", 
+			wp->NO, wp->val, wp->expr);
 	
 	return 0;
 }

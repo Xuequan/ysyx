@@ -125,7 +125,7 @@ static bool make_token(char *e) {
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
         position += substr_len;
-				printf("position = %d\n", position);
+				//printf("position = %d\n", position);
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
          * to record the token in the array `tokens'. For certain types
@@ -347,7 +347,7 @@ word_t eval (int p, int q) {
 */
 word_t get_mem_val(word_t address) {
 	// this maybe wrong!!!
-	printf("get_mem_val(%u)\n", address);
+	//printf("get_mem_val(%u)\n", address);
 	return vaddr_read(address, sizeof(word_t));;
 } // end function
 
