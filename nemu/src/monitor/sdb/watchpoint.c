@@ -103,7 +103,9 @@ WP* new_wp() {
 	WP* ptr = free_;
 	// free_ has only 1 wp
 	if (free_->next == NULL) {
+		printf("here \n");
 		add_wp2_tail(head, free_);
+		printf("here2 \n");
 		//add_wp2head(free_);
 		free_ = NULL;		
 		return ptr; 
