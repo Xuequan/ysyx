@@ -149,6 +149,7 @@ void free_wp_num(char *num) {
 		return;
 	}
 	WP* ptr = malloc(sizeof(WP *));
+	ptr = head;
 	//WP* ptr = head;
 	for (; ptr != NULL; ptr = ptr->next) { 
 		if (ptr->NO == atoi(num) ) {
