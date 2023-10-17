@@ -55,8 +55,18 @@ void init_wp_pool() {
 WP* new_wp();
 void free_wp(int num);
 
-/* add a wp to free_ or head tail */
-void add_wp2_tail(WP* list, WP* wp) {
+/* add a wp to free_ or head tail 
+** choose = 1, then add to free_
+** choose = 0, then add to head
+*/
+void add_wp2_tail(int choose, WP* wp) {
+	WP* list;
+	if (choose == 0) {
+		list = head;
+	} else {
+		list = free_;
+	}
+
 	if (list == NULL) {
 		list = wp;
 		list->next = NULL;
@@ -104,7 +114,7 @@ WP* new_wp() {
 	// free_ has only 1 wp
 	if (free_->next == NULL) {
 		printf("here \n");
-		add_wp2_tail(head, free_);
+		add_wp2_tail(0, free_);
 		printf("here2 \n");
 		//add_wp2head(free_);
 		free_ = NULL;		
@@ -121,8 +131,11 @@ WP* new_wp() {
 		prev->next = NULL;
 		// add this wp to head
 		printf("here3 \n");
-		add_wp2head(ptr);
-		//add_wp2_tail(head, ptr);
+		//add_wp2head(ptr);
+		if (head == NULL) {
+			printf("====\n");
+		}
+		add_wp2_tail(0, ptr);
 		printf("head->NO = %d\n", head->NO);
 		printf("here4 \n");
 		return ptr;
@@ -170,7 +183,7 @@ void free_wp(int num) {
 		// add this to free_ tail
 		clear_wp(ptr);
 		//add_wp2free_(ptr);
-		add_wp2_tail(free_, ptr);
+		add_wp2_tail(1, ptr);
 		head = NULL;
 	}
 	// the watchpoints behind head is nore than 1
@@ -193,7 +206,7 @@ void free_wp(int num) {
 		prev->next = ptr->next;
 		clear_wp(ptr);
 		//add_wp2free_(ptr);
-		add_wp2_tail(free_, ptr);
+		add_wp2_tail(1, ptr);
 	}
 }
 
