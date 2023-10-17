@@ -120,7 +120,9 @@ WP* new_wp() {
 		prev->next = NULL;
 		// add this wp to head
 	//	add_wp2head(ptr);
+		printf("here3 \n");
 		add_wp2_tail(head, ptr);
+		printf("here4 \n");
 		return ptr;
 	}
 	/*
