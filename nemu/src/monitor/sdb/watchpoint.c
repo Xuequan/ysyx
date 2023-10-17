@@ -137,11 +137,11 @@ void scan_wp_pool() {
 
 /* for command "info w" */
 void print_wp() {
-	printf("Num			Type						Disp Enb Address   What  \n");
+	printf("Num Type						Disp Enb Address   What  \n");
 	WP* ptr = head;
 	for ( ;ptr != NULL; ptr = ptr->next) {
 		// Num Type Disp Enb Address What
-		printf("%-6d %-10s %-5s %-4s %-10s %6s\n", 
+		printf("%-4d %-10s %-5s %-4s %-10s %6s\n", 
 			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, "val");
 	}	
 } // end function
