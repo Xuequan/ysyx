@@ -148,9 +148,7 @@ void free_wp_num(char *num) {
 		printf("No breakpoint number %d.\n", atoi(num));
 		return;
 	}
-	WP* ptr = malloc(sizeof(WP *));
-	ptr = head;
-	//WP* ptr = head;
+	WP* ptr = head;
 	for (; ptr != NULL; ptr = ptr->next) { 
 		if (ptr->NO == atoi(num) ) {
 			break;
@@ -161,7 +159,6 @@ void free_wp_num(char *num) {
 		return;
 	}
 	free_wp(ptr);
-	free(ptr);
 }
 
 /* scan watchpoint and see if the expr value change */
