@@ -86,6 +86,17 @@ WP* new_wp() {
 	return &wp_pool[k];	
 }
 
+static void clear_wp(WP* wp) {
+	if (wp == NULL) {
+		assert(0);
+	}
+	// clear wp.expr and val
+	for (int m = 0; m < WP_EXPR_LENGTH; m++) {
+		wp->expr[m] = '\0';
+	}
+	wp->val = 0;
+}
+
 void free_wp(WP *wp) {
 	// check if there is a used wp
 	if (head == NULL) {
@@ -97,30 +108,37 @@ void free_wp(WP *wp) {
 	WP *ptr  = prev->next;
 
 	if (ptr == NULL) {
+		// only one wp behind head
+		if (prev->NO == wp->NO) {
+			// add wp to free_ tail
+			clear_wp(prev);
+			WP* ptr2 = free_;
+			for ( ; ptr2->next != NULL; ptr2 = ptr2->next) { ;}
+			ptr2->next = prev;
+			head = NULL;
+		} else {
+			printf("wp is not exist, cannot free!\n");
+			return;
+		}
+	} else {
+		for ( ; ptr != NULL; prev = prev->next, ptr = ptr->next) { 
+			if (ptr->NO == wp->NO) {
+				break;
+			}
+		}//end for
+	}
+	if (ptr == NULL) {
 		printf("wp is not exist, cannot free!\n");
 		assert(0);
 	}
-
-	printf("here\n");
-	for ( ; ptr != NULL; prev = prev->next, ptr = ptr->next) { 
-		if (ptr->NO == wp->NO) {
-			break;
-		}
-	}
-	printf("here2\n");
+	clear_wp(ptr);
 
 	prev->next = ptr->next;	
 
-	// clear wp.expr and val
-	for (int m = 0; m < WP_EXPR_LENGTH; m++) {
-		wp->expr[m] = '\0';
-	}
-	wp->val = 0;
-
 	// add wp to free_ tail
-	ptr = free_;
-	for ( ;ptr->next != NULL; ptr = ptr->next) { ;}
-	ptr->next = wp;
+	WP* ptr2 = free_;
+	for ( ;ptr2->next != NULL; ptr2 = ptr2->next) { ;}
+	ptr2->next = wp;
 }
 
 /* input char *no, no is the number of wp */
