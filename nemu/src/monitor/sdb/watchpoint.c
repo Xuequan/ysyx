@@ -185,6 +185,10 @@ void scan_wp_pool() {
 
 /* for command "info w" */
 void print_wp() {
+	if (head == NULL) {
+		printf("No watchpoints.\n");
+		return;
+	}
 	printf("Num Type          Disp Enb Address    What  \n");
 	WP* ptr = head;
 	for ( ;ptr != NULL; ptr = ptr->next) {
