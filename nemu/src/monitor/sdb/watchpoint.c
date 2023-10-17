@@ -114,14 +114,15 @@ WP* new_wp() {
 	else {
 		WP *prev = free_;
 		ptr  =  prev->next;
-		for ( ; ptr->next != NULL; ptr = ptr->next) {
+		for ( ; ptr->next != NULL; ) {
 			prev = prev->next;
+			ptr = ptr->next;
 		}
 		prev->next = NULL;
 		// add this wp to head
-	//	add_wp2head(ptr);
 		printf("here3 \n");
-		add_wp2_tail(head, ptr);
+		add_wp2head(ptr);
+		//add_wp2_tail(head, ptr);
 		printf("head->NO = %d\n", head->NO);
 		printf("here4 \n");
 		return ptr;
