@@ -87,6 +87,11 @@ WP* new_wp() {
 }
 
 void free_wp(WP *wp) {
+	// check if there is a used wp
+	if (head == NULL) {
+		printf("feee_wp(): head is NULL, error!\n");
+		assert(0);
+	}
 	// clear wp.expr and val
 	for (int m = 0; m < WP_EXPR_LENGTH; m++) {
 		wp->expr[m] = '\0';
@@ -94,14 +99,11 @@ void free_wp(WP *wp) {
 	wp->val = 0;
 
 	// delete wp from head 
-	if (head == NULL) {
-		printf("feee_wp(): head is NULL, error!\n");
-		assert(0);
-	}
 	WP *prev = head;
 	WP *ptr  = prev->next;
 
-	for ( ;ptr != wp; prev = prev->next, ptr = ptr->next) { ; }
+	for ( ; ptr->NO != wp->NO && ptr != NULL; prev = prev->next, ptr = ptr->next) { 
+		; }
 
 	if (ptr == NULL) {
 		printf("wp is not exist, cannot free!\n");
