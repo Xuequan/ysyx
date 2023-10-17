@@ -55,7 +55,19 @@ void init_wp_pool() {
 WP* new_wp();
 void free_wp(int num);
 
-/* add a wp to free_ tail */
+/* add a wp to free_ or head tail */
+void add_wp2_tail(WP* list, WP* wp) {
+	if (list == NULL) {
+		list = wp;
+		list->next = NULL;
+	} else {
+		WP *ptr = list;
+		for (; ptr->next != NULL; ptr = ptr->next) { ;}
+		ptr->next = wp;
+		wp->next = NULL;
+	}
+}
+
 void add_wp2free_(WP* wp) {
 	if (free_ == NULL) {
 		free_ = wp;
@@ -90,7 +102,8 @@ WP* new_wp() {
 	// free_ has only 1 wp
 	if (free_->next == NULL) {
 		WP* ptr = free_;
-		add_wp2head(free_);
+		add_wp2_tail(head, ptr);
+		//add_wp2head(free_);
 		free_ = NULL;		
 		return ptr; 
 	} 
@@ -103,7 +116,8 @@ WP* new_wp() {
 	}
 	prev->next = NULL;
 	// add this wp to head
-	add_wp2head(ptr);
+	//add_wp2head(ptr);
+	add_wp2_tail(head, ptr);
 	// find this wp in wp_pool
 	/*
 	int k = 0;
@@ -147,7 +161,8 @@ void free_wp(int num) {
 		}
 		// add this to free_ tail
 		clear_wp(ptr);
-		add_wp2free_(ptr);
+		//add_wp2free_(ptr);
+		add_wp2_tail(free_, ptr);
 		head = NULL;
 	}
 	// the watchpoints behind head is nore than 1
@@ -169,7 +184,8 @@ void free_wp(int num) {
 		}	
 		prev->next = ptr->next;
 		clear_wp(ptr);
-		add_wp2free_(ptr);
+		//add_wp2free_(ptr);
+		add_wp2_tail(free_, ptr);
 	}
 }
 
