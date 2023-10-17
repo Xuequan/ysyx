@@ -95,7 +95,7 @@ void add_wp2head(WP* wp) {
 WP* new_wp() {
 	// free_ has no wp
 	if (free_ == NULL) {
-		printf("watchpoint is full used.\n");
+		printf("watchpoints are full used.\n");
 		return NULL;
 	} 
 
