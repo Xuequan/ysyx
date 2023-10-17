@@ -68,6 +68,18 @@ void add_wp2_tail(WP* list, WP* wp) {
 	}
 }
 
+void add_wp2head(WP* wp) {
+	if (head == NULL) {
+		head = wp;
+		wp->next = NULL;
+	} else {
+		WP *ptr = head;
+		for (; ptr->next != NULL; ptr = ptr->next) { ;}
+		ptr->next = wp;
+		wp->next = NULL;
+	}
+}
+
 void add_wp2free_(WP* wp) {
 	if (free_ == NULL) {
 		free_ = wp;
@@ -80,17 +92,6 @@ void add_wp2free_(WP* wp) {
 	}
 }
 
-void add_wp2head(WP* wp) {
-	if (head == NULL) {
-		head = wp;
-		wp->next = NULL;
-	} else {
-		WP *ptr = head;
-		for (; ptr->next != NULL; ptr = ptr->next) { ;}
-		ptr->next = wp;
-		wp->next = NULL;
-	}
-}
 
 WP* new_wp() {
 	// free_ has no wp
