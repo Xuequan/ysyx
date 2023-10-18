@@ -202,7 +202,7 @@ void transfer_tokens(int tokens_length) {
 			vaddr_t pc = cpu.pc; 
 			printf(" pc = 0x%x, actual pc = 0x%x\n", pc, cpu.pc);
 		
-			snprintf(tokens[i].str, sizeof(vaddr_t), "%#x", pc);
+			snprintf(tokens[i].str, sizeof(vaddr_t), "%u", pc);
 		} 
 	} // end for(; i < ...)
 
