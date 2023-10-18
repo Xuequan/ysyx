@@ -160,6 +160,12 @@ static bool make_token(char *e) {
   return true;
 }
 
+void copy_val2buf(char *dest, char *src, size_t size) {
+	if (dest == NULL || src == NULL) {
+		assert(0);
+	}
+	memcpy(dest, src, size);
+}
 bool is_certain_type(int type) {
 	return type == TK_MUL ||
 				 type == TK_SUB ||
@@ -200,9 +206,9 @@ void transfer_tokens(int tokens_length) {
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
 			vaddr_t pc = cpu.pc; 
+			char *ptr = (char *)&pc;
 			printf(" pc = 0x%x, actual pc = 0x%x\n", pc, cpu.pc);
-		
-			snprintf(tokens[i].str, sizeof(vaddr_t), "%u", pc);
+			copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
 		} 
 	} // end for(; i < ...)
 
