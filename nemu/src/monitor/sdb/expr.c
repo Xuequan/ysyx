@@ -52,7 +52,7 @@ enum {
 	*/
 	TK_DEREF,  
 	TK_LESS_EQ,
-						
+	TK_LOG_AND,						
 };
 
 static struct rule {
@@ -79,6 +79,7 @@ static struct rule {
 	{"\\\n", TK_NEWLINE},        // newline
 	{"x[0-9]{1,2}", TK_REG},     // register, eg, x0-x31
 	{"<=", TK_LESS_EQ},          // <=
+	{"&&", TK_LOG_AND},          // &&
 	/* end */
 };
 
@@ -220,7 +221,7 @@ void assign_tokens_type(int type, int *index) {
 		case TK_SUB:    case TK_MUL:  case TK_DIV: 
 		case TK_OPAREN: case TK_CPAREN:
 		case TK_REG:    case TK_HEX:
-		case TK_LESS_EQ:
+		case TK_LESS_EQ: case TK_LOG_AND:
 			{ 
 				tokens[*index].type = type;  
 				break;
@@ -312,6 +313,12 @@ word_t eval (int p, int q) {
 					} else {
 						return 0;
 					}
+				case TK_LOG_AND:  
+					if (val1 && val2) {
+						return 1;
+					} else {
+						return 0;
+					}
 				default: assert(0);
 			}//end switch
 		} else {
@@ -353,7 +360,8 @@ int find_main_op(int p, int q) {
 	for(i = p; i <= q; i++) {
 		if (tokens[i].type == TK_PLUS || tokens[i].type == TK_SUB
 		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV
-		 || tokens[i].type == TK_EQ   || tokens[i].type == TK_LESS_EQ) {
+		 || tokens[i].type == TK_EQ   || tokens[i].type == TK_LESS_EQ
+		 || tokens[i].type == TK_LOG_AND) {
 			if( (check_parentheses(p, i-1, 0) == true) && 
 					(check_parentheses(i + 1, q, 0) == true) ) {
 					index[cnt] = i;
@@ -375,6 +383,7 @@ int find_main_op(int p, int q) {
 	int defer_index = 0;
 	int eq_index = 0;
 	int less_eq_index = 0;
+	int log_and_index = 0;
 
 	if (cnt == 1) {
 		return index[0];
@@ -389,6 +398,8 @@ int find_main_op(int p, int q) {
 				eq_index = index[i];
 			} else if (tokens[index[i]].type == TK_LESS_EQ) { 
 				less_eq_index = index[i];
+			} else if (tokens[index[i]].type == TK_LOG_AND) { 
+				log_and_index = index[i];
 			} else {
 				mul_div_index = index[i];
 			} 
@@ -396,7 +407,9 @@ int find_main_op(int p, int q) {
 	}// end if-else
 	
 	// 按优先级来选择
-	if (eq_index != 0) {       // ==
+	if (log_and_index != 0) {       // &&
+	 	return log_and_index;
+	} else if (eq_index != 0) {       // ==
 	 	return eq_index;
 	} else if (less_eq_index != 0) {   // <= 
 		return less_eq_index;
