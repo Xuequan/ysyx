@@ -208,24 +208,15 @@ void transfer_tokens(int tokens_length) {
 		if (tokens[i].type == TK_PC) {
 			printf("str = %s\n", tokens[i].str);
 			vaddr_t pc = cpu.pc; 
-			vaddr_t a = 0x8000ffff;
-			char *pc2 = (char *)malloc(sizeof(char *));
-			pc2 = (char *)&a;
 			char *ptr = (char *)malloc(sizeof(char *));
-			ptr = pc2;
-			for (int m = 0; m < sizeof(vaddr_t); m++) {
-				printf("ptr[%d] = %c\n", m, *(ptr+m));
-			}
-			for (int m = 0; m < sizeof(vaddr_t); m++) {
-				printf("pc2[%d] = %c\n", m, *(pc2+m));
-			}
+			ptr = (char *)&pc;
 			//char *ptr = (char *)&pc;
-			printf(" pc = 0x%x, actual pc = 0x%x, size = %ld\n", pc, cpu.pc, sizeof(vaddr_t));
-			//copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
-			//memcpy(tokens[i].str, ptr, sizeof(vaddr_t));
-			strncpy(tokens[i].str, ptr, sizeof(vaddr_t));
-			tokens[i].str[sizeof(vaddr_t)] = '\0';
-			printf("str2 = %s\n", tokens[i].str);
+			for (int m = 0; m < sizeof(vaddr_t); m++) {
+				printf("ptr[%d] = %c\n", m, *(vaddr_t *)(ptr+m));
+			}
+			printf(" pc = 0x%x, $pc = 0x%x, size = %ld\n", pc, cpu.pc, sizeof(vaddr_t));
+			copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
+			printf("str2 = %#x\n", *(vaddr_t *)tokens[i].str);
 		} 
 	} // end for(; i < ...)
 
