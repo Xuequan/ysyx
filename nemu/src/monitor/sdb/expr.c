@@ -199,7 +199,8 @@ void transfer_tokens(int tokens_length) {
 	// only for 'w $pc == address' breakpoint
 	for(; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			word_t pc = cpu.pc; 
+			vaddr_t pc = cpu.pc; 
+			printf(" pc = 0x%16x, actual pc = 0x%16x\n", pc, cpu.pc);
 		
 			snprintf(tokens[i].str, sizeof(word_t), "%u", pc);
 		} 
