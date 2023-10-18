@@ -208,8 +208,9 @@ void transfer_tokens(int tokens_length) {
 		if (tokens[i].type == TK_PC) {
 			printf("str = %s\n", tokens[i].str);
 			vaddr_t pc = cpu.pc; 
+			vaddr_t a = 0x8000ffff;
 			char *pc2 = (char *)malloc(sizeof(char *));
-			pc2 = (char *)&cpu.pc;
+			pc2 = (char *)&a;
 			char *ptr = (char *)malloc(sizeof(char *));
 			ptr = pc2;
 			for (int m = 0; m < sizeof(vaddr_t); m++) {
