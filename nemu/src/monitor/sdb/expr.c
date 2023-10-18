@@ -301,9 +301,10 @@ word_t eval (int p, int q) {
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
-			if (tokens[p].type == TK_HEX || 
-					tokens[p].type == TK_PC) {
+			if (tokens[p].type == TK_HEX) {
 				return (word_t)strtol(tokens[p].str, NULL, 16);
+			} else if (tokens[p].type == TK_PC) {
+				return *(word_t *)(tokens[p].str);
 			} else {
 				return (word_t)atoi(tokens[p].str);
 			}
