@@ -55,8 +55,7 @@ void init_wp_pool() {
 WP* new_wp();
 void free_wp(int num);
 
-/* 
-** add a wp to free_ or head tail 
+/* add a wp to free_ or head tail 
 ** choose = 1, then add to free_
 ** choose = 0, then add to head
 */
@@ -81,44 +80,6 @@ void add_wp2_tail(int choose, WP* wp) {
 		wp->next = NULL;
 	}
 }
-	/*
-void add_wp2_tail(WP* list, WP* wp) {
-	if (list == NULL) {
-		list = wp;
-		list->next = NULL;
-	} else {
-		WP *ptr = list;
-		for (; ptr->next != NULL; ptr = ptr->next) { ;}
-		ptr->next = wp;
-		wp->next = NULL;
-	}
-}
-	*/
-
-void add_wp2head(WP* wp) {
-	if (head == NULL) {
-		head = wp;
-		wp->next = NULL;
-	} else {
-		WP *ptr = head;
-		for (; ptr->next != NULL; ptr = ptr->next) { ;}
-		ptr->next = wp;
-		wp->next = NULL;
-	}
-}
-
-void add_wp2free_(WP* wp) {
-	if (free_ == NULL) {
-		free_ = wp;
-		free_->next = NULL;
-	} else {
-		WP *ptr = free_;
-		for (; ptr->next != NULL; ptr = ptr->next) { ;}
-		ptr->next = wp;
-		wp->next = NULL;
-	}
-}
-
 
 WP* new_wp() {
 	// free_ has no wp
@@ -130,8 +91,8 @@ WP* new_wp() {
 	WP* ptr = free_;
 	// free_ has only 1 wp
 	if (free_->next == NULL) {
+		// add this wp to head
 		add_wp2_tail(0, free_);
-		//add_wp2head(free_);
 		free_ = NULL;		
 		return ptr; 
 	} 
@@ -144,25 +105,9 @@ WP* new_wp() {
 			ptr = ptr->next;
 		}
 		prev->next = NULL;
-		// add this wp to head
-		//add_wp2head(ptr);
 		add_wp2_tail(0, ptr);
 		return ptr;
 	}
-	/*
-	// find this wp in wp_pool
-		int k = 0;
-		for (; k < NR_WP; k++) { 
-			if (ptr->NO == wp_pool[k].NO) {
-				break;
-			}
-		}	
-		if ( k == NR_WP) {
-			printf("new_wp(): error\n");
-			assert(0);
-		}
-		return &wp_pool[k];	
-	*/
 }
 
 static void clear_wp(WP* wp) {

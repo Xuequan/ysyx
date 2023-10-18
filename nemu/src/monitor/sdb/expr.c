@@ -165,7 +165,7 @@ static bool make_token(char *e) {
 
 /* 1> if tokens[].type = TK_REG (register,eg, x10)
 ** get it value and copy it to tokens[].str
-** 3> if tokens[].type == TK_MUL, 
+** 2> if tokens[].type == TK_MUL, 
 ** check if it is TK_DEFER, if so, check the expr behind it
 ** and conver it to TK_VAL
 */ 
@@ -184,15 +184,6 @@ void transfer_tokens(int tokens_length) {
 			}
 			snprintf(tokens[i].str, sizeof(word_t), "%u", reg_val);
 		} // end if(tokens[i].type...)
-		
-	/*
-		if (tokens[i].type == TK_HEX) {
-			// convert hexadeximal(eg, 0xf)  to dec (eg, 15)
-			tokens[i].type = TK_VAL;  
-			//int hex_val = strtol(tokens[i].str, NULL, 16);
-			//snprintf(tokens[i].str, sizeof(int), "%d", hex_val);
-		}
-	*/
 	} // end for(; i < ...)
 
 	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
@@ -206,44 +197,28 @@ void transfer_tokens(int tokens_length) {
 				tokens[i-1].type == TK_OPAREN 
 			) ) {
 			tokens[i].type = TK_DEREF;
-			/*
-			int follow_expr_val = eval_follow_expr(i);
-			snprintf(tokens[i].str, sizeof(int), "%d", hex2dec_val);
-			*/
 		}// end if (tokens[i]...)
 	} // end for ( i = 0...)
 				
 } // end function
 
-/* tokens[i].type == TK_DEFER, eval_follow_expr will
-** configure out the following <expr> 
-*/
-int eval_follow_expr(int i) {
-	return 0;
-}// end function
-
-
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
 */ 
 void assign_tokens_type(int type, int *index) {
-	//switch (rules[i].token_type) {
 	switch (type) {
 		case TK_NOTYPE:    // if spaces, do not record
 		case TK_NEWLINE:
 			{
-				//nr_token--; 
 				(*index)--;
 				break;				
 			}
 
-		case TK_PLUS:  case TK_EQ: 	case TK_VAL: 	
-		case TK_SUB: case TK_MUL: case TK_DIV: 
+		case TK_PLUS:   case TK_EQ: 	case TK_VAL: 	
+		case TK_SUB:    case TK_MUL:  case TK_DIV: 
 		case TK_OPAREN: case TK_CPAREN:
 		case TK_REG:    case TK_HEX:
 			{ 
-				//tokens[nr_token].type = rules[i].token_type;  
-				//tokens[nr_token].type = type;  
 				tokens[*index].type = type;  
 				break;
 			}
@@ -322,7 +297,12 @@ word_t eval (int p, int q) {
 						assert(0);
 					}
 					return (word_t) (val1 / val2);
-			
+				case TK_EQ:  
+					if (val1 == val2) {
+						return 1;
+					} else {
+						return 0;
+					}
 				default: assert(0);
 			}//end switch
 		} else {
@@ -351,8 +331,8 @@ word_t get_mem_val(word_t address) {
 	return vaddr_read(address, sizeof(word_t));;
 } // end function
 
-/*
-** find the position of 主运算符
+/* find the position of main operator
+** now support +, -, *, /, *(defer), ==
 */
 int find_main_op(int p, int q) {
 	//printf("find_main_op(%d, %d)\n", p, q);
@@ -363,7 +343,8 @@ int find_main_op(int p, int q) {
 	// find the operators between [p, q]
 	for(i = p; i <= q; i++) {
 		if (tokens[i].type == TK_PLUS || tokens[i].type == TK_SUB
-		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV) {
+		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV
+		 || tokens[i].type == TK_EQ) {
 			if( (check_parentheses(p, i-1, 0) == true) && 
 					(check_parentheses(i + 1, q, 0) == true) ) {
 					index[cnt] = i;
@@ -383,6 +364,7 @@ int find_main_op(int p, int q) {
 	int mul_div_index = 0;
 	int plus_sub_index = 0;
 	int defer_index = 0;
+	int eq_index = 0;
 
 	if (cnt == 1) {
 		return index[0];
@@ -393,16 +375,21 @@ int find_main_op(int p, int q) {
 				plus_sub_index = index[i];
 			} else if (tokens[index[i]].type == TK_DEREF) { 
 				defer_index = index[i];
+			} else if (tokens[index[i]].type == TK_EQ) { 
+				eq_index = index[i];
 			} else {
 				mul_div_index = index[i];
 			} 
 		}//end for
 	}// end if-else
 	
-	if (plus_sub_index != 0) {
+	// 按优先级来选择
+	if (eq_index != 0) {       // ==
+	 	return eq_index;
+	} else if (plus_sub_index != 0) {   // +, -
 		return plus_sub_index;
-	} else if (mul_div_index != 0) {
-		return mul_div_index;
+	} else if (mul_div_index != 0) {    // *
+		return mul_div_index;							
 	} else {
 		return defer_index;
 	}
