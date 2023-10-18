@@ -212,6 +212,7 @@ void transfer_tokens(int tokens_length) {
 			//copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
 			memcpy(tokens[i].str, ptr, sizeof(vaddr_t));
 			tokens[i].str[sizeof(vaddr_t)] = '\0';
+			printf("%s\n", tokens[i].str);
 		} 
 	} // end for(; i < ...)
 
