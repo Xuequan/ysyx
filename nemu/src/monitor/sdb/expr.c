@@ -206,13 +206,14 @@ void transfer_tokens(int tokens_length) {
 	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
+			printf("str = %s\n", tokens[i].str);
 			vaddr_t pc = cpu.pc; 
 			char *ptr = (char *)&pc;
 			printf(" pc = 0x%x, actual pc = 0x%x\n", pc, cpu.pc);
 			//copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
 			memcpy(tokens[i].str, ptr, sizeof(vaddr_t));
 			tokens[i].str[sizeof(vaddr_t)] = '\0';
-			printf("%s\n", tokens[i].str);
+			printf("str2 = %s\n", tokens[i].str);
 		} 
 	} // end for(; i < ...)
 
