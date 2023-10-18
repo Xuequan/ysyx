@@ -302,7 +302,7 @@ word_t eval (int p, int q) {
 
 		} else if (tokens[op].type == TK_NEGVAL) {
 			word_t val3 = eval(op + 1, q);
-			return val3;
+			return -val3;
 
 		} else {
 			val1 = (int)eval(p, op - 1);
