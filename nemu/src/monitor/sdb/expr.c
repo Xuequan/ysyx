@@ -166,10 +166,16 @@ static bool make_token(char *e) {
   return true;
 }
 
-/*
 bool is_certain_type(int type) {
+	return type == TK_MUL ||
+				 type == TK_SUB ||
+				 type == TK_PLUS ||
+				 type == TK_DIV ||
+				 type == TK_OPAREN ||
+				 type == TK_EQ ||
+				 type == TK_LESS_EQ ||
+				 type == TK_LOG_AND;
 }
-*/
 
 /* 1> if tokens[].type = TK_REG (register,eg, x10)
 ** get it value and copy it to tokens[].str
@@ -199,16 +205,7 @@ void transfer_tokens(int tokens_length) {
 	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
 	for ( i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_MUL && 
-			( i == 0 ||
-				tokens[i-1].type == TK_MUL ||
-				tokens[i-1].type == TK_SUB ||
-				tokens[i-1].type == TK_PLUS ||
-				tokens[i-1].type == TK_DIV ||
-				tokens[i-1].type == TK_OPAREN ||
-				tokens[i-1].type == TK_EQ ||
-				tokens[i-1].type == TK_LESS_EQ ||
-				tokens[i-1].type == TK_LOG_AND
-			) ) {
+			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
 			tokens[i].type = TK_DEREF;
 		}// end if (tokens[i]...)
 	} // end for ( i = 0...)
