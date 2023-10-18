@@ -165,6 +165,7 @@ void copy_val2buf(char *dest, char *src, size_t size) {
 		assert(0);
 	}
 	memcpy(dest, src, size);
+	dest[size] = '\0';
 }
 bool is_certain_type(int type) {
 	return type == TK_MUL ||
