@@ -54,6 +54,7 @@ enum {
 	TK_NEGVAL,  // negative value
 	TK_LESS_EQ,
 	TK_LOG_AND,						
+	TK_PC,      // only for $PC
 };
 
 static struct rule {
@@ -81,6 +82,7 @@ static struct rule {
 	{"x[0-9]{1,2}", TK_REG},     // register, eg, x0-x31
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
+	{"\\$pc", TK_PC},
 	/* end */
 };
 
