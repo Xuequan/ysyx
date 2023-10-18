@@ -51,6 +51,7 @@ enum {
 	** so no rules[] for this 
 	*/
 	TK_DEREF,  
+	TK_NEGVAL,  // negative value
 	TK_LESS_EQ,
 	TK_LOG_AND,						
 };
@@ -117,7 +118,6 @@ static bool make_token(char *e) {
   int i = 0;
   regmatch_t pmatch;
   nr_token = 0;
-	//printf("make_token( %s )\n", e);
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i++) {
@@ -128,8 +128,6 @@ static bool make_token(char *e) {
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
         position += substr_len;
-				//printf("position = %d\n", position);
-
         /* TODO: Now a new token is recognized with rules[i]. Add codes
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
@@ -138,16 +136,10 @@ static bool make_token(char *e) {
 					printf("token is too long.\n");
 					assert(0);
 				}
-				/* copy the new token to a buffer token.str */
+				/* copy the new token to a token.str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
-			
-				/*
-				// print this token 
-				char *tmp = tokens[nr_token].str;
-				printf("%d: tokens[%d].str = %s\n", nr_token, nr_token, tmp);
-				*/
-				/* copy the new token to a buffer token.type */
+				/* copy the new token to a token.type */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 				nr_token++;
         break;
@@ -161,6 +153,7 @@ static bool make_token(char *e) {
   }//end while
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
+	print_tokens(nr_token + 1);
 	transfer_tokens(nr_token + 1);
 	//print_tokens(nr_token + 1);
   return true;
@@ -210,6 +203,13 @@ void transfer_tokens(int tokens_length) {
 		}// end if (tokens[i]...)
 	} // end for ( i = 0...)
 				
+	// check for negative number
+	for ( i = 0; i < tokens_length; i++) {
+		if (tokens[i].type == TK_SUB && 
+			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
+			tokens[i].type = TK_NEGVAL;
+		}// end if (tokens[i]...)
+	} // end for ( i = 0...)
 } // end function
 
 /* choose rules[].token_type and 
@@ -294,7 +294,17 @@ word_t eval (int p, int q) {
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_op(p, q);
 		//printf("eval(%d, %d), main op = %d\n", p, q, op);
-		if (tokens[op].type != TK_DEREF ) {
+		if (tokens[op].type == TK_DEREF) {
+			//printf("eval(%d, %d)\n", op + 1, q);
+			word_t val3 = eval(op + 1, q);
+			//printf("val3 = %#x\n", val3);
+			return get_mem_val(val3);
+
+		} else if (tokens[op].type == TK_NEGVAL) {
+			word_t val3 = eval(op + 1, q);
+			return val3;
+
+		} else {
 			val1 = (int)eval(p, op - 1);
 			val2 = (int)eval(op + 1, q);
 		
@@ -328,12 +338,7 @@ word_t eval (int p, int q) {
 					}
 				default: assert(0);
 			}//end switch
-		} else {
-			//printf("eval(%d, %d)\n", op + 1, q);
-			word_t val3 = eval(op + 1, q);
-			//printf("val3 = %#x\n", val3);
-			return get_mem_val(val3);
-		} // end if (tokens[op].type != TK_DEREF) 
+		} // end if (tokens[op].type ...) 
 	} else if (check_parentheses(p, q, 0) == false) {
 		printf("parentheses are not matched. Plese input again\n");
 		assert(0);
@@ -376,7 +381,7 @@ int find_main_op(int p, int q) {
 			}
 		} // end if (tokens[i].type == TK_PLUS...)
 		
-		if (tokens[i].type == TK_DEREF) {
+		if (tokens[i].type == TK_DEREF || tokens[i].type == TK_NEGVAL) {
 			if (check_parentheses(i + 1, q, 0) == true ) {
 				index[cnt] = i;
 				cnt++;
@@ -391,6 +396,7 @@ int find_main_op(int p, int q) {
 	int eq_index = 0;
 	int less_eq_index = 0;
 	int log_and_index = 0;
+	int negval_index = 0;
 
 	if (cnt == 1) {
 		return index[0];
@@ -401,6 +407,8 @@ int find_main_op(int p, int q) {
 				plus_sub_index = index[i];
 			} else if (tokens[index[i]].type == TK_DEREF) { 
 				defer_index = index[i];
+			} else if (tokens[index[i]].type == TK_NEGVAL) { 
+				negval_index = index[i];
 			} else if (tokens[index[i]].type == TK_EQ) { 
 				eq_index = index[i];
 			} else if (tokens[index[i]].type == TK_LESS_EQ) { 
@@ -424,8 +432,10 @@ int find_main_op(int p, int q) {
 		return plus_sub_index;
 	} else if (mul_div_index != 0) {    // *
 		return mul_div_index;							
-	} else {
+	} else if (defer_index != 0) {     // *0x80000000 (deference)
 		return defer_index;
+	} else {				// -8 (negative val)
+		return negval_index;
 	}
 }//end function
 
