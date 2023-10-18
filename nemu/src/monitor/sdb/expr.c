@@ -193,15 +193,16 @@ void transfer_tokens(int tokens_length) {
 				assert(0);
 			}
 			snprintf(tokens[i].str, sizeof(word_t), "%u", reg_val);
-		} // end if(tokens[i].type...)
+		} 
 	} // end for(; i < ...)
 		
 	// only for 'w $pc == address' breakpoint
 	for(; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			reg_val = (word_t)cpu.pc; 
-			snprintf(tokens[i].str, sizeof(word_t), "%u", reg_val);
-		} // end if(tokens[i].type...)
+			word_t pc = cpu.pc; 
+		
+			snprintf(tokens[i].str, sizeof(word_t), "%u", pc);
+		} 
 	} // end for(; i < ...)
 
 	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
@@ -209,7 +210,7 @@ void transfer_tokens(int tokens_length) {
 		if (tokens[i].type == TK_MUL && 
 			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
 			tokens[i].type = TK_DEREF;
-		}// end if (tokens[i]...)
+		}
 	} // end for ( i = 0...)
 				
 	// check for negative number
@@ -217,8 +218,8 @@ void transfer_tokens(int tokens_length) {
 		if (tokens[i].type == TK_SUB && 
 			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
 			tokens[i].type = TK_NEGVAL;
-		}// end if (tokens[i]...)
-	} // end for ( i = 0...)
+		}
+	} 
 } // end function
 
 /* choose rules[].token_type and 
