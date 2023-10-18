@@ -153,9 +153,8 @@ static bool make_token(char *e) {
   }//end while
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
-	print_tokens(nr_token + 1);
 	transfer_tokens(nr_token + 1);
-	//print_tokens(nr_token + 1);
+	print_tokens(nr_token + 1);
   return true;
 }
 
@@ -302,7 +301,7 @@ word_t eval (int p, int q) {
 
 		} else if (tokens[op].type == TK_NEGVAL) {
 			word_t val3 = eval(op + 1, q);
-			return -val3;
+			return 0 - val3;
 
 		} else {
 			val1 = (int)eval(p, op - 1);
