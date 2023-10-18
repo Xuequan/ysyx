@@ -230,6 +230,7 @@ void assign_tokens_type(int type, int *index) {
 		case TK_OPAREN: case TK_CPAREN:
 		case TK_REG:    case TK_HEX:
 		case TK_LESS_EQ: case TK_LOG_AND:
+		case TK_PC:
 			{ 
 				tokens[*index].type = type;  
 				break;
