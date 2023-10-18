@@ -200,9 +200,9 @@ void transfer_tokens(int tokens_length) {
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
 			vaddr_t pc = cpu.pc; 
-			printf(" pc = 0x%16x, actual pc = 0x%16x\n", pc, cpu.pc);
+			printf(" pc = 0x%x, actual pc = 0x%x\n", pc, cpu.pc);
 		
-			snprintf(tokens[i].str, sizeof(word_t), "%u", pc);
+			snprintf(tokens[i].str, sizeof(word_t), "%#x", pc);
 		} 
 	} // end for(; i < ...)
 
