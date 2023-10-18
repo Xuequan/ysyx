@@ -200,18 +200,15 @@ void transfer_tokens(int tokens_length) {
 				assert(0);
 			}
 			snprintf(tokens[i].str, sizeof(word_t), "%u", reg_val);
+			printf("tokens.str = %s\n", tokens[i].str);
 		} 
 	} // end for(; i < ...)
 		
 	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			printf("str = %s\n", tokens[i].str);
 			vaddr_t pc = cpu.pc; 
-			//char *ptr = (char *)malloc(sizeof(char *));
-			//ptr = (char *)&pc;
 			char *ptr = (char *)&pc;
-			printf(" pc = %#x, $pc = %#x, size = %ld\n", pc, cpu.pc, sizeof(vaddr_t));
 			copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
 			printf("str2 = %#x\n", *(vaddr_t *)tokens[i].str);
 		} 
