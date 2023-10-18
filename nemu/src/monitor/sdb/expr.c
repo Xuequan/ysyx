@@ -212,7 +212,7 @@ void transfer_tokens(int tokens_length) {
 			//ptr = (char *)&pc;
 			char *ptr = (char *)&pc;
 			for (int m = 0; m < sizeof(vaddr_t); m++) {
-				printf("%d: ptr[%d] = %c\n",m,  m, *(vaddr_t *)(ptr+m));
+				printf("%d: ptr[%d] = %#x\n",m,  m, *(vaddr_t *)(ptr+m));
 			}
 			printf(" pc = 0x%x, $pc = 0x%x, size = %ld\n", pc, cpu.pc, sizeof(vaddr_t));
 			copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
