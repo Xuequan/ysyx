@@ -166,11 +166,18 @@ static bool make_token(char *e) {
   return true;
 }
 
+/*
+bool is_certain_type(int type) {
+}
+*/
+
 /* 1> if tokens[].type = TK_REG (register,eg, x10)
 ** get it value and copy it to tokens[].str
 ** 2> if tokens[].type == TK_MUL, 
 ** check if it is TK_DEFER, if so, check the expr behind it
 ** and conver it to TK_VAL
+** 3> if tokens[].type == TK_SUB,
+** check if it is a negative number
 */ 
 void transfer_tokens(int tokens_length) {
 	word_t reg_val = 0;
@@ -197,7 +204,10 @@ void transfer_tokens(int tokens_length) {
 				tokens[i-1].type == TK_SUB ||
 				tokens[i-1].type == TK_PLUS ||
 				tokens[i-1].type == TK_DIV ||
-				tokens[i-1].type == TK_OPAREN 
+				tokens[i-1].type == TK_OPAREN ||
+				tokens[i-1].type == TK_EQ ||
+				tokens[i-1].type == TK_LESS_EQ ||
+				tokens[i-1].type == TK_LOG_AND
 			) ) {
 			tokens[i].type = TK_DEREF;
 		}// end if (tokens[i]...)
@@ -348,7 +358,7 @@ word_t get_mem_val(word_t address) {
 } // end function
 
 /* find the position of main operator
-** now support +, -, *, /, *(defer), ==
+** now support +, -, *, /, *(defer), ==, &&, <=
 */
 int find_main_op(int p, int q) {
 	//printf("find_main_op(%d, %d)\n", p, q);
