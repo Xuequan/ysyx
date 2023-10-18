@@ -211,7 +211,8 @@ void transfer_tokens(int tokens_length) {
 			char *ptr = (char *)&pc;
 			printf(" pc = 0x%x, actual pc = 0x%x, size = %ld\n", pc, cpu.pc, sizeof(vaddr_t));
 			//copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
-			memcpy(tokens[i].str, ptr, sizeof(vaddr_t));
+			//memcpy(tokens[i].str, ptr, sizeof(vaddr_t));
+			strncpy(tokens[i].str, ptr, sizeof(vaddr_t));
 			tokens[i].str[sizeof(vaddr_t)] = '\0';
 			printf("str2 = %s\n", tokens[i].str);
 		} 
