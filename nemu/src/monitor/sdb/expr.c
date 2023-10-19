@@ -202,6 +202,7 @@ void transfer_tokens(int tokens_length) {
 		if (tokens[i].type == TK_PC) {
 			//vaddr_t pc = cpu.pc; 
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
+			tokens[i].str[sizeof(cpu.pc)] = '\0';
 			// 很奇怪，下面的这个打印结果是空白的
 			// 用strtol()等函数也无法将tokens[i].str
 			// 转化为值pc, 只能用类型强制转化： *(vaddr_t *)tokens.str
