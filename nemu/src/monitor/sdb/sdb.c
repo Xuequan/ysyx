@@ -174,11 +174,7 @@ static int cmd_p(char *args) {
 				printf("expr() failed\n");
 				assert(0);
 			}
-			if (expr_result != (word_t)atoi(test_result)) {
-				/*
-				printf("expr_result = %u, atoi(test_result) = %u\n", 
-								expr_result, (word_t)atoi(test_result));
-				*/
+			if (expr_result != *(word_t *)test_result ) {
 				printf("expr_result = %d, atoi(test_result) = %d\n", 
 								(int)expr_result, (int)atoi(test_result));
 				assert(0);
