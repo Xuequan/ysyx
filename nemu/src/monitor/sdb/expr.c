@@ -192,8 +192,9 @@ void transfer_tokens(int tokens_length) {
 				printf("isa_reg_str2val() falied\n");
 				assert(0);
 			}
-			snprintf(tokens[i].str, 9, "%x", reg_val);
-			printf("reg_val = %#x, tokens.str = %s\n",reg_val,  tokens[i].str);
+			memcpy(tokens[i].str, &reg_val, sizeof(word_t));
+			tokens[i].str[sizeof(word_t)] = '\0';
+			printf("reg_val = %#x, tokens.str = %#x\n",reg_val, *(word_t *)tokens[i].str);
 		} 
 	} // end for(; i < ...)
 		
@@ -297,6 +298,7 @@ word_t eval (int p, int q) {
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
+			/*
 			if (tokens[p].type == TK_HEX) {
 				return (word_t)strtol(tokens[p].str, NULL, 16);
 			} else if (tokens[p].type == TK_PC) {
@@ -304,6 +306,8 @@ word_t eval (int p, int q) {
 			} else {
 				return (word_t)atoi(tokens[p].str);
 			}
+			*/
+			return *(word_t *)(tokens[p].str);
 	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
