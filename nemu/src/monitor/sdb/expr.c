@@ -319,14 +319,15 @@ word_t eval (int p, int q) {
 			val2 = (int)eval(op + 1, q);
 		
 			switch (tokens[op].type) {
-				case TK_PLUS: return val1 + val2;
+				case TK_PLUS: printf("return val = %d\n", val1 + val2); return val1 + val2;
 				case TK_SUB: return val1 - val2;
-				case TK_MUL: return val1 * val2;
+				case TK_MUL: printf("return val = %d\n", val1 * val2); return val1 * val2;
 				case TK_DIV: 
 					if (val2 == 0) {
 						printf("div by zero error\n");
 						assert(0);
 					}
+					printf("return val = %u\n",(word_t) val1/val2);
 					return (word_t) (val1 / val2);
 				case TK_EQ:  
 					if (val1 == val2) {
