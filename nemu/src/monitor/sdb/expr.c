@@ -171,13 +171,7 @@ bool is_certain_type(int type) {
 				 type == TK_LOG_AND;
 }
 
-/* 1> if tokens[].type = TK_REG (register,eg, x10)
-** get it value and copy it to tokens[].str
-** 2> if tokens[].type == TK_MUL, 
-** check if it is TK_DEFER, if so, check the expr behind it
-** and conver it to TK_VAL
-** 3> if tokens[].type == TK_SUB,
-** check if it is a negative number
+/* handle TK_REG, TK_PC, TK_DEREF, TK_NEGVAL
 */ 
 void transfer_tokens(int tokens_length) {
 	word_t reg_val = 0;
@@ -194,22 +188,17 @@ void transfer_tokens(int tokens_length) {
 			}
 			memcpy(tokens[i].str, &reg_val, sizeof(word_t));
 			tokens[i].str[sizeof(word_t)] = '\0';
-			printf("reg_val = %#x, tokens.str = %#x\n",reg_val, *(word_t *)tokens[i].str);
 		} 
-	} // end for(; i < ...)
+	}
 		
 	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			//vaddr_t pc = cpu.pc; 
+			tokens[i].type = TK_VAL;  // transfer $pc to number
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
-			// 很奇怪，下面的这个打印结果是空白的
-			// 用strtol()等函数也无法将tokens[i].str
-			// 转化为值pc, 只能用类型强制转化： *(vaddr_t *)tokens.str
-			//printf("pc = %#x\n", *(vaddr_t *)(tokens[i].str));
 		} 
-	} // end for(; i < ...)
+	} 
 
 	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
 	for ( i = 0; i < tokens_length; i++) {
@@ -217,7 +206,7 @@ void transfer_tokens(int tokens_length) {
 			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
 			tokens[i].type = TK_DEREF;
 		}
-	} // end for ( i = 0...)
+	} 
 				
 	// check for negative number
 	for ( i = 0; i < tokens_length; i++) {
@@ -243,7 +232,7 @@ void assign_tokens_type(int type, int *index) {
 		case TK_PLUS:   case TK_EQ: 	case TK_VAL: 	
 		case TK_SUB:    case TK_MUL:  case TK_DIV: 
 		case TK_OPAREN: case TK_CPAREN:
-		case TK_REG:    case TK_HEX:
+    case TK_HEX:
 		case TK_LESS_EQ: case TK_LOG_AND:
 		case TK_PC:
 			{ 
@@ -298,16 +287,7 @@ word_t eval (int p, int q) {
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
-			/*
-			if (tokens[p].type == TK_HEX) {
-				return (word_t)strtol(tokens[p].str, NULL, 16);
-			} else if (tokens[p].type == TK_PC) {
-				return *(word_t *)(tokens[p].str);
-			} else {
-				return (word_t)atoi(tokens[p].str);
-			}
-			*/
-			return *(word_t *)(tokens[p].str);
+		return *(word_t *)(tokens[p].str);
 	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
@@ -377,9 +357,8 @@ word_t eval (int p, int q) {
 */
 word_t get_mem_val(word_t address) {
 	// this maybe wrong!!!
-	//printf("get_mem_val(%u)\n", address);
 	return vaddr_read(address, sizeof(word_t));;
-} // end function
+} 
 
 /* find the position of main operator
 ** now support +, -, *, /, *(defer), ==, &&, <=
