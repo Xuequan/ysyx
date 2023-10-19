@@ -206,8 +206,7 @@ void transfer_tokens(int tokens_length) {
 			// 很奇怪，下面的这个打印结果是空白的
 			// 用strtol()等函数也无法将tokens[i].str
 			// 转化为值pc, 只能用类型强制转化： *(vaddr_t *)tokens.str
-			//printf("pc = %#x\n", *(vaddr_t *)(tokens[i].str));
-			printf("pc = %#lx\n", strtol(tokens[i].str, NULL, 16));
+			printf("pc = %#x\n", *(vaddr_t *)(tokens[i].str));
 		} 
 	} // end for(; i < ...)
 
