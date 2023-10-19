@@ -193,7 +193,7 @@ void transfer_tokens(int tokens_length) {
 				assert(0);
 			}
 			snprintf(tokens[i].str, sizeof(word_t), "%u", reg_val);
-			printf("tokens.str = %s\n", tokens[i].str);
+			printf("reg_val = %#x, tokens.str = %s\n",reg_val,  tokens[i].str);
 		} 
 	} // end for(; i < ...)
 		
