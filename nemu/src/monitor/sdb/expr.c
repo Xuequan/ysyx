@@ -287,6 +287,7 @@ word_t eval (int p, int q) {
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
+		printf("p = %d, result = %u\n", p, *(word_t *)(tokens[p].str));
 		return *(word_t *)(tokens[p].str);
 	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
