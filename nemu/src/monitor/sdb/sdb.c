@@ -192,7 +192,7 @@ static int cmd_p(char *args) {
 				printf("cmd_p : expr() failed.\n");
 				//assert(0);
 			} else {
-				printf("%d\n", expr_result);
+				printf("%u\n", expr_result);
 			}
 	}
 	
