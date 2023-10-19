@@ -295,7 +295,7 @@ word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_op(p, q);
-		//printf("eval(%d, %d), main op = %d\n", p, q, op);
+		printf("eval(%d, %d), main op = %d\n", p, q, op);
 		if (tokens[op].type == TK_DEREF) {
 			//printf("eval(%d, %d)\n", op + 1, q);
 			word_t val3 = eval(op + 1, q);
