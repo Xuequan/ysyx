@@ -177,8 +177,8 @@ static int cmd_p(char *args) {
 			}
 
 			if (expr_result != (word_t) atoi(test_result)) {
-				printf("expr_result = %d, (test_result) = %d\n", 
-					(int)expr_result, (int)(* (word_t *)test_result));
+				printf("expr_result = %u, (test_result) = %u\n", 
+					expr_result, (word_t)atoi(test_result));
 				assert(0);
 			} 
 		} // end while

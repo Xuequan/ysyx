@@ -44,7 +44,7 @@ enum {
 	TK_OPAREN, // open parenthesis 263
 	TK_CPAREN, // close parenthesis
 	TK_NEWLINE, 
-	TK_REG,   // register, like x0-x31
+	TK_REG,   // register, like x0-x31  266
 	TK_HEX,		// hexadecimal-number, like 0x, 0X
 
 	/* now only support *address, not support *variable 
@@ -232,7 +232,7 @@ void assign_tokens_type(int type, int *index) {
 		case TK_PLUS:   case TK_EQ: 	case TK_VAL: 	
 		case TK_SUB:    case TK_MUL:  case TK_DIV: 
 		case TK_OPAREN: case TK_CPAREN:
-    case TK_HEX:
+    case TK_HEX:		case TK_REG:
 		case TK_LESS_EQ: case TK_LOG_AND:
 		case TK_PC:
 			{ 
