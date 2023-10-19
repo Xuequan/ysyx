@@ -180,7 +180,7 @@ void transfer_tokens(int tokens_length) {
 	
 	for(; i < tokens_length; i++) {
 		if (tokens[i].type == TK_REG) {
-			tokens[i].type = TK_VAL;  // transfer register to number
+			//tokens[i].type = TK_VAL;  // transfer register to number
 			reg_val = isa_reg_str2val(tokens[i].str, &success);
 			if (success == false) {
 				printf("isa_reg_str2val() falied\n");
@@ -194,7 +194,7 @@ void transfer_tokens(int tokens_length) {
 	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			tokens[i].type = TK_VAL;  // transfer $pc to number
+			//tokens[i].type = TK_VAL;  // transfer $pc to number
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
 		} 
@@ -287,8 +287,15 @@ word_t eval (int p, int q) {
 		 * For now this token should be a number.
 		 * Return the value of the number.
 		 */
-		printf("p = %d, result = %u\n", p, *(word_t *)(tokens[p].str));
-		return *(word_t *)(tokens[p].str);
+		if (tokens[p].type == TK_PC) {
+			return *(word_t *)(tokens[p].str);
+		} else if (tokens[p].type == TK_HEX ||
+							tokens[p].type == TK_REG){
+			return (word_t)strtol(tokens[p].str, NULL, 16);
+		} else {
+			return (word_t)atoi(tokens[p].str);
+		}
+
 	} else if (check_parentheses(p, q, 1) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
