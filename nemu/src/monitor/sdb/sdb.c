@@ -151,7 +151,7 @@ static int cmd_w(char *args) {
 #define TEST_LENGTH (65536 + 11)
 static int cmd_p(char *args) {
 	if (args == NULL) {
-		// 用 nemu/tools/gen-expr 来检查计算是否正确
+		// test use nemu/tools/gen-expr
 		FILE *fp = fopen("/home/chuan/ysyx-workbench/nemu/tools/gen-expr/input", "r");
 		assert(fp != NULL);
 		char buf[TEST_LENGTH] = {};
@@ -188,14 +188,12 @@ static int cmd_p(char *args) {
 			bool success = false;
 			word_t expr_result = expr(args, &success); 
 			if (success == false) {
-				//printf("cmd_p : expr() failed.\n");
 				printf("cmd_p : expr() failed.\n");
 				//assert(0);
 			} else {
 				printf("%u\n", expr_result);
 			}
 	}
-	
 	return 0;
 }
 

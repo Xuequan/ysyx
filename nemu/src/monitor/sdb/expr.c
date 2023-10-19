@@ -24,13 +24,13 @@
 #include <math.h>
 #include <memory/vaddr.h>
 
-word_t eval(int p, int q); 
-int find_main_op(int p, int q);
+static word_t eval(int p, int q); 
+static int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
-void assign_tokens_type(int type, int *index);
-void transfer_tokens(int tokens_length);
-void print_tokens(int nr_token);
-word_t get_mem_val(word_t address);
+static void assign_tokens_type(int type, int *index);
+static void transfer_tokens(int tokens_length);
+//static void print_tokens(int nr_token);
+static word_t get_mem_val(word_t address);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -156,11 +156,11 @@ static bool make_token(char *e) {
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
 	transfer_tokens(nr_token + 1);
-	print_tokens(nr_token + 1);
+	//print_tokens(nr_token + 1);
   return true;
 }
 
-bool is_certain_type(int type) {
+static bool is_certain_type(int type) {
 	return type == TK_MUL ||
 				 type == TK_SUB ||
 				 type == TK_PLUS ||
@@ -173,7 +173,7 @@ bool is_certain_type(int type) {
 
 /* handle TK_REG, TK_PC, TK_DEREF, TK_NEGVAL
 */ 
-void transfer_tokens(int tokens_length) {
+static void transfer_tokens(int tokens_length) {
 	word_t reg_val = 0;
 	bool success = false;
 	int i = 0;
@@ -221,7 +221,7 @@ void transfer_tokens(int tokens_length) {
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
 */ 
-void assign_tokens_type(int type, int *index) {
+static void assign_tokens_type(int type, int *index) {
 	switch (type) {
 		case TK_NOTYPE:    // if spaces, do not record
 		case TK_NEWLINE:
@@ -250,14 +250,15 @@ void assign_tokens_type(int type, int *index) {
 	} //end switch
 } // end function
 
-void print_tokens(int length) {
+/*
+static void print_tokens(int length) {
 	printf("print_tokens : \n");
 
 	for(int i = 0; i < length; i++) {
 		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
 	}
 }
-
+*/
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -274,8 +275,8 @@ word_t expr(char *e, bool *success) {
 ** only the final result will be word_t
 ** intermediate result is int 
 */
-word_t eval (int p, int q) {
-	printf("== eval(%d, %d)\n", p, q);
+static word_t eval (int p, int q) {
+	//printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
 	int val1 = 0;
 	int val2 = 0;
@@ -305,11 +306,9 @@ word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
 		op = find_main_op(p, q);
-		printf("eval(%d, %d), main op = %d\n", p, q, op);
+		//printf("eval(%d, %d), main op = %d\n", p, q, op);
 		if (tokens[op].type == TK_DEREF) {
-			//printf("eval(%d, %d)\n", op + 1, q);
 			word_t val3 = eval(op + 1, q);
-			//printf("val3 = %#x\n", val3);
 			return get_mem_val(val3);
 
 		} else if (tokens[op].type == TK_NEGVAL) {
@@ -321,15 +320,19 @@ word_t eval (int p, int q) {
 			val2 = (int)eval(op + 1, q);
 		
 			switch (tokens[op].type) {
-				case TK_PLUS: printf("return val = %d\n", val1 + val2); return val1 + val2;
+				case TK_PLUS: 
+					//printf("return val = %d\n", val1 + val2); 
+					return val1 + val2;
 				case TK_SUB: return val1 - val2;
-				case TK_MUL: printf("return val = %d\n", val1 * val2); return val1 * val2;
+				case TK_MUL: 
+					//printf("return val = %d\n", val1 * val2); 
+					return val1 * val2;
 				case TK_DIV: 
 					if (val2 == 0) {
 						printf("div by zero error\n");
 						assert(0);
 					}
-					printf("return val = %u\n",(word_t) val1/val2);
+					//printf("return val = %u\n",(word_t) val1/val2);
 					return (word_t) (val1 / val2);
 				case TK_EQ:  
 					if (val1 == val2) {
@@ -366,7 +369,7 @@ word_t eval (int p, int q) {
 ** get the val from the address 
 ** Do not support *variable!!!
 */
-word_t get_mem_val(word_t address) {
+static word_t get_mem_val(word_t address) {
 	// this maybe wrong!!!
 	return vaddr_read(address, sizeof(word_t));;
 } 
@@ -374,7 +377,7 @@ word_t get_mem_val(word_t address) {
 /* find the position of main operator
 ** now support +, -, *, /, *(defer), ==, &&, <=
 */
-int find_main_op(int p, int q) {
+static int find_main_op(int p, int q) {
 	//printf("find_main_op(%d, %d)\n", p, q);
 	int i = 0;
 	int cnt = 0;
