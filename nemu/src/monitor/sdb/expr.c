@@ -160,13 +160,6 @@ static bool make_token(char *e) {
   return true;
 }
 
-void copy_val2buf(char *dest, char *src, size_t size) {
-	if (dest == NULL || src == NULL) {
-		assert(0);
-	}
-	memcpy(dest, src, size);
-	dest[size] = '\0';
-}
 bool is_certain_type(int type) {
 	return type == TK_MUL ||
 				 type == TK_SUB ||
@@ -207,10 +200,13 @@ void transfer_tokens(int tokens_length) {
 	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			vaddr_t pc = cpu.pc; 
-			char *ptr = (char *)&pc;
-			copy_val2buf(tokens[i].str, ptr, sizeof(vaddr_t));		
-			printf("str2 = %#x\n", *(vaddr_t *)tokens[i].str);
+			//vaddr_t pc = cpu.pc; 
+			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
+			// 很奇怪，下面的这个打印结果是空白的
+			// 用strtol()等函数也无法将tokens[i].str
+			// 转化为值pc, 只能用类型强制转化： *(vaddr_t *)tokens.str
+			// printf("str2 = %s\n", tokens[i].str);
+			printf("str2 = %#x\n", *(vaddr_t *)(tokens[i].str));
 		} 
 	} // end for(; i < ...)
 
