@@ -192,7 +192,7 @@ void transfer_tokens(int tokens_length) {
 				printf("isa_reg_str2val() falied\n");
 				assert(0);
 			}
-			snprintf(tokens[i].str, 9, "%u", reg_val);
+			snprintf(tokens[i].str, 9, "%x", reg_val);
 			printf("reg_val = %#x, tokens.str = %s\n",reg_val,  tokens[i].str);
 		} 
 	} // end for(; i < ...)
