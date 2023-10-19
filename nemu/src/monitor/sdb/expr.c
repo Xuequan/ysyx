@@ -197,6 +197,7 @@ void transfer_tokens(int tokens_length) {
 			//tokens[i].type = TK_VAL;  // transfer $pc to number
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
+			printf("pc = %#x\n", *(word_t *)tokens[i].str);
 		} 
 	} 
 
@@ -274,7 +275,7 @@ word_t expr(char *e, bool *success) {
 ** intermediate result is int 
 */
 word_t eval (int p, int q) {
-	//printf("== eval(%d, %d)\n", p, q);
+	printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
 	int val1 = 0;
 	int val2 = 0;
@@ -289,7 +290,7 @@ word_t eval (int p, int q) {
 		 */
 		if (tokens[p].type == TK_PC ||
 				tokens[p].type == TK_REG) {
-			return *(word_t *)(tokens[p].str);
+			return *(word_t *)tokens[p].str;
 		} else if (tokens[p].type == TK_HEX){
 			return (word_t)strtol(tokens[p].str, NULL, 16);
 		} else {
