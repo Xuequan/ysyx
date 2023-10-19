@@ -52,7 +52,7 @@ enum {
 	*/
 	TK_DEREF,  
 	TK_NEGVAL,  // negative value
-	TK_LESS_EQ,
+	TK_LESS_EQ,  // 270
 	TK_LOG_AND,						
 	TK_PC,      // only for $PC
 };
@@ -290,6 +290,7 @@ word_t eval (int p, int q) {
 		 */
 		if (tokens[p].type == TK_PC ||
 				tokens[p].type == TK_REG) {
+			printf("here\n");
 			return *(word_t *)tokens[p].str;
 		} else if (tokens[p].type == TK_HEX){
 			return (word_t)strtol(tokens[p].str, NULL, 16);
