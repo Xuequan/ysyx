@@ -290,7 +290,7 @@ word_t eval (int p, int q) {
 		 */
 		if (tokens[p].type == TK_PC ||
 				tokens[p].type == TK_REG) {
-			printf("here\n");
+			printf("here, val =%#x\n", *(word_t *)tokens[p].str);
 			return *(word_t *)tokens[p].str;
 		} else if (tokens[p].type == TK_HEX){
 			return (word_t)strtol(tokens[p].str, NULL, 16);
