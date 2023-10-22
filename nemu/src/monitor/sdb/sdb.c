@@ -74,7 +74,7 @@ static int cmd_info(char *args) {
 		// nemu/src/isa/$ISA/reg.c
 		isa_reg_display();
 
-	}else if (*args == 'w') {  //info watchpoint 
+	}else if (*args == 'w') {  // "info w" info watchpoint 
 		print_wp();
 	}else{
 		printf("Unknown command argument, please input 'info r' or 'info w' again.\n");
@@ -132,9 +132,7 @@ static int cmd_w(char *args) {
 		printf("cmd_w(): cannot get a new watchpoint\n");
 		assert(0);
 	}
-	//printf("wp->NO = %d\n", wp->NO);
 	strcpy(wp->expr, args);
-	//strncpy(wp->expr, args, (size_t)strlen(args));
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
@@ -150,7 +148,7 @@ static int cmd_w(char *args) {
 
 #define TEST_LENGTH (65536 + 11)
 static int cmd_p(char *args) {
-	if (args == NULL) {
+	if (args == NULL) {    // for test only
 		// test use nemu/tools/gen-expr
 		FILE *fp = fopen("/home/chuan/ysyx-workbench/nemu/tools/gen-expr/input", "r");
 		assert(fp != NULL);
