@@ -194,10 +194,8 @@ static void transfer_tokens(int tokens_length) {
 	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			//tokens[i].type = TK_VAL;  // transfer $pc to number
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
-			printf("pc = %#x\n", *(word_t *)tokens[i].str);
 		} 
 	} 
 
@@ -291,7 +289,6 @@ static word_t eval (int p, int q) {
 		 */
 		if (tokens[p].type == TK_PC ||
 				tokens[p].type == TK_REG) {
-			printf("here, val =%#x\n", *(word_t *)tokens[p].str);
 			return *(word_t *)tokens[p].str;
 		} else if (tokens[p].type == TK_HEX){
 			return (word_t)strtol(tokens[p].str, NULL, 16);
