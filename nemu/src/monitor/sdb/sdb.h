@@ -20,4 +20,23 @@
 
 word_t expr(char *e, bool *success);
 
+/* chuan add start */
+
+#define WP_EXPR_LENGTH 128
+typedef struct watchpoint {
+  int NO;
+  struct watchpoint *next;
+
+  /* TODO: Add more members if necessary */
+  char expr[WP_EXPR_LENGTH];  // 128 should be enough
+  word_t val;                 // expr value
+} WP;
+
+WP* new_wp();
+void free_wp(int num);
+void scan_wp_pool();
+void print_wp();
+
+/* end */
+
 #endif

@@ -23,9 +23,19 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
+#define NR_REGS ARRLEN(regs)
+
 void isa_reg_display() {
+	int i = 0;
+	for (; i < NR_REGS; i++) {
+		printf("%-5s %#x\n", regs[i], gpr(i));  
+	}
+	
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  return 0;
+	// 先获得 reg index, 由输入 char *s = x0-x31; 后面的数字得到 
+	word_t reg_val = gpr( (int)atoi(s + 1) );	
+	*success = true;
+  return reg_val;
 }

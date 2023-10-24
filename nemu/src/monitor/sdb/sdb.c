@@ -19,6 +19,9 @@
 #include <readline/history.h>
 #include "sdb.h"
 
+/*chuan */
+#include <memory/vaddr.h>
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -49,10 +52,155 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+	nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
 static int cmd_help(char *args);
+
+/* chuan, start*/
+static int cmd_si(char *args) {
+	/* chuan, if no number, set 1 */
+	if (args == NULL) 
+		cpu_exec(1);
+	else
+  	cpu_exec(*args);
+  return 0;
+}
+
+static int cmd_info(char *args) {
+	if (args == NULL) {
+		printf("Please input arguments 'r' or 'w' of command 'info'.\n");
+	}else if (*args == 'r') {
+		// nemu/src/isa/$ISA/reg.c
+		isa_reg_display();
+
+	}else if (*args == 'w') {  // "info w" info watchpoint 
+		print_wp();
+	}else{
+		printf("Unknown command argument, please input 'info r' or 'info w' again.\n");
+	}
+
+	return 0;
+}
+
+static int cmd_x(char *args) {
+	char *str = args;
+	char *num = NULL;
+	char *addr = NULL;
+	int  whitespace_num = 0;
+
+	if (args == NULL) {
+		printf("Please input arguments, for example, 'x 10 0x8000000'\n");
+		return 0;
+	}else {
+		// 1. parse args
+		// for (; *str++ != '\0'; ) { // This doesnt work, why?
+		for (; *str != '\0'; str++) {   
+			if (*str == ' ' && whitespace_num == 0) {
+				num = args;
+				*str = '\0';	
+				whitespace_num = 1;
+			}else if (*str == ' ' && whitespace_num == 1) {
+				continue;
+			}else if (*str != ' ' && whitespace_num == 1) {
+				addr = str;
+				break;
+			}
+		}	
+	}
+	/* 2. show data */
+	int print_num = (int)atof(num);
+	vaddr_t print_addr = (vaddr_t)atof(addr); 
+	//printf("number = %d, memory address = %#x\n", (int)atof(num), (int)atof(addr));	
+	word_t data;
+	for (int i = 0; i < print_num; i++) {
+		print_addr = print_addr + sizeof(word_t);
+		data = vaddr_read(print_addr, 4);
+		printf("%#x		%#x\n", print_addr, data); 
+	}
+
+	return 0;
+}
+
+static int cmd_w(char *args) {
+	if (args == NULL) {
+		printf("Please input arguments, for example, 'w *0x80000000'\n");
+		return 0;
+	}
+	WP *wp = new_wp();
+	if (wp == NULL) {
+		printf("cmd_w(): cannot get a new watchpoint\n");
+		assert(0);
+	}
+	strcpy(wp->expr, args);
+	bool success = false;
+	word_t expr_result = expr(args, &success); 
+	if (success == false) {
+		printf("cmd_w : expr() failed.\n");
+		assert(0);
+	}
+	wp->val = expr_result;
+	printf("wp->NO = %d, wp->val = %u, wp->expr = %s\n", 
+			wp->NO, wp->val, wp->expr);
+	
+	return 0;
+}
+
+#define TEST_LENGTH (65536 + 11)
+static int cmd_p(char *args) {
+	if (args == NULL) {    // for test only
+		// test use nemu/tools/gen-expr
+		FILE *fp = fopen("/home/chuan/ysyx-workbench/nemu/tools/gen-expr/input", "r");
+		assert(fp != NULL);
+		char buf[TEST_LENGTH] = {};
+		while(fgets(buf, TEST_LENGTH, fp) != NULL) {
+			char *buf_end = buf + strlen(buf);
+			char *test_result = strtok(buf, " ");
+			if (test_result == NULL) {
+				printf("Didn't get the gen-expr result\n");
+				assert(0);
+			}
+			char *expr_buf = test_result + strlen(test_result) + 1;
+			if (expr_buf > buf_end) { assert(0); }
+			if (expr_buf == NULL) {assert(0); }
+
+			bool success = false;
+			printf("expr_buf = %s, strlen(expr_buf) = %ld\n", 
+							expr_buf, strlen(expr_buf));
+
+			word_t expr_result = expr(expr_buf, &success);
+			if (success == false) {
+				printf("expr() failed\n");
+				assert(0);
+			}
+
+			if (expr_result != (word_t) atoi(test_result)) {
+				printf("expr_result = %u, (test_result) = %u\n", 
+					expr_result, (word_t)atoi(test_result));
+				assert(0);
+			} 
+		} // end while
+		fclose(fp);
+		
+	}else {
+			bool success = false;
+			word_t expr_result = expr(args, &success); 
+			if (success == false) {
+				printf("cmd_p : expr() failed.\n");
+				//assert(0);
+			} else {
+				printf("%u\n", expr_result);
+			}
+	}
+	return 0;
+}
+
+static int cmd_d(char *args) {
+	free_wp(atoi(args) );	
+  return 0;
+}
+/* chuan, end */
 
 static struct {
   const char *name;
@@ -64,7 +212,12 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-
+	{"si", "Step one instruction exactly", cmd_si},
+	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r' two commands", cmd_info},
+	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
+	{"p", "Print value of expression", cmd_p},
+	{"w", "Set watchpoint, eg 'w expr'", cmd_w},
+	{"d", "Delete watchpoint, eg 'd N'", cmd_d},
 };
 
 #define NR_CMD ARRLEN(cmd_table)
@@ -91,6 +244,7 @@ static int cmd_help(char *args) {
   }
   return 0;
 }
+
 
 void sdb_set_batch_mode() {
   is_batch_mode = true;
