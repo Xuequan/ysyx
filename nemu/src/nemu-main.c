@@ -31,8 +31,5 @@ int main(int argc, char *argv[]) {
   /* Start engine. */
   engine_start();
 
-/*chuan,is_exit_status_bad() will return 1 if type "q" 
-	need to fix it
-*/
   return is_exit_status_bad();
 }

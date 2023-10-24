@@ -49,12 +49,6 @@ void gen(char c);
 bool gen_rand_op(void);
 bool buf_is_overflow(void);
 static void gen_rand_expr(int *deep);
-/*
-bool check_div_by_zero(uint32_t p, uint32_t q);
-uint32_t eval_expr(uint32_t p, uint32_t q);
-int find_main_op2(uint32_t p, uint32_t q, int *expr_val);
-static bool check_parentheses(int p, int q, int option);
-*/
 
 int find_expr(int j, int length);
 uint32_t eval_expr(int p, int q);
