@@ -28,12 +28,12 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 		$(addprefix -LDFLAGS, $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) \
 		--exe -o $(abspath $(BIN))
+	@echo "===== verilator end ====="
 
 sim: $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	-@rf -rf $(OBJ_DIR)
-	@echo "===== verilator end ====="
 	$(BIN)
 	
 include ../Makefile
