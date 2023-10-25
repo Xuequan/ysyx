@@ -8,10 +8,11 @@ src2 = ./vsrc/top.v
 Vtop: $(src1) $(src2)
 	$(VERILATOR) $(VERILATOR_CFLAGS) @^
 
+obj_dir/Vtop: Vtop
+
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
-	$(Vtop)
 	obj_dir/Vtop
 	
 
