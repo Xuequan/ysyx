@@ -21,7 +21,12 @@ sim: $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	-@rf -rf $(OBJ_DIR)
-	$(VERILATOR) $(VERILATOR_CFLAGS) $^ 
+	$(VERILATOR) $(VERILATOR_CFLAGS)  \
+		--top-module $(TOPNAME) $^ \ 
+		$(addprefix -CFLAGS, $(CXXFLAGS)) \
+		$(addprefix -LDFLAGS, $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) \
+		--exe -o $(OBJ_DIR)
 	@echo "===== verilator end ====="
 	$(OBJ_DIR)/Vtop
 	
