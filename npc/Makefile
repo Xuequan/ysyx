@@ -32,7 +32,8 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \                             -O3 --x-assign fast --x-initial fast --noassert
 
-BIN = $(BUILD_DIR)/$(TOPNAME)
+#BIN = $(BUILD_DIR)/$(TOPNAME)
+BIN = ./obj_dir/Vtop
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@rf -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
