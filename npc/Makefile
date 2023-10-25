@@ -13,8 +13,8 @@ sim:
 	$(VERILATOR) $(VERILATOR_CFLAGS) $(CSRCS) $(VSRCS)	
 	obj_dir/Vtop
 	
-
 include ../Makefile
+
 .PHONY: clean
 clean:
 	-@rm -r ./obj_dir
