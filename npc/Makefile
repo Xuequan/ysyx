@@ -26,10 +26,10 @@ sim: $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 		$(addprefix -CFLAGS, $(CXXFLAGS)) $(addprefix -LDFLAGS, $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe	
 	@echo "===== verilator end ====="
-	./obj_dir/Vtop
+	$(OBJ_DIR)/Vtop
 	
 include ../Makefile
 
 .PHONY: clean
 clean:
-	-@rm -rf ./obj_dir
+	-@rm -rf $(OBJ_DIR)
