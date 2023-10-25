@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
 	Verilated::traceEverOn(true);
 	VerilatedVcdC* tfp = new VerilatedVcdC;
 	top->trace(tfp, 0);
-	tfp->open("obj_dir/simx.vcd");
+	tfp->open("build/simx.vcd");
 	
 	// set Vtop's input signals
 	time_t t;
