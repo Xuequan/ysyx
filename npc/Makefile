@@ -35,11 +35,13 @@ VERILATOR_CFLAGS += -MMD --build -cc  \                             -O3 --x-assi
 #BIN = $(BUILD_DIR)/$(TOPNAME)
 BIN = ./obj_dir/Vtop
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+	@echo "===== verilator begin ====="
 	@rf -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS, $(CXXFLAGS)) $(addprefix -LDFLAGS, $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))	
+	@echo "===== verilator end ====="
 
 
 sim:
