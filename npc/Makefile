@@ -3,17 +3,15 @@ all:
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += --cc --exe --trace --build 
-src1 = ./csrc/sim_main.cpp
-src2 = ./vsrc/top.v
-$(Vtop): $(src1) $(src2)
-	$(VERILATOR) $(VERILATOR_CFLAGS) @^
-
-$(obj_dir/Vtop): $(Vtop)
+OBJ_DIR = ./obj_dir
+CSRCS = ./csrc/sim_main.cpp
+VSRCS = ./vsrc/top.v
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
-	$(obj_dir/Vtop)
+	$(VERILATOR) $(VERILATOR_CFLAGS) $(CSRCS) $(VSRCS)	
+	boj_dir/Vtop
 	
 
 include ../Makefile
