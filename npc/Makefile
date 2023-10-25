@@ -1,15 +1,20 @@
 all:
 	@echo "Write this Makefile by your self."
 
-src1 = ./csrc/sim_main.cpp
-src2 = ./vsrc/top.v
-Vtop: $(src1) $(src2)
-	verilator --cc --exe --trace --build -j @^
+VERILATOR = verilator
+VERILATOR_CFLAGS += --cc --exe --trace --build 
+OBJ_DIR = ./obj_dir
+CSRCS = ./csrc/sim_main.cpp
+VSRCS = ./vsrc/top.v
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
-	./obj_dir/Vtop
+	$(VERILATOR) $(VERILATOR_CFLAGS) $(CSRCS) $(VSRCS)	
+	obj_dir/Vtop
 	
-
 include ../Makefile
+
+.PHONY: clean
+clean:
+	-@rm -r ./obj_dir
