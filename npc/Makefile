@@ -15,15 +15,13 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += --build -cc  \                             -O3 --x-assign fast --x-initial fast --noassert
+VERILATOR_CFLAGS += --build -cc -O3 --x-assign fast --x-initial fast --assert
 
 sim: $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	-@rf -rf $(OBJ_DIR)
-	$(VERILATOR) $(VERILATOR_CFLAGS) $^ \
-		$(addprefix -CFLAGS, $(CXXFLAGS)) $(addprefix -LDFLAGS, $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe	
+	$(VERILATOR) $(VERILATOR_CFLAGS) $^ 
 	@echo "===== verilator end ====="
 	$(OBJ_DIR)/Vtop
 	
