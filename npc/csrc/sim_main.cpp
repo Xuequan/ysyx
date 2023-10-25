@@ -7,12 +7,19 @@
 #include <stdlib.h>
 #include "verilated_vcd_c.h"
 
+#include "nvboard.h"
+
+void nvboard_bind_all_pins(Vtop *top);
+
 int main(int argc, char** argv) {
 	if (false && argc && argv) {}
 
 	const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 
 	const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
+	
+	nvboard_bind_all_pins(top);
+	nvboard_init();
 
 	contextp->debug(0);
 	contextp->randReset(2);
@@ -28,6 +35,7 @@ int main(int argc, char** argv) {
 	srand((unsigned) time(&t));
 	int f = 0;
 	while (!contextp->gotFinish() && contextp->time() < 100 ) {
+		nvboard_update();
 		contextp->timeInc(1);
 		top->a = rand() & 1;
 		top->b = rand() & 1;
@@ -38,6 +46,7 @@ int main(int argc, char** argv) {
 	}
 	top->final();
 	tfp->close();
+	nvboard_quit();
 	
 	return 0;
 }
