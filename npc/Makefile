@@ -15,7 +15,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD --build -cc  \                             -O3 --x-assign fast --x-initial fast --noassert
+VERILATOR_CFLAGS += --build -cc  \                             -O3 --x-assign fast --x-initial fast --noassert
 
 sim: $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
