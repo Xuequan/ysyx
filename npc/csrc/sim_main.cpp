@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "verilated_vcd_c.h"
 
-#include "nvboard.h"
+#include "/home/chuan/ysyx-workbench/nvboard/include/nvboard.h"
 
 void nvboard_bind_all_pins(Vtop *top) {
 	nvboard_bind_pin(&top->a, false, true, 1, LD0);
