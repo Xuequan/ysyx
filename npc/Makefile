@@ -1,5 +1,3 @@
-sim: default
-
 TOPNAME = top
 # NXDC_FILES = constr/top.nxdc
 INC_PATH ?= 
@@ -13,7 +11,7 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
-default: $(BIN)
+VCD_FILE = ./dump.vcd
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -44,6 +42,8 @@ print:
 		--Mdir $(OBJ_DIR) \
 		--exe -o $(abspath $(BIN))
 
+default: sim
+
 sim: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
@@ -51,6 +51,11 @@ sim: $(BIN)
 	
 include ../Makefile
 
-.PHONY: clean
+wave: $(VCD_FILE)
+	gtkwave $<
+
 clean:
 	-@rm -rf $(BUILD_DIR)
+	-@rm $(VCD_FILE)
+
+.PHONY: clean default wave sim
