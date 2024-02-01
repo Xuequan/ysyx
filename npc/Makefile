@@ -53,4 +53,3 @@ include ../Makefile
 .PHONY: clean
 clean:
 	-@rm -rf $(BUILD_DIR)
-	-@rm -rf $(OBJ_DIR)
