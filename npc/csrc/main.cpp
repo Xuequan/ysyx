@@ -29,8 +29,8 @@ void sim_exit() {
 }
 void nvboard_bind_all_pins(Vtop *top) {
 	nvboard_bind_pin(&top->a, false, true, 1, LD0);
-	nvboard_bind_pin(&top->b, false, true, 1, LD0);
-	nvboard_bind_pin(&top->f, false, false, 1, LD0);
+	nvboard_bind_pin(&top->b, false, true, 1, LD1);
+	nvboard_bind_pin(&top->f, false, false, 1, LD2);
 }
 
 int main() {
