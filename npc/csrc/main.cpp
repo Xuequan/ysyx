@@ -27,7 +27,7 @@ void sim_init() {
 void sim_exit() {
 	tfp->close();
 }
-void nvboard_bind_all_pin(Vtop *top) {
+void nvboard_bind_all_pins(Vtop *top) {
 	nvboard_bind_pin(&top->a, false, true, 1, LD0);
 	nvboard_bind_pin(&top->b, false, true, 1, LD1);
 	nvboard_bind_pin(&top->f, false, true, 1, LD2);
@@ -36,18 +36,19 @@ void nvboard_bind_all_pin(Vtop *top) {
 int main() {
 	sim_init();
 
-	nvboard_bind_all_pin(top);
+	nvboard_bind_all_pins(top);
 	nvboard_init();
 	
 	while (1) {
-		nvboard_update();
 		top->a = rand() & 1;
 		top->b = rand() & 1;
-		//step_and_dump_wave();
+		step_and_dump_wave();
+		/*
 		top->eval();
 		contextp->timeInc(1);
 		tfp->dump(contextp->time());
-
+		*/
+		nvboard_update();
 	}
 	//nvboard_quit();
 	
