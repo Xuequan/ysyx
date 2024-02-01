@@ -43,14 +43,9 @@ int main() {
 		top->a = rand() & 1;
 		top->b = rand() & 1;
 		step_and_dump_wave();
-		/*
-		top->eval();
-		contextp->timeInc(1);
-		tfp->dump(contextp->time());
-		*/
 		nvboard_update();
 	}
-	//nvboard_quit();
+	nvboard_quit();
 	
 	sim_exit();
 	return 0;
