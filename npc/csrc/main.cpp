@@ -39,16 +39,14 @@ int main() {
 	nvboard_bind_all_pins(top);
 	nvboard_init();
 	
-	int i = 0;
-	while (i< 10) {
+	while (1) {
 		top->a = rand() & 1;
 		top->b = rand() & 1;
 		step_and_dump_wave();
 
 		nvboard_update();
-		i++;
 	}
-	nvboard_quit();
+	//nvboard_quit();
 	
 	sim_exit();
 	return 0;
