@@ -40,6 +40,7 @@ int main() {
 	nvboard_init();
 	
 	while (1) {
+		nvboard_update();
 		top->a = rand() & 1;
 		top->b = rand() & 1;
 		//step_and_dump_wave();
@@ -47,7 +48,6 @@ int main() {
 		contextp->timeInc(1);
 		tfp->dump(contextp->time());
 
-		nvboard_update();
 	}
 	//nvboard_quit();
 	
