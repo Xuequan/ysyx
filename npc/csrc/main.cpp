@@ -27,16 +27,16 @@ void sim_init() {
 void sim_exit() {
 	tfp->close();
 }
-void nvboard_bind_all_pins(Vtop *top) {
+void nvboard_bind_all_pin(Vtop *top) {
 	nvboard_bind_pin(&top->a, false, true, 1, LD0);
 	nvboard_bind_pin(&top->b, false, true, 1, LD1);
-	nvboard_bind_pin(&top->f, false, false, 1, LD2);
+	nvboard_bind_pin(&top->f, false, true, 1, LD2);
 }
 
 int main() {
 	sim_init();
 
-	nvboard_bind_all_pins(top);
+	nvboard_bind_all_pin(top);
 	nvboard_init();
 	
 	while (1) {
