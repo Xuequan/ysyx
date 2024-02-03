@@ -80,46 +80,45 @@ void add_wp2_tail(int choose, WP* wp) {
 		wp->next = NULL;
 	}
 }
+/* add a wp to list(free_ or head) tail */
+void add_wp2tail(WP* list, WP* wp) {
+	if (wp == NULL) {
+		return;
+	}
+	if (list == NULL) {
+		list = wp;
+	}else {
+		WP *ptr = list;
+		for (; ptr->next != NULL; ptr = ptr->next) 
+			{ ;}
+		ptr->next = wp;
+		wp->next = NULL;
+	}
+}
 
+/* get a new wp from free_   */
 WP* new_wp() {
 	// free_ has no wp
 	if (free_ == NULL) {
-		printf("watchpoints are full used.\n");
+		printf("watchpoints fully used.\n");
 		return NULL;
 	} 
-
-	WP* ptr = free_;
 	// free_ has only 1 wp
-	if (free_->next == NULL) {
-		// add this wp to head'tail
-		add_wp2_tail(0, ptr);
+	else if (free_->next == NULL) {
+		WP* ptr = free_;
+		add_wp2tail(head, ptr);
 		free_ = NULL;		
 		return ptr; 
 	} 
-	// free_ has more than 1 wp
-	else {
-		WP *prev = free_;
-		ptr  =  prev->next;
-		for ( ; ptr->next != NULL; ) {
-			prev = prev->next;
-			ptr = ptr->next;
-		}
-		add_wp2_tail(0, ptr);
-		prev->next = NULL;
+	else {    // free_ has more than 1 WP
+		WP *ptr = free_->next;
+		free_->next = ptr->next;	
+		add_wp2tail(head, ptr);
 		return ptr;
 	}
-	/*
-	else {
-		WP *next = free_->next;
-		ptr = free_->next;
-		free_->next = next->next;	
-		ptr->next = NULL;
-		add_wp2_tail(0, ptr);
-		return ptr;
-	}
-	*/
 }
 
+/* clear a wp's content */
 static void clear_wp(WP* wp) {
 	if (wp == NULL) {
 		assert(0);
@@ -131,46 +130,36 @@ static void clear_wp(WP* wp) {
 	wp->val = 0;
 }
 
-/* input the NO of wp */
+/* free a wp: 1. remove this wp from head;
+** 2. clear its content
+** 3. add this wp to free;
+** input the NO of wp 
+*/
 void free_wp(int num) {
 	if (head == NULL) {
-		printf("No watchpoint number %d.\n", num);
-		return;
+		printf("Error: no existed watchpoint.");
+		assert(0);
 	}
 	WP* ptr = head;
-	// the watchpoints behind head is only 1
-	if (ptr->next == NULL) {
-		if (ptr->NO != num ) {
-			printf("watchpoint %d is not exist\n", num);
-			return;
-		}
-		// add this to free_ tail
-		clear_wp(ptr);
-		//add_wp2free_(ptr);
-		add_wp2_tail(1, ptr);
-		head = NULL;
+	for ( ; ptr != NULL && ptr->NO != num; ptr = ptr->next) {
+		;
 	}
-	// the watchpoints behind head is nore than 1
-	else {
-		for (; ptr != NULL; ptr = ptr->next) { 
-			if (ptr->NO == num ) {
-				break;
-			}
-		}
-		if (ptr == NULL) {
-			printf("watchpoint %d is not exist\n", num);
-			return;
-		}
+	if (ptr == NULL) {
+		printf("watchpoint %d is not exist\n", num);
+		assert(0);
+	} 
+
+	// ptr->NO == num 
+	clear_wp(ptr);
+	if (ptr == head) {   // only 1 watchpoint (head ifself)
+		add_wp2tail(free_, ptr);
+		head = NULL;
+	} else {
 		WP* prev = head;
-		for (; prev != NULL; prev = prev->next) {
-			if (prev->next == ptr) {
-				break;
-			}
-		}	
+		for ( ; prev != ptr; prev = prev->next) {	;}
 		prev->next = ptr->next;
-		clear_wp(ptr);
-		//add_wp2free_(ptr);
-		add_wp2_tail(1, ptr);
+		ptr->next = NULL;
+		add_wp2tail(free_, ptr);
 	}
 }
 
