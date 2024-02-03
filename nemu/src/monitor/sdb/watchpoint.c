@@ -55,12 +55,12 @@ void init_wp_pool() {
 WP* new_wp();
 void free_wp(int num);
 
-/* add a wp to free_ or head tail 
-** choose = 1, then add to free_
-** choose = 0, then add to head
+/* add a wp to free_ or head's tail 
+** choose = 1, then add to free_' tail
+** choose = 0, then add to head'tail
 */
 void add_wp2_tail(int choose, WP* wp) {
-	WP* list;
+	WP* list = NULL;
 	if (choose == 0) {
 		list = head;
 	} else {
@@ -91,8 +91,8 @@ WP* new_wp() {
 	WP* ptr = free_;
 	// free_ has only 1 wp
 	if (free_->next == NULL) {
-		// add this wp to head
-		add_wp2_tail(0, free_);
+		// add this wp to head'tail
+		add_wp2_tail(0, ptr);
 		free_ = NULL;		
 		return ptr; 
 	} 
@@ -104,10 +104,20 @@ WP* new_wp() {
 			prev = prev->next;
 			ptr = ptr->next;
 		}
+		add_wp2_tail(0, ptr);
 		prev->next = NULL;
+		return ptr;
+	}
+	/*
+	else {
+		WP *next = free_->next;
+		ptr = free_->next;
+		free_->next = next->next;	
+		ptr->next = NULL;
 		add_wp2_tail(0, ptr);
 		return ptr;
 	}
+	*/
 }
 
 static void clear_wp(WP* wp) {
@@ -121,10 +131,10 @@ static void clear_wp(WP* wp) {
 	wp->val = 0;
 }
 
-/* input num is the NO of wp */
+/* input the NO of wp */
 void free_wp(int num) {
 	if (head == NULL) {
-		printf("No breakpoint number %d.\n", num);
+		printf("No watchpoint number %d.\n", num);
 		return;
 	}
 	WP* ptr = head;

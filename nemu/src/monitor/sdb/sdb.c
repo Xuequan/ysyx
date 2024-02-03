@@ -115,9 +115,9 @@ static int cmd_x(char *args) {
 	//printf("number = %d, memory address = %#x\n", (int)atof(num), (int)atof(addr));	
 	word_t data;
 	for (int i = 0; i < print_num; i++) {
-		print_addr = print_addr + sizeof(word_t);
 		data = vaddr_read(print_addr, 4);
 		printf("%#x		%#x\n", print_addr, data); 
+		print_addr = print_addr + sizeof(word_t);
 	}
 
 	return 0;
@@ -125,7 +125,7 @@ static int cmd_x(char *args) {
 
 static int cmd_w(char *args) {
 	if (args == NULL) {
-		printf("Please input arguments, for example, 'w *0x80000000'\n");
+		printf("Please input arguments, for example, 'w 0x80000000'\n");
 		return 0;
 	}
 	WP *wp = new_wp();
@@ -141,8 +141,7 @@ static int cmd_w(char *args) {
 		assert(0);
 	}
 	wp->val = expr_result;
-	printf("wp->NO = %d, wp->val = %u, wp->expr = %s\n", 
-			wp->NO, wp->val, wp->expr);
+	printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
 	
 	return 0;
 }
@@ -213,10 +212,10 @@ static struct {
 
   /* TODO: Add more commands */
 	{"si", "Step one instruction exactly", cmd_si},
-	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r' two commands", cmd_info},
+	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r'", cmd_info},
 	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
 	{"p", "Print value of expression", cmd_p},
-	{"w", "Set watchpoint, eg 'w expr'", cmd_w},
+	{"w", "Set watchpoint, eg 'w 0x800000000'", cmd_w},
 	{"d", "Delete watchpoint, eg 'd N'", cmd_d},
 };
 
