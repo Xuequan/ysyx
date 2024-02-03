@@ -115,9 +115,9 @@ static int cmd_x(char *args) {
 	//printf("number = %d, memory address = %#x\n", (int)atof(num), (int)atof(addr));	
 	word_t data;
 	for (int i = 0; i < print_num; i++) {
-		print_addr = print_addr + sizeof(word_t);
 		data = vaddr_read(print_addr, 4);
 		printf("%#x		%#x\n", print_addr, data); 
+		print_addr = print_addr + sizeof(word_t);
 	}
 
 	return 0;
