@@ -141,8 +141,7 @@ static int cmd_w(char *args) {
 		assert(0);
 	}
 	wp->val = expr_result;
-	printf("wp->NO = %d, wp->val = %u, wp->expr = %s\n", 
-			wp->NO, wp->val, wp->expr);
+	printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
 	
 	return 0;
 }
@@ -197,7 +196,6 @@ static int cmd_p(char *args) {
 }
 
 static int cmd_d(char *args) {
-	printf("cmd_c: args = %s\n", args);
 	free_wp(atoi(args) );	
   return 0;
 }

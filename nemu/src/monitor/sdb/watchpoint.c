@@ -124,7 +124,7 @@ static void clear_wp(WP* wp) {
 /* input num is the NO of wp */
 void free_wp(int num) {
 	if (head == NULL) {
-		printf("No breakpoint number %d.\n", num);
+		printf("No watchpoint number %d.\n", num);
 		return;
 	}
 	WP* ptr = head;
