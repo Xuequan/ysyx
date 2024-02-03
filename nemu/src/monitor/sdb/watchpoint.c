@@ -67,7 +67,6 @@ void add_wp2_tail(int choose, WP* wp) {
 		list = free_;
 	}
 
-	/*
 	if (list == NULL && choose == 0) {
 		head = wp;
 		head->next = NULL;
@@ -76,15 +75,10 @@ void add_wp2_tail(int choose, WP* wp) {
 		free_->next = NULL;
 	} else {
 		WP *ptr = list;
-		for (; ptr != NULL; ptr = ptr->next) { ;}
+		for (; ptr->next != NULL; ptr = ptr->next) { ;}
 		ptr->next = wp;
 		wp->next = NULL;
 	}
-	*/
-		WP *ptr = list;
-		for (; ptr != NULL; ptr = ptr->next) { ;}
-		ptr = wp;
-		wp->next = NULL;
 }
 
 WP* new_wp() {
@@ -110,8 +104,8 @@ WP* new_wp() {
 			prev = prev->next;
 			ptr = ptr->next;
 		}
-		prev->next = NULL;
 		add_wp2_tail(0, ptr);
+		prev->next = NULL;
 		return ptr;
 	}
 }

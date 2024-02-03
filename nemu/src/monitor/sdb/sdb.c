@@ -125,7 +125,7 @@ static int cmd_x(char *args) {
 
 static int cmd_w(char *args) {
 	if (args == NULL) {
-		printf("Please input arguments, for example, 'w *0x80000000'\n");
+		printf("Please input arguments, for example, 'w 0x80000000'\n");
 		return 0;
 	}
 	WP *wp = new_wp();
