@@ -112,6 +112,7 @@ WP* new_wp() {
 	*/
 	else {
 		WP *next = free_->next;
+		ptr = free_->next;
 		free_->next = next->next;	
 		add_wp2_tail(0, ptr);
 		return ptr;
