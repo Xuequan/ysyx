@@ -197,6 +197,7 @@ static int cmd_p(char *args) {
 }
 
 static int cmd_d(char *args) {
+	printf("cmd_c: args = %s\n", args);
 	free_wp(atoi(args) );	
   return 0;
 }
