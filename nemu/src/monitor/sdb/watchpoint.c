@@ -97,6 +97,7 @@ WP* new_wp() {
 		return ptr; 
 	} 
 	// free_ has more than 1 wp
+	/*
 	else {
 		WP *prev = free_;
 		ptr  =  prev->next;
@@ -106,6 +107,13 @@ WP* new_wp() {
 		}
 		add_wp2_tail(0, ptr);
 		prev->next = NULL;
+		return ptr;
+	}
+	*/
+	else {
+		WP *next = free_->next;
+		free_->next = next->next;	
+		add_wp2_tail(0, ptr);
 		return ptr;
 	}
 }
