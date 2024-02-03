@@ -216,7 +216,7 @@ static struct {
 	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r' two commands", cmd_info},
 	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
 	{"p", "Print value of expression", cmd_p},
-	{"w", "Set watchpoint, eg 'w expr'", cmd_w},
+	{"w", "Set watchpoint, eg 'w *0x800000000'", cmd_w},
 	{"d", "Delete watchpoint, eg 'd N'", cmd_d},
 };
 
