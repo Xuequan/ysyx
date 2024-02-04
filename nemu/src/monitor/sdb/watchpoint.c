@@ -89,7 +89,7 @@ void add_wp2tail(WP* list, WP* wp) {
 		return;
 	}
 	if (list == NULL) {
-		list = wp;
+		*list = *wp;
 	}else {
 		WP *ptr = list;
 		for (; ptr->next != NULL; ptr = ptr->next) 
