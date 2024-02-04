@@ -91,7 +91,7 @@ void add_wp2tail(WP* list, WP* wp) {
 	if (list == NULL) {
 		printf("here\n");
 		list = wp;
-		if (list == NULL) 
+		if (list != NULL) 
 			printf("here2\n");
 	}else {
 		WP *ptr = list;
