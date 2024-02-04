@@ -59,6 +59,7 @@ void free_wp(int num);
 ** choose = 1, then add to free_' tail
 ** choose = 0, then add to head'tail
 */
+/*
 void add_wp2_tail(int choose, WP* wp) {
 	WP* list = NULL;
 	if (choose == 0) {
@@ -80,6 +81,7 @@ void add_wp2_tail(int choose, WP* wp) {
 		wp->next = NULL;
 	}
 }
+*/
 /* add a wp to list(free_ or head) tail */
 void add_wp2tail(WP* list, WP* wp) {
 	if (wp == NULL) {
@@ -111,8 +113,9 @@ WP* new_wp() {
 		return ptr; 
 	} 
 	else {    // free_ has more than 1 WP
-		WP *ptr = free_->next;
-		free_->next = ptr->next;	
+		WP *ptr = free_;
+		WP *next = free_->next;
+		free_ = next;
 		add_wp2tail(head, ptr);
 		return ptr;
 	}
