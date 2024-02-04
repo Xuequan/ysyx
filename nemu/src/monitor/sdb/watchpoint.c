@@ -123,7 +123,7 @@ WP* new_wp() {
 
 		add_wp2tail(head, ptr);
 		if (head == NULL)
-			printf("here\n");
+			printf("here3\n");
 		return ptr;
 	}
 }
