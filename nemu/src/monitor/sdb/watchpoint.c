@@ -89,10 +89,7 @@ void add_wp2tail(WP* list, WP* wp) {
 		return;
 	}
 	if (list == NULL) {
-		printf("here\n");
 		list = wp;
-		if (list != NULL) 
-			printf("here2\n");
 	}else {
 		WP *ptr = list;
 		for (; ptr->next != NULL; ptr = ptr->next) 
@@ -125,6 +122,8 @@ WP* new_wp() {
 		ptr->next = NULL;
 
 		add_wp2tail(head, ptr);
+		if (head == NULL)
+			printf("here\n");
 		return ptr;
 	}
 }
