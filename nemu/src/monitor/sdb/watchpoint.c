@@ -85,6 +85,7 @@ void add_wp2_tail(int choose, WP* wp) {
 /* add a wp to list(free_ or head) tail */
 void add_wp2tail(WP* list, WP* wp) {
 	if (wp == NULL) {
+		printf("wp is NULL\n");
 		return;
 	}
 	if (list == NULL) {
@@ -116,6 +117,10 @@ WP* new_wp() {
 		WP *ptr = free_;
 		WP *next = free_->next;
 		free_ = next;
+
+		/* ? */
+		ptr->next = NULL;
+
 		add_wp2tail(head, ptr);
 		return ptr;
 	}
