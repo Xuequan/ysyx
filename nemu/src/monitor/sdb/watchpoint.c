@@ -72,11 +72,13 @@ void add_wp2tail(WP** list, WP* wp) {
 	}
 }
 
-/* get a new wp from free_   */
+/* get a new wp from free_;
+** add this new wp to head's tail
+** */
 WP* new_wp() {
 	// free_ has no wp
 	if (free_ == NULL) {
-		printf("watchpoints fully used.\n");
+		printf("No free watchpoints.\n");
 		return NULL;
 	} 
 	// free_ has only 1 wp
@@ -127,6 +129,8 @@ void free_wp(int num) {
 	for ( ; ptr != NULL && ptr->NO != num; ptr = ptr->next) {
 		printf("free_wp(), ptr->NO = %d\n", ptr->NO)	;
 	}
+	printf("free_wp(), ptr->NO = %d\n", ptr->NO)	;
+	
 	if (ptr == NULL) {
 		printf("watchpoint %d is not exist\n", num);
 		assert(0);
