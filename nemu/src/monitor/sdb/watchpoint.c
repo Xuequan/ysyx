@@ -125,7 +125,7 @@ void free_wp(int num) {
 	}
 	WP* ptr = head;
 	for ( ; ptr != NULL && ptr->NO != num; ptr = ptr->next) {
-		;
+		printf("free_wp(), ptr->NO = %d\n", ptr->NO)	;
 	}
 	if (ptr == NULL) {
 		printf("watchpoint %d is not exist\n", num);
@@ -139,7 +139,7 @@ void free_wp(int num) {
 		head = NULL;
 	} else {
 		WP* prev = head;
-		for ( ; prev->next == ptr; prev = prev->next) {	;}
+		for ( ; prev->next != ptr; prev = prev->next) {	;}
 		prev->next = ptr->next;
 		ptr->next = NULL;
 		add_wp2tail(&free_, ptr);
