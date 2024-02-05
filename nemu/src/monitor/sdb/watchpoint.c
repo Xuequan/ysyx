@@ -139,8 +139,8 @@ void free_wp(int num) {
 	// ptr->NO == num 
 	clear_wp(ptr);
 	if (ptr == head) {   
-		add_wp2tail(&free_, ptr);
 		head = head->next;
+		add_wp2tail(&free_, ptr);
 	} else {
 		WP* prev = head;
 		for ( ; prev->next != ptr; prev = prev->next) {	;}
