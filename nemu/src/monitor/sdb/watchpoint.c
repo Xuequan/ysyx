@@ -120,8 +120,8 @@ static void clear_wp(WP* wp) {
 */
 void free_wp(int num) {
 	if (head == NULL) {
-		printf("Error: no existed watchpoint.");
-		assert(0);
+		printf("No existed watchpoint.");
+		return;
 	}
 	WP* ptr = head;
 	for ( ; ptr != NULL && ptr->NO != num; ptr = ptr->next) {
