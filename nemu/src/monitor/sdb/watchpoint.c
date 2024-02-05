@@ -139,7 +139,7 @@ void free_wp(int num) {
 		head = NULL;
 	} else {
 		WP* prev = head;
-		for ( ; prev != ptr; prev = prev->next) {	;}
+		for ( ; prev->next != ptr; prev = prev->next) {	;}
 		prev->next = ptr->next;
 		ptr->next = NULL;
 		add_wp2tail(&free_, ptr);
