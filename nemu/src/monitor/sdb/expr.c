@@ -29,8 +29,8 @@ static int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
 static void assign_tokens_type(int type, int *index);
 static void transfer_tokens(int tokens_length);
-//static void print_tokens(int nr_token);
 static word_t get_mem_val(word_t address);
+//static void print_tokens(int nr_token);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
