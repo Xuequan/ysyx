@@ -61,7 +61,7 @@ void add_wp2tail(WP** list, WP* wp) {
 		printf("wp is NULL\n");
 		return;
 	}
-	if (list == NULL) {
+	if (*list == NULL) {
 		*list = wp;
 	}else {
 		WP *ptr = *list;
