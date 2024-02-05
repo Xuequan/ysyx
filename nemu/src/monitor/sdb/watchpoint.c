@@ -138,9 +138,9 @@ void free_wp(int num) {
 
 	// ptr->NO == num 
 	clear_wp(ptr);
-	if (ptr == head) {   // only 1 watchpoint (head ifself)
+	if (ptr == head) {   
 		add_wp2tail(&free_, ptr);
-		head = NULL;
+		head = head->next;
 	} else {
 		WP* prev = head;
 		for ( ; prev->next != ptr; prev = prev->next) {	;}
