@@ -115,7 +115,8 @@ static void clear_wp(WP* wp) {
 	wp->val = 0;
 }
 
-/* free a wp: 1. remove this wp from head;
+/* free a wp: delete a wp 
+** 1. remove this wp from head;
 ** 2. clear its content
 ** 3. add this wp to free;
 ** input the NO of wp 
@@ -126,16 +127,12 @@ void free_wp(int num) {
 		return;
 	}
 	WP* ptr = head;
-	for ( ; ptr != NULL && ptr->NO != num; ptr = ptr->next) {
-		printf("1-free_wp(), ptr->NO = %d\n", ptr->NO)	;
-	}
+	for ( ; ptr != NULL && ptr->NO != num; ptr = ptr->next) { ; }
 	
 	if (ptr == NULL) {
 		printf("watchpoint %d is not exist\n", num);
 		return;
 	} 
-	printf("2-free_wp(), ptr->NO = %d\n", ptr->NO)	;
-
 	// ptr->NO == num 
 	clear_wp(ptr);
 	if (ptr == head) {   
