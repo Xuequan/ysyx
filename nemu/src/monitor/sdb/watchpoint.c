@@ -55,43 +55,16 @@ void init_wp_pool() {
 WP* new_wp();
 void free_wp(int num);
 
-/* add a wp to free_ or head's tail 
-** choose = 1, then add to free_' tail
-** choose = 0, then add to head'tail
-*/
-/*
-void add_wp2_tail(int choose, WP* wp) {
-	WP* list = NULL;
-	if (choose == 0) {
-		list = head;
-	} else {
-		list = free_;
-	}
-
-	if (list == NULL && choose == 0) {
-		head = wp;
-		head->next = NULL;
-	} else if (list == NULL && choose == 1) {
-		free_ = wp;
-		free_->next = NULL;
-	} else {
-		WP *ptr = list;
-		for (; ptr->next != NULL; ptr = ptr->next) { ;}
-		ptr->next = wp;
-		wp->next = NULL;
-	}
-}
-*/
 /* add a wp to list(free_ or head) tail */
-void add_wp2tail(WP* list, WP* wp) {
+void add_wp2tail(WP** list, WP* wp) {
 	if (wp == NULL) {
 		printf("wp is NULL\n");
 		return;
 	}
 	if (list == NULL) {
-		*list = *wp;
+		*list = wp;
 	}else {
-		WP *ptr = list;
+		WP *ptr = *list;
 		for (; ptr->next != NULL; ptr = ptr->next) 
 			{ ;}
 		ptr->next = wp;
@@ -109,7 +82,7 @@ WP* new_wp() {
 	// free_ has only 1 wp
 	else if (free_->next == NULL) {
 		WP* ptr = free_;
-		add_wp2tail(head, ptr);
+		add_wp2tail(&head, ptr);
 		free_ = NULL;		
 		return ptr; 
 	} 
@@ -121,7 +94,7 @@ WP* new_wp() {
 		/* ? */
 		ptr->next = NULL;
 
-		add_wp2tail(head, ptr);
+		add_wp2tail(&head, ptr);
 		if (head == NULL)
 			printf("here3\n");
 		return ptr;
@@ -162,14 +135,14 @@ void free_wp(int num) {
 	// ptr->NO == num 
 	clear_wp(ptr);
 	if (ptr == head) {   // only 1 watchpoint (head ifself)
-		add_wp2tail(free_, ptr);
+		add_wp2tail(&free_, ptr);
 		head = NULL;
 	} else {
 		WP* prev = head;
 		for ( ; prev != ptr; prev = prev->next) {	;}
 		prev->next = ptr->next;
 		ptr->next = NULL;
-		add_wp2tail(free_, ptr);
+		add_wp2tail(&free_, ptr);
 	}
 }
 
