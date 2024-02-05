@@ -129,12 +129,12 @@ void free_wp(int num) {
 	for ( ; ptr != NULL && ptr->NO != num; ptr = ptr->next) {
 		printf("free_wp(), ptr->NO = %d\n", ptr->NO)	;
 	}
-	printf("free_wp(), ptr->NO = %d\n", ptr->NO)	;
 	
 	if (ptr == NULL) {
 		printf("watchpoint %d is not exist\n", num);
 		assert(0);
 	} 
+	printf("free_wp(), ptr->NO = %d\n", ptr->NO)	;
 
 	// ptr->NO == num 
 	clear_wp(ptr);
