@@ -200,6 +200,7 @@ static int cmd_p(char *args) {
 	return 0;
 }
 
+/* just a copy of cmd_p() */
 static int cmd_px(char *args) {
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
