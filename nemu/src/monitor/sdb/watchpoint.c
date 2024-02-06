@@ -161,7 +161,7 @@ void scan_wp_pool() {
     }
     if (now_result != ptr->val) {
       nemu_state.state = NEMU_STOP;
-      printf("Hardware watchpoint %d: val\n", ptr->NO);
+      printf("Hardware watchpoint %d: %s\n", ptr->NO, ptr->expr);
       printf("\n");
       printf("Old vaule = %d\n", ptr->val);
       printf("New value = %u\n", now_result);
