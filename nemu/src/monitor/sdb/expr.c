@@ -83,7 +83,7 @@ static struct rule {
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
 	//{"\\$pc", TK_PC},
-	{"[$pc]{1}", TK_PC},
+	{"[$][p][c]", TK_PC},
 	/* end */
 };
 
@@ -183,7 +183,6 @@ static void transfer_tokens(int tokens_length) {
 	
 	for(; i < tokens_length; i++) {
 		if (tokens[i].type == TK_REG) {
-			//tokens[i].type = TK_VAL;  // transfer register to number
 			reg_val = isa_reg_str2val(tokens[i].str, &success);
 			if (success == false) {
 				printf("isa_reg_str2val() falied\n");
