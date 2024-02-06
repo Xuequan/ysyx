@@ -44,7 +44,6 @@ enum {
 	TK_OPAREN, // open parenthesis 263
 	TK_CPAREN, // close parenthesis
 	TK_NEWLINE, 
-	//TK_REG,   // register, like x0-x31  266
 	TK_REG,
 	TK_HEX,		// hexadecimal-number, like 0x, 0X
 
@@ -80,8 +79,7 @@ static struct rule {
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
-	//{"x[0-9]{1,2}", TK_REG},     // register, eg, x0-x31
-	{"[$]?[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0 or $t0
+	{"[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
 	{"\\$pc", TK_PC},
