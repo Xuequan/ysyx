@@ -131,6 +131,7 @@ static int cmd_w(char *args) {
 		printf("Please input arguments, for example, 'w *0x80000000'\n");
 		return 0;
 	}
+	// check if input args is valid 
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
