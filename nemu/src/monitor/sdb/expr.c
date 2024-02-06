@@ -83,7 +83,7 @@ static struct rule {
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
 	//{"\\$pc", TK_PC},
-	{"[$][p][c]", TK_PC},
+	{"[$]pc", TK_PC},     // $pc
 	/* end */
 };
 
