@@ -134,7 +134,7 @@ static int cmd_w(char *args) {
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
-		printf("cmd_w() : cannot recognize %s.\n", args);
+		printf("cmd_w() : cannot recognize \"%s\".\n", args);
 		return 0;
 	}
 
