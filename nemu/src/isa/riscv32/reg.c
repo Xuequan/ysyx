@@ -34,8 +34,16 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-	// 先获得 reg index, 由输入 char *s = x0-x31; 后面的数字得到 
-	word_t reg_val = gpr( (int)atoi(s + 1) );	
-	*success = true;
+	int i = 0;
+	for( ; i < NR_REGS; i++) {
+		if (strcmp(s, regs[i]) == 0 ) 
+			break;
+	}	
+	if (i == NR_REGS){
+		*success = false;
+	} else {
+		*success = true;
+	}
+	word_t reg_val = gpr(i);	
   return reg_val;
 }
