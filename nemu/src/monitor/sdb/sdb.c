@@ -170,12 +170,11 @@ static int cmd_p(char *args) {
 			if (expr_buf == NULL) {assert(0); }
 
 			bool success = false;
-			printf("expr_buf = %s, strlen(expr_buf) = %ld\n", 
-							expr_buf, strlen(expr_buf));
+			printf("expr = %s\n", expr_buf);
 
 			word_t expr_result = expr(expr_buf, &success);
 			if (success == false) {
-				printf("expr() failed\n");
+				printf("Calculate \"expr = %s\" failed\n", expr_buf);
 				assert(0);
 			}
 
