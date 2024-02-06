@@ -146,7 +146,7 @@ static int cmd_w(char *args) {
 	}
 	strcpy(wp->expr, args);
 	wp->val = expr_result;
-	printf("Watchpoint %d: %s, value = %u\n", wp->NO, wp->expr, wp->val);
+	printf("Watchpoint %d: %s, value = %ux\n", wp->NO, wp->expr, wp->val);
 	
 	return 0;
 }
