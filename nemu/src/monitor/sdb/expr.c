@@ -82,7 +82,8 @@ static struct rule {
 	{"[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
-	{"\\$pc", TK_PC},
+	//{"\\$pc", TK_PC},
+	{"[$pc]{1}", TK_PC},
 	/* end */
 };
 
