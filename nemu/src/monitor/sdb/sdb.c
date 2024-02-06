@@ -134,14 +134,14 @@ static int cmd_w(char *args) {
 	WP *wp = new_wp();
 	if (wp == NULL) {
 		printf("cmd_w(): cannot get a new watchpoint\n");
-		assert(0);
+		return 0;
 	}
 	strcpy(wp->expr, args);
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
 		printf("cmd_w() : expr() failed.\n");
-		assert(0);
+		return 0;
 	}
 	wp->val = expr_result;
 	printf("Watchpoint %d: %s, value = %u\n", wp->NO, wp->expr, wp->val);
