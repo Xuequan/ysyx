@@ -45,7 +45,9 @@ static char* rl_gets() {
   return line_read;
 }
 
+/* should stop at breakpoints if has */
 static int cmd_c(char *args) {
+	// -1 transfer to a big uint64_t number
   cpu_exec(-1);
   return 0;
 }
@@ -59,6 +61,7 @@ static int cmd_q(char *args) {
 static int cmd_help(char *args);
 
 /* chuan, start*/
+/* should stop at breakpoints if has */
 static int cmd_si(char *args) {
 	/* chuan, if no number, set 1 */
 	if (args == NULL) 
@@ -137,11 +140,11 @@ static int cmd_w(char *args) {
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
-		printf("cmd_w : expr() failed.\n");
+		printf("cmd_w() : expr() failed.\n");
 		assert(0);
 	}
 	wp->val = expr_result;
-	printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
+	printf("Watchpoint %d: %s, value = %u\n", wp->NO, wp->expr, wp->val);
 	
 	return 0;
 }

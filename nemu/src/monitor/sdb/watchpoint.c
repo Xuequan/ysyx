@@ -148,6 +148,7 @@ void free_wp(int num) {
 }
 
 /* scan watchpoint and see if the expr value change */
+/* trace_and_difftest(0 cpu/cpu-exec.c call this function */
 void scan_wp_pool() {
   WP* ptr = head;
   word_t now_result;
@@ -155,7 +156,7 @@ void scan_wp_pool() {
   for( ;ptr != NULL; ptr = ptr->next) {
     now_result = expr(ptr->expr, &success);
     if (success == false) {
-      printf("trace_and_difftest(): expr() error\n");
+      printf("scan_wp_pool(): eval expr() error\n");
       assert(0);
     }
     if (now_result != ptr->val) {

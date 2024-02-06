@@ -302,6 +302,7 @@ static word_t eval (int p, int q) {
 		 */
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
+			/* After discard the pair parentheses */
 		op = find_main_op(p, q);
 		//printf("eval(%d, %d), main op = %d\n", p, q, op);
 		if (tokens[op].type == TK_DEREF) {
