@@ -41,6 +41,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 	}	
 	if (i == NR_REGS){
 		*success = false;
+		return 0;
 	} else {
 		*success = true;
 	}
