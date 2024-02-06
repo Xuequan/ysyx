@@ -180,6 +180,6 @@ void print_wp() {
 	for ( ;ptr != NULL; ptr = ptr->next) {
 		// Num Type Disp Enb Address What
 		printf("%-3d %-10s %-4s %-3s %-10s %-6s\n", 
-			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, "val");
+			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, ptr->expr);
 	}	
 } // end function
