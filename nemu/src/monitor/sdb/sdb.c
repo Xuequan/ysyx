@@ -206,7 +206,7 @@ static int cmd_px(char *args) {
 	if (success == false) {
 		printf("cmd_px(): cannot recognize \"%s\".\n", args);
 	} else {
-		printf("%x\n", expr_result);
+		printf("%#x\n", expr_result);
 	}
 	return 0;
 }
