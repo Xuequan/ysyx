@@ -191,11 +191,22 @@ static int cmd_p(char *args) {
 			bool success = false;
 			word_t expr_result = expr(args, &success); 
 			if (success == false) {
-				printf("cmd_p : expr() failed.\n");
-				//assert(0);
+				printf("cmd_p(): cannot recognize \"%s\".\n", args);
+				return 0;
 			} else {
 				printf("%u\n", expr_result);
 			}
+	}
+	return 0;
+}
+
+static int cmd_px(char *args) {
+	bool success = false;
+	word_t expr_result = expr(args, &success); 
+	if (success == false) {
+		printf("cmd_px(): cannot recognize \"%s\".\n", args);
+	} else {
+		printf("%x\n", expr_result);
 	}
 	return 0;
 }
@@ -220,6 +231,7 @@ static struct {
 	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r'", cmd_info},
 	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
 	{"p", "Print value of expression", cmd_p},
+	{"p/x", "Print value of expression in hexadecimal fomat", cmd_px},
 	{"w", "Set watchpoint, eg 'w *0x80000000'", cmd_w},
 	{"d", "Delete watchpoint, eg 'd N'", cmd_d},
 };
