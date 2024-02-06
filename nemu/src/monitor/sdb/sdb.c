@@ -128,21 +128,22 @@ static int cmd_x(char *args) {
 
 static int cmd_w(char *args) {
 	if (args == NULL) {
-		printf("Please input arguments, for example, 'w 0x80000000'\n");
+		printf("Please input arguments, for example, 'w *0x80000000'\n");
 		return 0;
 	}
+	bool success = false;
+	word_t expr_result = expr(args, &success); 
+	if (success == false) {
+		printf("cmd_w() : cannot recognize %s.\n", args);
+		return 0;
+	}
+
 	WP *wp = new_wp();
 	if (wp == NULL) {
 		printf("cmd_w(): cannot get a new watchpoint\n");
 		return 0;
 	}
 	strcpy(wp->expr, args);
-	bool success = false;
-	word_t expr_result = expr(args, &success); 
-	if (success == false) {
-		printf("cmd_w() : expr() failed.\n");
-		return 0;
-	}
 	wp->val = expr_result;
 	printf("Watchpoint %d: %s, value = %u\n", wp->NO, wp->expr, wp->val);
 	
