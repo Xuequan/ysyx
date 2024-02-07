@@ -265,11 +265,13 @@ static void assign_tokens_type(int type, int *index) {
 } // end function
 
 static void print_tokens(int length) {
+	printf("=======================\n");
 	printf("print_tokens, total %d tokens : \n", length);
 
 	for(int i = 0; i < length; i++) {
 		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
 	}
+	printf("=======================\n");
 }
 
 word_t expr(char *e, bool *success) {
