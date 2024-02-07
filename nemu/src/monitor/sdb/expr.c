@@ -24,11 +24,14 @@
 #include <math.h>
 #include <memory/vaddr.h>
 
+word_t expr(char *e, bool *success);
+void init_regex();
+static bool make_token(char *e);
 static word_t eval(int p, int q); 
 static int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
 static void assign_tokens_type(int type, int *index);
-static void transfer_tokens(int tokens_length);
+static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
 //static void print_tokens(int nr_token);
 
@@ -57,6 +60,7 @@ enum {
 	TK_PC,      // only for $PC
 };
 
+/* Attention: NO reguler rules for TK_DEFER & TK_NEGVAL */
 static struct rule {
   const char *regex;
   int token_type;
@@ -115,6 +119,11 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+/* get the tokens from input expr
+** 1. scan input expr, try all rules one by one;
+** 2. when recognized, skip TK_NEWLINE & TK_NOTYPE, and copy it to tokens[];
+** 3. After having recognized all tokens, check whether if TK_DEFER & TK_NEGVAL;
+*/
 static bool make_token(char *e) {
   int position = 0;
   int i = 0;
@@ -144,7 +153,8 @@ static bool make_token(char *e) {
 				tokens[nr_token].str[substr_len] = '\0';	
 				printf("%d tokens.str = %s\n", i, tokens[nr_token].str);
 
-				/* assign the new type to token.type */
+				/* assign the new type to token.type 
+				 * skip TK_NOTYPE and TK_NEWLINE */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 				nr_token++;
         break;  // jump out from "for", not "while"
@@ -160,12 +170,13 @@ static bool make_token(char *e) {
 	/* nr_token is the last index of tokens[]
 	** not the length of tokens[] */
 	nr_token -= 1;
-	// 初步整理
-	transfer_tokens(nr_token + 1);
+	// check if TK_DEFER & TK_NEGVAL
+	check_tokens_type(nr_token + 1);
 	//print_tokens(nr_token + 1);
   return true;
 }
 
+/* help to check if tokens' type is TK_NEGVAL or TK_DEREF */
 static bool is_certain_type(int type) {
 	return type == TK_MUL ||
 				 type == TK_SUB ||
@@ -177,54 +188,11 @@ static bool is_certain_type(int type) {
 				 type == TK_LOG_AND;
 }
 
-/* handle TK_REG, TK_PC, TK_DEREF, TK_NEGVAL */ 
-/*
-static void transfer_tokens(int tokens_length) {
-	word_t reg_val = 0;
-	bool success = false;
-	int i = 0;
-	
-	for(; i < tokens_length; i++) {
-		if (tokens[i].type == TK_REG) {
-			reg_val = isa_reg_str2val(tokens[i].str, &success);
-			if (success == false) {
-				printf("isa_reg_str2val() falied\n");
-				assert(0);
-			}
-			memcpy(tokens[i].str, &reg_val, sizeof(word_t));
-			tokens[i].str[sizeof(word_t)] = '\0';
-		} 
-	}
-		
-	// only for 'w $pc == address' breakpoint
-	for(i = 0; i < tokens_length; i++) {
-		if (tokens[i].type == TK_PC) {
-			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
-			tokens[i].str[sizeof(cpu.pc)] = '\0';
-		} 
-	} 
-
-	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
-	for ( i = 0; i < tokens_length; i++) {
-		if (tokens[i].type == TK_MUL && 
-			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
-			tokens[i].type = TK_DEREF;
-		}
-	} 
-				
-	// check for negative number
-	for ( i = 0; i < tokens_length; i++) {
-		if (tokens[i].type == TK_SUB && 
-			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
-			tokens[i].type = TK_NEGVAL;
-		}
-	} 
-} // end function
-*/
-
-/* handle TK_REG, TK_PC, TK_DEREF, TK_NEGVAL
+/* handle TK_REG, TK_PC, TK_SUB, TK_MUL 
+** for TK_REG & TK_PC, get its value and copy to token.str
+** for TK_MUL& TK_SUB, check if token is TK_DEFER, TK_NEGVAL
 */ 
-static void transfer_tokens(int tokens_length) {
+static void check_tokens_type(int tokens_length) {
 	word_t reg_val = 0;
 	bool success = false;
 	int i = 0;
@@ -241,7 +209,6 @@ static void transfer_tokens(int tokens_length) {
 		} 
 	}
 		
-	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
@@ -265,6 +232,7 @@ static void transfer_tokens(int tokens_length) {
 		}
 	} 
 } // end function
+
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
 ** delete TK_NOTYPE, TK_NEWLINE
