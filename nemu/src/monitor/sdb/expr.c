@@ -144,10 +144,10 @@ static bool make_token(char *e) {
 				tokens[nr_token].str[substr_len] = '\0';	
 				printf("%d tokens.str = %s\n", i, tokens[nr_token].str);
 
-				/* copy the new token to token.type */
+				/* assign the new type to token.type */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 				nr_token++;
-        break;  // jump from "for", not "while"
+        break;  // jump out from "for", not "while"
       } // end if (regexec(&re[i]...) 
     } // end for ( ; i < NR_REGEX; ...)
 
@@ -157,7 +157,8 @@ static bool make_token(char *e) {
     }
   }//end while
 
-	// nr_token is the last index of tokens[]
+	/* nr_token is the last index of tokens[]
+	** not the length of tokens[] */
 	nr_token -= 1;
 	// 初步整理
 	transfer_tokens(nr_token + 1);
@@ -175,6 +176,51 @@ static bool is_certain_type(int type) {
 				 type == TK_LESS_EQ ||
 				 type == TK_LOG_AND;
 }
+
+/* handle TK_REG, TK_PC, TK_DEREF, TK_NEGVAL */ 
+/*
+static void transfer_tokens(int tokens_length) {
+	word_t reg_val = 0;
+	bool success = false;
+	int i = 0;
+	
+	for(; i < tokens_length; i++) {
+		if (tokens[i].type == TK_REG) {
+			reg_val = isa_reg_str2val(tokens[i].str, &success);
+			if (success == false) {
+				printf("isa_reg_str2val() falied\n");
+				assert(0);
+			}
+			memcpy(tokens[i].str, &reg_val, sizeof(word_t));
+			tokens[i].str[sizeof(word_t)] = '\0';
+		} 
+	}
+		
+	// only for 'w $pc == address' breakpoint
+	for(i = 0; i < tokens_length; i++) {
+		if (tokens[i].type == TK_PC) {
+			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
+			tokens[i].str[sizeof(cpu.pc)] = '\0';
+		} 
+	} 
+
+	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
+	for ( i = 0; i < tokens_length; i++) {
+		if (tokens[i].type == TK_MUL && 
+			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
+			tokens[i].type = TK_DEREF;
+		}
+	} 
+				
+	// check for negative number
+	for ( i = 0; i < tokens_length; i++) {
+		if (tokens[i].type == TK_SUB && 
+			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
+			tokens[i].type = TK_NEGVAL;
+		}
+	} 
+} // end function
+*/
 
 /* handle TK_REG, TK_PC, TK_DEREF, TK_NEGVAL
 */ 
@@ -219,9 +265,9 @@ static void transfer_tokens(int tokens_length) {
 		}
 	} 
 } // end function
-
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
+** delete TK_NOTYPE, TK_NEWLINE
 */ 
 static void assign_tokens_type(int type, int *index) {
 	switch (type) {
@@ -231,7 +277,6 @@ static void assign_tokens_type(int type, int *index) {
 				(*index)--;
 				break;				
 			}
-
 		case TK_PLUS:   case TK_EQ: 	case TK_VAL: 	
 		case TK_SUB:    case TK_MUL:  case TK_DIV: 
 		case TK_OPAREN: case TK_CPAREN:
@@ -242,7 +287,6 @@ static void assign_tokens_type(int type, int *index) {
 				tokens[*index].type = type;  
 				break;
 			}
-					
 		default: 
 			{ printf("make_token(): unknown token_type \"%d\"\n", 
 														type);
