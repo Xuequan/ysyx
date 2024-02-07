@@ -55,7 +55,6 @@ enum {
 	TK_LESS_EQ,  // 270
 	TK_LOG_AND,						
 	TK_PC,      // only for $PC
-	TK_TEST,
 };
 
 static struct rule {
@@ -80,11 +79,10 @@ static struct rule {
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
+	{"\\$[pP][cC]", TK_PC},						 // $pc, should before TK_REG
 	{"[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0
-	{"\\$pc", TK_PC},						 // $pc, should before TK_REG
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
-	{"\\$", TK_TEST},
 	/* end */
 };
 
@@ -235,7 +233,7 @@ static void assign_tokens_type(int type, int *index) {
 		case TK_OPAREN: case TK_CPAREN:
     case TK_HEX:		case TK_REG:
 		case TK_LESS_EQ: case TK_LOG_AND:
-		case TK_PC:			 case TK_TEST:
+		case TK_PC:			 
 			{ 
 				tokens[*index].type = type;  
 				break;
