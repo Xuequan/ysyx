@@ -147,7 +147,7 @@ static bool make_token(char *e) {
 				/* copy the new token to token.type */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 				nr_token++;
-        break;
+        break;  // jump from "for", not "while"
       } // end if (regexec(&re[i]...) 
     } // end for ( ; i < NR_REGEX; ...)
 
@@ -156,6 +156,7 @@ static bool make_token(char *e) {
       return false;
     }
   }//end while
+
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
 	// 初步整理
