@@ -83,8 +83,8 @@ void gen_num(void) {
 	//int num = 0;
 	//srand((unsigned) time(&t));
 
-	uint32_t num = (uint32_t)(rand() % 100);
-	//uint32_t num = (uint32_t)rand();
+	//uint32_t num = (uint32_t)(rand() % 100);
+	uint32_t num = (uint32_t)rand();
 
 	// add a num to the tail of buf[65535]
 	/*
@@ -317,10 +317,6 @@ int find_expr(int j, int length) {
 }
 
 int main(int argc, char *argv[]) {
-
-	//div_by_zero = 0;  // global var
-	//buf_overflow = 0;
-
 	int *deep = (int *)malloc(sizeof(int *));
 
   int seed = time(0);
@@ -366,159 +362,3 @@ int main(int argc, char *argv[]) {
 	free(deep);
   return 0;
 }
-
-/* if expr (buf[p, q]) == 0, return true */ 
-/*
-bool check_div_by_zero(uint32_t p, uint32_t q) {
-	printf("check_div_by_zero(%d, %d), length = %d\n", p, q, buf_length() );
-	return eval_expr(p, q) == 0;
-}
-*/
-
-/* eval_expr(p, q) refer to eval(p, q) which is locate
-** in nemu/src/monitor/sdb/expr.c.
-*/
-/*
-uint32_t eval_expr(uint32_t p, uint32_t q) {
-	int op = 0;
-	uint32_t val1 = 0;
-	uint32_t val2 = 0;
-	
-	uint32_t *expr_val = NULL;
-	
-	printf("eval_expr(%d, %d), length = %d\n", p, q, buf_length() );
-
-	if (p > q) {
-		printf("eval_expr(): bad expression\n");
-		assert(0);
-	} else if (p == q) {
-		printf("eval_expr(%d, %d) return %d\n", p, q, atoi(buf+p));
-		return (uint32_t)(atoi(buf+p));
-	} else {
-		op = find_main_op2(p, q, expr_val);
-		printf("find_main_op2(%d, %d), op = %d\n", p, q, op);
-
-		if ( op == -1) 
-			return *expr_val;
-
-		val1 = eval_expr(p, op - 1);
-		val2 = eval_expr(op + 1, q);
-		
-		switch (buf[op]) {
-			case '+': return val1 + val2;
-			case '-': return val1 - val2;
-			case '*': return val1 * val2;
-			case '/': return val1 / val2;
-			default: 
-				assert(0);
-		} // end switch
-	} // end if-else-if
-
-}
-*/
-/*
-int find_main_op2(uint32_t p, uint32_t q, int *expr_val) {
-  int i = 0;
-  int cnt = 0;
-  int index[q - p];
-
-  // find the operators between buf[p, q]
-  for(i = p; i <= q; i++) {
-		if (buf[i] == '+' || buf[i] == '-' ||
-				buf[i] == '*' || buf[i] == '/') {
-				index[cnt] = i;
-				cnt++;
-		} 
-  }//end for
-
-
-  // figure out which is the main operator
-	if (cnt == 0) { // buf[p-q] has no op, so is a num
-		for(int k = p; k <= q; k++) {
-			if (buf[k] != '(' && buf[k] != ')') {
-				*expr_val = atoi(buf + k);
-				return -1;
-			}
-		}
-	}
-		
-	expr_val = NULL;	
-
-  int mul_div_index = 0;
-  int plus_sub_index = 0;
-  if (cnt == 1) {
-    return index[0];
-  } else {
-    for ( i = 0; i < cnt; i++) {
-			if (buf[index[i]] == '+' || buf[index[i]] == '-') {
-        plus_sub_index = index[i];
-			} else {
-        mul_div_index = index[i];
-      }
-				
-    }//end for
-  }// end if-else
-
-  if (plus_sub_index != 0) {
-    return plus_sub_index;
-  } else {
-    return mul_div_index;
-  }
-
-} // end function
-*/	
-/* 
-** check if the parentheses in the expr is legal 
-** p and q is the index of tokens[]
-**
-** if argument option = 1, then 
-**    the expr should be surrounded by a matched parentheses
-** else argument option = 0, then
-**    the expr no need surrounded by a matched parentheses 
-*/
-/*
-static bool check_parentheses(int p, int q, int option) {
-  printf("check_parentheses(%d,%d,%d)\n", p, q, option);
-  int ii = p;
-  int jj = q;
-
-  if (p == q) {
-    //printf("This is a number.\n");
-    return true;
-  }
-
-  if (option == 1) {
-		if (buf[p] != '(' || buf[q] != ')') {
-    //if (tokens[p].type != TK_OPAREN || tokens[q].type != TK_CPAREN) {
-      //printf("Leftmost '(' and rightmost ')' are not matched.\n");
-      return false;
-    }
-  }
-
-  for(; p <= q; p++) {
-		switch(buf[p]) {
-			case '(': push('('); break;
-			case ')': 
-				if (is_empty() || top() != '(') {
-          printf("check_paren(%d, %d): bad expression\n", ii, jj);
-          destroy_stack();
-          return false;
-        }
-				pop();
-				break;
-			default:;
-		} // end switch
-	} // end for
-
-
-	if ( !is_empty() ) {
-		print_stack("not empty");
-		destroy_stack();
-		printf("check_paren2(%d, %d): bad expression\n", ii, jj);
-		return false;
-	}
-  destroy_stack();
-  return true;
-}//end function
-*/
-

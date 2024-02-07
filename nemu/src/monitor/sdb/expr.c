@@ -141,7 +141,7 @@ static bool make_token(char *e) {
 				/* copy the new token to a token.str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
-				printf("%d tokens.str = %s\n", i, tokens[nr_token].str);
+				//printf("%d tokens.str = %s\n", i, tokens[nr_token].str);
 				/* copy the new token to a token.type */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 				nr_token++;
