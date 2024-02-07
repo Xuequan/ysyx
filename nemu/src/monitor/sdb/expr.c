@@ -33,7 +33,7 @@ static bool check_parentheses(int p, int q, int option);
 static void assign_tokens_type(int type, int *index);
 static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
-//static void print_tokens(int nr_token);
+static void print_tokens(int nr_token);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -172,7 +172,8 @@ static bool make_token(char *e) {
 	nr_token -= 1;
 	// check if TK_DEFER & TK_NEGVAL
 	check_tokens_type(nr_token + 1);
-	//print_tokens(nr_token + 1);
+
+	print_tokens(nr_token + 1);
   return true;
 }
 
@@ -264,7 +265,6 @@ static void assign_tokens_type(int type, int *index) {
 	} //end switch
 } // end function
 
-/*
 static void print_tokens(int length) {
 	printf("print_tokens : \n");
 
@@ -272,7 +272,6 @@ static void print_tokens(int length) {
 		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
 	}
 }
-*/
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
