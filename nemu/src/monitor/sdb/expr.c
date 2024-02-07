@@ -265,7 +265,7 @@ static void assign_tokens_type(int type, int *index) {
 } // end function
 
 static void print_tokens(int length) {
-	printf("print_tokens : \n");
+	printf("print_tokens, total %d tokens : \n", length);
 
 	for(int i = 0; i < length; i++) {
 		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
@@ -305,6 +305,10 @@ static word_t eval (int p, int q) {
 				tokens[p].type == TK_REG) {
 			return *(word_t *)tokens[p].str;
 		} else if (tokens[p].type == TK_HEX){
+
+			long temp = strtol(tokens[p].str, NULL, 16);
+			printf("tokens[p].str = %s, value = %ld\n", tokens[p].str, temp);
+			
 			return (word_t)strtol(tokens[p].str, NULL, 16);
 		} else {
 			return (word_t)atoi(tokens[p].str);
