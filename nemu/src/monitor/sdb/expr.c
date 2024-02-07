@@ -139,11 +139,12 @@ static bool make_token(char *e) {
 					printf("token is too long.\n");
 					assert(0);
 				}
-				/* copy the new token to a token.str */
+				/* copy the new token to token.str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
-				//printf("%d tokens.str = %s\n", i, tokens[nr_token].str);
-				/* copy the new token to a token.type */
+				printf("%d tokens.str = %s\n", i, tokens[nr_token].str);
+
+				/* copy the new token to token.type */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 				nr_token++;
         break;
@@ -157,6 +158,7 @@ static bool make_token(char *e) {
   }//end while
 	// nr_token is the last index of tokens[]
 	nr_token -= 1;
+	// 初步整理
 	transfer_tokens(nr_token + 1);
 	//print_tokens(nr_token + 1);
   return true;
@@ -369,7 +371,6 @@ static word_t eval (int p, int q) {
 ** Do not support *variable!!!
 */
 static word_t get_mem_val(word_t address) {
-	// this maybe wrong!!!
 	return vaddr_read(address, sizeof(word_t));;
 } 
 
