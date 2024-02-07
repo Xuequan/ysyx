@@ -307,7 +307,9 @@ static word_t eval (int p, int q) {
 		} else if (tokens[p].type == TK_HEX){
 
 			long temp = strtol(tokens[p].str, NULL, 16);
-			printf("tokens[p].str = %s, value = %ld, val = %u\n", tokens[p].str, temp, (word_t)temp);
+			if (temp != 0 && ((word_t)temp == 0)) {
+				printf("eval(): value %ld overflow.\n", temp);
+			}
 			
 			return (word_t)strtol(tokens[p].str, NULL, 16);
 		} else {
