@@ -75,7 +75,8 @@ static struct rule {
   {"==", TK_EQ},        			// equal
 
 	/* chuan start */
-	{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	//{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	{"0[xX][0-9a-fA-F]+", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_SUB},          // minus
 	{"\\*", TK_MUL},					  // mul
@@ -151,8 +152,6 @@ static bool make_token(char *e) {
 				/* copy the new token to token.str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
-				printf("%d tokens.str = %s\n", i, tokens[nr_token].str);
-
 				/* assign the new type to token.type 
 				 * skip TK_NOTYPE and TK_NEWLINE */
 				assign_tokens_type(rules[i].token_type, &nr_token);
