@@ -79,9 +79,8 @@ static struct rule {
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
-	{"[$][p][c]", TK_PC},     // $pc
-	//{"\\$pc", TK_PC},
 	{"[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0
+	{"\\$pc", TK_PC},						 // $pc, should before TK_REG
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
 	/* end */
