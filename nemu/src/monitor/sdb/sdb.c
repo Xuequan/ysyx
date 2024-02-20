@@ -45,7 +45,9 @@ static char* rl_gets() {
   return line_read;
 }
 
+/* should stop at breakpoints if has */
 static int cmd_c(char *args) {
+	// -1 transfer to a big uint64_t number
   cpu_exec(-1);
   return 0;
 }
@@ -59,6 +61,7 @@ static int cmd_q(char *args) {
 static int cmd_help(char *args);
 
 /* chuan, start*/
+/* should stop at breakpoints if has */
 static int cmd_si(char *args) {
 	/* chuan, if no number, set 1 */
 	if (args == NULL) 
@@ -125,23 +128,25 @@ static int cmd_x(char *args) {
 
 static int cmd_w(char *args) {
 	if (args == NULL) {
-		printf("Please input arguments, for example, 'w 0x80000000'\n");
+		printf("Please input arguments, for example, 'w *0x80000000'\n");
 		return 0;
 	}
-	WP *wp = new_wp();
-	if (wp == NULL) {
-		printf("cmd_w(): cannot get a new watchpoint\n");
-		assert(0);
-	}
-	strcpy(wp->expr, args);
+	// check if input args is valid 
 	bool success = false;
 	word_t expr_result = expr(args, &success); 
 	if (success == false) {
-		printf("cmd_w : expr() failed.\n");
-		assert(0);
+		printf("cmd_w() : cannot recognize \"%s\".\n", args);
+		return 0;
 	}
+
+	WP *wp = new_wp();
+	if (wp == NULL) {
+		printf("cmd_w(): cannot get a new watchpoint\n");
+		return 0;
+	}
+	strcpy(wp->expr, args);
 	wp->val = expr_result;
-	printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
+	printf("Watchpoint %d: %s, value = %u\n", wp->NO, wp->expr, wp->val);
 	
 	return 0;
 }
@@ -165,12 +170,11 @@ static int cmd_p(char *args) {
 			if (expr_buf == NULL) {assert(0); }
 
 			bool success = false;
-			printf("expr_buf = %s, strlen(expr_buf) = %ld\n", 
-							expr_buf, strlen(expr_buf));
+			printf("expr = %s\n", expr_buf);
 
 			word_t expr_result = expr(expr_buf, &success);
 			if (success == false) {
-				printf("expr() failed\n");
+				printf("Calculate \"expr = %s\" failed\n", expr_buf);
 				assert(0);
 			}
 
@@ -186,11 +190,23 @@ static int cmd_p(char *args) {
 			bool success = false;
 			word_t expr_result = expr(args, &success); 
 			if (success == false) {
-				printf("cmd_p : expr() failed.\n");
-				//assert(0);
+				printf("cmd_p(): cannot recognize \"%s\".\n", args);
+				return 0;
 			} else {
 				printf("%u\n", expr_result);
 			}
+	}
+	return 0;
+}
+
+/* just a copy of cmd_p() */
+static int cmd_px(char *args) {
+	bool success = false;
+	word_t expr_result = expr(args, &success); 
+	if (success == false) {
+		printf("cmd_px(): cannot recognize \"%s\".\n", args);
+	} else {
+		printf("%#x\n", expr_result);
 	}
 	return 0;
 }
@@ -215,7 +231,8 @@ static struct {
 	{"info", "Show all register information or watchpoints, now only 'info w' and 'into r'", cmd_info},
 	{"x", "Show memory content, fromat 'x N EXPR'", cmd_x},
 	{"p", "Print value of expression", cmd_p},
-	{"w", "Set watchpoint, eg 'w 0x800000000'", cmd_w},
+	{"p/x", "Print value of expression in hexadecimal fomat", cmd_px},
+	{"w", "Set watchpoint, eg 'w *0x80000000'", cmd_w},
 	{"d", "Delete watchpoint, eg 'd N'", cmd_d},
 };
 

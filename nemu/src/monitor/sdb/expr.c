@@ -24,13 +24,16 @@
 #include <math.h>
 #include <memory/vaddr.h>
 
+word_t expr(char *e, bool *success);
+void init_regex();
+static bool make_token(char *e);
 static word_t eval(int p, int q); 
 static int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q, int option);
 static void assign_tokens_type(int type, int *index);
-static void transfer_tokens(int tokens_length);
-//static void print_tokens(int nr_token);
+static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
+static void print_tokens(int nr_token);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -44,7 +47,7 @@ enum {
 	TK_OPAREN, // open parenthesis 263
 	TK_CPAREN, // close parenthesis
 	TK_NEWLINE, 
-	TK_REG,   // register, like x0-x31  266
+	TK_REG,
 	TK_HEX,		// hexadecimal-number, like 0x, 0X
 
 	/* now only support *address, not support *variable 
@@ -57,6 +60,7 @@ enum {
 	TK_PC,      // only for $PC
 };
 
+/* Attention: NO reguler rules for TK_DEFER & TK_NEGVAL */
 static struct rule {
   const char *regex;
   int token_type;
@@ -71,7 +75,8 @@ static struct rule {
   {"==", TK_EQ},        			// equal
 
 	/* chuan start */
-	{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	//{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
+	{"0[xX][0-9a-fA-F]+", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_SUB},          // minus
 	{"\\*", TK_MUL},					  // mul
@@ -79,10 +84,10 @@ static struct rule {
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
-	{"x[0-9]{1,2}", TK_REG},     // register, eg, x0-x31
+	{"\\$[pP][cC]", TK_PC},						 // $pc, should before TK_REG
+	{"[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
-	{"\\$pc", TK_PC},
 	/* end */
 };
 
@@ -115,6 +120,11 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+/* get the tokens from input expr
+** 1. scan input expr, try all rules one by one;
+** 2. when recognized, skip TK_NEWLINE & TK_NOTYPE, and copy it to tokens[];
+** 3. After having recognized all tokens, check whether if TK_DEFER & TK_NEGVAL;
+*/
 static bool make_token(char *e) {
   int position = 0;
   int i = 0;
@@ -126,9 +136,10 @@ static bool make_token(char *e) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
-
+		/*
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        i, rules[i].regex, position, substr_len, substr_len, substr_start);
+		*/
         position += substr_len;
         /* TODO: Now a new token is recognized with rules[i]. Add codes
          * to record the token in the array `tokens'. For certain types
@@ -138,13 +149,14 @@ static bool make_token(char *e) {
 					printf("token is too long.\n");
 					assert(0);
 				}
-				/* copy the new token to a token.str */
+				/* copy the new token to token.str */
 				strncpy(tokens[nr_token].str, substr_start, (size_t) substr_len);
 				tokens[nr_token].str[substr_len] = '\0';	
-				/* copy the new token to a token.type */
+				/* assign the new type to token.type 
+				 * skip TK_NOTYPE and TK_NEWLINE */
 				assign_tokens_type(rules[i].token_type, &nr_token);
 				nr_token++;
-        break;
+        break;  // jump out from "for", not "while"
       } // end if (regexec(&re[i]...) 
     } // end for ( ; i < NR_REGEX; ...)
 
@@ -153,13 +165,18 @@ static bool make_token(char *e) {
       return false;
     }
   }//end while
-	// nr_token is the last index of tokens[]
+
+	/* nr_token is the last index of tokens[]
+	** not the length of tokens[] */
 	nr_token -= 1;
-	transfer_tokens(nr_token + 1);
-	//print_tokens(nr_token + 1);
+	// check if TK_DEFER & TK_NEGVAL
+	check_tokens_type(nr_token + 1);
+
+	print_tokens(nr_token + 1);
   return true;
 }
 
+/* help to check if tokens' type is TK_NEGVAL or TK_DEREF */
 static bool is_certain_type(int type) {
 	return type == TK_MUL ||
 				 type == TK_SUB ||
@@ -171,16 +188,17 @@ static bool is_certain_type(int type) {
 				 type == TK_LOG_AND;
 }
 
-/* handle TK_REG, TK_PC, TK_DEREF, TK_NEGVAL
+/* handle TK_REG, TK_PC, TK_SUB, TK_MUL 
+** for TK_REG & TK_PC, get its value and copy to token.str
+** for TK_MUL& TK_SUB, check if token is TK_DEFER, TK_NEGVAL
 */ 
-static void transfer_tokens(int tokens_length) {
+static void check_tokens_type(int tokens_length) {
 	word_t reg_val = 0;
 	bool success = false;
 	int i = 0;
 	
 	for(; i < tokens_length; i++) {
 		if (tokens[i].type == TK_REG) {
-			//tokens[i].type = TK_VAL;  // transfer register to number
 			reg_val = isa_reg_str2val(tokens[i].str, &success);
 			if (success == false) {
 				printf("isa_reg_str2val() falied\n");
@@ -191,7 +209,6 @@ static void transfer_tokens(int tokens_length) {
 		} 
 	}
 		
-	// only for 'w $pc == address' breakpoint
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
@@ -218,6 +235,7 @@ static void transfer_tokens(int tokens_length) {
 
 /* choose rules[].token_type and 
 ** assign it to tokens[].type
+** delete TK_NOTYPE, TK_NEWLINE
 */ 
 static void assign_tokens_type(int type, int *index) {
 	switch (type) {
@@ -227,18 +245,16 @@ static void assign_tokens_type(int type, int *index) {
 				(*index)--;
 				break;				
 			}
-
 		case TK_PLUS:   case TK_EQ: 	case TK_VAL: 	
 		case TK_SUB:    case TK_MUL:  case TK_DIV: 
 		case TK_OPAREN: case TK_CPAREN:
     case TK_HEX:		case TK_REG:
 		case TK_LESS_EQ: case TK_LOG_AND:
-		case TK_PC:
+		case TK_PC:			 
 			{ 
 				tokens[*index].type = type;  
 				break;
 			}
-					
 		default: 
 			{ printf("make_token(): unknown token_type \"%d\"\n", 
 														type);
@@ -248,15 +264,15 @@ static void assign_tokens_type(int type, int *index) {
 	} //end switch
 } // end function
 
-/*
 static void print_tokens(int length) {
-	printf("print_tokens : \n");
+	printf("=======================\n");
+	printf("print_tokens, total %d tokens : \n", length);
 
 	for(int i = 0; i < length; i++) {
 		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
 	}
+	printf("=======================\n");
 }
-*/
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -291,6 +307,12 @@ static word_t eval (int p, int q) {
 				tokens[p].type == TK_REG) {
 			return *(word_t *)tokens[p].str;
 		} else if (tokens[p].type == TK_HEX){
+
+			long temp = strtol(tokens[p].str, NULL, 16);
+			if (temp != 0 && ((word_t)temp == 0)) {
+				printf("eval(): value %ld overflow.\n", temp);
+			}
+			
 			return (word_t)strtol(tokens[p].str, NULL, 16);
 		} else {
 			return (word_t)atoi(tokens[p].str);
@@ -302,6 +324,7 @@ static word_t eval (int p, int q) {
 		 */
 		return eval(p + 1, q - 1);
 	} else if (check_parentheses(p, q, 0) == true) {
+			/* After discard the pair parentheses */
 		op = find_main_op(p, q);
 		//printf("eval(%d, %d), main op = %d\n", p, q, op);
 		if (tokens[op].type == TK_DEREF) {
@@ -367,7 +390,6 @@ static word_t eval (int p, int q) {
 ** Do not support *variable!!!
 */
 static word_t get_mem_val(word_t address) {
-	// this maybe wrong!!!
 	return vaddr_read(address, sizeof(word_t));;
 } 
 

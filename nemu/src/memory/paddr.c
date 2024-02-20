@@ -24,7 +24,11 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+ // 在 nemu 中运行的程序称为 "guest 程序”
+ // guest_to_host() 将 paddr 转化为 nemu 模拟的计算机地址在
+ // 本电脑上的地址
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
+	// host_to_guest() 则相反
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static word_t pmem_read(paddr_t addr, int len) {
