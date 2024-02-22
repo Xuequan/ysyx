@@ -187,12 +187,21 @@ void print_wp() {
 		printf("No watchpoints.\n");
 		return;
 	}
+	/*
 	printf("Num Type          Disp Enb Address    What  \n");
 	WP* ptr = head;
 	for ( ;ptr != NULL; ptr = ptr->next) {
 		// Num Type Disp Enb Address What
 		printf("%-3d %-10s %-4s %-3s %-10s %-6s\n", 
 			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, ptr->expr);
+	}	
+	*/
+	printf("Num Type          What  \n");
+	WP* ptr = head;
+	for ( ;ptr != NULL; ptr = ptr->next) {
+		// Num Type Disp Enb Address What
+		printf("%-3d %-6s\n", 
+			ptr->NO, ptr->expr);
 	}	
 } // end function
 
