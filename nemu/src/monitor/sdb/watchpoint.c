@@ -148,7 +148,7 @@ void free_wp(int num) {
 }
 
 /* scan watchpoint and see if the expr value change */
-/* trace_and_difftest(0 cpu/cpu-exec.c call this function */
+/* trace_and_difftest() cpu/cpu-exec.c call this function */
 void scan_wp_pool() {
   WP* ptr = head;
   word_t now_result;
