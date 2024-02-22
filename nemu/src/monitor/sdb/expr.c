@@ -117,7 +117,7 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-/* get the tokens from input expr
+/* get the tokens from input check_token_type(),expr
 ** 1. scan input expr, try all rules one by one;
 ** 2. when recognized, skip TK_NEWLINE & TK_NOTYPE, and copy it to tokens[];
 ** 3. After having recognized all tokens, check whether if TK_DEFER & TK_NEGVAL;
@@ -358,8 +358,8 @@ static word_t eval (int p, int q) {
 	} else {
 			/* After discard the pair parentheses */
 		int op = 0;
-		int val1 = 0;
-		int val2 = 0;
+		word_t val1 = 0;
+		word_t val2 = 0;
 		op = find_main_op(p, q);
 
 		printf("eval(%d, %d), main op = %d\n", p, q, op);
@@ -373,8 +373,8 @@ static word_t eval (int p, int q) {
 			return 0 - val3;
 
 		} else {
-			val1 = (int)eval(p, op - 1);
-			val2 = (int)eval(op + 1, q);
+			val1 = eval(p, op - 1);
+			val2 = eval(op + 1, q);
 		
 			switch (tokens[op].type) {
 				case TK_PLUS: 
@@ -390,7 +390,7 @@ static word_t eval (int p, int q) {
 						assert(0);
 					}
 					//printf("return val = %u\n",(word_t) val1/val2);
-					return (word_t) (val1 / val2);
+					return (val1 / val2);
 				case TK_EQ:  
 					if (val1 == val2) {
 						return 1;
@@ -421,7 +421,7 @@ static word_t eval (int p, int q) {
 ** Do not support *variable!!!
 */
 static word_t get_mem_val(word_t address) {
-	return vaddr_read(address, sizeof(word_t));;
+	return vaddr_read(address, sizeof(word_t));
 } 
 
 /* find the position of main operator
