@@ -163,7 +163,7 @@ void scan_wp_pool() {
     }
     if (now_result != ptr->val) {
       nemu_state.state = NEMU_STOP;
-      printf("Hardware watchpoint %d: %s\n", ptr->NO, ptr->expr);
+      printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
       printf("\n");
       printf("Old vaule = %d\n", ptr->val);
       printf("New value = %u\n", now_result);
@@ -171,11 +171,9 @@ void scan_wp_pool() {
     }
 		
 		/* check if reach memory address */
-		printf("========== ptr->expr+1 = %s, atoi=%ld\n", 
-			ptr->expr+1, strtol(ptr->expr+1, NULL, 16) );
 		if (cpu.pc == strtol(ptr->expr+1, NULL, 16) ) {
       nemu_state.state = NEMU_STOP;
-      printf("Hardware watchpoint %d: %s\n", ptr->NO, ptr->expr);
+      printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
       printf("\n");
 			return;
 		}	
