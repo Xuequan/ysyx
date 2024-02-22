@@ -199,7 +199,9 @@ static void check_tokens_type(int tokens_length) {
 	
 	for(; i < tokens_length; i++) {
 		if (tokens[i].type == TK_REG) {
-			reg_val = isa_reg_str2val(tokens[i].str, &success);
+			char* ptr = tokens[i].str;
+			ptr++;
+			reg_val = isa_reg_str2val(ptr, &success);
 			if (success == false) {
 				printf("isa_reg_str2val() falied\n");
 				assert(0);
