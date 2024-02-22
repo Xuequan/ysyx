@@ -195,3 +195,18 @@ void print_wp() {
 			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, ptr->expr);
 	}	
 } // end function
+
+/* check if already has a same wp 
+** return true if had 
+*/
+bool check_repeated_wp(char *args) {
+	if (head == NULL) {
+		return false;
+	}	
+	WP *ptr = head;
+	for(; ptr != NULL; ptr = ptr->next) {
+		if ( strcmp(args, ptr->expr) == 0 ) 
+			return true;
+	}
+	return false;
+}
