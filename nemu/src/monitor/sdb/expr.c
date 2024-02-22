@@ -169,10 +169,11 @@ static bool make_token(char *e) {
 	/* nr_token is the last index of tokens[]
 	** not the length of tokens[] */
 	nr_token -= 1;
+
+	print_tokens(nr_token + 1);
 	// check if TK_DEFER & TK_NEGVAL
 	check_tokens_type(nr_token + 1);
 
-	print_tokens(nr_token + 1);
   return true;
 }
 
