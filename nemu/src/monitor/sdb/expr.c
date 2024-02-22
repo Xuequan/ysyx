@@ -27,6 +27,7 @@
 word_t expr(char *e, bool *success);
 void init_regex();
 static bool make_token(char *e);
+static word_t str2num(int index);
 static word_t eval(int p, int q); 
 static int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q);
@@ -336,19 +337,6 @@ static word_t str2num(int index) {
 		default: 
 			return (word_t)atoi(tokens[index].str);
 	}
-	/*
-	if (tokens[index].type == TK_PC ||
-		tokens[index].type == TK_REG) {
-	} else if (tokens[index].type == TK_HEX){
-		long temp = strtol(tokens[index].str, NULL, 16);
-		if (temp != 0 && ((word_t)temp == 0)) {
-			printf("eval(): value %ld overflow.\n", temp);
-		}
-		return (word_t)strtol(tokens[index].str, NULL, 16);
-	} else {
-			return (word_t)atoi(tokens[index].str);
-	}
-	*/ 
 }
 
 /* only the final result will be word_t
@@ -356,9 +344,6 @@ static word_t str2num(int index) {
 */
 static word_t eval (int p, int q) {
 	printf("== eval(%d, %d)\n", p, q);
-	int op = 0;
-	int val1 = 0;
-	int val2 = 0;
 
 	if (p > q) {
 		printf("eval(): bad expression\n");
@@ -373,8 +358,13 @@ static word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else {
 			/* After discard the pair parentheses */
+		int op = 0;
+		int val1 = 0;
+		int val2 = 0;
 		op = find_main_op(p, q);
-		//printf("eval(%d, %d), main op = %d\n", p, q, op);
+
+		printf("eval(%d, %d), main op = %d\n", p, q, op);
+
 		if (tokens[op].type == TK_DEREF) {
 			word_t val3 = eval(op + 1, q);
 			return get_mem_val(val3);
