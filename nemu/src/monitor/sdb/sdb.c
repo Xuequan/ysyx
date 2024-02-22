@@ -161,30 +161,34 @@ static int cmd_p(char *args) {
 		// test use nemu/tools/gen-expr
 		FILE *fp = fopen("/home/chuan/ysyx-workbench/nemu/tools/gen-expr/input", "r");
 		assert(fp != NULL);
+
 		char buf[TEST_LENGTH] = {};
 		while(fgets(buf, TEST_LENGTH, fp) != NULL) {
 			char *buf_end = buf + strlen(buf);
-			char *test_result = strtok(buf, " ");
-			if (test_result == NULL) {
+			char *test_result_buf = strtok(buf, " ");
+			if (test_result_buf == NULL) {
 				printf("Didn't get the gen-expr result\n");
 				assert(0);
 			}
-			char *expr_buf = test_result + strlen(test_result) + 1;
+			char *expr_buf = test_result_buf + strlen(test_result_buf) + 1;
 			if (expr_buf > buf_end) { assert(0); }
-			if (expr_buf == NULL) {assert(0); }
+			if (expr_buf == NULL)   { assert(0); }
 
 			bool success = false;
 			printf("expr = %s\n", expr_buf);
-
+			
+			// 自己函数的计算结果
 			word_t expr_result = expr(expr_buf, &success);
 			if (success == false) {
 				printf("Calculate \"expr = %s\" failed\n", expr_buf);
 				assert(0);
 			}
-
-			if (expr_result != (word_t) atoi(test_result)) {
+			// test_result 是电脑计算的结果
+			word_t test_result = (word_t) atol(test_result_buf);
+			if ( expr_result != test_result ) 
+			{
 				printf("expr_result = %u, (test_result) = %u\n", 
-					expr_result, (word_t)atoi(test_result));
+														expr_result, test_result);
 				assert(0);
 			} 
 		} // end while
