@@ -85,7 +85,7 @@ static struct rule {
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
 	{"\\$[pP][cC]", TK_PC},						 // $pc, should before TK_REG
-	{"[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0
+	{"\\$[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg $t0
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
 	/* end */

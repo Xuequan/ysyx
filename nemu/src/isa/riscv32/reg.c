@@ -33,10 +33,11 @@ void isa_reg_display() {
 	
 }
 
+/*just support $reg, like $t0 */
 word_t isa_reg_str2val(const char *s, bool *success) {
 	int i = 0;
 	for( ; i < NR_REGS; i++) {
-		if (strcmp(s, regs[i]) == 0 ) 
+		if (strcmp(++s, regs[i]) == 0 ) 
 			break;
 	}	
 	if (i == NR_REGS){
