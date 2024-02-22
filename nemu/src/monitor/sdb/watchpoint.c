@@ -15,6 +15,7 @@
 
 #include "sdb.h"
 
+#include <isa.h>
 #include <utils.h>
 
 #define NR_WP 32
@@ -154,6 +155,7 @@ void scan_wp_pool() {
   word_t now_result;
   bool success = false;
   for( ;ptr != NULL; ptr = ptr->next) {
+		/* check if expr value change */
     now_result = expr(ptr->expr, &success);
     if (success == false) {
       printf("scan_wp_pool(): eval expr() error\n");
@@ -165,7 +167,17 @@ void scan_wp_pool() {
       printf("\n");
       printf("Old vaule = %d\n", ptr->val);
       printf("New value = %u\n", now_result);
+			return;
     }
+		
+		/* check if reach memory address */
+		if (cpu.pc == atoi(ptr->expr+1) ) {
+      nemu_state.state = NEMU_STOP;
+      printf("Hardware watchpoint %d: %s\n", ptr->NO, ptr->expr);
+      printf("\n");
+			return;
+		}	
+			
   }// end for (;...)
 }
 
