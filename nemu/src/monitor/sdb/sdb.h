@@ -36,6 +36,7 @@ WP* new_wp();
 void free_wp(int num);
 void scan_wp_pool();
 void print_wp();
+bool check_repeated_wp(char* args);
 
 /* end */
 

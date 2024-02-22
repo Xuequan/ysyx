@@ -138,7 +138,11 @@ static int cmd_w(char *args) {
 		printf("cmd_w() : cannot recognize \"%s\".\n", args);
 		return 0;
 	}
-
+	// check if always had a same wp
+	if (check_repeated_wp(args) == true) {
+		printf("Already have set same one.\n");
+		return 0;
+	}	
 	WP *wp = new_wp();
 	if (wp == NULL) {
 		printf("cmd_w(): cannot get a new watchpoint\n");
