@@ -50,9 +50,7 @@ enum {
 	TK_REG,
 	TK_HEX,		// hexadecimal-number, like 0x, 0X
 
-	/* now only support *address, not support *variable 
-	** so no rules[] for this 
-	*/
+	/* now only support *address, not support *variable */
 	TK_DEREF,  
 	TK_NEGVAL,  // negative value
 	TK_LESS_EQ,  // 270
@@ -76,12 +74,12 @@ static struct rule {
 
 	{"0[xX][0-9a-fA-F]+", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
-	{"\\-", TK_SUB},          // minus
+	{"\\-", TK_SUB},            // minus
 	{"\\*", TK_MUL},					  // mul
 	{"\\/", TK_DIV},					  // div
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
-	{"\\\n", TK_NEWLINE},        // newline
+	{"\\\n", TK_NEWLINE},       // newline
 	{"\\$[pP][cC]", TK_PC},			// $pc, should before TK_REG
 	{"\\$[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg $t0
 	{"<=", TK_LESS_EQ},          // <=
