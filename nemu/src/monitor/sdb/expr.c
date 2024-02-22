@@ -284,8 +284,7 @@ static char* print_help(int no) {
 		case 270: return "TK_LESS_EQ";
 		case 271: return "TK_LOG_AND";
 		case 272: return "TK_PC";
-		default:
-					return "error";
+		default:  return "error";
 	}
 }
 
@@ -318,7 +317,7 @@ word_t expr(char *e, bool *success) {
 }
 
 /* 根据tokens[index].type 的不同，
-** 用不同的方法将 tokens[].str 转化为数值
+** 对应check_token_type(),用不同的方法将 tokens[].str 转化为数值
 */
 static word_t str2num(int index) {
 	switch (tokens[index].type) {
@@ -518,7 +517,7 @@ static int find_main_op(int p, int q) {
 static bool check_paren_valid(int p, int q) {
 	assert(p <= q);
 
-	/* 遍历, 遇到“(" 则入栈；遇到“）” 则出栈 */
+	/* 遍历; 遇到“(" 则入栈；遇到“）” 则出栈 */
 	for(; p <= q; p++) {
 		switch(tokens[p].type) {
 			case TK_OPAREN: 
@@ -540,25 +539,14 @@ static bool check_paren_valid(int p, int q) {
 
 	if ( !is_empty() ) {
 		destroy_stack();
-		//printf("check_paren2(%d, %d, %d): bad expression\n", p, q, option);
 		return false;
 	}
 
 	return true;
 }
 
-/* 
-** check if the parentheses in the expr is legal 
-** p and q is the index of tokens[]
-**
-** if argument option = 1, then 
-** 		the expr should be surrounded by a matched parentheses
-** else argument option = 0, then
-**		the expr no need surrounded by a matched parentheses 
-*/
 /* 检查表达式是否被一对括号包裹，以及表达式里的括号是否成对 */
 static bool check_parentheses(int p, int q) { 
-	//printf("check_parentheses(%d,%d,%d)\n", p, q, option);
 
 	/* 首先先看一头一尾是否是一对括号 */
 	if (tokens[p].type != TK_OPAREN || 
