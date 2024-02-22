@@ -429,7 +429,7 @@ static word_t get_mem_val(word_t address) {
 ** now support +, -, *, /, *(defer), ==, &&, <=
 */
 static int find_main_op(int p, int q) {
-	//printf("find_main_op(%d, %d)\n", p, q);
+	printf("find_main_op(%d, %d)\n", p, q);
 	int i = 0;
 	int cnt = 0;
 	int index[q - p];
