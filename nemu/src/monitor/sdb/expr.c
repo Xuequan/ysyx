@@ -294,11 +294,12 @@ static char* print_help(int no) {
 
 static void print_tokens(int length) {
 	printf("=======================\n");
-	printf("print tokens[], total %d tokens: \n", length);
+	printf("print tokens, total %d tokens: \n", length);
 
 	for(int i = 0; i < length; i++) {
-		//printf("  tokens[%d].type = %s, tokens[%d].str = %s\n", i, print_help(tokens[i].type), i, tokens[i].str);
-		printf("  tokens[%d].type = %-12s tokens[%d].str = ", i, print_help(tokens[i].type), i);
+		printf("  tokens[%d].type = %-12s tokens[%d].str = ", 
+					i, print_help(tokens[i].type), i);
+
 		for (char *ptr = tokens[i].str; *ptr != '\0'; ptr++){
 			printf("%c", *ptr);
 		}
