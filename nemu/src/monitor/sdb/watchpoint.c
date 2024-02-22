@@ -171,9 +171,9 @@ void scan_wp_pool() {
     }
 		
 		/* check if reach memory address */
-		printf("========== ptr->expr+1 = %s, atoi=%d\n", 
-			ptr->expr+1, atoi(ptr->expr+1));
-		if (cpu.pc == atoi(ptr->expr+1) ) {
+		printf("========== ptr->expr+1 = %s, atoi=%ld\n", 
+			ptr->expr+1, strtol(ptr->expr+1, NULL, 16) );
+		if (cpu.pc == strtol(ptr->expr+1, NULL, 16) ) {
       nemu_state.state = NEMU_STOP;
       printf("Hardware watchpoint %d: %s\n", ptr->NO, ptr->expr);
       printf("\n");
