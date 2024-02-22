@@ -84,7 +84,7 @@ static struct rule {
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
 	{"\\\n", TK_NEWLINE},        // newline
-	{"\\$[pP][cC]", TK_PC},						 // $pc, should before TK_REG
+	{"\\$[pP][cC]", TK_PC},			// $pc, should before TK_REG
 	{"\\$[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg $t0
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
@@ -170,10 +170,10 @@ static bool make_token(char *e) {
 	** not the length of tokens[] */
 	nr_token -= 1;
 
-	print_tokens(nr_token + 1);
 	// check if TK_DEFER & TK_NEGVAL
 	check_tokens_type(nr_token + 1);
 
+	print_tokens(nr_token + 1);
   return true;
 }
 
@@ -297,7 +297,12 @@ static void print_tokens(int length) {
 	printf("print tokens[], total %d tokens: \n", length);
 
 	for(int i = 0; i < length; i++) {
-		printf("  tokens[%d].type = %s, tokens[%d].str = %s\n", i, print_help(tokens[i].type), i, tokens[i].str);
+		//printf("  tokens[%d].type = %s, tokens[%d].str = %s\n", i, print_help(tokens[i].type), i, tokens[i].str);
+		printf("  tokens[%d].type = %s, tokens[%d].str = ", i, print_help(tokens[i].type), i);
+		for (char *ptr = tokens[i].str; *ptr != '\0'; ptr++){
+			printf("%c", *ptr);
+		}
+		printf("\n");
 	}
 	printf("=======================\n");
 }
