@@ -29,7 +29,8 @@ void init_regex();
 static bool make_token(char *e);
 static word_t eval(int p, int q); 
 static int find_main_op(int p, int q);
-static bool check_parentheses(int p, int q, int option);
+static bool check_parentheses(int p, int q);
+static bool check_paren_valid(int p, int q);
 static void assign_tokens_type(int type, int *index);
 static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
@@ -315,12 +316,46 @@ word_t expr(char *e, bool *success) {
 	return eval(0, nr_token);
 }
 
-/* chuan, p < q
-** only the final result will be word_t
+/* 根据tokens[index].type 的不同，
+** 用不同的方法将 tokens[].str 转化为数值
+*/
+static word_t str2num(int index) {
+	switch (tokens[index].type) {
+		case TK_PC: case TK_REG: 
+				return *(word_t *)tokens[index].str;
+
+		case TK_HEX: 
+			{
+				long temp = strtol(tokens[index].str, NULL, 16);
+				if (temp != 0 && ((word_t)temp == 0)) {
+					printf("eval(): value %ld overflow.\n", temp);
+				}
+				return (word_t)strtol(tokens[index].str, NULL, 16);
+			}
+		
+		default: 
+			return (word_t)atoi(tokens[index].str);
+	}
+	/*
+	if (tokens[index].type == TK_PC ||
+		tokens[index].type == TK_REG) {
+	} else if (tokens[index].type == TK_HEX){
+		long temp = strtol(tokens[index].str, NULL, 16);
+		if (temp != 0 && ((word_t)temp == 0)) {
+			printf("eval(): value %ld overflow.\n", temp);
+		}
+		return (word_t)strtol(tokens[index].str, NULL, 16);
+	} else {
+			return (word_t)atoi(tokens[index].str);
+	}
+	*/ 
+}
+
+/* only the final result will be word_t
 ** intermediate result is int 
 */
 static word_t eval (int p, int q) {
-	//printf("== eval(%d, %d)\n", p, q);
+	printf("== eval(%d, %d)\n", p, q);
 	int op = 0;
 	int val1 = 0;
 	int val2 = 0;
@@ -329,31 +364,14 @@ static word_t eval (int p, int q) {
 		printf("eval(): bad expression\n");
 		assert(0);
 	} else if (p == q) {
-		/* Single token.
-		 * For now this token should be a number.
-		 * Return the value of the number.
-		 */
-		if (tokens[p].type == TK_PC ||
-				tokens[p].type == TK_REG) {
-			return *(word_t *)tokens[p].str;
-		} else if (tokens[p].type == TK_HEX){
-
-			long temp = strtol(tokens[p].str, NULL, 16);
-			if (temp != 0 && ((word_t)temp == 0)) {
-				printf("eval(): value %ld overflow.\n", temp);
-			}
-			
-			return (word_t)strtol(tokens[p].str, NULL, 16);
-		} else {
-			return (word_t)atoi(tokens[p].str);
-		}
-
-	} else if (check_parentheses(p, q, 1) == true) {
+		/* Single token, should be a number */
+		return str2num(p);
+	} else if (check_parentheses(p, q) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
 		 */
 		return eval(p + 1, q - 1);
-	} else if (check_parentheses(p, q, 0) == true) {
+	} else {
 			/* After discard the pair parentheses */
 		op = find_main_op(p, q);
 		//printf("eval(%d, %d), main op = %d\n", p, q, op);
@@ -405,12 +423,6 @@ static word_t eval (int p, int q) {
 				default: assert(0);
 			}//end switch
 		} // end if (tokens[op].type ...) 
-	} else if (check_parentheses(p, q, 0) == false) {
-		printf("parentheses are not matched. Plese input again\n");
-		assert(0);
-	} else {
-		printf("eval(): unknown error!\n");
-		assert(0);
 	}
 }
 
@@ -438,18 +450,26 @@ static int find_main_op(int p, int q) {
 		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV
 		 || tokens[i].type == TK_EQ   || tokens[i].type == TK_LESS_EQ
 		 || tokens[i].type == TK_LOG_AND) {
+			/*
 			if( (check_parentheses(p, i-1, 0) == true) && 
 					(check_parentheses(i + 1, q, 0) == true) ) {
 					index[cnt] = i;
 					cnt++;
 			}
+			*/
+			index[cnt] = i;
+			cnt++;
 		} // end if (tokens[i].type == TK_PLUS...)
 		
 		if (tokens[i].type == TK_DEREF || tokens[i].type == TK_NEGVAL) {
+			/*
 			if (check_parentheses(i + 1, q, 0) == true ) {
 				index[cnt] = i;
 				cnt++;
 			}	
+			*/
+			index[cnt] = i;
+			cnt++;
 		} // end if (tokens[i].type == TK_DEREF...)
 	}//end fo
 
@@ -503,32 +523,11 @@ static int find_main_op(int p, int q) {
 	}
 }//end function
 
-
-/* 
-** check if the parentheses in the expr is legal 
-** p and q is the index of tokens[]
-**
-** if argument option = 1, then 
-** 		the expr should be surrounded by a matched parentheses
-** else argument option = 0, then
-**		the expr no need surrounded by a matched parentheses 
+/* 检查表达式里的括号是否是成对出现
+** 注意：没有括号也会返回 true
 */
-static bool check_parentheses(int p, int q, int option) { 
-	//printf("check_parentheses(%d,%d,%d)\n", p, q, option);
-	if (p == q) {
-		printf("This is a number.\n");
-		bool re = (option != 1);
-		return re;
-	}
-	/*
-	// (76)/(67) 就不是被（）包围，但是这里显示的是 true
-	// 故需要做第二次检查
-	if (option == 1) {
-		if (tokens[p].type != TK_OPAREN || 
-				tokens[q].type != TK_CPAREN )  
-			return false;
-	}
-	*/
+static bool check_paren_valid(int p, int q) {
+	assert( q > p);
 
 	/* 遍历, 遇到“(" 则入栈；遇到“）” 则出栈 */
 	for(; p <= q; p++) {
@@ -539,7 +538,7 @@ static bool check_parentheses(int p, int q, int option) {
 
 			case TK_CPAREN: 
 				if ( is_empty() ) {
-					printf("check_paren(%d, %d): bad expression\n", p, q);
+					printf("check_paren_valid(%d, %d): bad expression\n", p, q);
 					destroy_stack();
 					return false;
 				}else{
@@ -550,23 +549,37 @@ static bool check_parentheses(int p, int q, int option) {
 		}//end switch
 	}// end for
 
-	/*
-	  if ( option == 1 && p < q) {
-			if (is_empty()) { // 若表达式是被括号包裹，那么不到最后一次永不会为空
-				destroy_stack();
-				return false;
-			}
-		}	
-	*/
-
 	if ( !is_empty() ) {
-		//print_stack("not empty");	
 		destroy_stack();
 		//printf("check_paren2(%d, %d, %d): bad expression\n", p, q, option);
 		return false;
 	}
 
-	destroy_stack();
+	return true;
+}
+
+/* 
+** check if the parentheses in the expr is legal 
+** p and q is the index of tokens[]
+**
+** if argument option = 1, then 
+** 		the expr should be surrounded by a matched parentheses
+** else argument option = 0, then
+**		the expr no need surrounded by a matched parentheses 
+*/
+/* 检查表达式是否被一对括号包裹，以及表达式里的括号是否成对 */
+static bool check_parentheses(int p, int q) { 
+	//printf("check_parentheses(%d,%d,%d)\n", p, q, option);
+
+	/* 首先先看一头一尾是否是一对括号 */
+	if (tokens[p].type != TK_OPAREN || 
+				tokens[q].type != TK_CPAREN )  
+		return false;
+
+	/* 再检查括号里头的表达式的括号是否合法 */
+	if ((check_paren_valid(p + 1, q - 1)) == false) 
+		return false;
+
 	return true;
 }//end function
 
