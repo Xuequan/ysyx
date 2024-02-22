@@ -326,15 +326,17 @@ static word_t str2num(int index) {
 
 		case TK_HEX: 
 			{
+				/*
 				long temp = strtol(tokens[index].str, NULL, 16);
 				if (temp != 0 && ((word_t)temp == 0)) {
 					printf("eval(): value %ld overflow.\n", temp);
 				}
-				return (word_t)strtol(tokens[index].str, NULL, 16);
+				*/
+				return (word_t) strtol(tokens[index].str, NULL, 16);
 			}
 		
 		default: 
-			return (word_t)atoi(tokens[index].str);
+			return (word_t) atoi(tokens[index].str);
 	}
 }
 
@@ -342,7 +344,7 @@ static word_t str2num(int index) {
 ** intermediate result is int 
 */
 static word_t eval (int p, int q) {
-	printf("== eval(%d, %d)\n", p, q);
+	//printf("== eval(%d, %d)\n", p, q);
 
 	if (p > q) {
 		printf("eval(): bad expression\n");
@@ -357,10 +359,9 @@ static word_t eval (int p, int q) {
 		return eval(p + 1, q - 1);
 	} else {
 			/* After discard the pair parentheses */
-		int op = 0;
 		word_t val1 = 0;
 		word_t val2 = 0;
-		op = find_main_op(p, q);
+		int op = find_main_op(p, q);
 
 		printf("eval(%d, %d), main op = %d\n", p, q, op);
 
@@ -378,19 +379,19 @@ static word_t eval (int p, int q) {
 		
 			switch (tokens[op].type) {
 				case TK_PLUS: 
-					//printf("return val = %d\n", val1 + val2); 
 					return val1 + val2;
-				case TK_SUB: return val1 - val2;
+				case TK_SUB: 
+					return val1 - val2;
 				case TK_MUL: 
-					//printf("return val = %d\n", val1 * val2); 
 					return val1 * val2;
 				case TK_DIV: 
-					if (val2 == 0) {
-						printf("div by zero error\n");
-						assert(0);
+					{
+						if (val2 == 0) {
+							printf("div by zero error\n");
+							assert(0);
+						}
+						return (val1 / val2);
 					}
-					//printf("return val = %u\n",(word_t) val1/val2);
-					return (val1 / val2);
 				case TK_EQ:  
 					if (val1 == val2) {
 						return 1;

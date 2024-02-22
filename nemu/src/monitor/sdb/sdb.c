@@ -179,6 +179,7 @@ static int cmd_p(char *args) {
 			if (expr_buf == NULL)   { assert(0); }
 
 			bool success = false;
+
 			printf("expr = %s\n", expr_buf);
 			
 			// 自己函数的计算结果
