@@ -45,7 +45,7 @@ static char* rl_gets() {
   return line_read;
 }
 
-/* should stop at breakpoints if has */
+/* should stop at breakpoints if exist */
 static int cmd_c(char *args) {
 	// -1 transfer to a big uint64_t number
   cpu_exec(-1);

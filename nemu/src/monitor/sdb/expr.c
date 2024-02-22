@@ -74,8 +74,6 @@ static struct rule {
   {"\\+", TK_PLUS},     			// plus
   {"==", TK_EQ},        			// equal
 
-	/* chuan start */
-	//{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"0[xX][0-9a-fA-F]+", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
 	{"\\-", TK_SUB},          // minus
@@ -88,7 +86,6 @@ static struct rule {
 	{"\\$[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg $t0
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
-	/* end */
 };
 
 #define NR_REGEX ARRLEN(rules)
