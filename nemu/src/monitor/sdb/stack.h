@@ -2,7 +2,6 @@
 ** 2023-9-29
 */
 
-
 #ifndef stack_type 
 
 #include <stddef.h>
