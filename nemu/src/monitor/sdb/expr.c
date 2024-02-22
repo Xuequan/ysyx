@@ -434,34 +434,33 @@ static int find_main_op(int p, int q) {
 	int cnt = 0;
 	int index[q - p];
 	
-	// find the operators between [p, q]
+	// find all operators between [p, q]
 	for(i = p; i <= q; i++) {
 		if (tokens[i].type == TK_PLUS || tokens[i].type == TK_SUB
 		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV
 		 || tokens[i].type == TK_EQ   || tokens[i].type == TK_LESS_EQ
-		 || tokens[i].type == TK_LOG_AND) {
-			/*
-			if( (check_parentheses(p, i-1, 0) == true) && 
-					(check_parentheses(i + 1, q, 0) == true) ) {
-					index[cnt] = i;
-					cnt++;
-			}
-			*/
-			index[cnt] = i;
-			cnt++;
-		} // end if (tokens[i].type == TK_PLUS...)
-		
-		if (tokens[i].type == TK_DEREF || tokens[i].type == TK_NEGVAL) {
-			/*
-			if (check_parentheses(i + 1, q, 0) == true ) {
-				index[cnt] = i;
-				cnt++;
-			}	
-			*/
-			index[cnt] = i;
-			cnt++;
-		} // end if (tokens[i].type == TK_DEREF...)
-	}//end fo
+		 || tokens[i].type == TK_LOG_AND) 
+		{ 
+			/* 还要确保该op两边的括号要成对，不然该op在括号里 */
+	  	if( (check_paren_valid(p, i-1) == true) &&
+          (check_paren_valid(i + 1, q) == true) ) 
+			{
+          index[cnt] = i;
+          cnt++;
+      }       
+    } // end if (tokens[i].type == TK_PLUS...)
+        
+    if (tokens[i].type == TK_DEREF || 
+				tokens[i].type == TK_NEGVAL ) 
+		{
+			/* 确保该op右边的括号要成对，不然该op在括号里 */
+      if (check_paren_valid(i + 1, q) == true ) 
+			{  
+        index[cnt] = i;
+        cnt++;
+      }     
+    } // end if (tokens[i].type == TK_DEREF...)
+	}//end for
 
 	// figure out which is the main operator
 	int mul_div_index = 0;
