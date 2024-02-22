@@ -171,7 +171,7 @@ void scan_wp_pool() {
     }
 		
 		/* check if reach memory address */
-		if (cpu.pc == strtol(ptr->expr+1, NULL, 16) ) {
+		if (cpu.pc - 4 == strtol(ptr->expr+1, NULL, 16) ) {
       nemu_state.state = NEMU_STOP;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
       printf("\n");
