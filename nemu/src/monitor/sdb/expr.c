@@ -264,15 +264,41 @@ static void assign_tokens_type(int type, int *index) {
 	} //end switch
 } // end function
 
+/* print_tokens help function */
+static char* print_help(int no) {
+	switch (no) {
+		case 256: return "TK_NOTYPE";
+		case 257: return "TK_EQ";
+		case 258: return "TK_VAL";
+		case 259: return "TK_PLUS";
+		case 260: return "TK_SUB";
+		case 261: return "TK_MUL";
+		case 262: return "TK_DIV";
+		case 263: return "TK_OPAREN";
+		case 264: return "TK_CPAREN";
+		case 265: return "TK_NEWLINE";
+		case 266: return "TK_REG";
+		case 267: return "TK_HEX";
+		case 268: return "TK_DEREF";
+		case 269: return "TK_NEGVAL";
+		case 270: return "TK_LESS_EQ";
+		case 271: return "TK_LOG_AND";
+		case 272: return "TK_PC";
+		default:
+					return "error";
+	}
+}
+
 static void print_tokens(int length) {
 	printf("=======================\n");
-	printf("print_tokens, total %d tokens : \n", length);
+	printf("print_tokens, total %d tokens: \n", length);
 
 	for(int i = 0; i < length; i++) {
-		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
+		printf("  tokens[%d].type = %s, tokens[%d].str = %s\n", i, print_help(tokens[i].type), i, tokens[i].str);
 	}
 	printf("=======================\n");
 }
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
