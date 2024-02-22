@@ -140,7 +140,7 @@ static int cmd_w(char *args) {
 	}
 	// check if always had a same wp
 	if (check_repeated_wp(args) == true) {
-		printf("Already have set same one.\n");
+		printf("Already had a same one.\n");
 		return 0;
 	}	
 	WP *wp = new_wp();
