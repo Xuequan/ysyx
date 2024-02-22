@@ -516,7 +516,7 @@ static int find_main_op(int p, int q) {
 ** 注意：没有括号也会返回 true
 */
 static bool check_paren_valid(int p, int q) {
-	assert( q < p);
+	assert(p <= q);
 
 	/* 遍历, 遇到“(" 则入栈；遇到“）” 则出栈 */
 	for(; p <= q; p++) {
