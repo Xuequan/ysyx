@@ -205,15 +205,21 @@ static void check_tokens_type(int tokens_length) {
 				printf("isa_reg_str2val() falied\n");
 				assert(0);
 			}
+			/*
 			memcpy(tokens[i].str, &reg_val, sizeof(word_t));
 			tokens[i].str[sizeof(word_t)] = '\0';
+			*/
+			sprintf(tokens[i].str, "%u", reg_val);
 		} 
 	}
 		
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
+			/*
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
+			*/
+			sprintf(tokens[i].str, "%#x", reg_val);
 		} 
 	} 
 
@@ -322,7 +328,8 @@ word_t expr(char *e, bool *success) {
 static int str2num(int index) {
 	switch (tokens[index].type) {
 		case TK_PC: case TK_REG: 
-				return *(int*)tokens[index].str;
+				//return *(int*)tokens[index].str;
+				return (int) strtol(tokens[index].str, NULL, 16);
 
 		case TK_HEX: 
 				return (int) strtol(tokens[index].str, NULL, 16);
@@ -606,6 +613,8 @@ static word_t check_expr(int length) {
 			buf[m] = tokens[i].str[j];
 			m++;
 		}		
+		buf[m] = ' ';
+		m++;
 	}
 	buf[m] = '\0';
 	int len = (int)strlen(buf);
