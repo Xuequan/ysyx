@@ -609,6 +609,8 @@ static word_t check_expr(int length) {
 	int m = 0;
 	char buf[32 * length];
 	for ( ; i < length; i++) {
+		if (tokens[i].type == TK_DEREF) 
+			return 0;
 		for (int j = 0; j < (int)strlen(tokens[i].str); j++) {
 			buf[m] = tokens[i].str[j];
 			m++;
