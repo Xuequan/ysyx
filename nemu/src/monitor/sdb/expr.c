@@ -36,6 +36,7 @@ static void assign_tokens_type(int type, int *index);
 static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
 static void print_tokens(int nr_token);
+static word_t check_expr(int length);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -216,7 +217,7 @@ static void check_tokens_type(int tokens_length) {
 		} 
 	} 
 
-	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
+	// check for TK_DEREF; should be after all above(TK_REG, TK_HEX)
 	for ( i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_MUL && 
 			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
@@ -311,6 +312,7 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 	*success = true;
+	check_expr(nr_token + 1);
 	return eval(0, nr_token);
 }
 
@@ -557,3 +559,17 @@ static bool check_parentheses(int p, int q) {
 	return true;
 }//end function
 
+static word_t check_expr(int length) {
+	int i = 0;
+	int m = 0;
+	char buf[32 * length];
+	for ( ; i < length; i++) {
+		for (int j = 0; j < sizeof(tokens[i].str); j++) {
+			buf[m] = tokens[i].str[j];
+			m++;
+		}		
+	}
+	buf[m] = '\0';
+	printf("buf = %s\n", buf);
+	return 0;
+}
