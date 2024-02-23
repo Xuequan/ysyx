@@ -149,7 +149,7 @@ void free_wp(int num) {
 }
 
 /* scan watchpoint and see if the expr value change */
-/* trace_and_difftest() cpu/cpu-exec.c call this function */
+/* trace_and_difftest(), cpu/cpu-exec.c call this function */
 void scan_wp_pool() {
   WP* ptr = head;
   word_t now_result;
@@ -163,6 +163,7 @@ void scan_wp_pool() {
     }
     if (now_result != ptr->val) {
       nemu_state.state = NEMU_STOP;
+			ptr->val = now_result;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
       printf("\n");
       printf("Old vaule = %d\n", ptr->val);
