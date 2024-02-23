@@ -332,7 +332,7 @@ static int str2num(int index) {
 	}
 }
 
-static int eval_help (int p, int q) {
+static int eval_int_ret (int p, int q) {
 	if (p > q) {
 		printf("eval(): bad expression\n");
 		assert(0);
@@ -404,10 +404,9 @@ static int eval_help (int p, int q) {
 */
 static word_t eval (int p, int q) {
 	/* check overflow */	
-	int temp = eval_help(p, q);
+	int temp = eval_int_ret(p, q);
 	if (temp < 0) {
 		printf("Please note: maybe overflow!\n");
-		assert(0);
 	}
 	return (word_t)temp;
 }
