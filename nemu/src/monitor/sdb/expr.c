@@ -366,11 +366,12 @@ static word_t eval (int p, int q) {
 
 		if (tokens[op].type == TK_DEREF) {
 			word_t val3 = eval(op + 1, q);
-			
+			printf("%u\n", val3);	
 			return get_mem_val(val3);
 
 		} else if (tokens[op].type == TK_NEGVAL) {
 			word_t val3 = eval(op + 1, q);
+			printf("%u\n", 0-val3);	
 			return 0 - val3;
 
 		} else {
@@ -379,10 +380,13 @@ static word_t eval (int p, int q) {
 		
 			switch (tokens[op].type) {
 				case TK_PLUS: 
+					printf("%u\n", val1+val2);	
 					return val1 + val2;
 				case TK_SUB: 
+					printf("%u\n", val1-val2);	
 					return val1 - val2;
 				case TK_MUL: 
+					printf("%u\n", val1*val2);	
 					return val1 * val2;
 				case TK_DIV: 
 					{
@@ -390,6 +394,7 @@ static word_t eval (int p, int q) {
 							printf("div by zero error\n");
 							assert(0);
 						}
+						printf("%u\n", val1/val2);	
 						return (val1 / val2);
 					}
 				case TK_EQ:  
