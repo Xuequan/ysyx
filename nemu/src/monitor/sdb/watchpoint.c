@@ -197,7 +197,7 @@ void print_wp() {
 			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, ptr->expr);
 	}	
 	*/
-	printf("Num Type          What  \n");
+	printf("Num          What  \n");
 	WP* ptr = head;
 	for ( ;ptr != NULL; ptr = ptr->next) {
 		// Num Type Disp Enb Address What
