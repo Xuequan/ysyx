@@ -559,6 +559,44 @@ static bool check_parentheses(int p, int q) {
 	return true;
 }//end function
 
+/* --------------------------------------------------- */
+static char *code_format =                                        
+"#include <stdio.h>\n"
+"int main() { \n"
+"  unsigned result = %s; \n"
+"  printf(\"%%u\", result); \n"
+"  return 0; \n"
+"} \n";
+
+/* from nemu/tools/gen-expr/gen-expr.c */
+word_t eval_from_tool(char expr[], int length) {
+
+  char eval_code[length + 128];
+ 	for (int i = 0; i < length + 128; i++) {
+		eval_code[i] = '\0';
+	} 
+
+  sprintf(eval_code, code_format, expr);
+  FILE *fp2 = fopen("/home/chuan/Templates/.expr.c", "w");
+  assert(fp2 != NULL);
+  fputs(eval_code, fp2);
+  fclose(fp2);
+  
+  int ret2 = system("gcc /home/chuan/Templates/.expr.c -o /home/chuan/Templates/.expr");
+  if (ret2 != 0) {
+    printf("system() error!\n");
+    assert(0);
+  }
+  
+  fp2 = popen("/home/chuan/Templates/.expr", "r");
+  assert(fp2 != NULL);
+  int result = 0;
+  ret2 = fscanf(fp2, "%d", &result);
+  pclose(fp2);
+  return (word_t)result;
+}
+
+
 static word_t check_expr(int length) {
 	int i = 0;
 	int m = 0;
@@ -570,7 +608,8 @@ static word_t check_expr(int length) {
 		}		
 	}
 	buf[m] = '\0';
-	word_t ret = (word_t) atol(buf);
+	int len = (int)strlen(buf);
+	word_t ret = eval_from_tool(buf, len);
 	printf("buf = %s, value = %u\n", buf, ret);
 	return 0;
 }
