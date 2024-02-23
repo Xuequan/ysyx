@@ -449,7 +449,6 @@ static int find_main_op(int p, int q) {
     if (tokens[i].type == TK_DEREF || 
 				tokens[i].type == TK_NEGVAL ) 
 		{
-			/* 确保该op右边的括号要成对，不然该op在括号里 */
       if (check_paren_valid(i + 1, q) == true ) 
 			{  
         index[cnt] = i;
