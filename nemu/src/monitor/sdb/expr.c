@@ -358,12 +358,11 @@ static word_t eval (int p, int q) {
 		 */
 		return eval(p + 1, q - 1);
 	} else {
-			/* After discard the pair parentheses */
 		word_t val1 = 0;
 		word_t val2 = 0;
 		int op = find_main_op(p, q);
 
-		printf("eval(%d, %d), main op = %d\n", p, q, op);
+		printf("eval(%d, %d), main op index = %d\n", p, q, op);
 
 		if (tokens[op].type == TK_DEREF) {
 			word_t val3 = eval(op + 1, q);
@@ -429,7 +428,6 @@ static word_t get_mem_val(word_t address) {
 ** now support +, -, *, /, *(defer), ==, &&, <=
 */
 static int find_main_op(int p, int q) {
-	printf("find_main_op(%d, %d)\n", p, q);
 	int i = 0;
 	int cnt = 0;
 	int index[q - p];
