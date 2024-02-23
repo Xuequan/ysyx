@@ -362,10 +362,11 @@ static word_t eval (int p, int q) {
 		word_t val2 = 0;
 		int op = find_main_op(p, q);
 
-		printf("eval(%d, %d), main op index = %d\n", p, q, op);
+		printf("main_op_index = %d, eval(%d, %d) = ", op, p, q);
 
 		if (tokens[op].type == TK_DEREF) {
 			word_t val3 = eval(op + 1, q);
+			
 			return get_mem_val(val3);
 
 		} else if (tokens[op].type == TK_NEGVAL) {
