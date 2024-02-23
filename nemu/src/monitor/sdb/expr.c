@@ -35,7 +35,7 @@ static bool check_paren_valid(int p, int q);
 static void assign_tokens_type(int type, int *index);
 static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
-//static void print_tokens(int nr_token);
+static void print_tokens(int nr_token);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -170,7 +170,7 @@ static bool make_token(char *e) {
 	// check if TK_DEFER & TK_NEGVAL
 	check_tokens_type(nr_token + 1);
 
-//	print_tokens(nr_token + 1);
+	print_tokens(nr_token + 1);
   return true;
 }
 
@@ -265,7 +265,6 @@ static void assign_tokens_type(int type, int *index) {
 } // end function
 
 /* print_tokens help function */
-/*
 static char* print_help(int no) {
 	switch (no) {
 		case 256: return "TK_NOTYPE";
@@ -288,8 +287,6 @@ static char* print_help(int no) {
 		default:  return "error";
 	}
 }
-*/
-/*
 static void print_tokens(int length) {
 	printf("=======================\n");
 	printf("print tokens, total %d tokens: \n", length);
@@ -305,7 +302,6 @@ static void print_tokens(int length) {
 	}
 	printf("=======================\n");
 }
-*/
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -333,6 +329,11 @@ static int str2num(int index) {
 				return atoi(tokens[index].str);
 	}
 }
+/*
+static bool check_ov (int val1, int val2, int op) {
+	
+}
+*/
 
 static int eval_int_ret (int p, int q) {
 	if (p > q) {
