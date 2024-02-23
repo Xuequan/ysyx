@@ -407,6 +407,7 @@ static word_t eval (int p, int q) {
 	int temp = eval_help(p, q);
 	if (temp < 0) {
 		printf("Please note: maybe overflow!\n");
+		assert(0);
 	}
 	return (word_t)temp;
 }
