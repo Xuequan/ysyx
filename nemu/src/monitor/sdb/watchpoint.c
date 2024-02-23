@@ -164,9 +164,9 @@ void scan_wp_pool() {
     if (now_result != ptr->val) {
       nemu_state.state = NEMU_STOP;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
-      printf("\n");
-      printf("Old vaule = %d", ptr->val);
+      printf("Old vaule = %d, ", ptr->val);
       printf("New value = %u\n", now_result);
+      printf("\n");
 			ptr->val = now_result;
 			return;
     }
@@ -186,6 +186,7 @@ void scan_wp_pool() {
 void print_wp() {
 	if (head == NULL) {
 		printf("No watchpoints.\n");
+		printf("\n");
 		return;
 	}
 	/*
@@ -204,6 +205,7 @@ void print_wp() {
 		printf("%-3d %-6s\n", 
 			ptr->NO, ptr->expr);
 	}	
+  printf("\n");
 } // end function
 
 /* check if already has a same wp 
