@@ -189,7 +189,6 @@ static int cmd_p(char *args) {
 				assert(0);
 			}
 			// test_result 是电脑计算的结果
-			printf("===========test_result = %ld\n", atol(test_result_buf));
 			word_t test_result = (word_t) atol(test_result_buf);
 			if ( expr_result != test_result ) 
 			{

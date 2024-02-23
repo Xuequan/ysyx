@@ -166,7 +166,6 @@ void scan_wp_pool() {
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
       printf("Old vaule = %d, ", ptr->val);
       printf("New value = %u\n", now_result);
-      printf("\n");
 			ptr->val = now_result;
 			return;
     }
@@ -175,7 +174,6 @@ void scan_wp_pool() {
 		if (cpu.pc - 4 == strtol(ptr->expr+1, NULL, 16) ) {
       nemu_state.state = NEMU_STOP;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
-      printf("\n");
 			return;
 		}	
 			
@@ -186,7 +184,6 @@ void scan_wp_pool() {
 void print_wp() {
 	if (head == NULL) {
 		printf("No watchpoints.\n");
-		printf("\n");
 		return;
 	}
 	/*
