@@ -564,7 +564,7 @@ static word_t check_expr(int length) {
 	int m = 0;
 	char buf[32 * length];
 	for ( ; i < length; i++) {
-		for (int j = 0; j < sizeof(tokens[i].str); j++) {
+		for (int j = 0; j < sizeof(tokens[i].str)/sizeof(char); j++) {
 			buf[m] = tokens[i].str[j];
 			m++;
 		}		
