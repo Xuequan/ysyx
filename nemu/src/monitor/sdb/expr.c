@@ -523,7 +523,7 @@ static bool check_paren_valid(int p, int q) {
 
 			case TK_CPAREN: 
 				if ( is_empty() ) {
-					printf("check_paren_valid(%d, %d): bad expression\n", p, q);
+					//printf("check_paren_valid(%d, %d): bad expression\n", p, q);
 					destroy_stack();
 					return false;
 				}else{
