@@ -163,11 +163,11 @@ void scan_wp_pool() {
     }
     if (now_result != ptr->val) {
       nemu_state.state = NEMU_STOP;
-			ptr->val = now_result;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
       printf("\n");
-      printf("Old vaule = %d\n", ptr->val);
+      printf("Old vaule = %d", ptr->val);
       printf("New value = %u\n", now_result);
+			ptr->val = now_result;
 			return;
     }
 		
@@ -197,7 +197,7 @@ void print_wp() {
 			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, ptr->expr);
 	}	
 	*/
-	printf("Num          What  \n");
+	printf("Num What  \n");
 	WP* ptr = head;
 	for ( ;ptr != NULL; ptr = ptr->next) {
 		// Num Type Disp Enb Address What

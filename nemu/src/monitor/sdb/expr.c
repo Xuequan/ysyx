@@ -349,8 +349,6 @@ static int eval_int_ret (int p, int q) {
 	} else {
 		int op = find_main_op(p, q);
 
-		printf("eval(%d, %d), main_op_index = %d\n", p, q, op);
-
 		if (tokens[op].type == TK_DEREF) {
 			int val3 = eval(op + 1, q);
 			return (int)get_mem_val(val3);
