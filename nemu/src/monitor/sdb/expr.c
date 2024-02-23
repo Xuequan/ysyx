@@ -570,6 +570,7 @@ static word_t check_expr(int length) {
 		}		
 	}
 	buf[m] = '\0';
-	printf("buf = %s\n", buf);
+	word_t ret = (word_t) atol(buf);
+	printf("buf = %s, value = %u\n", buf, ret);
 	return 0;
 }
