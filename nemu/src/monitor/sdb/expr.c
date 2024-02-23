@@ -318,8 +318,12 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 	*success = true;
-	check_expr(nr_token + 1);
-	return eval(0, nr_token);
+	word_t reference_result = check_expr(nr_token + 1);
+	word_t eval_result = eval(0, nr_token);
+	if (reference_result != eval_result) {
+		printf("Plese check, calculate error\n");
+	}
+	return eval_result;
 }
 
 /* 根据tokens[index].type 的不同，
