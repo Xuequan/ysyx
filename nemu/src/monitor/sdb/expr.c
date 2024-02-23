@@ -27,7 +27,7 @@
 word_t expr(char *e, bool *success);
 void init_regex();
 static bool make_token(char *e);
-static word_t str2num(int index);
+static int str2num(int index);
 static word_t eval(int p, int q); 
 static int find_main_op(int p, int q);
 static bool check_parentheses(int p, int q);
@@ -319,33 +319,20 @@ word_t expr(char *e, bool *success) {
 /* 根据tokens[index].type 的不同，
 ** 对应check_token_type(),用不同的方法将 tokens[].str 转化为数值
 */
-static word_t str2num(int index) {
+static int str2num(int index) {
 	switch (tokens[index].type) {
 		case TK_PC: case TK_REG: 
-				return *(word_t *)tokens[index].str;
+				return *(int*)tokens[index].str;
 
 		case TK_HEX: 
-			{
-				/*
-				long temp = strtol(tokens[index].str, NULL, 16);
-				if (temp != 0 && ((word_t)temp == 0)) {
-					printf("eval(): value %ld overflow.\n", temp);
-				}
-				*/
-				return (word_t) strtol(tokens[index].str, NULL, 16);
-			}
+				return (int) strtol(tokens[index].str, NULL, 16);
 		
 		default: 
-			return (word_t) atoi(tokens[index].str);
+				return atoi(tokens[index].str);
 	}
 }
 
-/* only the final result will be word_t
-** intermediate result is int 
-*/
-static word_t eval (int p, int q) {
-	//printf("== eval(%d, %d)\n", p, q);
-
+static int eval_help (int p, int q) {
 	if (p > q) {
 		printf("eval(): bad expression\n");
 		assert(0);
@@ -358,23 +345,21 @@ static word_t eval (int p, int q) {
 		 */
 		return eval(p + 1, q - 1);
 	} else {
-		word_t val1 = 0;
-		word_t val2 = 0;
 		int op = find_main_op(p, q);
 
 		printf("eval(%d, %d), main_op_index = %d\n", p, q, op);
 
 		if (tokens[op].type == TK_DEREF) {
-			word_t val3 = eval(op + 1, q);
-			return get_mem_val(val3);
+			int val3 = eval(op + 1, q);
+			return (int)get_mem_val(val3);
 
 		} else if (tokens[op].type == TK_NEGVAL) {
-			word_t val3 = eval(op + 1, q);
+			int val3 = eval(op + 1, q);
 			return 0 - val3;
 
 		} else {
-			val1 = eval(p, op - 1);
-			val2 = eval(op + 1, q);
+			int val1 = eval(p, op - 1);
+			int val2 = eval(op + 1, q);
 		
 			switch (tokens[op].type) {
 				case TK_PLUS: 
@@ -412,6 +397,18 @@ static word_t eval (int p, int q) {
 			}//end switch
 		} // end if (tokens[op].type ...) 
 	}
+}
+
+/* only the final result will be word_t
+** intermediate result is int 
+*/
+static word_t eval (int p, int q) {
+	/* check overflow */	
+	int temp = eval_help(p, q);
+	if (temp < 0) {
+		printf("Please note: maybe overflow!\n");
+	}
+	return (word_t)temp;
 }
 
 /* get_mem_val(int address) 
