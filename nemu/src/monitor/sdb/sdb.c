@@ -45,7 +45,7 @@ static char* rl_gets() {
   return line_read;
 }
 
-/* should stop at breakpoints if has */
+/* should stop at breakpoints if exist */
 static int cmd_c(char *args) {
 	// -1 transfer to a big uint64_t number
   cpu_exec(-1);
@@ -138,7 +138,11 @@ static int cmd_w(char *args) {
 		printf("cmd_w() : cannot recognize \"%s\".\n", args);
 		return 0;
 	}
-
+	// check if always had a same wp
+	if (check_repeated_wp(args) == true) {
+		printf("Already had a same one.\n");
+		return 0;
+	}	
 	WP *wp = new_wp();
 	if (wp == NULL) {
 		printf("cmd_w(): cannot get a new watchpoint\n");
@@ -152,35 +156,44 @@ static int cmd_w(char *args) {
 }
 
 #define TEST_LENGTH (65536 + 11)
+
 static int cmd_p(char *args) {
+
 	if (args == NULL) {    // for test only
 		// test use nemu/tools/gen-expr
 		FILE *fp = fopen("/home/chuan/ysyx-workbench/nemu/tools/gen-expr/input", "r");
 		assert(fp != NULL);
+
 		char buf[TEST_LENGTH] = {};
+
 		while(fgets(buf, TEST_LENGTH, fp) != NULL) {
 			char *buf_end = buf + strlen(buf);
-			char *test_result = strtok(buf, " ");
-			if (test_result == NULL) {
+			char *test_result_buf = strtok(buf, " ");
+			if (test_result_buf == NULL) {
 				printf("Didn't get the gen-expr result\n");
 				assert(0);
 			}
-			char *expr_buf = test_result + strlen(test_result) + 1;
+
+			char *expr_buf = test_result_buf + strlen(test_result_buf) + 1;
 			if (expr_buf > buf_end) { assert(0); }
-			if (expr_buf == NULL) {assert(0); }
+			if (expr_buf == NULL)   { assert(0); }
 
 			bool success = false;
-			printf("expr = %s\n", expr_buf);
 
+			printf("expr = %s\n", expr_buf);
+			
+			// 自己函数的计算结果
 			word_t expr_result = expr(expr_buf, &success);
 			if (success == false) {
 				printf("Calculate \"expr = %s\" failed\n", expr_buf);
 				assert(0);
 			}
-
-			if (expr_result != (word_t) atoi(test_result)) {
-				printf("expr_result = %u, (test_result) = %u\n", 
-					expr_result, (word_t)atoi(test_result));
+			// test_result 是电脑计算的结果
+			word_t test_result = (word_t) atol(test_result_buf);
+			if ( expr_result != test_result ) 
+			{
+				printf("expr_result = %u, test_result = %u\n", 
+											expr_result, test_result);
 				assert(0);
 			} 
 		} // end while
@@ -311,3 +324,4 @@ void init_sdb() {
   /* Initialize the watchpoint pool. */
   init_wp_pool();
 }
+

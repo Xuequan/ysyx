@@ -27,13 +27,16 @@
 word_t expr(char *e, bool *success);
 void init_regex();
 static bool make_token(char *e);
+static int str2num(int index);
 static word_t eval(int p, int q); 
 static int find_main_op(int p, int q);
-static bool check_parentheses(int p, int q, int option);
+static bool check_parentheses(int p, int q);
+static bool check_paren_valid(int p, int q);
 static void assign_tokens_type(int type, int *index);
 static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
 static void print_tokens(int nr_token);
+static word_t check_expr(int length);
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -50,9 +53,7 @@ enum {
 	TK_REG,
 	TK_HEX,		// hexadecimal-number, like 0x, 0X
 
-	/* now only support *address, not support *variable 
-	** so no rules[] for this 
-	*/
+	/* now only support *address, not support *variable */
 	TK_DEREF,  
 	TK_NEGVAL,  // negative value
 	TK_LESS_EQ,  // 270
@@ -74,21 +75,18 @@ static struct rule {
   {"\\+", TK_PLUS},     			// plus
   {"==", TK_EQ},        			// equal
 
-	/* chuan start */
-	//{"0[xX][0-9a-fA-F]{1,8}", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"0[xX][0-9a-fA-F]+", TK_HEX},    // hexadecimal numbers, should be at the front of TK_VAL
 	{"[0-9]+", TK_VAL},  				// decimal numbers
-	{"\\-", TK_SUB},          // minus
+	{"\\-", TK_SUB},            // minus
 	{"\\*", TK_MUL},					  // mul
 	{"\\/", TK_DIV},					  // div
 	{"\\(", TK_OPAREN},					// open parenthesis	
 	{"\\)", TK_CPAREN},					// close parenthesis
-	{"\\\n", TK_NEWLINE},        // newline
-	{"\\$[pP][cC]", TK_PC},						 // $pc, should before TK_REG
-	{"[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg t0
+	{"\\\n", TK_NEWLINE},       // newline
+	{"\\$[pP][cC]", TK_PC},			// $pc, should before TK_REG
+	{"\\$[$rsgta][0-9ap][01]?", TK_REG},  // regrister, eg $t0
 	{"<=", TK_LESS_EQ},          // <=
 	{"&&", TK_LOG_AND},          // &&
-	/* end */
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -120,7 +118,7 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-/* get the tokens from input expr
+/* get the tokens from input check_token_type(),expr
 ** 1. scan input expr, try all rules one by one;
 ** 2. when recognized, skip TK_NEWLINE & TK_NOTYPE, and copy it to tokens[];
 ** 3. After having recognized all tokens, check whether if TK_DEFER & TK_NEGVAL;
@@ -169,6 +167,7 @@ static bool make_token(char *e) {
 	/* nr_token is the last index of tokens[]
 	** not the length of tokens[] */
 	nr_token -= 1;
+
 	// check if TK_DEFER & TK_NEGVAL
 	check_tokens_type(nr_token + 1);
 
@@ -199,24 +198,32 @@ static void check_tokens_type(int tokens_length) {
 	
 	for(; i < tokens_length; i++) {
 		if (tokens[i].type == TK_REG) {
-			reg_val = isa_reg_str2val(tokens[i].str, &success);
+			char* ptr = tokens[i].str;
+			ptr++;
+			reg_val = isa_reg_str2val(ptr, &success);
 			if (success == false) {
 				printf("isa_reg_str2val() falied\n");
 				assert(0);
 			}
+			/*
 			memcpy(tokens[i].str, &reg_val, sizeof(word_t));
 			tokens[i].str[sizeof(word_t)] = '\0';
+			*/
+			sprintf(tokens[i].str, "%u", reg_val);
 		} 
 	}
 		
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
+			/*
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
+			*/
+			sprintf(tokens[i].str, "%#x", reg_val);
 		} 
 	} 
 
-	// check for TK_DEREF should be after all above(TK_REG, TK_HEX)
+	// check for TK_DEREF; should be after all above(TK_REG, TK_HEX)
 	for ( i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_MUL && 
 			( i == 0 || is_certain_type(tokens[i-1].type) ) ) {
@@ -264,12 +271,41 @@ static void assign_tokens_type(int type, int *index) {
 	} //end switch
 } // end function
 
+/* print_tokens help function */
+static char* print_help(int no) {
+	switch (no) {
+		case 256: return "TK_NOTYPE";
+		case 257: return "TK_EQ";
+		case 258: return "TK_VAL";
+		case 259: return "TK_PLUS";
+		case 260: return "TK_SUB";
+		case 261: return "TK_MUL";
+		case 262: return "TK_DIV";
+		case 263: return "TK_OPAREN";
+		case 264: return "TK_CPAREN";
+		case 265: return "TK_NEWLINE";
+		case 266: return "TK_REG";
+		case 267: return "TK_HEX";
+		case 268: return "TK_DEREF";
+		case 269: return "TK_NEGVAL";
+		case 270: return "TK_LESS_EQ";
+		case 271: return "TK_LOG_AND";
+		case 272: return "TK_PC";
+		default:  return "error";
+	}
+}
 static void print_tokens(int length) {
 	printf("=======================\n");
-	printf("print_tokens, total %d tokens : \n", length);
+	printf("print tokens, total %d tokens: \n", length);
 
 	for(int i = 0; i < length; i++) {
-		printf("  tokens[%d].type = %d, tokens[%d].str = %s\n", i, tokens[i].type, i, tokens[i].str);
+		printf("  tokens[%d].type = %-12s tokens[%d].str = ", 
+					i, print_help(tokens[i].type), i);
+
+		for (char *ptr = tokens[i].str; *ptr != '\0'; ptr++){
+			printf("%c", *ptr);
+		}
+		printf("\n");
 	}
 	printf("=======================\n");
 }
@@ -282,78 +318,79 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 	*success = true;
-	return eval(0, nr_token);
+
+	word_t reference_result = check_expr(nr_token + 1);
+	word_t eval_result = eval(0, nr_token);
+	if ( (reference_result == 0) ? 1 : reference_result != eval_result ) 
+	{
+		printf("Please check, calculate error\n");
+	}
+	return eval_result;
 }
 
-/* chuan, p < q
-** only the final result will be word_t
-** intermediate result is int 
+/* 根据tokens[index].type 的不同，
+** 对应check_token_type(),用不同的方法将 tokens[].str 转化为数值
 */
-static word_t eval (int p, int q) {
-	//printf("== eval(%d, %d)\n", p, q);
-	int op = 0;
-	int val1 = 0;
-	int val2 = 0;
+static int str2num(int index) {
+	switch (tokens[index].type) {
+		case TK_PC: case TK_REG: 
+				//return *(int*)tokens[index].str;
+				return (int) strtol(tokens[index].str, NULL, 16);
 
+		case TK_HEX: 
+				return (int) strtol(tokens[index].str, NULL, 16);
+		
+		default: 
+				return atoi(tokens[index].str);
+	}
+}
+/*
+static bool check_ov (int val1, int val2, int op) {
+	
+}
+*/
+
+static int eval_int_ret (int p, int q) {
 	if (p > q) {
 		printf("eval(): bad expression\n");
 		assert(0);
 	} else if (p == q) {
-		/* Single token.
-		 * For now this token should be a number.
-		 * Return the value of the number.
-		 */
-		if (tokens[p].type == TK_PC ||
-				tokens[p].type == TK_REG) {
-			return *(word_t *)tokens[p].str;
-		} else if (tokens[p].type == TK_HEX){
-
-			long temp = strtol(tokens[p].str, NULL, 16);
-			if (temp != 0 && ((word_t)temp == 0)) {
-				printf("eval(): value %ld overflow.\n", temp);
-			}
-			
-			return (word_t)strtol(tokens[p].str, NULL, 16);
-		} else {
-			return (word_t)atoi(tokens[p].str);
-		}
-
-	} else if (check_parentheses(p, q, 1) == true) {
+		/* Single token, should be a number */
+		return str2num(p);
+	} else if (check_parentheses(p, q) == true) {
 		/* The expression is surrounded by a matched pair parentheses.
 		 * If that is the case. just throw away the parentheses exper.
 		 */
 		return eval(p + 1, q - 1);
-	} else if (check_parentheses(p, q, 0) == true) {
-			/* After discard the pair parentheses */
-		op = find_main_op(p, q);
-		//printf("eval(%d, %d), main op = %d\n", p, q, op);
+	} else {
+		int op = find_main_op(p, q);
+
 		if (tokens[op].type == TK_DEREF) {
-			word_t val3 = eval(op + 1, q);
-			return get_mem_val(val3);
+			int val3 = eval(op + 1, q);
+			return (int)get_mem_val(val3);
 
 		} else if (tokens[op].type == TK_NEGVAL) {
-			word_t val3 = eval(op + 1, q);
+			int val3 = eval(op + 1, q);
 			return 0 - val3;
 
 		} else {
-			val1 = (int)eval(p, op - 1);
-			val2 = (int)eval(op + 1, q);
+			int val1 = eval(p, op - 1);
+			int val2 = eval(op + 1, q);
 		
 			switch (tokens[op].type) {
 				case TK_PLUS: 
-					//printf("return val = %d\n", val1 + val2); 
 					return val1 + val2;
-				case TK_SUB: return val1 - val2;
+				case TK_SUB: 
+					return val1 - val2;
 				case TK_MUL: 
-					//printf("return val = %d\n", val1 * val2); 
 					return val1 * val2;
 				case TK_DIV: 
-					if (val2 == 0) {
-						printf("div by zero error\n");
-						assert(0);
+					{
+						if (val2 == 0) {
+							assert(0);
+						}
+						return (val1 / val2);
 					}
-					//printf("return val = %u\n",(word_t) val1/val2);
-					return (word_t) (val1 / val2);
 				case TK_EQ:  
 					if (val1 == val2) {
 						return 1;
@@ -375,13 +412,21 @@ static word_t eval (int p, int q) {
 				default: assert(0);
 			}//end switch
 		} // end if (tokens[op].type ...) 
-	} else if (check_parentheses(p, q, 0) == false) {
-		printf("parentheses are not matched. Plese input again\n");
-		assert(0);
-	} else {
-		printf("eval(): unknown error!\n");
-		assert(0);
 	}
+}
+
+/* only the final result will be word_t
+** intermediate result is int 
+*/
+static word_t eval (int p, int q) {
+	/* check overflow */	
+	int temp = eval_int_ret(p, q);
+	/*
+	if (temp < 0) {
+		printf("Please note: maybe overflow!\n");
+	}
+	*/
+	return (word_t)temp;
 }
 
 /* get_mem_val(int address) 
@@ -390,38 +435,43 @@ static word_t eval (int p, int q) {
 ** Do not support *variable!!!
 */
 static word_t get_mem_val(word_t address) {
-	return vaddr_read(address, sizeof(word_t));;
+	return vaddr_read(address, sizeof(word_t));
 } 
 
 /* find the position of main operator
 ** now support +, -, *, /, *(defer), ==, &&, <=
 */
 static int find_main_op(int p, int q) {
-	//printf("find_main_op(%d, %d)\n", p, q);
 	int i = 0;
 	int cnt = 0;
 	int index[q - p];
 	
-	// find the operators between [p, q]
+	// find all operators between [p, q]
 	for(i = p; i <= q; i++) {
 		if (tokens[i].type == TK_PLUS || tokens[i].type == TK_SUB
 		 || tokens[i].type == TK_MUL  || tokens[i].type == TK_DIV
 		 || tokens[i].type == TK_EQ   || tokens[i].type == TK_LESS_EQ
-		 || tokens[i].type == TK_LOG_AND) {
-			if( (check_parentheses(p, i-1, 0) == true) && 
-					(check_parentheses(i + 1, q, 0) == true) ) {
-					index[cnt] = i;
-					cnt++;
-			}
-		} // end if (tokens[i].type == TK_PLUS...)
-		
-		if (tokens[i].type == TK_DEREF || tokens[i].type == TK_NEGVAL) {
-			if (check_parentheses(i + 1, q, 0) == true ) {
-				index[cnt] = i;
-				cnt++;
-			}	
-		} // end if (tokens[i].type == TK_DEREF...)
-	}//end fo
+		 || tokens[i].type == TK_LOG_AND) 
+		{ 
+			/* 还要确保该op两边的括号要成对，不然该op在括号里 */
+	  	if( (check_paren_valid(p, i-1) == true) &&
+          (check_paren_valid(i + 1, q) == true) ) 
+			{
+          index[cnt] = i;
+          cnt++;
+      }       
+    } // end if (tokens[i].type == TK_PLUS...)
+        
+    if (tokens[i].type == TK_DEREF || 
+				tokens[i].type == TK_NEGVAL ) 
+		{
+      if (check_paren_valid(i + 1, q) == true ) 
+			{  
+        index[cnt] = i;
+        cnt++;
+      }     
+    } // end if (tokens[i].type == TK_DEREF...)
+	}//end for
 
 	// figure out which is the main operator
 	int mul_div_index = 0;
@@ -473,65 +523,110 @@ static int find_main_op(int p, int q) {
 	}
 }//end function
 
-
-/* 
-** check if the parentheses in the expr is legal 
-** p and q is the index of tokens[]
-**
-** if argument option = 1, then 
-** 		the expr should be surrounded by a matched parentheses
-** else argument option = 0, then
-**		the expr no need surrounded by a matched parentheses 
+/* 检查表达式里的括号是否是成对出现
+** 注意：没有括号也会返回 true
 */
-static bool check_parentheses(int p, int q, int option) { 
-	//printf("check_parentheses(%d,%d,%d)\n", p, q, option);
-	int ii = p;
-	int jj = q;
-	if (p == q) {
-		//printf("This is a number.\n");
-		return true;
-	}
-	// 这里有问题
-	// (76)/(67) 就不是被（）包围，但是这里显示的是 true
-	// 故需要做第二次检查
-	if (option == 1) {
-		if (tokens[p].type != TK_OPAREN || tokens[q].type != TK_CPAREN) { 
-			//printf("Leftmost '(' and rightmost ')' are not matched.\n");
-			return false;
-		}
-	}
+static bool check_paren_valid(int p, int q) {
+	assert(p <= q);
 
+	/* 遍历; 遇到“(" 则入栈；遇到“）” 则出栈 */
 	for(; p <= q; p++) {
 		switch(tokens[p].type) {
 			case TK_OPAREN: 
 				push(TK_OPAREN);
 				break;
+
 			case TK_CPAREN: 
-				if (is_empty() || top() != TK_OPAREN) {
-					printf("check_paren(%d, %d): bad expression\n", ii, jj);
+				if ( is_empty() ) {
+					//printf("check_paren_valid(%d, %d): bad expression\n", p, q);
 					destroy_stack();
 					return false;
-				}
-				pop();
-				break;
+				}else{
+					pop();
+					break;
+				} 
 			default:;
 		}//end switch
-
-		// 第二次检查
-	  if ( option == 1 && p < q) {
-			if (is_empty()) { // 若表达式是被括号包裹，那么不到最后一次永不会为空
-				destroy_stack();
-				return false;
-			}
-		}	
 	}// end for
 
 	if ( !is_empty() ) {
-		//print_stack("not empty");	
 		destroy_stack();
-		//printf("check_paren2(%d, %d, %d): bad expression\n", ii, jj, option);
 		return false;
 	}
+
+	return true;
+}
+
+/* 检查表达式是否被一对括号包裹，以及表达式里的括号是否成对 */
+static bool check_parentheses(int p, int q) { 
+
+	/* 首先先看一头一尾是否是一对括号 */
+	if (tokens[p].type != TK_OPAREN || 
+				tokens[q].type != TK_CPAREN )  
+		return false;
+
+	/* 再检查括号里头的表达式的括号是否合法 */
+	if ((check_paren_valid(p + 1, q - 1)) == false) 
+		return false;
+
 	return true;
 }//end function
 
+/* --------------------------------------------------- */
+static char *code_format =                                        
+"#include <stdio.h>\n"
+"int main() { \n"
+"  unsigned result = %s; \n"
+"  printf(\"%%u\", result); \n"
+"  return 0; \n"
+"} \n";
+
+/* from nemu/tools/gen-expr/gen-expr.c */
+word_t eval_from_tool(char expr[], int length) {
+
+  char eval_code[length + 128];
+ 	for (int i = 0; i < length + 128; i++) {
+		eval_code[i] = '\0';
+	} 
+
+  sprintf(eval_code, code_format, expr);
+  FILE *fp2 = fopen("/home/chuan/Templates/.expr.c", "w");
+  assert(fp2 != NULL);
+  fputs(eval_code, fp2);
+  fclose(fp2);
+  
+  int ret2 = system("gcc /home/chuan/Templates/.expr.c -o /home/chuan/Templates/.expr");
+  if (ret2 != 0) {
+    printf("system() error!\n");
+    assert(0);
+  }
+  
+  fp2 = popen("/home/chuan/Templates/.expr", "r");
+  assert(fp2 != NULL);
+  int result = 0;
+  ret2 = fscanf(fp2, "%d", &result);
+  pclose(fp2);
+  return (word_t)result;
+}
+
+
+static word_t check_expr(int length) {
+	int i = 0;
+	int m = 0;
+	char buf[32 * length];
+	for ( ; i < length; i++) {
+		if (tokens[i].type == TK_DEREF) 
+			return 0;
+		for (int j = 0; j < (int)strlen(tokens[i].str); j++) {
+			buf[m] = tokens[i].str[j];
+			m++;
+		}		
+		buf[m] = ' ';
+		m++;
+	}
+	buf[m] = '\0';
+	int len = (int)strlen(buf);
+	word_t ret = eval_from_tool(buf, len);
+	printf("buf = %s, value = %u\n", buf, ret);
+	return ret;
+}

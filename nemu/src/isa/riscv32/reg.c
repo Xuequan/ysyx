@@ -30,7 +30,6 @@ void isa_reg_display() {
 	for (; i < NR_REGS; i++) {
 		printf("%-5s %#x\n", regs[i], gpr(i));  
 	}
-	
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

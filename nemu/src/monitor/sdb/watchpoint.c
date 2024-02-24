@@ -15,6 +15,7 @@
 
 #include "sdb.h"
 
+#include <isa.h>
 #include <utils.h>
 
 #define NR_WP 32
@@ -148,12 +149,13 @@ void free_wp(int num) {
 }
 
 /* scan watchpoint and see if the expr value change */
-/* trace_and_difftest(0 cpu/cpu-exec.c call this function */
+/* trace_and_difftest(), cpu/cpu-exec.c call this function */
 void scan_wp_pool() {
   WP* ptr = head;
   word_t now_result;
   bool success = false;
   for( ;ptr != NULL; ptr = ptr->next) {
+		/* check if expr value change */
     now_result = expr(ptr->expr, &success);
     if (success == false) {
       printf("scan_wp_pool(): eval expr() error\n");
@@ -161,11 +163,20 @@ void scan_wp_pool() {
     }
     if (now_result != ptr->val) {
       nemu_state.state = NEMU_STOP;
-      printf("Hardware watchpoint %d: %s\n", ptr->NO, ptr->expr);
-      printf("\n");
-      printf("Old vaule = %d\n", ptr->val);
+      printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
+      printf("Old vaule = %d, ", ptr->val);
       printf("New value = %u\n", now_result);
+			ptr->val = now_result;
+			return;
     }
+		
+		/* check if reach memory address */
+		if (cpu.pc - 4 == strtol(ptr->expr+1, NULL, 16) ) {
+      nemu_state.state = NEMU_STOP;
+      printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
+			return;
+		}	
+			
   }// end for (;...)
 }
 
@@ -175,6 +186,7 @@ void print_wp() {
 		printf("No watchpoints.\n");
 		return;
 	}
+	/*
 	printf("Num Type          Disp Enb Address    What  \n");
 	WP* ptr = head;
 	for ( ;ptr != NULL; ptr = ptr->next) {
@@ -182,4 +194,28 @@ void print_wp() {
 		printf("%-3d %-10s %-4s %-3s %-10s %-6s\n", 
 			ptr->NO, "hw watchpoint", "keep", "y", ptr->expr+1, ptr->expr);
 	}	
+	*/
+	printf("Num What  \n");
+	WP* ptr = head;
+	for ( ;ptr != NULL; ptr = ptr->next) {
+		// Num Type Disp Enb Address What
+		printf("%-3d %-6s\n", 
+			ptr->NO, ptr->expr);
+	}	
+  printf("\n");
 } // end function
+
+/* check if already has a same wp 
+** return true if had 
+*/
+bool check_repeated_wp(char *args) {
+	if (head == NULL) {
+		return false;
+	}	
+	WP *ptr = head;
+	for(; ptr != NULL; ptr = ptr->next) {
+		if ( strcmp(args, ptr->expr) == 0 ) 
+			return true;
+	}
+	return false;
+}
