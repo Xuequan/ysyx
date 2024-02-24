@@ -321,7 +321,8 @@ word_t expr(char *e, bool *success) {
 
 	word_t reference_result = check_expr(nr_token + 1);
 	word_t eval_result = eval(0, nr_token);
-	if ( (reference_result == 0) ? 1 : reference_result != eval_result ) {
+	if ( (reference_result == 0) ? 1 : reference_result != eval_result ) 
+	{
 		printf("Please check, calculate error\n");
 	}
 	return eval_result;
