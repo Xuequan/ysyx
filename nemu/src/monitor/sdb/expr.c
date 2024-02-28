@@ -219,7 +219,7 @@ static void check_tokens_type(int tokens_length) {
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
 			*/
-			sprintf(tokens[i].str, "%#x", reg_val);
+			sprintf(tokens[i].str, "%#x", cpu.pc);
 		} 
 	} 
 
