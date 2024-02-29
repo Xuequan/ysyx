@@ -36,7 +36,11 @@ enum {
 #define immJ() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 20 ) | \
 														BITS(i, 30, 21) << 1 | (BITS(i, 20, 20) << 11) | \
 													 (BITS(i, 19, 12) << 12); } while(0)
-#define updateDnpc() do { s->dnpc = s->pc + *imm; } while(0)
+/* update s->dnpc */
+#define updateDnpc() do { s->dnpc = s->pc + (*imm); } while(0)
+
+/* set address least-significant bit 0 */
+#define setLSBZero(x) do { (x) &= 0xfffffffe;} while(0)  
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
@@ -47,7 +51,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
     case TYPE_S: src1R(); src2R(); immS(); break;
-		case TYPE_J: immJ(); 		 updateDnpc(); break; 
+		case TYPE_J: immJ(); 		 updateDnpc();break; 
   }
 }
 
@@ -72,11 +76,13 @@ static int decode_exec(Decode *s) {
 	// addi 
 	INSTPAT("??????? ????? ????? 000 ????? 00100 11", addi	 , I, R(rd) = src1 + imm);
 	// jal
-  INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal		 , J, R(rd) = 4 + s->pc); 
+  INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal		 , J, R(rd) = s->pc + 4;); 
 	// sw 
   INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw		 , S, Mw(src1 + imm, 4, src2)); 
 	// lw 
   INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw		 , I, R(rd) = Mr(src1 + imm, 4)); 
+	// jalr
+  INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr	 , I, R(rd) = s->pc + 4; setLSBZero(s->dnpc); ); 
 
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
