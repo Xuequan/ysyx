@@ -38,6 +38,7 @@ enum {
 													 (BITS(i, 19, 12) << 12); } while(0)
 /* update s->dnpc */
 #define updateDnpc() do { s->dnpc = s->pc + *imm; } while(0)
+#define updateDnpc2() do { s->dnpc = *src1 + *imm; } while(0)
 
 /* set address least-significant bit 0 */
 #define setLSBZero() do { s->dnpc &= 0xfffffffe;} while(0)  
@@ -52,7 +53,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_U:                   immU(); break;
     case TYPE_S: src1R(); src2R(); immS(); break;
 		case TYPE_J: immJ(); 		 updateDnpc();break; 
-    case TYPE_I_JALR: src1R();  immI(); updateDnpc(); /* setLSBZero(); */  break;
+    case TYPE_I_JALR: src1R();  immI(); updateDnpc2(); /* setLSBZero(); */  break;
   }
 }
 
