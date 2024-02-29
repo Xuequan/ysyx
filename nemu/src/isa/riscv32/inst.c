@@ -37,10 +37,10 @@ enum {
 														BITS(i, 30, 21) << 1 | (BITS(i, 20, 20) << 11) | \
 													 (BITS(i, 19, 12) << 12); } while(0)
 /* update s->dnpc */
-#define updateDnpc() do { s->dnpc = s->pc + (*imm); } while(0)
+#define updateDnpc() do { s->dnpc = s->pc + *imm; } while(0)
 
 /* set address least-significant bit 0 */
-#define setLSBZero(x) do { (x) &= 0xfffffffe;} while(0)  
+#define setLSBZero() do { s->dnpc &= 0xfffffffe;} while(0)  
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
@@ -82,7 +82,7 @@ static int decode_exec(Decode *s) {
 	// lw 
   INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw		 , I, R(rd) = Mr(src1 + imm, 4)); 
 	// jalr
-  INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr	 , I, R(rd) = s->pc + 4; setLSBZero(s->dnpc); ); 
+  INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr	 , I, R(rd) = s->pc + 4; setLSBZero(); ); 
 
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
