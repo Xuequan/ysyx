@@ -53,11 +53,12 @@ enum {
 #define shiftAmt() do { shiftAmt = BITS(src2, 4, 0);} while (0)  
 */
 
-static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
+static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int *shamt, int type) {
   uint32_t i = s->isa.inst.val;
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
   *rd     = BITS(i, 11, 7);
+	*shamt  = BITS(i, 24, 20);
   switch (type) {
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
@@ -72,12 +73,13 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 static int decode_exec(Decode *s) {
   int rd = 0;
   word_t src1 = 0, src2 = 0, imm = 0;
+	int shamt = 0;
   s->dnpc = s->snpc;   
 	// word_t shitfAmt = 0;
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 #define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
-  decode_operand(s, &rd, &src1, &src2, &imm, concat(TYPE_, type)); \
+  decode_operand(s, &rd, &src1, &src2, &imm, &shamt, concat(TYPE_, type)); \
   __VA_ARGS__ ; \
 }
 
@@ -96,6 +98,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw		 , S, Mw(src1 + imm, 4, src2)); 
 	// sh
   INSTPAT("??????? ????? ????? 001 ????? 01000 11", sh		 , S, Mw(src1 + imm, 2, src2)); 
+	// sb 
+  INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb		 , S, Mw(src1 + imm, 1, src2)); 
 	// lw 
   INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw		 , I, R(rd) = Mr(src1 + imm, 4)); 
 	// jalr
@@ -142,6 +146,12 @@ static int decode_exec(Decode *s) {
 	INSTPAT("??????? ????? ????? 101 ????? 11000 11", bge	   , B, s->dnpc = ((sword_t)src1 >= (sword_t)src2) ? s->pc + imm : s->dnpc;);
 	// bgeu
 	INSTPAT("??????? ????? ????? 111 ????? 11000 11", bgeu	 , B, s->dnpc = (src1 >= src2) ? s->pc + imm : s->dnpc;);
+	// slli 
+  INSTPAT("0000000 ????? ????? 001 ????? 00100 11", slli	 , I, R(rd) = src1 << shamt;); 
+	// srli 
+  INSTPAT("0000000 ????? ????? 101 ????? 00100 11", srli	 , I, R(rd) = src1 >> shamt;); 
+	// srai 
+  INSTPAT("0100000 ????? ????? 101 ????? 00100 11", srai	 , I, R(rd) = (sword_t)src1 >> shamt;); 
 	
 
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
