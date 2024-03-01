@@ -23,7 +23,7 @@
 #define Mw vaddr_write
 
 enum {
-  TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_I_JALR, TYPE_R,
+  TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_I_JALR, TYPE_R, TYPE_B,
   TYPE_N, // none
 };
 
@@ -36,6 +36,10 @@ enum {
 #define immJ() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 20 ) | \
 														BITS(i, 30, 21) << 1 | (BITS(i, 20, 20) << 11) | \
 													 (BITS(i, 19, 12) << 12); } while(0)
+
+#define immB() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 12 ) | \
+														BITS(i, 30, 25) << 5 | (BITS(i, 11, 8) << 1) | \
+													 (BITS(i, 7, 7) << 11); } while(0)
 /* update s->dnpc */
 #define updateDnpc() do { s->dnpc = s->pc + *imm; } while(0)
 #define updateDnpc2() do { s->dnpc = *src1 + *imm; } while(0)
@@ -55,6 +59,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 		case TYPE_J: immJ(); 		 updateDnpc();break; 
     case TYPE_I_JALR: src1R();  immI(); updateDnpc2(); setLSBZero();   break;
     case TYPE_R: src1R(); src2R(); 			  break;
+    case TYPE_B: src1R(); src2R(); immB(); break;
   }
 }
 
@@ -100,6 +105,8 @@ static int decode_exec(Decode *s) {
 	INSTPAT("??????? ????? ????? 100 ????? 00100 11", xori	 , I, R(rd) = src1 ^ imm;);
 	// andi
 	INSTPAT("??????? ????? ????? 111 ????? 00100 11", andi	 , I, R(rd) = src1 & imm;);
+	// beq
+	INSTPAT("??????? ????? ????? 000 ????? 11000 11", beq	   , B, s->dnpc = (src1 == src2) ? s->pc + imm : s->dnpc;);
 
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
