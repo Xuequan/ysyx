@@ -47,6 +47,12 @@ enum {
 /* set address least-significant bit 0 */
 #define setLSBZero() do { s->dnpc &= 0xfffffffe;} while(0)  
 
+
+/* shift amount held in the lower 5 bits of register rs2 */
+/*
+#define shiftAmt() do { shiftAmt = BITS(src2, 4, 0);} while (0)  
+*/
+
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
   int rs1 = BITS(i, 19, 15);
@@ -56,9 +62,9 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
     case TYPE_S: src1R(); src2R(); immS(); break;
-		case TYPE_J: immJ(); 		 updateDnpc();break; 
+		case TYPE_J: immJ(); 		 updateDnpc(); break; 
     case TYPE_I_JALR: src1R();  immI(); updateDnpc2(); setLSBZero();   break;
-    case TYPE_R: src1R(); src2R(); 			  break;
+    case TYPE_R: src1R(); src2R(); 			   break;
     case TYPE_B: src1R(); src2R(); immB(); break;
   }
 }
@@ -67,6 +73,7 @@ static int decode_exec(Decode *s) {
   int rd = 0;
   word_t src1 = 0, src2 = 0, imm = 0;
   s->dnpc = s->snpc;   
+	// word_t shitfAmt = 0;
 
 #define INSTPAT_INST(s) ((s)->isa.inst.val)
 #define INSTPAT_MATCH(s, name, type, ... /* execute body */ ) { \
@@ -95,6 +102,16 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 000 ????? 01100 11", add    , R, R(rd) = src1 + src2; ); 
 	// sub
   INSTPAT("0100000 ????? ????? 000 ????? 01100 11", sub    , R, R(rd) = src1 - src2; ); 
+	// slt
+  INSTPAT("0000000 ????? ????? 010 ????? 01100 11", slt    , R, R(rd) = ((sword_t)src1 < (sword_t)src2) ? 1 : 0; ); 
+	// sltu
+  INSTPAT("0000000 ????? ????? 011 ????? 01100 11", sltu   , R, R(rd) = (src1 < src2) ? 1 : 0; ); 
+	// sll
+  INSTPAT("0000000 ????? ????? 001 ????? 01100 11", sll    , R, R(rd) = src1 << BITS(src2, 4, 0); ); 
+	// srl
+  INSTPAT("0000000 ????? ????? 101 ????? 01100 11", srl    , R, R(rd) = src1 >> BITS(src2, 4, 0); ); 
+	// sra
+  INSTPAT("0100000 ????? ????? 101 ????? 01100 11", sra    , R, R(rd) = (sword_t)src1 >> BITS(src2, 4, 0);); 
 	// slti
 	INSTPAT("??????? ????? ????? 010 ????? 00100 11", slti	 , I, R(rd) = (sword_t)src1 < (sword_t)imm ? 1 : 0;);
 	// sltiu
