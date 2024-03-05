@@ -105,8 +105,8 @@ int main() {
 	ram_init();	
 	print_instructions();
 
-	for (int i = 0; i < 40; i++){
-		if (i < 10) 
+	for (int i = 0; i < 9; i++){
+		if (i < 5) 
 			top->rst = 1;	
 		else 
 			top->rst = 0;	
