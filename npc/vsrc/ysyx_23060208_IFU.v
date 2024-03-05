@@ -12,7 +12,7 @@ wire [ADDR_WIDTH-1:0] next_pc;  // to IDU
 //assign next_pc = addr_o + ADDR_WIDTH'h4;
 assign next_pc = addr_o + ADDR_WIDTH'('h4);
 
-ysyx_23060208_PCreg #(.ADDR_WIDTH(ADDR_WIDTH)) i0(
+ysyx_23060208_PCreg #(.ADDR_WIDTH(ADDR_WIDTH)) PCreg_i0(
 	.clk(clk),
 	.rst(rst),
 	.next_pc(next_pc),
