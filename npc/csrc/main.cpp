@@ -47,6 +47,7 @@ void nvboard_bind_all_pins(Vtop *top) {
 
 // 读入指令
 map<unsigned int, string> instructions;
+//map<unsigned int, unsigned int> instructions;
 void ram_init(void) {
 	ifstream infile;
 	infile.open("/home/chuan/ysyx-workbench/npc/csrc/ram.txt");
@@ -55,15 +56,18 @@ void ram_init(void) {
 		return;
 	}
 	string __addr, _addr;
+	unsigned int addr;
+
 	string inst;
 	string line;
-	unsigned int addr;
 	while (getline(infile, line) ){
 		istringstream stream(line);
 		stream >> __addr;
+
 		_addr = __addr.substr(0, 8);
 		istringstream st(_addr);
 		st >> addr;		
+
 		stream >> inst;
 		instructions[addr] = inst;
 	}
@@ -84,7 +88,7 @@ unsigned int pmem_read(unsigned int addr) {
 	string inst = instructions[addr];
 	cout << "==== inst = " << inst <<endl;
 	unsigned int ret;
-	sscanf(inst.c_str(), "%u", &ret);
+	sscanf(inst.c_str(), "%x", &ret);
 	printf("inst = %#x\n", ret);
 
 	unsigned int test;
@@ -109,11 +113,12 @@ int main() {
 	top->rst = 0;
 	step_and_dump_wave();
 	top->clk = 1;
-
+/*
 	top->pc = (unsigned int)80000000;
 	top->inst = pmem_read(top->pc);
 	cout << "get inst: " << top->inst << endl;
 	step_and_dump_wave();
+*/
 
 	/*
 	while (1) {
