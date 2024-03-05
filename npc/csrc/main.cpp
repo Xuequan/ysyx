@@ -46,28 +46,31 @@ void nvboard_bind_all_pins(Vtop *top) {
 */
 
 // 读入指令
-map<string, string> instructions;
+map<unsigned int, string> instructions;
 void ram_init(void) {
 	ifstream infile("ram.txt");
 	if (! infile) {
 		printf("Open ram.txt wrong!\n");
 		return;
 	}
-	string __addr, addr;
+	string __addr, _addr;
 	string inst;
 	string line;
+	unsigned int addr;
 	while (getline(infile, line) ){
 		istringstream stream(line);
 		stream >> __addr;
-		addr = __addr.substr(0, 8);
+		_addr = __addr.substr(0, 8);
+		istringstream st(_addr);
+		st >> addr;		
 		stream >> inst;
 		instructions[addr] = inst;
 	}
 }
 
-unsigned int pmem_read(string addr) {
-	map<string, string>::iterator it;
-	it = instructions.find("addr");
+unsigned int pmem_read(unsigned int addr) {
+	map<unsigned int, string>::iterator it;
+	it = instructions.find(addr);
 	if (it == instructions.end()) {
 		cout << "Cannot find a instruction at address " << addr << "\n";
 		return 0;
@@ -98,7 +101,7 @@ int main() {
 		if (top->pc == 0x80000004)
 			break;
 		top->clk = ~top->clk;	
-		top->inst = pmem_read(to_string(top->pc));
+		top->inst = pmem_read(top->pc);
 		step_and_dump_wave();
 		//nvboard_update();
 	}
