@@ -107,6 +107,7 @@ int main() {
 
 	for (int i = 0; i < 10; i++){
 		top->rst = 1;	
+		top->clk = i % 2;
 		printf("%d: top->pc = %#x\n", i, top->pc);
 		step_and_dump_wave();
 	}
