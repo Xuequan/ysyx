@@ -63,7 +63,6 @@ void ram_init(void) {
 		stream >> __addr;
 		addr = __addr.substr(0, 8);
 		addr = "0x" + addr;
-		printf("addr = %s\n", addr.c_str());
 		stream >> inst;
 		instructions[addr] = inst;
 	}
@@ -85,6 +84,10 @@ unsigned int pmem_read(unsigned int addr) {
 	it = instructions.begin();
 	char buf[12];
 	for ( ; it != instructions.end(); ++it) {
+		string tmp = it->first;
+		printf("pmem_read() :\n");
+		unsigned int tmp2 = (unsigned int)strtol(tmp.c_str(), NULL, 16);
+		printf("------%#x\n", tmp2);
 		int i = 0;
 		for (auto c : it->first)
 		{
