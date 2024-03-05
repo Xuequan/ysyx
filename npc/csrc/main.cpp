@@ -84,19 +84,19 @@ void print_instructions() {
 
 unsigned int pmem_read(unsigned int addr) {
 	printf("pmem_read(): input addr = %#x\n", addr);
-	map<unsigned int, string>::iterator it;
-	it = instructions.begin();
-	for ( ; it != instructions.end(); ++it) {
-		if ((unsigned int)it->first == addr) {   // 找到addr对应的 pc
+	map<unsigned int, string>::iterator it2;
+	it2 = instructions.begin();
+	for ( ; it2 != instructions.end(); ++it2) {
+		if ((unsigned int)it2->first == addr) {   // 找到addr对应的 pc
 			break; 
 		}
 	}
 
-	if (it == instructions.end() ){
+	if (it2 == instructions.end() ){
 		printf("Cannot find a instruction at address %#x\n", addr);
 		return 0;
 	}
-	string inst = it->second;
+	string inst = it2->second;
 	unsigned int ret;
 	sscanf(inst.c_str(), "%x", &ret);
 	printf("inst = %#x\n", ret);
