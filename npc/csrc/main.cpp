@@ -85,8 +85,9 @@ unsigned int pmem_read(unsigned int addr) {
 	char buf[12];
 	for ( ; it != instructions.end(); ++it) {
 		string tmp = it->first;
-		printf("pmem_read() :\n");
+		//printf("pmem_read() :\n");
 		unsigned int tmp2 = (unsigned int)strtol(tmp.c_str(), NULL, 16);
+		/*
 		printf("------%#x\n", tmp2);
 		int i = 0;
 		for (auto c : it->first)
@@ -98,6 +99,9 @@ unsigned int pmem_read(unsigned int addr) {
 		printf("== %#x\n", *(unsigned int *)buf);
 		if (*(unsigned int *)buf == addr)
 			break; 
+		*/
+		if (tmp2 == addr)
+			break;
 	}
 
 	if (it == instructions.end() ){
