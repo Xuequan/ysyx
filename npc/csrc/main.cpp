@@ -48,7 +48,8 @@ void nvboard_bind_all_pins(Vtop *top) {
 // 读入指令
 map<unsigned int, string> instructions;
 void ram_init(void) {
-	ifstream infile("ram.txt");
+	ifstream infile;
+	infile.open("ram.txt");
 	if (! infile) {
 		printf("Open ram.txt wrong!\n");
 		return;
@@ -66,6 +67,7 @@ void ram_init(void) {
 		stream >> inst;
 		instructions[addr] = inst;
 	}
+	infile.close();
 }
 
 unsigned int pmem_read(unsigned int addr) {
