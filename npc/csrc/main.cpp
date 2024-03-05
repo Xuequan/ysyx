@@ -85,6 +85,7 @@ void print_instructions() {
 unsigned int pmem_read(unsigned int addr) {
 	printf("pmem_read(): input addr = %#x\n", addr);
 	map<unsigned int, string>::iterator it;
+	it = instructions.begin();
 	for ( ; it != instructions.end(); ++it) {
 		if (it->first == addr) {   // 找到addr对应的 pc
 			break; 
@@ -95,7 +96,6 @@ unsigned int pmem_read(unsigned int addr) {
 		return 0;
 	}
 	string inst = it->second;
-	cout << "==== inst = " << inst <<endl;
 	unsigned int ret;
 	sscanf(inst.c_str(), "%x", &ret);
 	printf("inst = %#x\n", ret);
@@ -120,9 +120,8 @@ int main() {
 		else 
 			top->rst = 0;	
 		top->clk = i % 2;
-		printf("%d: top->pc = %#x, ", i, top->pc);
 		top->inst = pmem_read((unsigned int)top->pc);
-		printf("now top->inst = %#x\n", top->inst);
+		printf("%d: top->pc = %#x, top->inst \n", i, top->pc, top->inst);
 		step_and_dump_wave();
 	}
 
