@@ -5,14 +5,15 @@ module ysyx_23060208_PCreg
 	input clk,
 	input rst,
 	//input wen,
-	input  [ADDR_WIDTH-1:0] dnpc,
-	output [ADDR_WIDTH-1:0] pc
+	// next_pc
+	input  [ADDR_WIDTH-1:0] next_pc,
+	output reg [ADDR_WIDTH-1:0] pc
 );
 
 Reg #(.WIDTH(ADDR_WIDTH), .RESET_VAL(ADDR_WIDTH'('h8000_0000))) i0(
 	.clk(clk),
 	.rst(rst),
-	.din(dnpc),
+	.din(next_pc),
 	.dout(pc),
 	.wen(1'b1)   
 );
