@@ -95,6 +95,8 @@ int main() {
 	step_and_dump_wave();
 	top->clk = 1;
 	while (1) {
+		if (top->pc == 0x80000004)
+			break;
 		top->clk = ~top->clk;	
 		top->inst = pmem_read(to_string(top->pc));
 		step_and_dump_wave();
