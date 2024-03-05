@@ -113,12 +113,10 @@ int main() {
 	top->rst = 0;
 	step_and_dump_wave();
 	top->clk = 1;
-/*
 	top->pc = (unsigned int)80000000;
 	top->inst = pmem_read(top->pc);
 	cout << "get inst: " << top->inst << endl;
 	step_and_dump_wave();
-*/
 
 	/*
 	while (1) {
