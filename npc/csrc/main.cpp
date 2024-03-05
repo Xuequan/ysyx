@@ -82,7 +82,7 @@ unsigned int pmem_read(unsigned int addr) {
 	printf("pmem_read(): input addr = %#x\n", addr);
 	map<string, string>::iterator it;
 	it = instructions.begin();
-	char buf[10];
+	char buf[12];
 	for ( ; it != instructions.end(); ++it) {
 		int i = 0;
 		for (auto c : it->first)
