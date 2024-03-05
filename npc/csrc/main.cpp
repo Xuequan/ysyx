@@ -113,7 +113,7 @@ int main() {
 	top->rst = 0;
 	step_and_dump_wave();
 	for (int i = 0; i < 10; i++) {
-		top->clk = ~top->clk;
+		top->clk = i % 2;
 		printf("%d: top->pc = %#x\n", i, top->pc);
 		step_and_dump_wave();
 	}
