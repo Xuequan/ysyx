@@ -106,6 +106,8 @@ unsigned int pmem_read(unsigned int addr, bool *success) {
 
 	if (it == instructions.end() ){
 		printf("Cannot find a instruction at address %#x\n", addr);
+		
+		printf("\n");
 		*success = 0;
 		return 0;
 	}
@@ -133,7 +135,6 @@ int main() {
 		else 
 			top->rst = 0;	
 		top->clk = i % 2;
-		printf("\n");
 		bool success = 0;
 		top->inst = pmem_read((unsigned int)top->pc, &success);
 		/*
