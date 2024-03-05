@@ -106,9 +106,8 @@ int main() {
 	top->clk = 1;
 
 	top->pc = (unsigned int)80000000;
-	printf("top->pc = %#x\n", top->pc);
-	cout << "get inst: " << instructions[top->pc] << endl;
 	top->inst = pmem_read(top->pc);
+	cout << "get inst: " << top->inst << endl;
 	step_and_dump_wave();
 
 	/*
