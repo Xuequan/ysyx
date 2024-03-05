@@ -87,10 +87,11 @@ unsigned int pmem_read(unsigned int addr) {
 	map<unsigned int, string>::iterator it;
 	it = instructions.begin();
 	for ( ; it != instructions.end(); ++it) {
-		if (it->first == addr) {   // 找到addr对应的 pc
+		if ((unsigned int)it->first == addr) {   // 找到addr对应的 pc
 			break; 
 		}
 	}
+
 	if (it == instructions.end() ){
 		printf("Cannot find a instruction at address %#x\n", addr);
 		return 0;
@@ -122,6 +123,7 @@ int main() {
 		top->clk = i % 2;
 		top->inst = pmem_read((unsigned int)top->pc);
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
+		printf("\n");
 		step_and_dump_wave();
 	}
 
