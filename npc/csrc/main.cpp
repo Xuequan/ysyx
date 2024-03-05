@@ -69,7 +69,11 @@ void ram_init(void) {
 	}
 	infile.close();
 }
-
+void print_instructions() {
+	map<unsigned int, string>::iterator it = instructions.begin();
+	for ( ; it != instructions.end(); it++)
+		cout << it->first << ": " << it->second << endl;
+}
 unsigned int pmem_read(unsigned int addr) {
 	map<unsigned int, string>::iterator it;
 	it = instructions.find(addr);
@@ -94,6 +98,8 @@ int main() {
 	nvboard_init();
 	*/
 	ram_init();	
+	print_instructions();
+	print_instructions();
 	for (int i = 0; i < 10; i++)
 		top->rst = 1;	
 	top->rst = 0;
