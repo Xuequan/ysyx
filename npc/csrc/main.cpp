@@ -99,7 +99,6 @@ int main() {
 	*/
 	ram_init();	
 	print_instructions();
-	print_instructions();
 	for (int i = 0; i < 10; i++)
 		top->rst = 1;	
 	top->rst = 0;
