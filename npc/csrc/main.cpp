@@ -97,6 +97,12 @@ int main() {
 	top->rst = 0;
 	step_and_dump_wave();
 	top->clk = 1;
+
+		top->clk = ~top->clk;	
+		top->inst = pmem_read(top->pc);
+		step_and_dump_wave();
+
+	/*
 	while (1) {
 		if (top->pc == 0x80000004)
 			break;
@@ -105,6 +111,7 @@ int main() {
 		step_and_dump_wave();
 		//nvboard_update();
 	}
+	*/
 	//nvboard_quit();
 	
 	sim_exit();
