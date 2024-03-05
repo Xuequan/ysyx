@@ -101,6 +101,7 @@ int main() {
 	top->clk = 1;
 
 		top->clk = ~top->clk;	
+		printf("top->pc = %u\n", top->pc);
 		top->inst = pmem_read(top->pc);
 		step_and_dump_wave();
 
