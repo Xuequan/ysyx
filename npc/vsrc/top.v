@@ -1,5 +1,5 @@
 module top
-	#(DATA_WIDTH = 32, ADDR_WIDTH = 25, 
+	#(DATA_WIDTH = 32, ADDR_WIDTH = 32, 
 		REG_WIDTH = 5)(
 	input clk,
 	input rst,
