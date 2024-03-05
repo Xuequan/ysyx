@@ -49,7 +49,7 @@ void nvboard_bind_all_pins(Vtop *top) {
 map<unsigned int, string> instructions;
 void ram_init(void) {
 	ifstream infile;
-	infile.open("./ram.txt");
+	infile.open("/home/chuan/ysyx-workbench/npc/csrc/ram.txt");
 	if (! infile) {
 		printf("Open ram.txt wrong!\n");
 		return;
