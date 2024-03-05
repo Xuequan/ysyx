@@ -64,7 +64,7 @@ void ram_init(void) {
 		istringstream stream(line);
 		stream >> __addr;
 
-		_addr = __addr.substr(0, 8);
+		_addr = __addr.substr(0, 10);
 		istringstream st(_addr);
 		st >> addr;		
 
@@ -79,7 +79,7 @@ void print_instructions() {
 		cout << it->first << ": " << it->second << endl;
 }
 unsigned int pmem_read(unsigned int addr) {
-	printf("pmem_read(): input addr = %#x, ", addr);
+	printf("pmem_read(): input addr = %#x\n", addr);
 	map<unsigned int, string>::iterator it;
 	it = instructions.find(addr);
 	if (it == instructions.end()) {
