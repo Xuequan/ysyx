@@ -84,8 +84,7 @@ unsigned int pmem_read(unsigned int addr) {
 	string inst = instructions[addr];
 	cout << "==== inst = " << inst <<endl;
 	unsigned int ret;
-	istringstream ss(inst);
-	ss >> ret;
+	sscanf(inst.c_str(), "%u", &ret);
 	printf("inst = %#x\n", ret);
 	return ret;
 }
