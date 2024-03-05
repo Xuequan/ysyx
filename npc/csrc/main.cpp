@@ -78,7 +78,8 @@ void print_instructions() {
 	printf("==============================\n");
 	map<unsigned int, string>::iterator it = instructions.begin();
 	for ( ; it != instructions.end(); it++)
-		cout << it->first << ": " << it->second << endl;
+		//cout << it->first << ": " << it->second << endl;
+		printf("%#x, %#x\n", it->first, it->second);
 	printf("==============================\n");
 }
 
