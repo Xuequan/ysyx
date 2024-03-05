@@ -78,7 +78,7 @@ void print_instructions() {
 	printf("==============================\n");
 }
 
-unsigned int pmem_read(unsigned int addr) {
+unsigned int pmem_read(unsigned int addr, bool *success) {
 	printf("pmem_read(): input addr = %#x\n", addr);
 	map<string, string>::iterator it;
 	it = instructions.begin();
@@ -106,13 +106,13 @@ unsigned int pmem_read(unsigned int addr) {
 
 	if (it == instructions.end() ){
 		printf("Cannot find a instruction at address %#x\n", addr);
+		*success = 0;
 		return 0;
 	}
 	string inst = it->second;
 	unsigned int ret;
 	sscanf(inst.c_str(), "%x", &ret);
-	printf("inst = %#x\n", ret);
-
+	*success = 1;
 	return ret;
 }
 
@@ -134,7 +134,12 @@ int main() {
 			top->rst = 0;	
 		top->clk = i % 2;
 		printf("\n");
-		top->inst = pmem_read((unsigned int)top->pc);
+		bool success = 0;
+		top->inst = pmem_read((unsigned int)top->pc, &success);
+		if (!success)	{
+			printf("Failed to get pc at %#x\n", top->pc);
+			break;
+		}
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 		step_and_dump_wave();
 	}
