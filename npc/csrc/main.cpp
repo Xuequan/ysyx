@@ -82,7 +82,6 @@ unsigned int pmem_read(unsigned int addr) {
 	map<unsigned int, string>::iterator it;
 	it = instructions.find(addr);
 	if (it == instructions.end()) {
-		// cout << "Cannot find a instruction at address " << addr << "\n";
 		printf("Cannot find a instruction at address %#x\n", addr);
 		return 0;
 	}
@@ -113,7 +112,7 @@ int main() {
 			top->rst = 0;	
 		top->clk = i % 2;
 		printf("%d: top->pc = %#x, ", i, top->pc);
-		top->inst = pmem_read(top->pc);
+		top->inst = pmem_read((unsigned int)top->pc);
 		printf("now top->inst = %#x\n", top->inst);
 		step_and_dump_wave();
 	}
