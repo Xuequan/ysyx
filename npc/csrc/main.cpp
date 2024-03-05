@@ -104,8 +104,12 @@ int main() {
 	*/
 	ram_init();	
 	print_instructions();
-	for (int i = 0; i < 10; i++)
+
+	for (int i = 0; i < 10; i++){
 		top->rst = 1;	
+		printf("%d: top->pc = %#x\n", i, top->pc);
+		step_and_dump_wave();
+	}
 	top->rst = 0;
 	step_and_dump_wave();
 	top->clk = 1;
