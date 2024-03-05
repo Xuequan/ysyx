@@ -1,8 +1,18 @@
 #include "Vtop.h"
 #include <stdlib.h>
-#include "nvboard.h"
+//#include "nvboard.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
+
+#include <stdio.h>
+//#include "/home/chuan/ysyx-workbench/nemu/include/memory"
+
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <map>
+#include <fstream>
+using namespace std;
 
 // static TOP_NAME dut;
 
@@ -27,25 +37,70 @@ void sim_init() {
 void sim_exit() {
 	tfp->close();
 }
+/*
 void nvboard_bind_all_pins(Vtop *top) {
 	nvboard_bind_pin(&top->a, false, true, 1, LD0);
 	nvboard_bind_pin(&top->b, false, true, 1, LD1);
 	nvboard_bind_pin(&top->f, false, true, 1, LD2);
 }
+*/
+
+// 读入指令
+map<string, string> instructions;
+void ram_init(void) {
+	ifstream infile("ram.txt");
+	if (! infile) {
+		printf("Open ram.txt wrong!\n");
+		return;
+	}
+	string __addr, addr;
+	string inst;
+	string line;
+	while (getline(infile, line) ){
+		istringstream stream(line);
+		stream >> __addr;
+		addr = __addr.substr(0, 8);
+		stream >> inst;
+		instructions[addr] = inst;
+	}
+}
+
+unsigned int pmem_read(string addr) {
+	map<string, string>::iterator it;
+	it = instructions.find("addr");
+	if (it == instructions.end()) {
+		cout << "Cannot find a instruction at address " << addr << "\n";
+		return 0;
+	}
+	string inst = instructions[addr];
+	unsigned int ret;
+	istringstream ss(inst);
+	ss >> ret;
+	printf("inst = %#x\n", ret);
+	return ret;
+}
+
 
 int main() {
 	sim_init();
 
+	/*
 	nvboard_bind_all_pins(top);
 	nvboard_init();
-	
+	*/
+	ram_init();	
+	for (int i = 0; i < 10; i++)
+		top->rst = 1;	
+	top->rst = 0;
+	step_and_dump_wave();
+	top->clk = 1;
 	while (1) {
-		top->a = rand() & 1;
-		top->b = rand() & 1;
+		top->clk = ~top->clk;	
+		top->inst = pmem_read(to_string(top->pc));
 		step_and_dump_wave();
-		nvboard_update();
+		//nvboard_update();
 	}
-	nvboard_quit();
+	//nvboard_quit();
 	
 	sim_exit();
 	return 0;
