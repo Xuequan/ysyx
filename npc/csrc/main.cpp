@@ -121,7 +121,7 @@ int main() {
 			top->rst = 0;	
 		top->clk = i % 2;
 		top->inst = pmem_read((unsigned int)top->pc);
-		printf("%d: top->pc = %#x, top->inst \n", i, top->pc, top->inst);
+		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 		step_and_dump_wave();
 	}
 
