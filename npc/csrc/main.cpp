@@ -46,8 +46,8 @@ void nvboard_bind_all_pins(Vtop *top) {
 */
 
 // 读入指令
-map<unsigned int, string> instructions;
-//map<unsigned int, unsigned int> instructions;
+map<string, string> instructions;
+//map<string, unsigned int> instructions;
 void ram_init(void) {
 	ifstream infile;
 	infile.open("/home/chuan/ysyx-workbench/npc/csrc/ram.txt");
@@ -55,18 +55,13 @@ void ram_init(void) {
 		printf("Open ram.txt wrong!\n");
 		return;
 	}
-	string __addr, _addr;
-	unsigned int addr;
-
+	string __addr, addr;
 	string inst;
 	string line;
 	while (getline(infile, line) ){
 		istringstream stream(line);
 		stream >> __addr;
-
-		_addr = __addr.substr(0, 8);
-		istringstream st(_addr);
-		st >> addr;		
+		addr = __addr.substr(0, 8);
 
 		stream >> inst;
 		instructions[addr] = inst;
@@ -76,28 +71,35 @@ void ram_init(void) {
 
 void print_instructions() {
 	printf("==============================\n");
-	map<unsigned int, string>::iterator it = instructions.begin();
+	map<string, string>::iterator it = instructions.begin();
 	for ( ; it != instructions.end(); it++)
-		//cout << it->first << ": " << it->second << endl;
-		printf("%#x, %#x\n", it->first, it->second);
+		cout << it->first << ": " << it->second << endl;
+		//printf("%#x, %#x\n", it->first, it->second);
 	printf("==============================\n");
 }
 
 unsigned int pmem_read(unsigned int addr) {
 	printf("pmem_read(): input addr = %#x\n", addr);
-	map<unsigned int, string>::iterator it2;
-	it2 = instructions.begin();
-	for ( ; it2 != instructions.end(); ++it2) {
-		if ((unsigned int)it2->first == addr) {   // 找到addr对应的 pc
-			break; 
+	map<string, string>::iterator it;
+	it = instructions.begin();
+	char buf[10];
+	for ( ; it != instructions.end(); ++it) {
+		int i = 0;
+		for (auto c : it->first)
+		{
+			buf[i] = c;
+			i++;
 		}
+		buf[i] = '\0';
+		if (*(unsigned int *)buf == addr)
+			break; 
 	}
 
-	if (it2 == instructions.end() ){
+	if (it == instructions.end() ){
 		printf("Cannot find a instruction at address %#x\n", addr);
 		return 0;
 	}
-	string inst = it2->second;
+	string inst = it->second;
 	unsigned int ret;
 	sscanf(inst.c_str(), "%x", &ret);
 	printf("inst = %#x\n", ret);
