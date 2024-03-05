@@ -84,7 +84,7 @@ unsigned int pmem_read(unsigned int addr) {
 	string inst = instructions[addr];
 	cout << "==== inst = " << inst <<endl;
 	unsigned int ret;
-	sscanf(inst.c_str(), "%d", &ret);
+	sscanf(inst.c_str(), "%u", &ret);
 	printf("inst = %#x\n", ret);
 	return ret;
 }
@@ -106,10 +106,10 @@ int main() {
 	top->clk = 1;
 
 	top->pc = (unsigned int)80000000;
-		printf("top->pc = %#x\n", top->pc);
-	cout << instructions[top->pc] << endl;
-		top->inst = pmem_read(top->pc);
-		step_and_dump_wave();
+	printf("top->pc = %#x\n", top->pc);
+	cout << "get inst" << instructions[top->pc] << endl;
+	top->inst = pmem_read(top->pc);
+	step_and_dump_wave();
 
 	/*
 	while (1) {
