@@ -86,6 +86,11 @@ unsigned int pmem_read(unsigned int addr) {
 	unsigned int ret;
 	sscanf(inst.c_str(), "%u", &ret);
 	printf("inst = %#x\n", ret);
+
+	unsigned int test;
+	istringstream ss1(inst);
+	ss1 >> test;
+	cout << "test1 :" << test << endl;	
 	return ret;
 }
 
