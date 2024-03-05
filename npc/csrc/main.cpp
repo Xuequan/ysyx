@@ -82,7 +82,8 @@ unsigned int pmem_read(unsigned int addr) {
 	map<unsigned int, string>::iterator it;
 	it = instructions.find(addr);
 	if (it == instructions.end()) {
-		cout << "Cannot find a instruction at address " << addr << "\n";
+		// cout << "Cannot find a instruction at address " << addr << "\n";
+		printf("Cannot find a instruction at address %#x\n", addr);
 		return 0;
 	}
 	string inst = instructions[addr];
@@ -105,25 +106,17 @@ int main() {
 	ram_init();	
 	print_instructions();
 
-	for (int i = 0; i < 10; i++){
-		top->rst = 1;	
+	for (int i = 0; i < 40; i++){
+		if (i < 10) 
+			top->rst = 1;	
+		else 
+			top->rst = 0;	
 		top->clk = i % 2;
-		printf("%d: top->pc = %#x\n", i, top->pc);
+		printf("%d: top->pc = %#x, ", i, top->pc);
+		top->inst = pmem_read(top->pc);
+		printf("now top->inst = %#x\n", top->inst);
 		step_and_dump_wave();
 	}
-	top->rst = 0;
-	step_and_dump_wave();
-	for (int i = 0; i < 10; i++) {
-		top->clk = i % 2;
-		printf("%d: top->pc = %#x\n", i, top->pc);
-		step_and_dump_wave();
-	}
-	top->clk = 1;
-	//top->pc = (unsigned int)80000000;
-	printf("now top->pc = %#x\n", top->pc);
-	top->inst = pmem_read(top->pc);
-	printf("now top->inst = %#x\n", top->inst);
-	step_and_dump_wave();
 
 	/*
 	while (1) {
