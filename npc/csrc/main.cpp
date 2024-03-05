@@ -62,7 +62,7 @@ void ram_init(void) {
 		istringstream stream(line);
 		stream >> __addr;
 		addr = __addr.substr(0, 8);
-
+		addr = "0x" + addr;
 		stream >> inst;
 		instructions[addr] = inst;
 	}
