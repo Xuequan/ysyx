@@ -91,10 +91,6 @@ unsigned int pmem_read(unsigned int addr) {
 	sscanf(inst.c_str(), "%x", &ret);
 	printf("inst = %#x\n", ret);
 
-	unsigned int test;
-	istringstream ss1(inst);
-	ss1 >> test;
-	cout << "test1 :" << test << endl;	
 	return ret;
 }
 
@@ -115,7 +111,7 @@ int main() {
 	top->clk = 1;
 	top->pc = (unsigned int)80000000;
 	top->inst = pmem_read(top->pc);
-	cout << "get inst: " << top->inst << endl;
+	cout << "get inst: %x" << top->inst << endl;
 	step_and_dump_wave();
 
 	/*
