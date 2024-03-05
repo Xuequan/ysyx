@@ -136,10 +136,12 @@ int main() {
 		printf("\n");
 		bool success = 0;
 		top->inst = pmem_read((unsigned int)top->pc, &success);
+		/*
 		if (!success)	{
 			printf("Failed to get pc at %#x\n", top->pc);
 			break;
 		}
+		*/
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 		step_and_dump_wave();
 	}
