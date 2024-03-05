@@ -91,6 +91,7 @@ unsigned int pmem_read(unsigned int addr) {
 			i++;
 		}
 		buf[i] = '\0';
+		printf("== %#x\n", *(unsigned int *)buf);
 		if (*(unsigned int *)buf == addr)
 			break; 
 	}
