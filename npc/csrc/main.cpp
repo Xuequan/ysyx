@@ -110,6 +110,7 @@ int main() {
 	step_and_dump_wave();
 	top->clk = 1;
 	//top->pc = (unsigned int)80000000;
+	printf("now top->pc = %#x\n", top->pc);
 	top->inst = pmem_read(top->pc);
 	printf("now top->inst = %#x\n", top->inst);
 	step_and_dump_wave();
