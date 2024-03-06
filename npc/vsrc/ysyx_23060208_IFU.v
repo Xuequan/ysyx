@@ -22,9 +22,6 @@ ysyx_23060208_PCreg #(.ADDR_WIDTH(ADDR_WIDTH)) PCreg_i0(
 
 reg [ADDR_WIDTH-1:0] addr_r; 
 always @(posedge clk) begin
-	if (rst) 
-		addr_r <= 0;
-	else 
 		addr_r <= addr_o;
 end
 assign addr = addr_r;
