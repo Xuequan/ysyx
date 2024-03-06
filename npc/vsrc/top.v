@@ -22,7 +22,7 @@ ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) ifu(
 	.clk(clk),
 	.rst(rst),
 	.inst_i(inst),
-	.addr_o(pc)
+	.addr(pc)
 );	
 
 ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
