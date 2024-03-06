@@ -129,7 +129,7 @@ int main() {
 	ram_init();	
 	print_instructions();
 
-	for (int i = 0; i < 9; i++){
+	for (int i = 0; i < 15; i++){
 		if (i < 5) 
 			top->rst = 1;	
 		else 
@@ -137,12 +137,11 @@ int main() {
 		top->clk = i % 2;
 		bool success = 0;
 		top->inst = pmem_read((unsigned int)top->pc, &success);
-		/*
 		if (!success)	{
 			printf("Failed to get pc at %#x\n", top->pc);
-			break;
+			sim_exit();
+			return 0;
 		}
-		*/
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 		step_and_dump_wave();
 	}
