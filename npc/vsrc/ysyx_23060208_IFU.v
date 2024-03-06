@@ -19,5 +19,11 @@ ysyx_23060208_PCreg #(.ADDR_WIDTH(ADDR_WIDTH)) PCreg_i0(
 	.pc(addr_o)
 );
 
+/*
+always @(posedge clk) begin
+	if (rst) 
+		addr_o <= 
+end
+*/
 
 endmodule

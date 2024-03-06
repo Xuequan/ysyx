@@ -8,7 +8,7 @@ module Reg
 	input wen
 );
 
-	always @(posedge clk or posedge rst) begin
+	always @(posedge clk) begin
 		if (rst) 
 			dout <= RESET_VAL;
 		else if (wen)
