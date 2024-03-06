@@ -129,6 +129,7 @@ int main() {
 	print_instructions();
 
 	for (int i = 0; i < 15; i++){
+		top->clk = i % 2;
 		if (i < 5) { 
 			top->rst = 1;	
 			step_and_dump_wave();
@@ -136,7 +137,6 @@ int main() {
 		} else { 
 			top->rst = 0;	
 		}
-		top->clk = i % 2;
 		bool success = 0;
 		top->inst = pmem_read((unsigned int)top->pc, &success);
 		if (!success)	{
