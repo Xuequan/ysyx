@@ -121,7 +121,6 @@ unsigned int pmem_read(unsigned int addr, bool *success) {
 
 int main() {
 	sim_init();
-
 	/*
 	nvboard_bind_all_pins(top);
 	nvboard_init();
@@ -132,6 +131,7 @@ int main() {
 	for (int i = 0; i < 15; i++){
 		if (i < 5) { 
 			top->rst = 1;	
+			step_and_dump_wave();
 			continue;
 		} else { 
 			top->rst = 0;	
