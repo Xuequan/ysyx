@@ -16,7 +16,15 @@ Reg #(.WIDTH(ADDR_WIDTH), .RESET_VAL(32'h8000_0000)) reg_i0(
 	.rst(rst),
 	.din(next_pc),
 	.dout(pc),
-	.wen(1'b1)   
+	.wen(wen_r)   
 );
+
+reg wen_r;
+always @(posedge clk) begin
+	if (rst)
+		wen_r <= 0;
+	else 
+		wen_r <= 1;
+end
 
 endmodule
