@@ -32,7 +32,7 @@ assign funct7 = inst[31:25];
 
 
 assign inst_addi = (opcode == 7'b001_0011) && 
-									 (funct3 == 3'b111);
+									 (funct3 == 3'b0);
 assign rd  = inst[11:7];
 assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
