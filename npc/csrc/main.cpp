@@ -154,7 +154,7 @@ int main() {
 		}
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 	top->check_trap(&a);
-	printf("====== test: value = %d \n", a);
+	printf("====== test: value = %#x \n", a);
 		step_and_dump_wave();
 	}
 
