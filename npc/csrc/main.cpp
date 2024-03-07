@@ -134,7 +134,7 @@ int main() {
 	svSetScope(scope);
 	svLogicVecVal a; 
 	top->check_trap(&a);
-	printf("====== test: %d = \n", a);
+	printf("====== test: value = %d \n", a);
 
 	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
