@@ -14,6 +14,7 @@
 #include <fstream>
 using namespace std;
 
+#include "Vtop__Dpi.h"
 // static TOP_NAME dut;
 
 VerilatedContext* contextp = NULL;
@@ -128,7 +129,10 @@ int main() {
 	ram_init();	
 	print_instructions();
 
-	for (int i = 0; i < 15; i++){
+	svBit a = 1; 
+	top->check_trap(&a);
+	printf("test, %c = \n", a);
+	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
 		if (i < 5) { 
 			top->rst = 1;	

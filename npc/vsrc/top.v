@@ -5,6 +5,7 @@ module top
 	input rst,
 	// to ram	
 	output [ADDR_WIDTH-1:0] pc, 
+	output 									inst_ebreak,
 	// from ram
 	input  [DATA_WIDTH-1:0] inst
 );
@@ -34,7 +35,8 @@ ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 	.src1(src1),
 	.src2(src2),
 	.rd(rd),
-	.op(op)
+	.op(op),
+	.inst_ebreak(inst_ebreak)
 );
 
 ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
@@ -47,4 +49,12 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.waddr(waddr),
 	.wdata(wdata)
 );
+
+export "DPI-C" function check_trap;
+function void check_trap(output bit o);
+	begin
+		o = inst_ebreak;
+	end 
+endfunction
+
 endmodule

@@ -12,7 +12,8 @@ module ysyx_23060208_IDU
 	output [DATA_WIDTH-1:0] src1,
 	output [DATA_WIDTH-1:0] src2,
 	output [REG_WIDTH-1 :0] rd,
-	output [2						:0] op
+	output [2						:0] op,
+	output 									inst_ebreak
 );
 
 // 解析指令
@@ -25,21 +26,22 @@ wire [DATA_WIDTH-1:0] immI;
 wire [DATA_WIDTH-1:0] src1_from_reg;
 wire [DATA_WIDTH-1:0] src2_from_reg;
 wire inst_addi; 
+//wire inst_ebreak;
 
 assign opcode = inst[6:0];
 assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
-
-
-assign inst_addi = (opcode == 7'b001_0011) && 
-									 (funct3 == 3'b0);
 assign rd  = inst[11:7];
 assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
+
+assign inst_addi = (opcode == 7'b001_0011) && 
+									 (funct3 == 3'b0);
+assign inst_ebreak = (inst == 32'b1_00000_000_00000_1110011); 
 // I-type inst
 assign immI = { {20{inst[31]}}, inst[31:20]};
 
-assign op = 3'b000;  
+assign op = inst_addi ? 3'b000 : 3'b000;  
 
 ysyx_23060208_Regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 	.clk(clk),
