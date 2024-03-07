@@ -133,8 +133,9 @@ int main() {
 	assert(scope);
 	svSetScope(scope);
 	svBit a; 
-
-	for (int i = 0; i < 20; i++){
+	
+	int i = 0;
+	while(1) {
 		top->clk = i % 2;
 		if (i < 5) { 
 			top->rst = 1;	
@@ -161,6 +162,7 @@ int main() {
 
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 		step_and_dump_wave();
+		i++;
 	}
 
 	/*
