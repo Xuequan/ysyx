@@ -142,10 +142,11 @@ int main() {
 		} else { 
 			top->rst = 0;	
 		}
-
+		
 		bool success = 0;
 
-		top->inst = pmem_read((unsigned int)top->pc, &success);
+		if (top->clk) 
+			top->inst = pmem_read((unsigned int)top->pc, &success);
 		if (!success)	{
 			printf("Failed to get pc at %#x\n", top->pc);
 			break;
