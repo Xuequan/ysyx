@@ -132,7 +132,7 @@ int main() {
 	const svScope scope = svGetScopeFromName("TOP.top");
 	assert(scope);
 	svSetScope(scope);
-	svLogicVecVal a; 
+	svBit a; 
 
 	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
@@ -152,7 +152,7 @@ int main() {
 		}
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 	top->check_trap(&a);
-	printf("====== test: value = %#x \n", a.aval);
+	printf("====== test: value = %#x \n", a);
 		step_and_dump_wave();
 	}
 
