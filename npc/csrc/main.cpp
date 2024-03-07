@@ -145,11 +145,12 @@ int main() {
 		
 		bool success = 0;
 
-		if (top->clk) 
+		if (top->clk) { 
 			top->inst = pmem_read((unsigned int)top->pc, &success);
-		if (!success)	{
-			printf("Failed to get pc at %#x\n", top->pc);
-			break;
+			if (!success)	{
+				printf("Failed to get pc at %#x\n", top->pc);
+				break;
+			}
 		}
 
 		top->check_ebreak(&a);
