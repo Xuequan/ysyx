@@ -161,6 +161,7 @@ int main() {
 		}
 
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
+		i++;
 		step_and_dump_wave();
 	}
 
