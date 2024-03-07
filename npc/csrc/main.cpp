@@ -156,8 +156,7 @@ int main() {
 
 		top->check_ebreak(&a);
 		if (a == 1) {
-			printf("====== if_ebreak_inst = %#x \n", a);
-			printf("ebreak instruction, stop sim.\n");
+			printf("Reach ebreak instruction, stop sim.\n");
 			break;
 		}
 
