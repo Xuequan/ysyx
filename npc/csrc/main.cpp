@@ -131,8 +131,8 @@ int main() {
 	svBit a; 
 
 	int i = 0;
-	//while (1) {
-	for ( ; i < 20000; i++){
+	while (1) {
+	//for ( ; i < 20000; i++){
 		top->clk = i % 2;
 		if (i < 5) { 
 			top->rst = 1;	
@@ -148,10 +148,6 @@ int main() {
 		if (!success)	{
 			printf("Failed to get pc at %#x\n", top->pc);
 			break;
-			/*
-			sim_exit();
-			return 0;
-			*/
 		}
 
 		top->check_ebreak(&a);
@@ -161,7 +157,7 @@ int main() {
 		}
 
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
-		//i++;
+		i++;
 		step_and_dump_wave();
 	}
 
