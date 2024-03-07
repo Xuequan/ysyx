@@ -153,6 +153,8 @@ int main() {
 			return 0;
 		}
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
+	top->check_trap(&a);
+	printf("====== test: value = %d \n", a);
 		step_and_dump_wave();
 	}
 
