@@ -132,7 +132,6 @@ int main() {
 
 	int i = -1;
 	while (1) {
-	//for ( ; i < 20000; i++){
 		i++;
 		top->clk = i % 2;
 		if (i < 5) { 
@@ -151,19 +150,19 @@ int main() {
 				printf("Failed to get pc at %#x\n", top->pc);
 				break;
 			}
+
+			top->check_ebreak(&a);
+			if (a == 1) {
+				printf("Reach ebreak instruction, stop sim.\n");
+				step_and_dump_wave();
+				break;
+			}
+
+			printf("%d: top->clk = %d, top->pc = %#x, top->inst= %#x \n", i, top->clk, top->pc, top->inst);
 		}
 
-		top->check_ebreak(&a);
-		if (a == 1) {
-			printf("Reach ebreak instruction, stop sim.\n");
-			step_and_dump_wave();
-			break;
-		}
-
-		printf("%d: top->clk = %d, top->pc = %#x, top->inst= %#x \n", i, top->clk, top->pc, top->inst);
 		step_and_dump_wave();
-	}
-
+	} // end while(1)
 	sim_exit();
 	return 0;
 }
