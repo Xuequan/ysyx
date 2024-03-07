@@ -133,8 +133,6 @@ int main() {
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal a; 
-	top->check_trap(&a);
-	printf("====== test: value = %d \n", a);
 
 	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
@@ -154,7 +152,7 @@ int main() {
 		}
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 	top->check_trap(&a);
-	printf("====== test: value = %#x \n", a);
+	printf("====== test: value = %#x \n", a.aval);
 		step_and_dump_wave();
 	}
 
