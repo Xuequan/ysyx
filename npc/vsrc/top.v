@@ -58,8 +58,14 @@ bit function check_trap(input inst_ebreak);
 	end 
 endfunction
 */
+/*
 export "DPI-C" task check_trap;
 task check_trap (output bit o);
 	o = inst_ebreak;
+endtask
+*/
+export "DPI-C" task check_trap;
+task check_trap (output [31:0] o);
+	o = pc;
 endtask
 endmodule

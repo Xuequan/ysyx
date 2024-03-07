@@ -132,9 +132,9 @@ int main() {
 	const svScope scope = svGetScopeFromName("TOP.top");
 	assert(scope);
 	svSetScope(scope);
-	svBit a = 1; 
+	svLogicVecVal a; 
 	top->check_trap(&a);
-	printf("====== test: %c = \n", a);
+	printf("====== test: %d = \n", a);
 
 	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
