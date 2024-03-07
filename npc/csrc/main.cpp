@@ -122,10 +122,6 @@ unsigned int pmem_read(unsigned int addr, bool *success) {
 
 int main() {
 	sim_init();
-	/*
-	nvboard_bind_all_pins(top);
-	nvboard_init();
-	*/
 	ram_init();	
 	print_instructions();
 	
@@ -144,13 +140,17 @@ int main() {
 		} else { 
 			top->rst = 0;	
 		}
+
 		bool success = 0;
 
 		top->inst = pmem_read((unsigned int)top->pc, &success);
 		if (!success)	{
 			printf("Failed to get pc at %#x\n", top->pc);
+			break;
+			/*
 			sim_exit();
 			return 0;
+			*/
 		}
 
 		top->check_ebreak(&a);
