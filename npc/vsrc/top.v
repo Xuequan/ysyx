@@ -51,7 +51,7 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 );
 
 export "DPI-C" function check_trap;
-function void check_trap(output bit o);
+function check_trap(output bit o);
 	begin
 		o = inst_ebreak;
 	end 
