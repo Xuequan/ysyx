@@ -134,7 +134,7 @@ int main() {
 	svSetScope(scope);
 	svBit a = 1; 
 	top->check_trap(&a);
-	printf("====== test: %d = \n", a);
+	printf("====== test: %c = \n", a);
 
 	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
