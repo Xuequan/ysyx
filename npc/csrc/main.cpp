@@ -133,9 +133,8 @@ int main() {
 	assert(scope);
 	svSetScope(scope);
 	svBit a; 
-	
-	int i = 0;
-	while(1) {
+
+	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
 		if (i < 5) { 
 			top->rst = 1;	
@@ -162,9 +161,18 @@ int main() {
 
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
 		step_and_dump_wave();
-		i++;
 	}
 
+	/*
+	while (1) {
+		if (top->pc == 0x80000004)
+			break;
+		top->clk = ~top->clk;	
+		top->inst = pmem_read(top->pc);
+		step_and_dump_wave();
+		//nvboard_update();
+	}
+	*/
 	//nvboard_quit();
 	
 	sim_exit();
