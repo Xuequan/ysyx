@@ -15,7 +15,7 @@
 using namespace std;
 
 #include "Vtop__Dpi.h"
-// static TOP_NAME dut;
+#include "svdpi.h"
 
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
@@ -128,10 +128,14 @@ int main() {
 	*/
 	ram_init();	
 	print_instructions();
-
+	
+	const svScope scope = svGetScopeFromName("TOP.top");
+	assert(scope);
+	svSetScope(scope);
 	svBit a = 1; 
 	top->check_trap(&a);
 	printf("test, %c = \n", a);
+
 	for (int i = 0; i < 20; i++){
 		top->clk = i % 2;
 		if (i < 5) { 
