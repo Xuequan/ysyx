@@ -50,11 +50,16 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.wdata(wdata)
 );
 
+/*
 export "DPI-C" function check_trap;
-function check_trap(output bit o);
+bit function check_trap(input inst_ebreak);
 	begin
-		o = inst_ebreak;
+		check_trap = inst_ebreak;
 	end 
 endfunction
-
+*/
+export "DPI-C" task check_trap;
+task check_trap (output bit o);
+	o = inst_ebreak;
+endtask
 endmodule
