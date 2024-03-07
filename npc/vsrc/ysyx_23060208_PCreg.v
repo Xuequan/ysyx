@@ -10,8 +10,8 @@ module ysyx_23060208_PCreg
 	output reg [ADDR_WIDTH-1:0] pc
 );
 
-//Reg #(.WIDTH(ADDR_WIDTH), .RESET_VAL(ADDR_WIDTH'('h8000_0000))) reg_i0(
-Reg #(.WIDTH(ADDR_WIDTH), .RESET_VAL(ADDR_WIDTH'('h7fff_fffc))) reg_i0(
+Reg #(.WIDTH(ADDR_WIDTH), .RESET_VAL(ADDR_WIDTH'('h8000_0000))) reg_i0(
+//Reg #(.WIDTH(ADDR_WIDTH), .RESET_VAL(ADDR_WIDTH'('h7fff_fffc))) reg_i0(
 // Reg #(.WIDTH(ADDR_WIDTH), .RESET_VAL(32'h8000_0000)) reg_i0(
 	.clk(clk),
 	.rst(rst),
