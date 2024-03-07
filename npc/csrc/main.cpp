@@ -158,7 +158,7 @@ int main() {
 			break;
 		}
 
-		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
+		printf("%d: top->clk = %d, top->pc = %#x, top->inst= %#x \n", i, top->clk, top->pc, top->inst);
 		step_and_dump_wave();
 	}
 
