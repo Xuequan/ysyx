@@ -153,6 +153,7 @@ int main() {
 		top->check_ebreak(&a);
 		if (a == 1) {
 			printf("Reach ebreak instruction, stop sim.\n");
+			step_and_dump_wave();
 			break;
 		}
 
