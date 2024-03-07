@@ -64,8 +64,8 @@ task check_trap (output bit o);
 	o = inst_ebreak;
 endtask
 */
-export "DPI-C" task check_trap;
-task check_trap (output bit o);
+export "DPI-C" task check_ebreak;
+task check_ebreak (output bit o);
 	o = inst_ebreak;
 endtask
 endmodule

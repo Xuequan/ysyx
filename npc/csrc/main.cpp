@@ -144,15 +144,22 @@ int main() {
 			top->rst = 0;	
 		}
 		bool success = 0;
+
 		top->inst = pmem_read((unsigned int)top->pc, &success);
 		if (!success)	{
 			printf("Failed to get pc at %#x\n", top->pc);
 			sim_exit();
 			return 0;
 		}
+
+		top->check_ebreak(&a);
+		if (a == 1) {
+			printf("====== if_ebreak_inst = %#x \n", a);
+			printf("ebreak instruction, stop sim.\n");
+			break;
+		}
+
 		printf("%d: top->pc = %#x, top->inst= %#x \n", i, top->pc, top->inst);
-	top->check_trap(&a);
-	printf("====== test: value = %#x \n", a);
 		step_and_dump_wave();
 	}
 
