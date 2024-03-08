@@ -27,8 +27,9 @@
 }
 static void handle_lh(word_t src1, word_t imm, int rd) {
 	word_t ret = Mr(src1 + imm, 2);
-	int sext_ret = (int)SEXT(BITS(ret, 15, 0), 16) >> 16;
-	R(rd) = sext_ret;
+	int sext_ret = ((int)ret << 16 ) >> 16;
+	//int sext_ret = (int)SEXT(BITS(ret, 15, 0), 16) >> 16;
+	R(rd) = (word_t)sext_ret;
 }
 
 enum {
