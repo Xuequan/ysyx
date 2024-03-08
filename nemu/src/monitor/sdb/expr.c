@@ -326,7 +326,8 @@ word_t expr(char *e, bool *success) {
 	word_t eval_result = eval(0, nr_token);
 	if ( (reference_result == 0) ? 1 : reference_result != eval_result ) 
 	{
-		printf("Please check, calculate error\n");
+		//printf("Please check, calculate error\n");
+		;
 	}
 	return eval_result;
 }
@@ -630,6 +631,6 @@ static word_t check_expr(int length) {
 	buf[m] = '\0';
 	int len = (int)strlen(buf);
 	word_t ret = eval_from_tool(buf, len);
-	printf("buf = %s, value = %u\n", buf, ret);
+	//printf("buf = %s, value = %u\n", buf, ret);
 	return ret;
 }
