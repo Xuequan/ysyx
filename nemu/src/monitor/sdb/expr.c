@@ -35,7 +35,7 @@ static bool check_paren_valid(int p, int q);
 static void assign_tokens_type(int type, int *index);
 static void check_tokens_type(int tokens_length);
 static word_t get_mem_val(word_t address);
-static void print_tokens(int nr_token);
+//static void print_tokens(int nr_token);
 static word_t check_expr(int length);
 
 enum {
@@ -171,7 +171,7 @@ static bool make_token(char *e) {
 	// check if TK_DEFER & TK_NEGVAL
 	check_tokens_type(nr_token + 1);
 
-	print_tokens(nr_token + 1);
+//	print_tokens(nr_token + 1);
   return true;
 }
 
@@ -209,7 +209,7 @@ static void check_tokens_type(int tokens_length) {
 			memcpy(tokens[i].str, &reg_val, sizeof(word_t));
 			tokens[i].str[sizeof(word_t)] = '\0';
 			*/
-			sprintf(tokens[i].str, "%u", reg_val);
+			sprintf(tokens[i].str, "%#x", reg_val);
 		} 
 	}
 		
@@ -219,7 +219,7 @@ static void check_tokens_type(int tokens_length) {
 			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
 			tokens[i].str[sizeof(cpu.pc)] = '\0';
 			*/
-			sprintf(tokens[i].str, "%#x", reg_val);
+			sprintf(tokens[i].str, "%#x", cpu.pc);
 		} 
 	} 
 
@@ -271,7 +271,9 @@ static void assign_tokens_type(int type, int *index) {
 	} //end switch
 } // end function
 
+
 /* print_tokens help function */
+/*
 static char* print_help(int no) {
 	switch (no) {
 		case 256: return "TK_NOTYPE";
@@ -310,6 +312,7 @@ static void print_tokens(int length) {
 	printf("=======================\n");
 }
 
+*/
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
@@ -323,7 +326,8 @@ word_t expr(char *e, bool *success) {
 	word_t eval_result = eval(0, nr_token);
 	if ( (reference_result == 0) ? 1 : reference_result != eval_result ) 
 	{
-		printf("Please check, calculate error\n");
+		//printf("Please check, calculate error\n");
+		;
 	}
 	return eval_result;
 }
@@ -627,6 +631,6 @@ static word_t check_expr(int length) {
 	buf[m] = '\0';
 	int len = (int)strlen(buf);
 	word_t ret = eval_from_tool(buf, len);
-	printf("buf = %s, value = %u\n", buf, ret);
+	//printf("buf = %s, value = %u\n", buf, ret);
 	return ret;
 }
