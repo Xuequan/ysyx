@@ -74,7 +74,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
 	handle_mulh(src1, src2, rd);\
 }
 static void handle_mulh(word_t src1, word_t src2, int rd) {
-	long long result = (sword_t) src1 * (sword_t) src2;
+	long long result = (long long) src1 * (long long) src2;
 	R(rd) = (word_t) (result >> 32);
 }
 
