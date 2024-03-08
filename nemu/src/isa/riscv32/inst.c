@@ -70,6 +70,14 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
+#define HANDLE_MULH(src1, src2, rd) { \
+	handle_mulh(src1, src2, rd);\
+}
+static void handle_mulh(word_t src1, word_t src2, int rd) {
+	long long result = (sword_t) src1 * (sword_t) src2;
+	R(rd) = (word_t) (result >> 32);
+}
+
 static int decode_exec(Decode *s) {
   int rd = 0;
   word_t src1 = 0, src2 = 0, imm = 0;
@@ -160,7 +168,7 @@ static int decode_exec(Decode *s) {
 	// mul
   INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul    , R, R(rd) = src1 * src2); 
 	// mulh
-  INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , R, R(rd) = (long long)((long) src1 * (long) src2) >> 32); 
+  INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , R, HANDLE_MULH(src1, src2, rd)); 
 	// div
   INSTPAT("0000001 ????? ????? 100 ????? 01100 11", div    , R, R(rd) = (sword_t)src1 / src2); 
 	// divu
