@@ -22,14 +22,23 @@
 #define Mr vaddr_read
 #define Mw vaddr_write
 
+/* handle instruction LH, need sign-extends to 32-bits before storing in rd */
 #define HANDLE_LH(src1, imm, rd) { \
 	handle_lh(src1, imm, rd); \
 }
 static void handle_lh(word_t src1, word_t imm, int rd) {
 	word_t ret = Mr(src1 + imm, 2);
 	int sext_ret = ((int)ret << 16 ) >> 16;
-	//int sext_ret = (int)SEXT(BITS(ret, 15, 0), 16) >> 16;
 	R(rd) = (word_t)sext_ret;
+}
+
+/* handle instruction MULH, before multiplication, src1 & src2 should be type casted to sword_t */
+#define HANDLE_MULH(src1, src2, rd) { \
+	handle_mulh(src1, src2, rd);\
+}
+static void handle_mulh(word_t src1, word_t src2, int rd) {
+	long long result = (long long) ((sword_t)src1) * (long long) ((sword_t)src2);
+	R(rd) = (word_t) (result >> 32);
 }
 
 enum {
@@ -58,11 +67,6 @@ enum {
 #define setLSBZero() do { s->dnpc &= 0xfffffffe;} while(0)  
 
 
-/* shift amount held in the lower 5 bits of register rs2 */
-/*
-#define shiftAmt() do { shiftAmt = BITS(src2, 4, 0);} while (0)  
-*/
-
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int *shamt, int type) {
   uint32_t i = s->isa.inst.val;
   int rs1 = BITS(i, 19, 15);
@@ -80,26 +84,6 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   }
 }
 
-#define HANDLE_MULH(src1, src2, rd) { \
-	handle_mulh(src1, src2, rd);\
-}
-static void handle_mulh(word_t src1, word_t src2, int rd) {
-	long long result = (long long) ((sword_t)src1) * (long long) ((sword_t)src2);
-	R(rd) = (word_t) (result >> 32);
-}
-
-/*
-#define HANDLE_LHU(src1, imm, rd) { \
-	handle_lhu(src1, imm, rd); \
-}
-static void handle_lhu(word_t src1, word_t imm, int rd) {
-	word_t sext_ret = Mr(src1 + imm, 2);
-	R(rd) = sext_ret & 0x0000ffff;
-}
-*/
-
-  //INSTPAT("??????? ????? ????? 001 ????? 00000 11", lh		 , I, R(rd) = Mr(src1 + imm, 2)); 
-//#define immI() do { *imm = SEXT(BITS(i, 31, 20), 12); } while(0)
 
 static int decode_exec(Decode *s) {
   int rd = 0;
