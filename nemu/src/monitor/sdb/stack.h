@@ -1,12 +1,14 @@
 /* stack interface
 ** 2023-9-29
 */
-
-#ifndef stack_type 
+#ifndef STACK_H
+#define STACK_H
 
 #include <stddef.h>
 
+#ifndef stack_type 
 #define STACK_TYPE int
+#endif
 
 /* create_stack
 **		No need because of linked list structure stack.
@@ -48,4 +50,4 @@ int is_empty(void);
 int is_full(void);
 
 void print_stack(char *message);
-#endif
+#endif 
