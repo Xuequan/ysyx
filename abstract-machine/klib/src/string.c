@@ -20,8 +20,29 @@ char *strcat(char *dst, const char *src) {
   panic("Not implemented");
 }
 
+/* return 0 if s1 and s2 are equal;
+** return 1 if s1 is greater than s2;
+** return -1 if s1 is less than s2;
+*/
 int strcmp(const char *s1, const char *s2) {
-  panic("Not implemented");
+	char *ptr1 = (char *) s1;
+	char *ptr2 = (char *) s2;
+	while (*ptr1 != '\0' && *ptr2 != '\0') {
+		if (*ptr1 == *ptr2) { 
+			ptr1++;
+			ptr2++;
+		} else if (*ptr1 > *ptr2) { 
+			return 1;	
+		} else {
+			return -1;
+		}
+	}	
+	if (*ptr1 == '\0' && *ptr2 == '\0') 
+		return 0;
+	else if (*ptr1 != '\0') 
+		return 1;
+	else 
+		return -1;
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {
