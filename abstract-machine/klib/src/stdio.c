@@ -28,6 +28,8 @@ int sprintf(char *out, const char *fmt, ...) {
 	va_start(ap, fmt);
 	while (*fmt) {
 		switch (*fmt++) {
+			case '%':
+				break;
 			case 's':
 				s = va_arg(ap, char *);
 				memcpy(ptr, s, sizeof(s));
