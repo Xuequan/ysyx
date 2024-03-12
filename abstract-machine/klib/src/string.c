@@ -36,8 +36,20 @@ void *memmove(void *dst, const void *src, size_t n) {
   panic("Not implemented");
 }
 
+/* memcpy() copies n bytes from memory area src to memory area dest.
+** The memory area must not overloap.
+** Return a pointer to dest
+*/
 void *memcpy(void *out, const void *in, size_t n) {
-  panic("Not implemented");
+	uint8_t *p1 = (uint8_t *) out;
+	uint8_t *p2 = (uint8_t *) in;
+	for ( ; n != 0; n--) {
+		*p1 = *p2;
+		p1++;
+		p2++;
+	}
+	*p1 = '\0';
+	return out;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {

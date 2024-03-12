@@ -16,6 +16,7 @@ NEMUFLAGS += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/platform/nemu/include
 
+# NEMU 批处理
 SET_SDB_BATCH_MODE := -b
 .PHONY: $(AM_HOME)/am/src/platform/nemu/trm.c
 
