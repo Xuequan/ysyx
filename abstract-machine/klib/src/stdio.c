@@ -22,24 +22,42 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 */
 int sprintf(char *out, const char *fmt, ...) {
 	va_list ap;
-	int d;
-	char *s;
+	int ival;
+	char *sval;
+	// index 指向out[] 最后的 '\0'
+	int index = 0;
+
 	va_start(ap, fmt);
-	while (*fmt) {
-		switch (*fmt++) {
+
+	char c;
+	while ((c = *fmt)) {
+		switch (c) {
 			case '%':
 				break;
-			case 's':
-				s = va_arg(ap, char *);
-				memcpy(out, s, strlen(s));
-				break;
-			case 'd':
-				d = va_arg(ap, int);
-				memcpy(out, &d, sizeof(int));
-				break;
-			default:
-				break;	
-		}
+
+      case 's':
+        sval = va_arg(ap, char *); 
+        printf("sval = %s\n", sval);
+        memcpy(out + index, sval, strlen(sval));
+        index += strlen(sval);
+        break;
+
+      case 'd':   
+        ival = va_arg(ap, int);
+        char buf2[5] = {0};
+        itoa(ival, buf2); 
+        printf("ival = %d, buf2 = %s\n", ival, buf2);
+        memcpy(out+index, buf2, strlen(buf2));
+        index += strlen(buf2);
+        break;
+
+      default:
+        printf("default = %c\n", c); 
+        out[index++] = c;
+        out[index] = '\0';
+        break;
+    }   
+    fmt++;
 	} // end while
 	va_end(ap);
 	return 0;
