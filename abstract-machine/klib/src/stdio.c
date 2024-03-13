@@ -24,7 +24,6 @@ int sprintf(char *out, const char *fmt, ...) {
 	va_list ap;
 	int d;
 	char *s;
-	char *ptr = out;
 	va_start(ap, fmt);
 	while (*fmt) {
 		switch (*fmt++) {
@@ -32,13 +31,11 @@ int sprintf(char *out, const char *fmt, ...) {
 				break;
 			case 's':
 				s = va_arg(ap, char *);
-				memcpy(ptr, s, sizeof(s));
-				ptr = ptr + sizeof(s);
+				memcpy(out, s, strlen(s));
 				break;
 			case 'd':
 				d = va_arg(ap, int);
-				memcpy(ptr, &d, sizeof(d));
-				ptr = ptr + sizeof(d);
+				memcpy(out, &d, sizeof(int));
 				break;
 			default:
 				break;	

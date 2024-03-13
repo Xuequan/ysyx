@@ -4,9 +4,18 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+/* strlen() function calculates the length of the string pointed to by s,
+** excluding the terminating null byte ('\0').
+*/
 size_t strlen(const char *s) {
-  panic("Not implemented");
+	assert(s != NULL);
+	size_t i = 0;
+	char *ptr = (char *)s;
+	for ( ; *ptr != '\0'; i++)
+		ptr++;
+	return i;
 }
+
 
 char *strcpy(char *dst, const char *src) {
   panic("Not implemented");
@@ -62,6 +71,9 @@ void *memmove(void *dst, const void *src, size_t n) {
 ** Return a pointer to dest
 */
 void *memcpy(void *out, const void *in, size_t n) {
+	if ( n == 0 || in == NULL || out == NULL) 
+		return out;
+
 	uint8_t *p1 = (uint8_t *) out;
 	uint8_t *p2 = (uint8_t *) in;
 	for ( ; n != 0; n--) {
