@@ -37,7 +37,7 @@ int sprintf(char *out, const char *fmt, ...) {
 
       case 's':
         sval = va_arg(ap, char *); 
-        printf("sval = %s\n", sval);
+        //printf("sval = %s\n", sval);
         memcpy(out + index, sval, strlen(sval));
         index += strlen(sval);
         break;
@@ -46,13 +46,13 @@ int sprintf(char *out, const char *fmt, ...) {
         ival = va_arg(ap, int);
         char buf2[5] = {0};
         itoa(ival, buf2); 
-        printf("ival = %d, buf2 = %s\n", ival, buf2);
+        //printf("ival = %d, buf2 = %s\n", ival, buf2);
         memcpy(out+index, buf2, strlen(buf2));
         index += strlen(buf2);
         break;
 
       default:
-        printf("default = %c\n", c); 
+        //printf("default = %c\n", c); 
         out[index++] = c;
         out[index] = '\0';
         break;
