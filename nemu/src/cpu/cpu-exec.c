@@ -42,8 +42,11 @@ void device_update();
 
 static void print_iringbuf(void) {
 	for( int i = 0; i < IRINGBUF_LEN; i++) {
-		if (strlen(iringbuf[i]) != 0) 
+		if (strlen(iringbuf[i]) != 0) {
+			if ( i == iindex - 1)
+				printf("--> ");
 			printf("%s\n", iringbuf[i]);
+		}
 	}
 }
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
