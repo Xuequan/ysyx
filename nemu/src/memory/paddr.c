@@ -61,14 +61,26 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
-  if (likely(in_pmem(addr))) return pmem_read(addr, len);
+  if (likely(in_pmem(addr))) {
+		word_t num = pmem_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		log_write("Read from mem: address = %#x, length = %d, data = %#x\n", addr, len, num); 
+#endif
+		return num;
+	}
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
   return 0;
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
-  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
+  if (likely(in_pmem(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to mem: address = %#x, length = %d, data = %#x\n", addr, len, data); 
+#endif
+		pmem_write(addr, len, data); 
+		return; 
+	}
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }
