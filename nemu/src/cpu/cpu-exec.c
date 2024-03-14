@@ -41,8 +41,10 @@ static bool g_print_step = false;
 void device_update();
 
 static void print_iringbuf(void) {
-	for( int i = 0; i < IRINGBUF_LEN; i++)
-		printf("%s\n", iringbuf[i]);
+	for( int i = 0; i < IRINGBUF_LEN; i++) {
+		if (strlen(iringbuf[i]) != 0) 
+			printf("%s\n", iringbuf[i]);
+	}
 }
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	// print inst information
