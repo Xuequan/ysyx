@@ -138,8 +138,36 @@ void *memcpy(void *out, const void *in, size_t n) {
 	return out;
 }
 
+/* memcmp() function compares the first n bytes (each interpreted
+** as unsigned char) of the memory areas s1 and s2.
+** Rerutn 1, 0, -1 if s1 is greater than, equal to, or
+** less than s2 respectively. 
+*/
 int memcmp(const void *s1, const void *s2, size_t n) {
-  panic("Not implemented");
+	assert( s1 != NULL && s2 != NULL);
+	unsigned char *ptr1 = (unsigned char *)s1;
+	unsigned char *ptr2 = (unsigned char *)s2;
+	size_t i;
+	
+	for( i = 0; i < n && *ptr1 != '\0' && *ptr2 != '\0'; i++) {	
+		if (*ptr1 == *ptr2) { 
+			ptr1++;
+			ptr2++;
+		} else if (*ptr1 > *ptr2) { 
+			return 1;	
+		} else {
+			return -1;
+		}
+	}	
+
+	if ( i == n)
+		return 0;
+	if (*ptr1 == '\0' && *ptr2 == '\0') 
+		return 0;
+	else if (*ptr1 != '\0') 
+		return 1;
+	else 
+		return -1;
 }
 
 #endif
