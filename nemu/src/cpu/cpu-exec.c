@@ -20,6 +20,12 @@
 
 #include "../monitor/sdb/sdb.h"
 
+/* iringbuf */
+#define IRINGBUF_LEN 15
+static char iringbuf[IRINGBUF_LEN][128];
+/* iindex points to the next to be written position of iringbuf[][] */
+static int iindex = 0;
+
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -34,11 +40,21 @@ static bool g_print_step = false;
 
 void device_update();
 
+static void print_iringbuf(void) {
+	for( int i = 0; i < IRINGBUF_LEN; i++) {
+		if (strlen(iringbuf[i]) != 0) {
+			if ( i == iindex - 1)
+				printf("--> ");
+			printf("%s\n", iringbuf[i]);
+		}
+	}
+}
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	// print inst information
 	// eg: 0x80000000: 00 00 02 97 auipc	t0, 0
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+	
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -75,6 +91,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
+	
+	if (iindex == IRINGBUF_LEN) 
+		iindex = 0;	
+	memcpy(iringbuf[iindex], s->logbuf, strlen(s->logbuf));
+	iindex++; 
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
@@ -130,9 +151,11 @@ void cpu_exec(uint64_t n) {
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
-            ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
+            													 ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
+			if (nemu_state.halt_ret != 0)
+				print_iringbuf();
       // fall through
-    case NEMU_QUIT: statistic();
+    case NEMU_QUIT: statistic(); 
   }
 }
