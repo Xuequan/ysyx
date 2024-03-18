@@ -71,7 +71,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 	bool success = false;
 	char *func_name = vaddr2func(s->pc, &success); 
-	if (success == true && strcmp("main", func_name) == 0) { 
+	if (success == true && strcmp("main", func_name) != 0) { 
 		printf("func_name = %s, addr = %#x\n", func_name, s->pc);
 	}
 
