@@ -45,7 +45,6 @@ static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
-
 char *elf_file = NULL;
 
 static long load_img() {
@@ -114,8 +113,8 @@ void init_monitor(int argc, char *argv[]) {
   /* Open the log file. */
   init_log(log_file);
 
-	/* Initialize ELF file. */
-	init_elf(elf_file);
+	/* Read ELF file and get strtab & symtab. */
+  init_elf(elf_file);
 
   /* Initialize memory. */
   init_mem();

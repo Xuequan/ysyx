@@ -18,7 +18,6 @@
 
 extern char *elf_file;
 
-
 #define ENTRY_NUM 100
 static struct {
 	// actual symtab entry number
@@ -139,7 +138,7 @@ static bool check_elf() {
 }
 
 */
-/* open ELF file and get strtab & symtab */
+/* read from ELF file and get strtab & symtab */
 void init_elf() {
 	FILE *fp = fopen(elf_file, "r");
 
@@ -205,7 +204,7 @@ void init_elf() {
 		return;
 	}
 
-	/* 4. fill in static SYMTAB symtab */
+	// fill in static struct symtab 
 	symtab.entnum = shdr[symtab_idx]->sh_size / 
 											 shdr[symtab_idx]->sh_entsize;
 	word_t symtab_entsize = shdr[symtab_idx]->sh_entsize;
@@ -232,7 +231,7 @@ void init_elf() {
 		}
 	}
 
-	/* 5. get string tables (strtab) */
+	/* 4. get string tables (strtab) */
 	// 这里我取巧了，直接从 symtab 开始查看，因为 .shstrtab 的 TYPE 也是 STRTAB
 	int strtab_idx = 0;
 	for( strtab_idx = symtab_idx; strtab_idx < ehdr.e_shnum; strtab_idx++) {
@@ -262,8 +261,8 @@ void init_elf() {
 		return ;
 	}
 
-	/* printf strtab */
-	print_strtab(strtab, strtab_size);
+	/* printf strtab just for test */
+	// print_strtab(strtab, strtab_size);
 
 	fclose(fp);
 	return;	
@@ -272,6 +271,41 @@ void init_elf() {
 /* give a vaddr, if this vaddr of instruction inside a function
 ** output its function name in strtab and set *boolen = true
 ** othewise set *boolen = false
+*/
+/*
+char *vaddr2func(vaddr_t addr, bool *success, vaddr_t dnpc){
+
+	*success = false;
+
+	char *ret = NULL;
+	int i = 0;	
+	for( ; i < symtab.entnum; i++) {
+		if (addr >= symtab.sym[i].st_value && 
+				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size){
+			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
+				ret = strtab + symtab.sym[i].st_name; 	
+				//printf("FUNC name = %s\n", ret);
+				*success = true;
+				break;
+			}
+		} 
+	}//end-for
+	if ( i == symtab.entnum ) {
+		*success = false;
+		return ret;
+	} 
+		
+	int j = 0;	
+	for( ; j != i && j < symtab.entnum; j++ ){
+		if (dnpc == symtab.sym[j].st_value){
+			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[j].st_info), ELF32_ST_TYPE(symtab.sym[j].st_info)) == STT_FUNC ) {
+			// now pc at addr will call a function or ret 
+			}
+		}
+	}//end-for
+
+	return ret;	
+}
 */
 char *vaddr2func(vaddr_t addr, bool *success){
 
@@ -284,7 +318,7 @@ char *vaddr2func(vaddr_t addr, bool *success){
 				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size){
 			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	
-				printf("FUNC name = %s\n", ret);
+				//printf("FUNC name = %s\n", ret);
 				*success = true;
 				break;
 			}
