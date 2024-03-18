@@ -199,9 +199,11 @@ static void init_elf(const char *elf_file) {
 	char strtab_file[strlen(path) + strlen("strtab_file") + 1];
 
 	memcpy(symtab_file, path, strlen(path));
+	symtab_file[strlen(path)] = '\0';
 	strcat(symtab_file, "symtab_file");
 
 	memcpy(strtab_file, path, strlen(path));
+	strtab_file[strlen(path)] = '\0';
 	strcat(strtab_file, "strtab_file");
 
 	printf("symtab_file = %s, strtab_file = %s\n", symtab_file, strtab_file);
