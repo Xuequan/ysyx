@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <memory/paddr.h>
+#include <elf.h>
 
 void init_rand();
 void init_log(const char *log_file);
@@ -45,6 +46,7 @@ static char *log_file = NULL;
 static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
+static char *elf_file = NULL;
 
 static long load_img() {
   if (img_file == NULL) {
@@ -68,6 +70,140 @@ static long load_img() {
   return size;
 }
 
+/* open ELF file and get strtab & symtab */
+static void init_elf(const char *elf_file) {
+	FILE *fp = fopen(elf_file, "r");
+	if (fp == NULL) {
+		printf("Can not open '%s'\n", elf_file);
+		return;
+	}
+
+	/* 1. get Ehdr and ELF file check */
+  MUXDEF(CONFIG_RV64, Elf64_Ehdr, Elf32_Ehdr) ehdr;
+	if ( fread(&ehdr, sizeof(ehdr), 1, fp) == 0) {
+		printf("Cannot read ElfN_Ehdr.\n");
+		fclose(fp);
+		return;
+	}
+
+	// check elf_file is a ELF file
+	if ( !(ehdr.e_ident[EI_MAG0] == ELFMAG0 && 
+			ehdr.e_ident[EI_MAG1] == ELFMAG1 && 
+			ehdr.e_ident[EI_MAG2] == ELFMAG2 && 
+			ehdr.e_ident[EI_MAG3] == ELFMAG3) ) {
+		printf("file '%s' is not a ELF file.\n", elf_file);
+		fclose(fp);
+		return;
+	}
+	// check if elf_file is 32-bit
+	if ( ehdr.e_ident[EI_CLASS] != ELFCLASS32) {
+		printf("file '%s' is not a ELF32.\n", elf_file);
+		fclose(fp);
+		return;
+	}
+	// check if elf_file is a executable file or shared object
+	// if not, st_value is not a virtual address
+	if ( ehdr.e_type != ET_EXEC || ehdr.e_type != ET_DYN) {
+		printf("file '%s' is not a executable file or shared object.\n", elf_file);
+		fclose(fp);
+		return;
+	}
+		
+	/* 2. get section header table */
+  MUXDEF(CONFIG_RV64, Elf64_Shdr, Elf32_Shdr) shdr[ehdr.e_shnum][ehdr.e_shentsize];
+	// 定位到 section header table
+	if (fseek(fp, ehdr.e_shoff, SEEK_SET) != 0) {
+		printf("Unable to set section header table postion\n");
+		fclose(fp);
+		return;
+	}
+	for( int i = 0; i < ehdr.e_shnum; i++) {
+		if (fread(shdr[i], sizeof(shdr), 1, fp) == 0) {
+			printf("Unable to read shdr\n");
+			fclose(fp);
+			return;
+		}
+	}
+	
+	/* 3. get symbol tables (symtab) */
+	int symtab_idx = 0;
+	for( ; symtab_idx < ehdr.e_shnum; symtab_idx++) {
+		if (shdr[symtab_idx]->sh_type == SHT_SYMTAB) {
+			break;
+		}
+	}
+	if (symtab_idx == ehdr.e_shnum) {
+		printf("Failed to get symtab in section header table\n");
+		fclose(fp);
+		return;
+	}
+	// symtab entry number
+	uint32_t symentnum = shdr[symtab_idx]->sh_size / shdr[symtab_idx]->sh_entsize;
+  MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) symtab[symentnum][shdr[symtab_idx]->sh_entsize];
+	// 定位到 symtab
+	if (fseek(fp, shdr[symtab_idx]->sh_offset, SEEK_SET) != 0) {
+		printf("Unable to set symtab postion\n");
+		fclose(fp);
+		return;
+	}
+	for( int i = 0; i < symentnum; i++) {
+		if (fread(symtab[i], sizeof(shdr[symtab_idx]->sh_entsize), 1, fp) == 0) {
+			printf("Unable to get symtab\n");
+			fclose(fp);
+			return;
+		}
+	}
+
+	/* 4. get string tables (strtab) */
+	// 这里我取巧了，直接从 symtab 开始查看，因为 .shstrtab 的 TYPE 也是 STRTAB
+	int strtab_idx = 0;
+	for( strtab_idx = symtab_idx; strtab_idx < ehdr.e_shnum; strtab_idx++) {
+		if (shdr[strtab_idx]->sh_type == SHT_STRTAB) {
+			break;
+		}
+	}
+	if (strtab_idx == ehdr.e_shnum) {
+		printf("Failed to get strtab in section header table\n");
+		fclose(fp);
+		return;
+	}
+	uint32_t strtab_size = shdr[strtab_idx]->sh_size;
+	unsigned char strtab[strtab_size];
+	// 定位到 strtab 的位置
+	if (fseek(fp, shdr[strtab_idx]->sh_offset, SEEK_SET) != 0) {
+		printf("Unable to set strtab postion\n");
+		fclose(fp);
+		return;
+	}
+	if ( fread(strtab, strtab_size, 1, fp) == 0) {
+		printf("Cannot get strtab\n");
+		fclose(fp);
+		return;
+	}	
+		
+	fclose(fp);
+	
+	// 测试，打印 strtab
+	printf("========== print strtab start =============\n");
+	unsigned char *token;
+	int i =0, j = 0;
+	int num = 0;
+	for( i = 0; i < strtab_size; ){
+		token = strtab + i;
+		printf("%d: %s\n", num, token);	
+		num++;
+		for( j = i; j < strtab_size; ){
+			if ( *(strtab + j) != '\0')
+				j++;
+			else
+				break;
+		}
+		i = j + 1;
+	}
+	printf("========== print strtab end =============\n");
+	return;	
+} // end function
+
 static int parse_args(int argc, char *argv[]) {
   const struct option table[] = {
     {"batch"    , no_argument      , NULL, 'b'},
@@ -78,12 +214,13 @@ static int parse_args(int argc, char *argv[]) {
     {0          , 0                , NULL,  0 },
   };
   int o;
-  while ( (o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
+  while ( (o = getopt_long(argc, argv, "-bhl:d:p:f:", table, NULL)) != -1) {
     switch (o) {
       case 'b': sdb_set_batch_mode(); break;
       case 'p': sscanf(optarg, "%d", &difftest_port); break;
       case 'l': log_file = optarg; break;
       case 'd': diff_so_file = optarg; break;
+      case 'f': elf_file = optarg; break;
       case 1: img_file = optarg; return 0;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
@@ -91,6 +228,7 @@ static int parse_args(int argc, char *argv[]) {
         printf("\t-l,--log=FILE           output log to FILE\n");
         printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");
         printf("\t-p,--port=PORT          run DiffTest with port PORT\n");
+        printf("\t-f,--elf=FILE           output log to log?\n");
         printf("\n");
         exit(0);
     }
@@ -109,6 +247,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Open the log file. */
   init_log(log_file);
+
+	/* Initialize ELF file. */
+	init_elf(elf_file);
 
   /* Initialize memory. */
   init_mem();
