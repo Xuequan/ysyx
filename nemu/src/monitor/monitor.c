@@ -33,8 +33,6 @@ static void welcome() {
   Log("Build time: %s, %s", __TIME__, __DATE__);
   printf("Welcome to %s-NEMU!\n", ANSI_FMT(str(__GUEST_ISA__), ANSI_FG_YELLOW ANSI_BG_RED));
   printf("For help, type \"help\"\n");
-  //Log("Exercise: Please remove me in the source code and compile NEMU again.");
-  //assert(0);
 }
 
 #ifndef CONFIG_TARGET_AM
@@ -47,9 +45,6 @@ static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
 static char *elf_file = NULL;
-
-char **elf_symtab = NULL;
-char *elf_strtab = NULL;
 
 static long load_img() {
   if (img_file == NULL) {
@@ -186,13 +181,25 @@ static void init_elf(const char *elf_file) {
 		
 	fclose(fp);
 
-	/* 5. get elf_symtab, elf_strtab */
+	/* 5. 解析 elf 的文件路径，将 symtab 和 strtab 分别写入相同的文件夹中 */
+
+	char *ptr = NULL;
+	if ( (ptr = strrchr(elf_file, '/')) == NULL) {
+		printf("init_elf(): get '%s' directory path wrong\n", elf_file);
+		return;
+	}
+	char path[ptr - elf_file];
+	memcpy(path, elf_file, ptr - elf_file); 
+	printf("path = %s\n", path);
+	/* 5. write symtab into file */
+	/*
 	for(int i = 0; i < symentnum; i++) {
 		if (memcpy(*elf_symtab, symtab[i], shdr[symtab_idx]->sh_entsize) == NULL) {
 			printf("init_elf(): copy systab failed\n");
 			return;
 		}
 	}
+	*/
 	
 		 	
 	/*
