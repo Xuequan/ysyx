@@ -188,7 +188,7 @@ static void init_elf(const char *elf_file) {
 
 	/* 5. get elf_symtab, elf_strtab */
 	for(int i = 0; i < symentnum; i++) {
-		if (memcpy(elf_symtab[i], symtab[i], shdr[symtab_idx]->sh_entsize) == NULL) {
+		if (memcpy(*elf_symtab, symtab[i], shdr[symtab_idx]->sh_entsize) == NULL) {
 			printf("init_elf(): copy systab failed\n");
 			return;
 		}
