@@ -188,9 +188,8 @@ static void init_elf(const char *elf_file) {
 		printf("init_elf(): get '%s' directory path wrong\n", elf_file);
 		return;
 	}
-	char path[ptr - elf_file + 3];
+	char path[ptr - elf_file + 2];
 	memcpy(path, elf_file, ptr - elf_file + 1); 
-	path[ptr -elf_file + 2] = '\0';
 	printf("path = %s\n", path);
 
 	// symtab file: path/symtab.txt 
