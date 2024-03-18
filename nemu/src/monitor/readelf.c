@@ -18,6 +18,8 @@
 
 extern char *elf_file;
 
+static FILE *fp = NULL;
+
 static MUXDEF(CONFIG_RV64, Elf64_Ehdr, Elf32_Ehdr) ehdr;
 
 typedef struct symtab_arg {
@@ -107,7 +109,7 @@ bool get_strtab(FILE *elf_fp, char* buf) {
 		}
 	}
 	// 定位到 strtab 的位置
-	if (fseek(elf_fp, strtab.off, SEEK_SET) != 0) {
+	if ( fseek(elf_fp, strtab.off, SEEK_SET) != 0) {
 		printf("get_strtab(): Unable to set strtab postion\n");
 		return false;
 	}
@@ -143,7 +145,6 @@ static bool check_elf() {
 	return true;
 }
 
-static FILE *fp = NULL;
 /* open ELF file and get strtab & symtab */
 void init_elf() {
 	FILE *fp = fopen(elf_file, "r");
@@ -229,6 +230,13 @@ char *vaddr2func(vaddr_t addr, bool *success){
 	/* get strtab, symtab */
 	char strtab_buf[strtab.size];
 	char symtab_buf[symtab.entnum][symtab.entsize];
+
+	if (fp == NULL) {
+		if ((fp = fopen(elf_file, "r")) == NULL) {
+			printf("vaddr2func(): Can not open '%s'\n", elf_file);
+			return NULL;
+		}
+	}
 
 	if ( get_strtab(fp, strtab_buf) == false ){ 
 		printf("vaddr2func(): get_strtab failed\n");
