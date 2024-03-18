@@ -66,6 +66,54 @@ typedef struct strtab_arg {
 	
 STRTAB strtab;
 
+// 测试，打印 strtab
+void print_strtab(char buf[]) {
+
+	printf("========== print strtab start =============\n");
+
+	char *token;
+	int i =0, j = 0;
+	int num = 0;
+	for( i = 0; i < strtab.size; ){
+		token = buf + i;
+		printf("%d: %s\n", num, token);	
+		num++;
+		for( j = i; j < strtab.size; ){
+			if ( *(buf + j) != '\0')
+				j++;
+			else
+				break;
+		}
+		i = j + 1;
+	}
+	printf("========== print strtab end =============\n");
+}
+/* get strtab from reading ELF file 
+** FILE *elf_fp is the opening fd of ELF file 
+** char *buf is the buf[strtab.size]
+** return true if success, otherwise false.
+*/
+bool get_strtab(FILE *elf_fp, char* buf) {
+
+	if (elf_fp == NULL) {
+		FILE *elf_fp = fopen(elf_file, "r");
+		if (elf_fp == NULL) {
+			printf("get_strtab(): Can not open '%s'\n", elf_file);
+			return false;
+		}
+	}
+	// 定位到 strtab 的位置
+	if (fseek(elf_fp, strtab.off, SEEK_SET) != 0) {
+		printf("get_strtab(): Unable to set strtab postion\n");
+		return false;
+	}
+
+	if ( fread(buf, strtab.size, 1, elf_fp) == 0) {
+		printf("get_strtab(): Cannot get strtab\n");
+		return false;
+	}	
+	return true;
+}
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
@@ -186,60 +234,16 @@ static void init_elf() {
 	strtab.off  = shdr[strtab_idx]->sh_offset;
 	strtab.size = shdr[strtab_idx]->sh_size;
 
+	char buf[strtab.size];
+	if ( get_strtab(fp, buf) == false) 
+		printf("error \n");
+	print_strtab(buf);
 	fclose(fp);
 	return;	
 } // end function
 
 
-/* get strtab from reading ELF file 
-** FILE *elf_fp is the opening fd of ELF file 
-** char *buf is the buf[strtab.size]
-** return true if success, otherwise false.
-*/
-bool get_strtab(FILE *elf_fp, char* buf) {
-
-	if (elf_fp == NULL) {
-		FILE *elf_fp = fopen(elf_file, "r");
-		if (elf_fp == NULL) {
-			printf("get_strtab(): Can not open '%s'\n", elf_file);
-			return false;
-		}
-	}
-	// 定位到 strtab 的位置
-	if (fseek(elf_fp, strtab.off, SEEK_SET) != 0) {
-		printf("get_strtab(): Unable to set strtab postion\n");
-		return false;
-	}
-
-	if ( fread(buf, strtab.size, 1, elf_fp) == 0) {
-		printf("get_strtab(): Cannot get strtab\n");
-		return false;
-	}	
-	return true;
-}
 		
-// 测试，打印 strtab
-void print_strtab(char buf[]) {
-
-	printf("========== print strtab start =============\n");
-
-	char *token;
-	int i =0, j = 0;
-	int num = 0;
-	for( i = 0; i < strtab.size; ){
-		token = buf + i;
-		printf("%d: %s\n", num, token);	
-		num++;
-		for( j = i; j < strtab.size; ){
-			if ( *(buf + j) != '\0')
-				j++;
-			else
-				break;
-		}
-		i = j + 1;
-	}
-	printf("========== print strtab end =============\n");
-}
 
 /* get symtab from reading ELF file 
 ** FILE *elf_fp is the opening fd of ELF file 
