@@ -188,9 +188,16 @@ static void init_elf(const char *elf_file) {
 		printf("init_elf(): get '%s' directory path wrong\n", elf_file);
 		return;
 	}
-	char path[ptr - elf_file];
+	char path[ptr - elf_file + 1];
 	memcpy(path, elf_file, ptr - elf_file); 
+	path[ptr -elf_file + 1] = '\0';
 	printf("path = %s\n", path);
+	// symtab file: path/symtab.txt 
+	char symtab_file[strlen(path) + 10];
+	int path_length = ptr - elf_file + 1;
+	memcpy(symtab_file, elf_file, path_length);
+	memcpy(symtab_file + path_length , "symtab.txt", strlen("symtab.txt")); 
+	printf("symtab_file = %s\n", symtab_file);
 	/* 5. write symtab into file */
 	/*
 	for(int i = 0; i < symentnum; i++) {
