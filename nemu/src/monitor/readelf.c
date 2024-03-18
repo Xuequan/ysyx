@@ -38,6 +38,7 @@ typedef struct strtab_arg {
 	
 STRTAB strtab;
 
+
 /* get symtab from reading ELF file 
 ** FILE *elf_fp is the opening fd of ELF file 
 ** char *buf[][] is &symtab[symtab.entnum][symtab.entsize]
@@ -142,6 +143,7 @@ static bool check_elf() {
 	return true;
 }
 
+static FILE *fp = NULL;
 /* open ELF file and get strtab & symtab */
 void init_elf() {
 	FILE *fp = fopen(elf_file, "r");
@@ -214,19 +216,49 @@ void init_elf() {
 	strtab.off  = shdr[strtab_idx]->sh_offset;
 	strtab.size = shdr[strtab_idx]->sh_size;
 
-	/*
-	char buf[strtab.size];
-	if ( get_strtab(fp, buf) == false) 
-		printf("error \n");
-	print_strtab(buf);
-
-	char buf2[symtab.entnum][symtab.entsize];
-	if ( get_symtab(fp, buf2) == false)
-		printf("error \n");
-	else 
-		printf("well done \n");
-	*/
-	fclose(fp);
 	return;	
 } // end function
 
+/* give a vaddr, if this vaddr of instruction inside a function
+** output its function name in strtab and set *boolen = true
+** othewise set *boolen = false
+*/
+char *vaddr2func(vaddr_t addr, bool *success){
+
+	*success = false;
+	/* get strtab, symtab */
+	char strtab_buf[strtab.size];
+	char symtab_buf[symtab.entnum][symtab.entsize];
+
+	if ( get_strtab(fp, strtab_buf) == false ){ 
+		printf("vaddr2func(): get_strtab failed\n");
+		return NULL;
+	}
+	print_strtab(strtab_buf);
+
+	if ( get_symtab(fp, symtab_buf) == false ){
+		printf("vaddr2func(): get_symtab failed\n");
+		return NULL;
+	}
+	// close elf_file
+	fclose(fp);
+
+	char *ret = NULL;
+	int i = 0;	
+	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym;
+	for( ; i < symtab.entnum; i++) {
+		memcpy(&sym, symtab_buf[i], symtab.entsize);
+		if (addr >= sym.st_value && addr <= sym.st_value + sym.st_size){
+			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(sym.st_info), ELF32_ST_TYPE(sym.st_info)) == STT_FUNC ) {
+				ret = strtab_buf + sym.st_name; 	
+				printf("FUNC name = %s\n", ret);
+				*success = true;
+				break;
+			}
+		} 
+	}//end-for
+	if ( i == symtab.entnum ) {
+		*success = false;
+	}
+	return ret;	
+}

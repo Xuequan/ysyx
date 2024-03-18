@@ -20,6 +20,8 @@
 
 #include "../monitor/sdb/sdb.h"
 
+char *vaddr2func(vaddr_t addr, bool *success);
+
 /* iringbuf */
 #define IRINGBUF_LEN 15
 static char iringbuf[IRINGBUF_LEN][128];
@@ -66,6 +68,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
+
+	bool *success = NULL;
+	char *func_name = vaddr2func(s->pc, success); 
+	if (*success == true) 
+		printf("func_name = %s, addr = %#x\n", func_name, s->pc);
+	else
+		printf("addr = %#x is not inside a function\n", s->pc);
+
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -93,9 +103,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
 	
 	if (iindex == IRINGBUF_LEN) 
-		iindex = 0;	
+	{	iindex = 0;	}
 	memcpy(iringbuf[iindex], s->logbuf, strlen(s->logbuf));
 	iindex++; 
+
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
