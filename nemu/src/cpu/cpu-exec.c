@@ -69,9 +69,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
 
-	bool *success = NULL;
-	char *func_name = vaddr2func(s->pc, success); 
-	if (*success == true) 
+	bool success = false;
+	char *func_name = vaddr2func(s->pc, &success); 
+	if (success == true) 
 		printf("func_name = %s, addr = %#x\n", func_name, s->pc);
 	else
 		printf("addr = %#x is not inside a function\n", s->pc);
