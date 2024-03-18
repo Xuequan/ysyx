@@ -18,27 +18,16 @@
 
 extern char *elf_file;
 
-static FILE *fp = NULL;
 
-static MUXDEF(CONFIG_RV64, Elf64_Ehdr, Elf32_Ehdr) ehdr;
+#define ENTRY_NUM 100
+static struct {
+	// actual symtab entry number
+	word_t entnum;
+	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
+} symtab;
 
-typedef struct symtab_arg {
-	uint32_t entsize;   // symtab every entry size
-	uint32_t entnum;    // symtab number of entries
-	// symtab offset in ELF file
-	MUXDEF(CONFIG_RV64, Elf64_Off, Elf32_Off) off;
-} SYMTAB; 
-
-SYMTAB symtab;
-
-typedef struct strtab_arg {
-	// strtab offset in ELF file
-	MUXDEF(CONFIG_RV64, Elf64_Off, Elf32_Off) off;
-	// strtab total size
-	MUXDEF(CONFIG_RV64, uint64_t, uint32_t) size;
-} STRTAB; 
-	
-STRTAB strtab;
+#define STRTAB_SIZE 1024
+static char strtab[STRTAB_SIZE];	
 
 
 /* get symtab from reading ELF file 
@@ -46,7 +35,8 @@ STRTAB strtab;
 ** char *buf[][] is &symtab[symtab.entnum][symtab.entsize]
 ** return true if success, otherwise false.
 */
-bool get_symtab(FILE *elf_fp, char buf[][symtab.entsize]) {
+/*
+bool get_symtab(FILE *elf_fp,  buf[][symtab.entsize]) {
 
 	if (elf_fp == NULL) {
 		FILE *elf_fp = fopen(elf_file, "r");
@@ -71,20 +61,21 @@ bool get_symtab(FILE *elf_fp, char buf[][symtab.entsize]) {
 	}
 	return true;
 }
+*/
 
 // 测试，打印 strtab
-void print_strtab(char buf[]) {
+void print_strtab(char buf[], int strtab_size) {
 
 	printf("========== print strtab start =============\n");
 
 	char *token;
 	int i =0, j = 0;
 	int num = 0;
-	for( i = 0; i < strtab.size; ){
+	for( i = 0; i < strtab_size; ){
 		token = buf + i;
 		printf("%d: %s\n", num, token);	
 		num++;
-		for( j = i; j < strtab.size; ){
+		for( j = i; j < strtab_size; ){
 			if ( *(buf + j) != '\0')
 				j++;
 			else
@@ -99,6 +90,7 @@ void print_strtab(char buf[]) {
 ** char *buf is the buf[strtab.size]
 ** return true if success, otherwise false.
 */
+/*
 bool get_strtab(FILE *elf_fp, char* buf) {
 
 	if (elf_fp == NULL) {
@@ -120,7 +112,8 @@ bool get_strtab(FILE *elf_fp, char* buf) {
 	}	
 	return true;
 }
-
+*/
+/*
 static bool check_elf() {
 	// check elf_file is a ELF file
 	if ( !(ehdr.e_ident[EI_MAG0] == ELFMAG0 && 
@@ -145,23 +138,41 @@ static bool check_elf() {
 	return true;
 }
 
+*/
 /* open ELF file and get strtab & symtab */
 void init_elf() {
 	FILE *fp = fopen(elf_file, "r");
+
 	if (fp == NULL) {
 		printf("init_elf(): Can not open '%s'\n", elf_file);
 		return;
 	}
 
 	/* 1. get Ehdr and ELF file check */
+	MUXDEF(CONFIG_RV64, Elf64_Ehdr, Elf32_Ehdr) ehdr;
 	if ( fread(&ehdr, sizeof(ehdr), 1, fp) == 0) {
 		printf("init_elf(): Cannot read ElfN_Ehdr.\n");
 		fclose(fp);
 		return;
 	}
 
-	if (check_elf() == false) {
-		fclose(fp);
+	// check elf_file is a ELF file
+	if ( !(ehdr.e_ident[EI_MAG0] == ELFMAG0 && 
+			ehdr.e_ident[EI_MAG1] == ELFMAG1 && 
+			ehdr.e_ident[EI_MAG2] == ELFMAG2 && 
+			ehdr.e_ident[EI_MAG3] == ELFMAG3) ) {
+		printf("init_elf(): file '%s' is not a ELF file.\n", elf_file);
+		return;
+	}
+	// check if elf_file is 32-bit
+	if (ehdr.e_ident[EI_CLASS] != ELFCLASS32) {
+		printf("init_elf(): file '%s' is not a ELF32.\n", elf_file);
+		return;
+	}
+	// check if elf_file is a executable file or shared object
+	// if not, st_value is not a virtual address
+	if (ehdr.e_type != ET_EXEC && ehdr.e_type != ET_DYN) {
+		printf("init_elf(): file '%s' is not a executable file or shared object.\n", elf_file);
 		return;
 	}
 		
@@ -189,18 +200,39 @@ void init_elf() {
 		}
 	}
 	if (symtab_idx == ehdr.e_shnum) {
-		printf("init_elf(): Failed to get symtab in section header table\n");
+		printf("init_elf(): Failed to get symtab entry in section header table\n");
 		fclose(fp);
 		return;
 	}
 
-	uint32_t symentnum = shdr[symtab_idx]->sh_size / 
+	/* 4. fill in static SYMTAB symtab */
+	symtab.entnum = shdr[symtab_idx]->sh_size / 
 											 shdr[symtab_idx]->sh_entsize;
-	symtab.entsize = shdr[symtab_idx]->sh_entsize;
-	symtab.entnum  = symentnum;
-	symtab.off     = shdr[symtab_idx]->sh_offset; 
+	word_t symtab_entsize = shdr[symtab_idx]->sh_entsize;
+	word_t symtab_off     = shdr[symtab_idx]->sh_offset; 
+	
+	if (symtab.entnum > ENTRY_NUM) {
+		printf("Please note, ENTRY_NUM should be bigger than %#x.\n", symtab.entnum);
+		fclose(fp);
+		return; 
+	}
 
-	/* 4. get string tables (strtab) */
+	// 定位到 symtab
+	if (fseek(fp, symtab_off, SEEK_SET) != 0) {
+		printf("init_elf(): Unable to set symtab postion\n");
+		fclose(fp);
+		return;
+	}
+
+	for( int i = 0; i < symtab.entnum; i++) {
+		if (fread(&symtab.sym[i], symtab_entsize, 1, fp) == 0) {
+			printf("init_elf(): Unable to get symtab\n");
+			fclose(fp);
+			return ;
+		}
+	}
+
+	/* 5. get string tables (strtab) */
 	// 这里我取巧了，直接从 symtab 开始查看，因为 .shstrtab 的 TYPE 也是 STRTAB
 	int strtab_idx = 0;
 	for( strtab_idx = symtab_idx; strtab_idx < ehdr.e_shnum; strtab_idx++) {
@@ -214,9 +246,26 @@ void init_elf() {
 		return;
 	}
 
-	strtab.off  = shdr[strtab_idx]->sh_offset;
-	strtab.size = shdr[strtab_idx]->sh_size;
+	word_t strtab_off  = shdr[strtab_idx]->sh_offset;
+	word_t strtab_size = shdr[strtab_idx]->sh_size;
+	
+	if (strtab_size > STRTAB_SIZE) {
+		printf("init_elf(): STATAB_SIZE should bigger than %#x.\n", strtab_size);
+		fclose(fp);
+		return;
+	}
+		// seek and get strtab
+	if ( fseek(fp, strtab_off, SEEK_SET) != 0 ||
+			 fread(strtab, strtab_size, 1, fp) == 0 ) {
+		printf("init_elf(): Unable to set strtab\n");
+		fclose(fp);
+		return ;
+	}
 
+	/* printf strtab */
+	print_strtab(strtab, strtab_size);
+
+	fclose(fp);
 	return;	
 } // end function
 
@@ -227,38 +276,14 @@ void init_elf() {
 char *vaddr2func(vaddr_t addr, bool *success){
 
 	*success = false;
-	/* get strtab, symtab */
-	char strtab_buf[strtab.size];
-	char symtab_buf[symtab.entnum][symtab.entsize];
-
-	if (fp == NULL) {
-		if ((fp = fopen(elf_file, "r")) == NULL) {
-			printf("vaddr2func(): Can not open '%s'\n", elf_file);
-			return NULL;
-		}
-	}
-
-	if ( get_strtab(fp, strtab_buf) == false ){ 
-		printf("vaddr2func(): get_strtab failed\n");
-		return NULL;
-	}
-	print_strtab(strtab_buf);
-
-	if ( get_symtab(fp, symtab_buf) == false ){
-		printf("vaddr2func(): get_symtab failed\n");
-		return NULL;
-	}
-	// close elf_file
-	fclose(fp);
 
 	char *ret = NULL;
 	int i = 0;	
-	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym;
 	for( ; i < symtab.entnum; i++) {
-		memcpy(&sym, symtab_buf[i], symtab.entsize);
-		if (addr >= sym.st_value && addr <= sym.st_value + sym.st_size){
-			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(sym.st_info), ELF32_ST_TYPE(sym.st_info)) == STT_FUNC ) {
-				ret = strtab_buf + sym.st_name; 	
+		if (addr >= symtab.sym[i].st_value && 
+				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size){
+			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
+				ret = strtab + symtab.sym[i].st_name; 	
 				printf("FUNC name = %s\n", ret);
 				*success = true;
 				break;
