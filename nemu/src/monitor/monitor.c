@@ -195,10 +195,13 @@ static void init_elf(const char *elf_file) {
 
 	// symtab file: path/symtab.txt 
 	char symtab_file[strlen(path) + strlen("symtab_file") + 1];
+	char strtab_file[strlen(path) + strlen("strtab_file") + 1];
 
 	strcat(symtab_file, path);
 	strcat(symtab_file, "symtab_file");
-	printf("symtab_file = %s\n", symtab_file);
+	strcat(strtab_file, path);
+	strcat(strtab_file, "strtab_file");
+	printf("symtab_file = %s, strtab_file = %s\n", symtab_file, strtab_file);
 	/* 5. write symtab into file */
 	/*
 	for(int i = 0; i < symentnum; i++) {
