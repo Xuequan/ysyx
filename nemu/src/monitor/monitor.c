@@ -74,7 +74,7 @@ static long load_img() {
 static void init_elf(const char *elf_file) {
 	FILE *fp = fopen(elf_file, "r");
 	if (fp == NULL) {
-		printf("Can not open '%s'\n", elf_file);
+		printf("init_elf(): Can not open '%s'\n", elf_file);
 		return;
 	}
 
