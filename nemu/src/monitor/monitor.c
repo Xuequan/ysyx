@@ -191,7 +191,7 @@ static void init_elf(const char *elf_file) {
 	int len = (int)(ptr - elf_file) + 1;
 	char path[len + 1];
 	memcpy(path, elf_file, len); 
-	path[len + 1] = '\0';
+	path[len] = '\0';
 	printf("path = %s\n", path);
 
 	// symtab file: path/symtab.txt 
