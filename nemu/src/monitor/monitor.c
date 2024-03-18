@@ -81,7 +81,7 @@ static void init_elf(const char *elf_file) {
 	/* 1. get Ehdr and ELF file check */
   MUXDEF(CONFIG_RV64, Elf64_Ehdr, Elf32_Ehdr) ehdr;
 	if ( fread(&ehdr, sizeof(ehdr), 1, fp) == 0) {
-		printf("Cannot read ElfN_Ehdr.\n");
+		printf("init_elf(): Cannot read ElfN_Ehdr.\n");
 		fclose(fp);
 		return;
 	}
@@ -91,20 +91,20 @@ static void init_elf(const char *elf_file) {
 			ehdr.e_ident[EI_MAG1] == ELFMAG1 && 
 			ehdr.e_ident[EI_MAG2] == ELFMAG2 && 
 			ehdr.e_ident[EI_MAG3] == ELFMAG3) ) {
-		printf("file '%s' is not a ELF file.\n", elf_file);
+		printf("init_elf(): file '%s' is not a ELF file.\n", elf_file);
 		fclose(fp);
 		return;
 	}
 	// check if elf_file is 32-bit
 	if (ehdr.e_ident[EI_CLASS] != ELFCLASS32) {
-		printf("file '%s' is not a ELF32.\n", elf_file);
+		printf("init_elf(): file '%s' is not a ELF32.\n", elf_file);
 		fclose(fp);
 		return;
 	}
 	// check if elf_file is a executable file or shared object
 	// if not, st_value is not a virtual address
 	if (ehdr.e_type != ET_EXEC && ehdr.e_type != ET_DYN) {
-		printf("file '%s' is not a executable file or shared object.\n", elf_file);
+		printf("init_elf(): file '%s' is not a executable file or shared object.\n", elf_file);
 		fclose(fp);
 		return;
 	}
@@ -113,13 +113,13 @@ static void init_elf(const char *elf_file) {
   MUXDEF(CONFIG_RV64, Elf64_Shdr, Elf32_Shdr) shdr[ehdr.e_shnum][ehdr.e_shentsize];
 	// 定位到 section header table
 	if (fseek(fp, ehdr.e_shoff, SEEK_SET) != 0) {
-		printf("Unable to set section header table postion\n");
+		printf("init_elf(): Unable to set section header table postion\n");
 		fclose(fp);
 		return;
 	}
 	for( int i = 0; i < ehdr.e_shnum; i++) {
-		if (fread(shdr[i], sizeof(shdr), 1, fp) == 0) {
-			printf("Unable to read shdr\n");
+		if (fread(shdr[i], ehdr.e_shentsize, 1, fp) == 0) {
+			printf("init_elf(): Unable to read shdr\n");
 			fclose(fp);
 			return;
 		}
@@ -133,7 +133,7 @@ static void init_elf(const char *elf_file) {
 		}
 	}
 	if (symtab_idx == ehdr.e_shnum) {
-		printf("Failed to get symtab in section header table\n");
+		printf("init_elf(): Failed to get symtab in section header table\n");
 		fclose(fp);
 		return;
 	}
@@ -142,13 +142,13 @@ static void init_elf(const char *elf_file) {
   MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) symtab[symentnum][shdr[symtab_idx]->sh_entsize];
 	// 定位到 symtab
 	if (fseek(fp, shdr[symtab_idx]->sh_offset, SEEK_SET) != 0) {
-		printf("Unable to set symtab postion\n");
+		printf("init_elf(): Unable to set symtab postion\n");
 		fclose(fp);
 		return;
 	}
 	for( int i = 0; i < symentnum; i++) {
-		if (fread(symtab[i], sizeof(shdr[symtab_idx]->sh_entsize), 1, fp) == 0) {
-			printf("Unable to get symtab\n");
+		if (fread(symtab[i], shdr[symtab_idx]->sh_entsize, 1, fp) == 0) {
+			printf("init_elf(): Unable to get symtab\n");
 			fclose(fp);
 			return;
 		}
@@ -163,7 +163,7 @@ static void init_elf(const char *elf_file) {
 		}
 	}
 	if (strtab_idx == ehdr.e_shnum) {
-		printf("Failed to get strtab in section header table\n");
+		printf("init_elf(): Failed to get strtab in section header table\n");
 		fclose(fp);
 		return;
 	}
@@ -171,12 +171,12 @@ static void init_elf(const char *elf_file) {
 	unsigned char strtab[strtab_size];
 	// 定位到 strtab 的位置
 	if (fseek(fp, shdr[strtab_idx]->sh_offset, SEEK_SET) != 0) {
-		printf("Unable to set strtab postion\n");
+		printf("init_elf(): Unable to set strtab postion\n");
 		fclose(fp);
 		return;
 	}
 	if ( fread(strtab, strtab_size, 1, fp) == 0) {
-		printf("Cannot get strtab\n");
+		printf("init_elf(): Cannot get strtab\n");
 		fclose(fp);
 		return;
 	}	
