@@ -103,8 +103,7 @@ static void init_elf(const char *elf_file) {
 	}
 	// check if elf_file is a executable file or shared object
 	// if not, st_value is not a virtual address
-	if (ehdr.e_type != ET_EXEC || ehdr.e_type != ET_DYN) {
-		printf("ehdr.e_type = %d, ET_EXEC = %d\n", ehdr.e_type, ET_EXEC);
+	if (ehdr.e_type != ET_EXEC && ehdr.e_type != ET_DYN) {
 		printf("file '%s' is not a executable file or shared object.\n", elf_file);
 		fclose(fp);
 		return;
