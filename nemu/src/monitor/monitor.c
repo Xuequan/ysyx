@@ -188,7 +188,7 @@ static void init_elf(const char *elf_file) {
 		printf("init_elf(): get '%s' directory path wrong\n", elf_file);
 		return;
 	}
-	int len = ptr - elf_file + 1;
+	int len = (int)(ptr - elf_file) + 1;
 	char path[len + 1];
 	memcpy(path, elf_file, len); 
 	path[len + 1] = '\0';
