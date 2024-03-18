@@ -66,6 +66,37 @@ typedef struct strtab_arg {
 	
 STRTAB strtab;
 
+/* get symtab from reading ELF file 
+** FILE *elf_fp is the opening fd of ELF file 
+** char *buf[][] is &symtab[symtab.entnum][symtab.entsize]
+** return true if success, otherwise false.
+*/
+bool get_symtab(FILE *elf_fp, char buf[][symtab.entsize]) {
+
+	if (elf_fp == NULL) {
+		FILE *elf_fp = fopen(elf_file, "r");
+		if (elf_fp == NULL) {
+			printf("get_symtab(): Can not open '%s'\n", elf_file);
+			return false;
+		}
+	}
+	// 定位到 symtab
+	if (fseek(elf_fp, symtab.off, SEEK_SET) != 0) {
+		printf("get_symtab(): Unable to set symtab postion\n");
+		fclose(elf_fp);
+		return false;
+	}
+
+	for( int i = 0; i < symtab.entnum; i++) {
+		if (fread(buf[i], symtab.entsize, 1, elf_fp) == 0) {
+			printf("get_symtab(): Unable to get symtab\n");
+			fclose(elf_fp);
+			return false;
+		}
+	}
+	return true;
+}
+
 // 测试，打印 strtab
 void print_strtab(char buf[]) {
 
@@ -238,43 +269,19 @@ static void init_elf() {
 	if ( get_strtab(fp, buf) == false) 
 		printf("error \n");
 	print_strtab(buf);
+
+	char buf2[symtab.entnum][symtab.entsize];
+	if ( get_symtab(fp, buf2) == false)
+		printf("error \n");
+	else 
+		printf("well done \n");
+		
+
+
 	fclose(fp);
 	return;	
 } // end function
 
-
-		
-
-/* get symtab from reading ELF file 
-** FILE *elf_fp is the opening fd of ELF file 
-** char *buf[][] is &symtab[symtab.entnum][symtab.entsize]
-** return true if success, otherwise false.
-*/
-bool get_symtab(FILE *elf_fp, char*** buf) {
-
-	if (elf_fp == NULL) {
-		FILE *elf_fp = fopen(elf_file, "r");
-		if (elf_fp == NULL) {
-			printf("get_symtab(): Can not open '%s'\n", elf_file);
-			return false;
-		}
-	}
-	// 定位到 symtab
-	if (fseek(elf_fp, symtab.off, SEEK_SET) != 0) {
-		printf("get_symtab(): Unable to set symtab postion\n");
-		fclose(elf_fp);
-		return false;
-	}
-
-	for( int i = 0; i < symtab.entnum; i++) {
-		if (fread(*buf[i], symtab.entsize, 1, elf_fp) == 0) {
-			printf("get_symtab(): Unable to get symtab\n");
-			fclose(elf_fp);
-			return false;
-		}
-	}
-	return true;
-}
 
 static int parse_args(int argc, char *argv[]) {
   const struct option table[] = {
