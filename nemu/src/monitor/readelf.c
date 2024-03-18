@@ -214,7 +214,6 @@ void init_elf() {
 	strtab.off  = shdr[strtab_idx]->sh_offset;
 	strtab.size = shdr[strtab_idx]->sh_size;
 
-	/*
 	char buf[strtab.size];
 	if ( get_strtab(fp, buf) == false) 
 		printf("error \n");
@@ -225,7 +224,7 @@ void init_elf() {
 		printf("error \n");
 	else 
 		printf("well done \n");
-	*/
+
 	fclose(fp);
 	return;	
 } // end function
