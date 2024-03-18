@@ -48,6 +48,9 @@ static char *img_file = NULL;
 static int difftest_port = 1234;
 static char *elf_file = NULL;
 
+char **elf_symtab = NULL;
+char *elf_strtab = NULL;
+
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
@@ -168,7 +171,7 @@ static void init_elf(const char *elf_file) {
 		return;
 	}
 	uint32_t strtab_size = shdr[strtab_idx]->sh_size;
-	unsigned char strtab[strtab_size];
+	char strtab[strtab_size];
 	// 定位到 strtab 的位置
 	if (fseek(fp, shdr[strtab_idx]->sh_offset, SEEK_SET) != 0) {
 		printf("init_elf(): Unable to set strtab postion\n");
@@ -182,7 +185,17 @@ static void init_elf(const char *elf_file) {
 	}	
 		
 	fclose(fp);
+
+	/* 5. get elf_symtab, elf_strtab */
+	for(int i = 0; i < symentnum; i++) {
+		if (memcpy(elf_symtab[i], symtab[i], shdr[symtab_idx]->sh_entsize) == NULL) {
+			printf("init_elf(): copy systab failed\n");
+			return;
+		}
+	}
 	
+		 	
+	/*
 	// 测试，打印 strtab
 	printf("========== print strtab start =============\n");
 	unsigned char *token;
@@ -201,6 +214,7 @@ static void init_elf(const char *elf_file) {
 		i = j + 1;
 	}
 	printf("========== print strtab end =============\n");
+	*/
 	return;	
 } // end function
 
