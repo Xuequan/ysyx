@@ -96,14 +96,15 @@ static void init_elf(const char *elf_file) {
 		return;
 	}
 	// check if elf_file is 32-bit
-	if ( ehdr.e_ident[EI_CLASS] != ELFCLASS32) {
+	if (ehdr.e_ident[EI_CLASS] != ELFCLASS32) {
 		printf("file '%s' is not a ELF32.\n", elf_file);
 		fclose(fp);
 		return;
 	}
 	// check if elf_file is a executable file or shared object
 	// if not, st_value is not a virtual address
-	if ( ehdr.e_type != ET_EXEC || ehdr.e_type != ET_DYN) {
+	if (ehdr.e_type != ET_EXEC || ehdr.e_type != ET_DYN) {
+		printf("ehdr.e_type = %d\n", ehdr.e_type);
 		printf("file '%s' is not a executable file or shared object.\n", elf_file);
 		fclose(fp);
 		return;
