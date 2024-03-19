@@ -113,32 +113,23 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	bool success1 = false;
 	bool success2 = false;
 	char *now_func; 
-	//char *now_func  = vaddr2func(s->pc,   &success1, 0); 
- 	//char *next_func = vaddr2func(s->dnpc, &success2, 1); 
  	char *next_func; 
+	int space = 0;
 
-	//printf("success1 = %d, s->pc = %#x, success2 = %d, s->dnpc = %#x\n", success1, s->pc, success2, s->dnpc);
-	/*
-	if (success1 && success2
-		&& (identify_inst(s->pc, s->isa.inst.val) == 1) ) { 
-		printf("%#x: call [%s@%#x]\n", s->pc, next_func, s->dnpc);
-	} else if (success1
-		&& (identify_inst(s->pc, s->isa.inst.val) == 2) ) { 
-		printf("%#x: ----------- ret [%s]\n", s->pc, now_func);
-	}
-	*/
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident)  { 
+		space++;
 		next_func = vaddr2func(s->dnpc, &success2, 1); 
 		if (success2){
-			printf("%#x: call [%s@%#x]\n", s->pc, next_func, s->dnpc);
+			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 		}else{
 			printf("Get func name of pc: '%#x' error!\n", s->dnpc);
 		}
-	}else if(ident == 2){ 
-		now_func  = vaddr2func(s->pc,   &success1, 0); 
+	}else if(2 == ident){ 
+		space--;
+		now_func  = vaddr2func(s->pc, &success1, 0); 
 		if (success1){
-			printf("%#x: ----------- ret [%s]\n", s->pc, now_func);
+			printf("%#x:%*s [%s]\n", s->pc, space, "ret", now_func);
 		}else{
 			printf("Get func name of pc: '%#x' error!\n", s->pc);
 		}
