@@ -63,13 +63,15 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
   pattern_decode(str_jal, strlen(str_jal), &key, &mask, &shift);  
 
+	/*
 	printf("input pc = %#x\n", pc);
 	if (pc == 0x8000000c) {
 		printf("inst = %#lx, key = %#lx, mask = %#lx, shift = %#lx\n", (uint64_t)inst, key, mask, shift);
 	}
+	*/
 
 	if ( (((uint64_t)inst >> shift) & mask) == key) {
-		printf("JAL : addr = %#x\n", pc);
+		//printf("JAL : addr = %#x\n", pc);
     return 1;
   }
    
@@ -108,7 +110,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   isa_exec_once(s);
 
 	/* ftrace start */
-	printf("exec: %#x\n", s->pc);
+	//printf("exec: %#x\n", s->pc);
 
 	bool success1 = false;
 	bool success2 = false;
