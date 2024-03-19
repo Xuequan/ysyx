@@ -76,7 +76,7 @@ static int identify_inst(vaddr_t pc, word_t inst) {
     // the ra as the source register and the zero register(x0)
     // as the destination register.
     if (rs1 == 1 && rd == 0){
-			printf("ret : addr = %#x\n", pc);
+			//printf("ret : addr = %#x\n", pc);
       return 2; 
     }     
   }
@@ -111,7 +111,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		printf("%#x: call [%s@%#x]\n", s->pc, next_func, s->dnpc);
 	} else if (success1
 		&& (identify_inst(s->pc, s->isa.inst.val) == 2) ) { 
-		printf("%#x: ret [%s]\n", s->pc, now_func);
+		printf("%#x: ----------- ret [%s]\n", s->pc, now_func);
 	}
 	/* ftrace end */
 
