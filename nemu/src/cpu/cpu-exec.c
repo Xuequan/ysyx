@@ -63,13 +63,6 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
   pattern_decode(str_jal, strlen(str_jal), &key, &mask, &shift);  
 
-	/*
-	printf("input pc = %#x\n", pc);
-	if (pc == 0x8000000c) {
-		printf("inst = %#lx, key = %#lx, mask = %#lx, shift = %#lx\n", (uint64_t)inst, key, mask, shift);
-	}
-	*/
-
 	if ( (((uint64_t)inst >> shift) & mask) == key) {
 		//printf("JAL : addr = %#x\n", pc);
     return 1;
@@ -83,10 +76,15 @@ static int identify_inst(vaddr_t pc, word_t inst) {
     // jalr performs a procedure return by selecting
     // the ra as the source register and the zero register(x0)
     // as the destination register.
-    if (rs1 == 1 && rd == 0){
-			//printf("ret : addr = %#x\n", pc);
+    if (rs1 == 1 && rd == 0){        // ret
       return 2; 
-    }     
+    }else if (rs1 == 1 && rd == 1){// call far-away sunroutine
+      return 2; 
+    }else if (rs1 == 6 && rd == 0) {// tail call far-away subroutine   
+			return 2;
+    }else {  					 // jr rs; jalr rs;   
+			return 1;
+		}
   }
   return 0;
 }      
