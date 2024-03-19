@@ -63,18 +63,17 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   pattern_decode(str_jal, strlen(str_jal), &key, &mask, &shift);  
 
 	if ( (((uint64_t)inst >> shift) & mask) == key) {
-		//printf("JAL : addr = %#x\n", pc);
     return 1;
   }
    
-  uint8_t rs1 = BITS(inst, 19, 15);
-  uint8_t rd = BITS(inst, 11, 7);  
   char *str_jalr = "??????? ????? ????? 000 ????? 11001 11";
   pattern_decode(str_jalr, strlen(str_jal), &key, &mask, &shift);
   if ( (((uint64_t)inst >> shift) & mask) == key) {
-    // jalr performs a procedure return by selecting
+  	uint8_t rs1 = BITS(inst, 19, 15);
+  	uint8_t rd = BITS(inst, 11, 7);  
+    // "jalr performs a procedure return by selecting
     // the ra as the source register and the zero register(x0)
-    // as the destination register.
+    // as the destination register."
     if (rs1 == 1 && rd == 0){        // ret
       return 2; 
     }else if (rs1 == 1 && rd == 1){// call far-away sunroutine
@@ -108,37 +107,27 @@ static void exec_once(Decode *s, vaddr_t pc) {
   isa_exec_once(s);
 
 	/* ftrace start */
-	//printf("exec: %#x\n", s->pc);
-
 	bool success1 = false;
 	bool success2 = false;
-	char *now_func; 
- 	char *next_func; 
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident){ // maybe a function call, should double check 
-		next_func = vaddr2func(s->dnpc, &success2, 1); 
-		if (success2){ // double check, if next_pc is a function, then a function call
+		char* next_func = vaddr2func(s->dnpc, &success1, 1); 
+		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
 			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 		}
-		/*
-		else{
-			printf("pc at '%#x' not a function entry!\n", s->dnpc);
-		}
-		*/
 	}else if(2 == ident){ // ret
-			// call vaddr2func for function name only
-		now_func  = vaddr2func(s->pc, &success1, 0); 
-		if (success1){
+			// call vaddr2func just for function name only
+		char* now_func  = vaddr2func(s->pc, &success2, 0); 
+		if (success2){
 			space--;
 			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
 		}else{  
-				// should not be here
+				// should never be here
 			printf("Should be checked! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
 		}
 	}
-	
 	/* ftrace end */
 
   cpu.pc = s->dnpc;

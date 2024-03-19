@@ -29,11 +29,9 @@ static struct {
 static char strtab[STRTAB_SIZE];	
 
 /*
-// 测试，打印 strtab
+// for test only, print strtab
 static void print_strtab(char buf[], int strtab_size) {
-
 	printf("========== print strtab start =============\n");
-
 	char *token;
 	int i =0, j = 0;
 	int num = 0;
