@@ -51,6 +51,35 @@ static void print_iringbuf(void) {
 		}
 	}
 }
+/* return 1 if inst at add pc is jal;
+** return 2 if inst at add pc is jalr, 
+** and rd is x0 reg, ra is src;
+** else return 0.
+*/
+static int identify_inst(vaddr_t pc, word_t inst) {
+
+  uint64_t key = 0, mask = 0, shift = 0;
+
+  char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
+  pattern_decode(str_jal, sizeof(str_jal) - 1, &key, &mask, &shift);  if ( (((uint64_t)inst >> shift) & mask) == key) {
+    return 1;
+  }
+   
+  uint8_t rs1 = BITS(inst, 19, 15);
+  uint8_t rd = BITS(inst, 11, 7);  
+  char *str_jalr = "??????? ????? ????? 000 ????? 11001 11";
+  pattern_decode(str_jalr, sizeof(str_jal) - 1, &key, &mask, &shift);
+  if ( (((uint64_t)inst >> shift) & mask) == key) {
+    // jalr performs a procedure return by selecting
+    // the ra as the source register and the zero register(x0)
+    // as the destination register.
+    if (rs1 == 1 && rd == 0){
+      return 2; 
+    }     
+  }
+  return 0;
+}      
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	// print inst information
 	// eg: 0x80000000: 00 00 02 97 auipc	t0, 0
@@ -69,11 +98,18 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
 
-	bool success = false;
-	char *func_name = vaddr2func(s->pc, &success); 
-	if (success) { 
-		printf("func_name = %s, addr = %#x\n", func_name, s->pc);
+	/* ftrace start */
+	bool success1 = false, success2 = false;
+	char *now_func  = vaddr2func(s->pc,   &success1); 
+	char *next_func = vaddr2func(s->dnpc, &success2); 
+	if (success1 && success2
+		&& (identify_inst(s->pc, s->isa.inst.val) == 1)) { 
+		printf("%#x: call [%s@%#x]\n", s->pc, next_func, s->dnpc);
+	} else if (success1
+		&& (identify_inst(s->pc, s->isa.inst.val) == 2) ) { 
+		printf("%#x: ret [%s]\n", s->pc, now_func);
 	}
+	/* ftrace end */
 
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
