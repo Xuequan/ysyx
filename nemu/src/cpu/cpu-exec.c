@@ -61,14 +61,15 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   uint64_t key = 0, mask = 0, shift = 0;
 
   char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
-  pattern_decode(str_jal, sizeof(str_jal) - 1, &key, &mask, &shift);  if ( (((uint64_t)inst >> shift) & mask) == key) {
+  pattern_decode(str_jal, strlen(str_jal) - 1, &key, &mask, &shift);  
+	if ( (((uint64_t)inst >> shift) & mask) == key) {
     return 1;
   }
    
   uint8_t rs1 = BITS(inst, 19, 15);
   uint8_t rd = BITS(inst, 11, 7);  
   char *str_jalr = "??????? ????? ????? 000 ????? 11001 11";
-  pattern_decode(str_jalr, sizeof(str_jal) - 1, &key, &mask, &shift);
+  pattern_decode(str_jalr, strlen(str_jal) - 1, &key, &mask, &shift);
   if ( (((uint64_t)inst >> shift) & mask) == key) {
     // jalr performs a procedure return by selecting
     // the ra as the source register and the zero register(x0)
@@ -102,8 +103,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	bool success1 = false, success2 = false;
 	char *now_func  = vaddr2func(s->pc,   &success1); 
 	char *next_func = vaddr2func(s->dnpc, &success2); 
+
 	if (success1 && success2
-		&& (identify_inst(s->pc, s->isa.inst.val) == 1)) { 
+		&& (identify_inst(s->pc, s->isa.inst.val) == 1) ) { 
 		printf("%#x: call [%s@%#x]\n", s->pc, next_func, s->dnpc);
 	} else if (success1
 		&& (identify_inst(s->pc, s->isa.inst.val) == 2) ) { 
