@@ -61,7 +61,7 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   uint64_t key = 0, mask = 0, shift = 0;
 
   char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
-  pattern_decode(str_jal, (strlen(str_jal) - 1), &key, &mask, &shift);  
+  pattern_decode(str_jal, strlen(str_jal), &key, &mask, &shift);  
 	if ( (((uint64_t)inst >> shift) & mask) == key) {
     return 1;
   }
@@ -69,7 +69,7 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   uint8_t rs1 = BITS(inst, 19, 15);
   uint8_t rd = BITS(inst, 11, 7);  
   char *str_jalr = "??????? ????? ????? 000 ????? 11001 11";
-  pattern_decode(str_jalr, (strlen(str_jal) - 1), &key, &mask, &shift);
+  pattern_decode(str_jalr, strlen(str_jal), &key, &mask, &shift);
   if ( (((uint64_t)inst >> shift) & mask) == key) {
     // jalr performs a procedure return by selecting
     // the ra as the source register and the zero register(x0)
