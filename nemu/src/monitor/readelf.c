@@ -85,6 +85,16 @@ void print_strtab(char buf[], int strtab_size) {
 	}
 	printf("========== print strtab end =============\n");
 }
+void print_strtab2(char buf[]) {
+	printf("========== print2 strtab start =============\n");
+	int i = 0;	
+	char *ret;
+	for( ; i < symtab.entnum; i++) {
+		ret = buf + symtab.sym[i].st_name; 	
+		printf("%d - %s\n", symtab.sym[i].st_name, ret);
+	}//end-for
+	printf("========== print2 strtab end =============\n");
+}
 /* get strtab from reading ELF file 
 ** FILE *elf_fp is the opening fd of ELF file 
 ** char *buf is the buf[strtab.size]
@@ -264,6 +274,7 @@ void init_elf() {
 
 	/* printf strtab just for test */
 	print_strtab(strtab, strtab_size);
+	print_strtab2(strtab);
 
 	fclose(fp);
 	return;	
@@ -320,7 +331,7 @@ char *vaddr2func(vaddr_t addr, bool *success){
 		{
 			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	
-				printf("%#x, FUNC name = %s, st_name = %d\n", addr, ret, symtab.sym[i].st_name);
+				//printf("%#x, FUNC name = %s, st_name = %d\n", addr, ret, symtab.sym[i].st_name);
 				*success = true;
 				break;
 			}
