@@ -105,6 +105,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	bool success1 = false, success2 = false;
 	char *now_func  = vaddr2func(s->pc,   &success1, 0); 
 	char *next_func = vaddr2func(s->dnpc, &success2, 1); 
+	printf("exec: %#x\n", s->pc);
 
 	if (success1 && success2
 		&& (identify_inst(s->pc, s->isa.inst.val) == 1) ) { 
