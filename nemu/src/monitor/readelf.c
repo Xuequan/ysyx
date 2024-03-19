@@ -311,7 +311,6 @@ char *vaddr2func(vaddr_t addr, bool *success, vaddr_t dnpc){
 char *vaddr2func(vaddr_t addr, bool *success){
 
 	*success = false;
-
 	char *ret = NULL;
 	int i = 0;	
 	for( ; i < symtab.entnum; i++) {
@@ -321,7 +320,7 @@ char *vaddr2func(vaddr_t addr, bool *success){
 		{
 			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	
-					//printf("FUNC name = %s\n", ret);
+					printf("%#x, FUNC name = %s\n", addr, ret);
 				*success = true;
 				break;
 			}

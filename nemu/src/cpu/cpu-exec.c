@@ -63,6 +63,7 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
   pattern_decode(str_jal, strlen(str_jal), &key, &mask, &shift);  
 	if ( (((uint64_t)inst >> shift) & mask) == key) {
+		printf("JAL : addr = %#x\n", pc);
     return 1;
   }
    
@@ -75,6 +76,7 @@ static int identify_inst(vaddr_t pc, word_t inst) {
     // the ra as the source register and the zero register(x0)
     // as the destination register.
     if (rs1 == 1 && rd == 0){
+			printf("ret : addr = %#x\n", pc);
       return 2; 
     }     
   }
