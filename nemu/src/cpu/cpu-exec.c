@@ -118,19 +118,24 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident){ // maybe a function call  
 		next_func = vaddr2func(s->dnpc, &success2, 1); 
-		if (success2){
+		if (success2){ // if next_pc is a function, then a function call
 			space++;
 			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
-		}else{
+		}
+		/*
+		else{
 			printf("pc at '%#x' not a function entry!\n", s->dnpc);
 		}
+		*/
 	}else if(2 == ident){ // ret
+			// call vaddr2func is only for function name
 		now_func  = vaddr2func(s->pc, &success1, 0); 
 		if (success1){
 			space--;
 			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
-		}else{
-			printf("'%#x': inst = '%#x' not a function entry!\n", s->pc, s->isa.inst.val);
+		}else{  
+				// should not be here
+			printf("Should be checked! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
 		}
 	}
 	
