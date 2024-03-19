@@ -263,7 +263,7 @@ void init_elf() {
 	}
 
 	/* printf strtab just for test */
-	// print_strtab(strtab, strtab_size);
+	print_strtab(strtab, strtab_size);
 
 	fclose(fp);
 	return;	
