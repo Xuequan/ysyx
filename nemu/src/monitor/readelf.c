@@ -324,7 +324,6 @@ char *vaddr2func(vaddr_t addr, bool *success, vaddr_t dnpc){
 ** choose == 1, should be the first inst of the function
 */
 char *vaddr2func(vaddr_t addr, bool *success, int choose){
-
 	*success = false;
 	char *ret = NULL;
 	bool cond = false;
@@ -345,6 +344,5 @@ char *vaddr2func(vaddr_t addr, bool *success, int choose){
 			}
 		} 
 	}//end-for
-
 	return ret;	
 }

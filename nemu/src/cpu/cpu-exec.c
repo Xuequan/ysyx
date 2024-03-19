@@ -51,9 +51,8 @@ static void print_iringbuf(void) {
 		}
 	}
 }
-/* return 1 if inst at add pc is jal;
-** return 2 if inst at add pc is jalr, 
-** and rd is x0 reg, ra is src;
+/* return 1 if function call
+** return 2 if function ret 
 ** else return 0.
 */
 static int identify_inst(vaddr_t pc, word_t inst) {
@@ -117,21 +116,21 @@ static void exec_once(Decode *s, vaddr_t pc) {
  	char *next_func; 
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);
-	if (1 == ident)  { 
-		space++;
+	if (1 == ident){ // maybe a function call  
 		next_func = vaddr2func(s->dnpc, &success2, 1); 
 		if (success2){
+			space++;
 			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 		}else{
-			printf("Get func name of pc: '%#x' error!\n", s->dnpc);
+			printf("pc at '%#x' not a function entry!\n", s->dnpc);
 		}
-	}else if(2 == ident){ 
-		space--;
+	}else if(2 == ident){ // ret
 		now_func  = vaddr2func(s->pc, &success1, 0); 
 		if (success1){
+			space--;
 			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
 		}else{
-			printf("Get func name of pc: '%#x' error!\n", s->pc);
+			printf("'%#x': inst = '%#x' not a function entry!\n", s->pc, s->isa.inst.val);
 		}
 	}
 	
