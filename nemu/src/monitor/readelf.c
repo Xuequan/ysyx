@@ -320,7 +320,7 @@ char *vaddr2func(vaddr_t addr, bool *success){
 		{
 			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	
-					printf("%#x, FUNC name = %s\n", addr, ret);
+					//printf("%#x, FUNC name = %s\n", addr, ret);
 				*success = true;
 				break;
 			}
