@@ -116,9 +116,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
  	char *next_func; 
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);
-	if (1 == ident){ // maybe a function call  
+	if (1 == ident){ // maybe a function call, should double check 
 		next_func = vaddr2func(s->dnpc, &success2, 1); 
-		if (success2){ // if next_pc is a function, then a function call
+		if (success2){ // double check, if next_pc is a function, then a function call
 			space++;
 			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 		}
@@ -128,7 +128,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		}
 		*/
 	}else if(2 == ident){ // ret
-			// call vaddr2func is only for function name
+			// call vaddr2func for function name only
 		now_func  = vaddr2func(s->pc, &success1, 0); 
 		if (success1){
 			space--;
