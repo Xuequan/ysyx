@@ -121,6 +121,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		space++;
 		next_func = vaddr2func(s->dnpc, &success2, 1); 
 		if (success2){
+			printf("space = %d\n", space);
 			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 		}else{
 			printf("Get func name of pc: '%#x' error!\n", s->dnpc);
