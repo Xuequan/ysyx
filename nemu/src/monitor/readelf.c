@@ -13,7 +13,6 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 #include <isa.h>
-//#include <memory/paddr.h>
 #include <elf.h>
 #include <string.h>
 
