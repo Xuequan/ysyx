@@ -127,15 +127,15 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		printf("%#x: ----------- ret [%s]\n", s->pc, now_func);
 	}
 	*/
-	if (identify_inst(s->pc, s->isa.inst.val) == 1)  { 
+	int ident = identify_inst(s->pc, s->isa.inst.val);
+	if (1 == ident)  { 
 		next_func = vaddr2func(s->dnpc, &success2, 1); 
 		if (success2){
 			printf("%#x: call [%s@%#x]\n", s->pc, next_func, s->dnpc);
 		}else{
 			printf("Get func name of pc: '%#x' error!\n", s->dnpc);
 		}
-	} 
-	if (identify_inst(s->pc, s->isa.inst.val) == 2){ 
+	}else if(ident == 2){ 
 		now_func  = vaddr2func(s->pc,   &success1, 0); 
 		if (success1){
 			printf("%#x: ----------- ret [%s]\n", s->pc, now_func);
@@ -143,6 +143,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 			printf("Get func name of pc: '%#x' error!\n", s->pc);
 		}
 	}
+	
 	/* ftrace end */
 
   cpu.pc = s->dnpc;
