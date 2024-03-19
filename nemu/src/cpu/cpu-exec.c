@@ -62,6 +62,11 @@ static int identify_inst(vaddr_t pc, word_t inst) {
 
   char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
   pattern_decode(str_jal, strlen(str_jal), &key, &mask, &shift);  
+
+	if (pc == 0x8000000c) {
+		printf("inst = %#lx, key = %#lx, mask = %#lx, shift = %#lx\n", (uint64_t)inst, key, mask, shift);
+	}
+
 	if ( (((uint64_t)inst >> shift) & mask) == key) {
 		printf("JAL : addr = %#x\n", pc);
     return 1;
