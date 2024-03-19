@@ -102,6 +102,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	scan_wp_pool();
 }
 
+int space = 0;
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
@@ -114,14 +115,12 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	bool success2 = false;
 	char *now_func; 
  	char *next_func; 
-	int space = 0;
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident)  { 
 		space++;
 		next_func = vaddr2func(s->dnpc, &success2, 1); 
 		if (success2){
-			printf("space = %d\n", space);
 			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 		}else{
 			printf("Get func name of pc: '%#x' error!\n", s->dnpc);
