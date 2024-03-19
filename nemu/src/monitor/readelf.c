@@ -15,6 +15,7 @@
 #include <isa.h>
 #include <memory/paddr.h>
 #include <elf.h>
+#include <string.h>
 
 extern char *elf_file;
 
@@ -318,14 +319,14 @@ char *vaddr2func(vaddr_t addr, bool *success){
 				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size){
 			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	
-				//printf("FUNC name = %s\n", ret);
-				*success = true;
+				if (strcmp(ret, "main") != 0){
+					//printf("FUNC name = %s\n", ret);
+					*success = true;
+				}
 				break;
 			}
 		} 
 	}//end-for
-	if ( i == symtab.entnum ) {
-		*success = false;
-	}
+
 	return ret;	
 }
