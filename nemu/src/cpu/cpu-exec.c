@@ -20,7 +20,7 @@
 
 #include "../monitor/sdb/sdb.h"
 
-char *vaddr2func(vaddr_t addr, bool *success);
+char *vaddr2func(vaddr_t addr, bool *success, int choose);
 
 /* iringbuf */
 #define IRINGBUF_LEN 15
@@ -103,10 +103,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 	/* ftrace start */
 	bool success1 = false, success2 = false;
-	if (s->pc == s->dnpc)
-		printf("==== why pc = dnpc\n");
-	char *now_func  = vaddr2func(s->pc,   &success1); 
-	char *next_func = vaddr2func(s->dnpc, &success2); 
+	char *now_func  = vaddr2func(s->pc,   &success1, 0); 
+	char *next_func = vaddr2func(s->dnpc, &success2, 1); 
 
 	if (success1 && success2
 		&& (identify_inst(s->pc, s->isa.inst.val) == 1) ) { 

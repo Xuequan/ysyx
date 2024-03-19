@@ -319,19 +319,27 @@ char *vaddr2func(vaddr_t addr, bool *success, vaddr_t dnpc){
 	return ret;	
 }
 */
-char *vaddr2func(vaddr_t addr, bool *success){
+/* input addr(pc), &success;
+** choose == 0, no need to be a function start (the first inst)
+** choose == 1, should be the first inst of the function
+*/
+char *vaddr2func(vaddr_t addr, bool *success, int choose){
 
 	*success = false;
 	char *ret = NULL;
+	bool cond = false;
 	int i = 0;	
 	for( ; i < symtab.entnum; i++) {
-		if (addr >= symtab.sym[i].st_value && 
-				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size)
-			//&& symtab.sym[i].st_size != 0 )
-		{
+		if (1 == choose) {
+			cond = (addr == symtab.sym[i].st_value);
+		} else {
+			cond = (addr >= symtab.sym[i].st_value && 
+				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size);
+		}
+
+		if (cond) {
 			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	
-				//printf("%#x, FUNC name = %s, st_name = %d\n", addr, ret, symtab.sym[i].st_name);
 				*success = true;
 				break;
 			}
