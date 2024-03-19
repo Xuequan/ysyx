@@ -315,8 +315,8 @@ char *vaddr2func(vaddr_t addr, bool *success){
 	int i = 0;	
 	for( ; i < symtab.entnum; i++) {
 		if (addr >= symtab.sym[i].st_value && 
-				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size
-			&& symtab.sym[i].st_size != 0 )
+				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size)
+			//&& symtab.sym[i].st_size != 0 )
 		{
 			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	

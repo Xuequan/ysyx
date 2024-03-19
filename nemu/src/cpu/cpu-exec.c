@@ -103,6 +103,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 	/* ftrace start */
 	bool success1 = false, success2 = false;
+	if (s->pc == s->dnpc)
+		printf("==== why pc = dnpc\n");
 	char *now_func  = vaddr2func(s->pc,   &success1); 
 	char *next_func = vaddr2func(s->dnpc, &success2); 
 
