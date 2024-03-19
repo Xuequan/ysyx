@@ -20,6 +20,8 @@
 
 #include "../monitor/sdb/sdb.h"
 
+char *vaddr2func(vaddr_t addr, bool *success, int choose);
+
 /* iringbuf */
 #define IRINGBUF_LEN 15
 static char iringbuf[IRINGBUF_LEN][128];
@@ -49,6 +51,42 @@ static void print_iringbuf(void) {
 		}
 	}
 }
+/* return 1 if function call
+** return 2 if function ret 
+** else return 0.
+*/
+static int identify_inst(vaddr_t pc, word_t inst) {
+
+  uint64_t key = 0, mask = 0, shift = 0;
+
+  char *str_jal = "??????? ????? ????? ??? ????? 11011 11"; 
+  pattern_decode(str_jal, strlen(str_jal), &key, &mask, &shift);  
+
+	if ( (((uint64_t)inst >> shift) & mask) == key) {
+    return 1;
+  }
+   
+  char *str_jalr = "??????? ????? ????? 000 ????? 11001 11";
+  pattern_decode(str_jalr, strlen(str_jal), &key, &mask, &shift);
+  if ( (((uint64_t)inst >> shift) & mask) == key) {
+  	uint8_t rs1 = BITS(inst, 19, 15);
+  	uint8_t rd = BITS(inst, 11, 7);  
+    // "jalr performs a procedure return by selecting
+    // the ra as the source register and the zero register(x0)
+    // as the destination register."
+    if (rs1 == 1 && rd == 0){        // ret
+      return 2; 
+    }else if (rs1 == 1 && rd == 1){// call far-away sunroutine
+      return 2; 
+    }else if (rs1 == 6 && rd == 0) {// tail call far-away subroutine   
+			return 2;
+    }else {  					 // jr rs; jalr rs;   
+			return 1;
+		}
+  }
+  return 0;
+}      
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	// print inst information
 	// eg: 0x80000000: 00 00 02 97 auipc	t0, 0
@@ -58,14 +96,40 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-	// chuan add
+	// chceck if reach breakpoint
 	scan_wp_pool();
 }
 
+int space = 4;
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
+
+	/* ftrace start */
+	bool success1 = false;
+	bool success2 = false;
+
+	int ident = identify_inst(s->pc, s->isa.inst.val);
+	if (1 == ident){ // maybe a function call, should double check 
+		char* next_func = vaddr2func(s->dnpc, &success1, 1); 
+		if (success1){ // double check, if next_pc is a function, then a function call
+			space++;
+			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
+		}
+	}else if(2 == ident){ // ret
+			// call vaddr2func just for function name only
+		char* now_func  = vaddr2func(s->pc, &success2, 0); 
+		if (success2){
+			space--;
+			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+		}else{  
+				// should never be here
+			printf("Should be checked! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
+		}
+	}
+	/* ftrace end */
+
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -93,9 +157,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst.val, ilen);
 	
 	if (iindex == IRINGBUF_LEN) 
-		iindex = 0;	
+	{	iindex = 0;	}
 	memcpy(iringbuf[iindex], s->logbuf, strlen(s->logbuf));
 	iindex++; 
+
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
