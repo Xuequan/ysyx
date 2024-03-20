@@ -35,6 +35,7 @@ ARCH_SPLIT = $(subst -, ,$(ARCH))
 ISA        = $(word 1,$(ARCH_SPLIT))
 PLATFORM   = $(word 2,$(ARCH_SPLIT))
 
+$(info # ISA=$(ISA) PLATFORM=$(PLATFORM))
 ### Check if there is something to build
 ifeq ($(flavor SRCS), undefined)
   $(error Nothing to build)
@@ -55,13 +56,27 @@ IMAGE_REL = build/$(NAME)-$(ARCH)
 IMAGE     = $(abspath $(IMAGE_REL))
 ARCHIVE   = $(WORK_DIR)/build/$(NAME)-$(ARCH).a
 
+
 ### Collect the files to be linked: object files (`.o`) and libraries (`.a`)
 OBJS      = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
 LIBS     := $(sort $(LIBS) am klib) # lazy evaluation ("=") causes infinite recursions
+
+
 LINKAGE   = $(OBJS) \
   $(addsuffix -$(ARCH).a, $(join \
     $(addsuffix /build/, $(addprefix $(AM_HOME)/, $(LIBS))), \
     $(LIBS) ))
+
+### Print build info message
+$(info #1 WORD_DIR:$(WORK_DIR))
+$(info #2 ARCHIVE:$(ARCHIVE))
+$(info #3 DST_DIR:$(DST_DIR))
+$(info #4 IMAGE:$(IMAGE))
+$(info #5 IMAGE_REL:$(IMAGE_REL))
+$(info #6 LIBS:$(LIBS))
+$(info #7 OBJS:$(OBJS))
+$(info #8 ARCH:$(ARCH))
+$(info #9 LINKAGE:$(LINKAGE))
 
 ## 3. General Compilation Flags
 

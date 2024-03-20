@@ -19,6 +19,10 @@ LDFLAGS_CXX = $(addprefix -Wl$(comma), $(LDFLAGS))
 
 image:
 	@echo + LD "->" $(IMAGE_REL)
+	@echo =========================
+	@echo IMAGE=$(IMAGE) 
+	@echo LINKAGE=$(LINKAGE)
+	@echo =========================
 	@g++ -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -lSDL2 -ldl
 
 run: image
