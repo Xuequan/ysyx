@@ -104,6 +104,12 @@ CFLAGS   += -O2 -MMD -Wall -Werror $(INCFLAGS) \
 CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
 ASFLAGS  += -MMD $(INCFLAGS)
 LDFLAGS  += -z noexecstack
+#LDFLAGS  += -z nodefaultlib
+
+$(info #10 INC_PATH:$(INC_PATH))
+$(info #11 INCFLAGS:$(INCFLAGS))
+$(info #12 CFLAGS:$(CFLAGS))
+$(info #13 SRCS---$(SRCS))
 
 ## 4. Arch-Specific Configurations
 
