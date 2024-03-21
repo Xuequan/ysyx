@@ -17,8 +17,6 @@
 #include <cpu/difftest.h>
 #include "../local-include/reg.h"
 
-//extern const char* regs[];
-
 /* 对比一致则返回 true */ 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 	int i = 0;
