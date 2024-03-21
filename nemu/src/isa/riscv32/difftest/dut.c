@@ -17,19 +17,17 @@
 #include <cpu/difftest.h>
 #include "../local-include/reg.h"
 
+extern const char* regs[];
+
 /* 对比一致则返回 true */ 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
-	/*
 	int i = 0;
-	//extern const char* regs[];
-	//int nr_regs = (int)(sizeof(regs) / sizeof(regs[0]));
-	for( ; i < NR_REGS; i++) {
+	for( ; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
 		if (gpr(i) != ref_r->gpr[i]) {
 			printf("Registers of NEMU and REF are different, PC = %#x\n", pc);
 			return false;	
 		}
 	}
-*/
   return true;
 	
 }
