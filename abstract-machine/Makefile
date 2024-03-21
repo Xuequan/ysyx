@@ -67,7 +67,7 @@ LINKAGE   = $(OBJS) \
     $(LIBS) ))
 
 ### Print build info message
-$(info #1 WORD_DIR:$(WORK_DIR))
+$(info #1 WORK_DIR:$(WORK_DIR))
 $(info #2 ARCHIVE:$(ARCHIVE))
 $(info #3 DST_DIR:$(DST_DIR))
 $(info #4 IMAGE:$(IMAGE))
@@ -109,7 +109,8 @@ LDFLAGS  += -z noexecstack
 $(info #10 INC_PATH:$(INC_PATH))
 $(info #11 INCFLAGS:$(INCFLAGS))
 $(info #12 CFLAGS:$(CFLAGS))
-$(info #13 SRCS---$(SRCS))
+$(info #13 LDFLAGS:$(LDFLAGS))
+$(info #14 SRCS---$(SRCS))
 
 ## 4. Arch-Specific Configurations
 

@@ -25,11 +25,10 @@ image:
 	@echo LDFLAGS_CXX=$(LDFLAGS_CXX)
 	@echo LDFLAGS=$(LDFLAGS)
 	@echo =========================
-	#@g++ -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -L $(AM_HOME)/klib/build/klib-native.a -lSDL2 -ldl
-	@g++ -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -lSDL2 -ldl
+	@g++ -pie -g -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -lSDL2 -ldl
 
 run: image
-	$(IMAGE)
+	$(IMAGE)  
 
 gdb: image
 	gdb -ex "handle SIGUSR1 SIGUSR2 SIGSEGV noprint nostop" $(IMAGE)
