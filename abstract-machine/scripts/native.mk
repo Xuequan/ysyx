@@ -25,7 +25,7 @@ image:
 	@echo LDFLAGS_CXX=$(LDFLAGS_CXX)
 	@echo LDFLAGS=$(LDFLAGS)
 	@echo =========================
-	@g++ -pie -g -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -lSDL2 -ldl
+	@g++ -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -lSDL2 -ldl
 
 run: image
 	$(IMAGE)  
