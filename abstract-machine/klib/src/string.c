@@ -8,9 +8,8 @@
 ** excluding the terminating null byte ('\0').
 */
 size_t strlen(const char *s) {
-	assert(s != NULL);
 	size_t i = 0;
-	char *ptr = (char *)s;
+	uint8_t *ptr = (uint8_t *)s;
 	for ( ; *ptr != '\0'; i++)
 		ptr++;
 	return i;
