@@ -8,14 +8,14 @@ module isram
 	output reg [DATA_WIDTH-1:0] inst_o
 );
 //reg [383:0] isram [32'h8000_0000:32'h8000_f000];  
-reg [7:0] isram [1024:0];  
+reg [16*8-1:0] isram [32'h0:32'h0000_f000];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.bin", isram);
 
 always @(posedge clk) begin
 	if (rst) begin
 		inst_o <= 0;
 	end else begin
-		inst_o <= {isram[addr], isram[addr+1], isram[addr+2], isram[addr+3]};
+		inst_o <= isram[addr - 32'h8000_0000][31:0];
 	end
 end
 endmodule
