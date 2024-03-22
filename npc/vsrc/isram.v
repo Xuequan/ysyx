@@ -7,7 +7,7 @@ module isram
 	
 	output reg [DATA_WIDTH-1:0] inst_o
 );
-reg [DATA_WIDTH-1:0] isram [1024:0];  // 暂定1024行
+reg [DATA_WIDTH-1:0] isram [32'h8000_ffff:32'h8000_0000];  // 暂定1024行
 initial $readmemh("/home/chuan/ysyx-workbench/npc/vsrc/dummy.bin", isram);
 
 always @(posedge clk) begin
