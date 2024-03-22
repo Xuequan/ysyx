@@ -4,13 +4,10 @@ module top
 	input clk,
 	input rst,
 	// to ram	
-	//output [ADDR_WIDTH-1:0] pc, 
-	output 									inst_ebreak
+	output inst_ebreak
 	// from ram
-	//input  [DATA_WIDTH-1:0] inst
 );
 
-//wire [DATA_WIDTH-1:0] inst;
 wire [DATA_WIDTH-1:0] wdata;
 wire [REG_WIDTH-1 :0] waddr;
 wire [DATA_WIDTH-1:0] src1;
@@ -60,21 +57,9 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 );
 
 /*
-export "DPI-C" function check_trap;
-bit function check_trap(input inst_ebreak);
-	begin
-		check_trap = inst_ebreak;
-	end 
-endfunction
-*/
-/*
-export "DPI-C" task check_trap;
-task check_trap (output bit o);
-	o = inst_ebreak;
-endtask
-*/
 export "DPI-C" task check_ebreak;
 task check_ebreak (output bit o);
 	o = inst_ebreak;
 endtask
+*/
 endmodule

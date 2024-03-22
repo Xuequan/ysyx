@@ -4,16 +4,10 @@
 #include "verilated.h"
 
 #include <stdio.h>
-
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <map>
-#include <fstream>
-using namespace std;
-
+/*
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
+*/
 
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
@@ -39,11 +33,12 @@ void sim_exit() {
 
 int main() {
 	sim_init();
-
+	/*
 	const svScope scope = svGetScopeFromName("TOP.top");
 	assert(scope);
 	svSetScope(scope);
 	svBit a; 
+	*/
 
 	int i = -1;
 	while (1) {
@@ -57,8 +52,9 @@ int main() {
 			top->rst = 0;	
 		}
 		
-		bool success = 0;
+		//bool success = 0;
 
+		/*
 		if (top->clk) { 
 			top->check_ebreak(&a);
 			if (a == 1) {
@@ -67,7 +63,12 @@ int main() {
 				break;
 			}
 		}
+		*/
 		step_and_dump_wave();
+		if (top->inst_ebreak){
+			printf("hit ebreak inst\n");
+			return 0;
+		}
 	} // end while(1)
 	sim_exit();
 	return 0;
