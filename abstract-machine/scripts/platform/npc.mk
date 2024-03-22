@@ -19,8 +19,8 @@ image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	#@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
-	#@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O verilog $(IMAGE).elf $(NPC_HOME)/$(NAME).v
-	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(NPC_HOME)/$(NAME).bin
+	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O verilog $(IMAGE).elf $(NPC_HOME)/$(NAME).v
+	#@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(NPC_HOME)/$(NAME).bin
 
 run: image
 	@$(MAKE) -s -C $(NPC_HOME) sim
