@@ -22,7 +22,7 @@ VerilatedVcdC* tfp = NULL;
 
 static Vtop* top;
 
-char *file = "/home/chuan/ysyx-workbench/npc/csrc/dummy-riscv32d-npc.bin";
+char *file = "/home/chuan/ysyx-workbench/npc/csrc/ram.txt";
 void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
