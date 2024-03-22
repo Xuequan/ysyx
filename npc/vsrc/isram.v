@@ -7,7 +7,7 @@ module isram
 	
 	output reg [DATA_WIDTH-1:0] inst_o
 );
-reg [7:0] isram [32'h8000_0000:32'h8000_f000];  
+reg [7:0] isram [32'h8000_0000:32'h8000_0f00];  
 //reg [16*8-1:0] isram [32'h0000_0000:32'h0000_f000];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 
