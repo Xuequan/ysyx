@@ -8,7 +8,7 @@ module isram
 	output reg [DATA_WIDTH-1:0] inst_o
 );
 reg [DATA_WIDTH-1:0] isram [32'h8000_0000:32'h8000_f000];  
-initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram, 32'h8000_0000);
+initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 
 always @(posedge clk) begin
 	if (rst) 
