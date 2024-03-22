@@ -22,6 +22,7 @@ VerilatedVcdC* tfp = NULL;
 
 static Vtop* top;
 
+char *file = "/home/chuan/ysyx-workbench/npc/csrc/dummy-riscv32d-npc.bin";
 void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
@@ -51,7 +52,7 @@ map<string, string> instructions;
 //map<string, unsigned int> instructions;
 void ram_init(void) {
 	ifstream infile;
-	infile.open("/home/chuan/ysyx-workbench/npc/csrc/ram.txt");
+	infile.open(file);
 	if (! infile) {
 		printf("Open ram.txt wrong!\n");
 		return;
