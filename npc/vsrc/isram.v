@@ -9,7 +9,7 @@ module isram
 );
 reg [383:0] isram [32'h8000_0000:32'h8000_f000];  
 //reg [16*8-1:0] isram [32'h0000_0000:32'h0000_f000];  
-initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram, 32'h8000_0000);
+initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram, 32'h8000_0000, 32'h8000_0030);
 
 always @(posedge clk) begin
 	if (rst) begin
