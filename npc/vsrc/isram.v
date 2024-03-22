@@ -11,7 +11,7 @@ module isram
 reg [7:0] isram [32'h8000_0000:32'h8000_0300];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 */
-reg [31:0] isram [32'h80000000:32'h80003000];  
+reg [34:0] isram [32'h80000000:32'h80003000];  
 //initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 32'h80000000, 32'h8000002C);
 initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 12);
 
@@ -23,7 +23,7 @@ always @(posedge clk) begin
 		inst_o <= {isram[addr+3], isram[addr+2], isram[addr+1], isram[addr]};
 		$display("%d", inst_o);
 		*/
-		inst_o <= isram[addr];
+		inst_o <= isram[addr][31:0];
 	end
 end
 
