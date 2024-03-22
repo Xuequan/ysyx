@@ -17,7 +17,7 @@ initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 12);
 
 always @(posedge clk) begin
 	if (rst) begin
-		inst_o <= 0;
+		inst_o <= 32'h0;
 	end else begin
 		/*
 		inst_o <= {isram[addr+3], isram[addr+2], isram[addr+1], isram[addr]};
