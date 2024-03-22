@@ -11,7 +11,7 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
-VCD_FILE = ./dump.vcd
+VCD_FILE = ./wave.vcd
 
 $(shell mkdir -p $(BUILD_DIR))
 
