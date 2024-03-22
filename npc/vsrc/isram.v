@@ -6,10 +6,13 @@ module isram
 	input [ADDR_WIDTH-1:0] addr,
 	output reg [DATA_WIDTH-1:0] inst_o
 );
+
 reg [7:0] isram [32'h8000_0000:32'h8000_0300];  
 //reg [31:0] isram [32'h8000_0000:32'h8000_0030];  
 
-initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram, 32'h80000000, 32'h8000002f);
+initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
+
+//initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram, 32'h80000000, 32'h8000002f);
 
 always @(posedge clk) begin
 	if (rst) begin
