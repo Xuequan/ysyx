@@ -4,10 +4,10 @@ module top
 	input clk,
 	input rst,
 	// to ram	
-	output [ADDR_WIDTH-1:0] pc, 
-	output 									inst_ebreak,
+	//output [ADDR_WIDTH-1:0] pc, 
+	output 									inst_ebreak
 	// from ram
-	input  [DATA_WIDTH-1:0] inst
+	//input  [DATA_WIDTH-1:0] inst
 );
 
 //wire [DATA_WIDTH-1:0] inst;
@@ -18,6 +18,15 @@ wire [DATA_WIDTH-1:0] src2;
 wire [REG_WIDTH-1 :0] rd;
 wire [2						:0] op;
 
+wire [ADDR_WIDTH-1:0] pc;
+wire [DATA_WIDTH-1:0] inst;
+
+isram	#(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) isram_i0(
+	.clk(clk),
+	.rst(rst),
+	.addr(pc),
+	.inst_o(inst)
+);
 
 ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) ifu(
 	.clk(clk),
