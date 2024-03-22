@@ -11,7 +11,7 @@ module isram
 reg [7:0] isram [32'h8000_0000:32'h8000_0300];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 */
-reg [31:0] isram [32'h8000_0000:32'h8000_0030];  
+reg [31:0] isram [32'h8000_0000:32'h8000_0040];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram);
 
 always @(posedge clk) begin
