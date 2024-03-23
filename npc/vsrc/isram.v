@@ -14,7 +14,7 @@ initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 //initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 32'h80000000, 32'h8000002C);
 
 reg [7:0] isram [32'h800_0000:32'h800_0010];  
-initial $readmemh("/home/chuan/ysyx-workbench/npc/d2.txt", isram, 'h8000000);
+initial $readmemh("/home/chuan/ysyx-workbench/npc/d2.txt", isram);
 /*
 reg [7:0] isram [32'h8000_0000:32'h8000_0010];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/d2.txt", isram);
