@@ -131,7 +131,7 @@ unsigned int pmem_read(unsigned int addr, bool *success) {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
 	sim_init();
 	ram_init();	
 	print_instructions();
