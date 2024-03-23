@@ -14,7 +14,7 @@ initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 reg [7:0] isram ['h8000_0000:'h8000_1000];  
 //initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 32'h80000000, 32'h8000002C);
 
-initial $readmemh("/home/chuan/ysyx-workbench/npc/d2.txt", isram);
+initial $readmemh("/home/chuan/ysyx-workbench/npc/d2.txt", isram, 'h8000_0000);
 
 always @(posedge clk) begin
 	if (rst) begin
