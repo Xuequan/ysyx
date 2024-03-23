@@ -38,6 +38,7 @@ run: run-env
 	@echo "inside nemu/scripts/native.mk"
 	@echo BINARY = $(BINARY)
 	@echo OBJ_DIR = $(OBJ_DIR)
+	@echo OBJS= $(OBJS)
 	@echo ARGS=$(ARGS)
 	@echo IMG=$(IMG)
 	@echo NEMU_EXEC = $(NEMU_EXEC)
