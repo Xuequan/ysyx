@@ -21,7 +21,7 @@ always @(posedge clk) begin
 		inst_o <= 32'h0;
 	end else begin
 		inst_o <= {isram[addr+3], isram[addr+2], isram[addr+1], isram[addr]};
-		$display("%d", inst_o);
+		$display("here %d", inst_o);
 		//inst_o <= isram[addr];
 	end
 end
