@@ -11,9 +11,9 @@ module isram
 reg [7:0] isram [32'h8000_0000:32'h8000_0300];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 */
-reg [31:0] isram [32'h80000000:32'h80003000];  
+reg [31:0] isram [32'h8000_0000:32'h8001_0000];  
 //initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 32'h80000000, 32'h8000002C);
-initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 12);
+initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram);
 
 always @(posedge clk) begin
 	if (rst) begin
