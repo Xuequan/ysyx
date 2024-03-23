@@ -24,7 +24,7 @@ always @(posedge clk) begin
 		inst_o <= 32'h0;
 	end else begin
 		inst_o <= {isram[addr+3], isram[addr+2], isram[addr+1], isram[addr]};
-		//$display("here %x", isram['h80000001]);
+		$display("here %x", isram['h800_0002]);
 		$display("addr %x", inst_o);
 		//inst_o <= isram[addr];
 	end
