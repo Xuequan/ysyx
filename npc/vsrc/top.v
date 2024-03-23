@@ -3,9 +3,7 @@ module top
 		REG_WIDTH = 5)(
 	input clk,
 	input rst,
-	// to ram	
 	output inst_ebreak
-	// from ram
 );
 
 wire [DATA_WIDTH-1:0] wdata;
@@ -17,11 +15,13 @@ wire [2						:0] op;
 
 wire [ADDR_WIDTH-1:0] pc;
 wire [DATA_WIDTH-1:0] inst;
+wire 									valid;
 
-isram	#(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) isram_i0(
+ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) isram_i0(
 	.clk(clk),
 	.rst(rst),
-	.addr(pc),
+	.valid(valid),
+	.raddr(pc),
 	.inst_o(inst)
 );
 
@@ -29,6 +29,7 @@ ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) ifu(
 	.clk(clk),
 	.rst(rst),
 	.inst_i(inst),
+	.valid(valid),
 	.addr(pc)
 );	
 

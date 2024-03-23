@@ -5,7 +5,7 @@ module ysyx_23060208_IFU
 	input rst,
 	input [DATA_WIDTH-1:0] inst_i,  // from inst ram
 
-	//output reg [ADDR_WIDTH-1:0] addr_o // to inst ram
+	output reg valid,						
 	output reg [ADDR_WIDTH-1:0] addr    // to inst ram
 );
 
@@ -18,5 +18,7 @@ ysyx_23060208_PCreg #(.ADDR_WIDTH(ADDR_WIDTH)) PCreg_i0(
 	.next_pc(next_pc),
 	.pc(addr)
 );
+
+assign valid = 1'b1;
 
 endmodule
