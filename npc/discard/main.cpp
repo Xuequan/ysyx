@@ -5,7 +5,6 @@
 #include "verilated.h"
 
 #include <stdio.h>
-//#include "/home/chuan/ysyx-workbench/nemu/include/memory"
 
 #include <string>
 #include <sstream>

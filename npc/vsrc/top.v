@@ -56,10 +56,9 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.wdata(wdata)
 );
 
-/*
 export "DPI-C" task check_ebreak;
 task check_ebreak (output bit o);
 	o = inst_ebreak;
 endtask
-*/
+
 endmodule
