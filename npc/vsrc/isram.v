@@ -13,9 +13,12 @@ initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy.v", isram);
 */
 //initial $readmemh("/home/chuan/ysyx-workbench/npc/dummy_revised.v", isram, 32'h80000000, 32'h8000002C);
 
+/*
 reg [7:0] isram ['h8000000:'h8000010];  
 initial $readmemh("/home/chuan/ysyx-workbench/npc/d2.txt", isram, 'h8000000);
-
+*/
+reg [7:0] isram ['h80000000:'h80000010];  
+initial $readmemh("/home/chuan/ysyx-workbench/npc/d2.txt", isram, 'h80000000);
 always @(posedge clk) begin
 	if (rst) begin
 		inst_o <= 32'h0;
