@@ -22,3 +22,4 @@ image: $(IMAGE).elf
 
 run: image
 	@$(MAKE) -s -C $(NPC_HOME) sim ARGS="$(IMAGE).bin"
+
