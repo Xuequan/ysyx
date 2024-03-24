@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		}
-		printf("inst = %x\n", top->inst);
+		printf("inst = %08x\n", top->inst);
 		step_and_dump_wave();
 	} // end while(1)
 	sim_exit();
