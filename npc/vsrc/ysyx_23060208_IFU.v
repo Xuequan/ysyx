@@ -24,7 +24,7 @@ always @(posedge clk) begin
 		next_pc_r <= next_pc;
 end
 assign next_pc = inst_jal_jalr ? nextpc_from_jal_jalr : 
-										next_pc_r + ADDR_WIDTH'('h4);
+										addr + ADDR_WIDTH'('h4);
 
 ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 	.clk(clk),
@@ -35,6 +35,6 @@ ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 );
 
 assign valid = 1'b1;
-assign addr = next_pc_r;
+assign addr = inst_jal_jalr ? nextpc_from_jal_jalr : next_pc_r;
 
 endmodule
