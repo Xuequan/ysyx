@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
 	FILE *fp = fopen(argv[1], "rb");
 	assert(fp != 0);
 	
+	printf("here1\n");
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
 
@@ -73,7 +74,7 @@ int main(int argc, char *argv[]) {
 
 	fclose(fp);
 	/* load mem end */		
-
+	printf("here2\n");
 	sim_init();
 	
 	const svScope scope = svGetScopeFromName("TOP.top");
