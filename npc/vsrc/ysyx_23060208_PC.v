@@ -13,7 +13,7 @@ module ysyx_23060208_PC
 reg [ADDR_WIDTH-1:0] pc_r;
 always @(posedge clk) begin
 	if (rst) 
-		pc_r <= ADDR_WIDTH'('h8000_0000);
+		pc_r <= ADDR_WIDTH'('h8000_0000) - 4;
 	else if(wen)
 		pc_r <= next_pc;
 end
