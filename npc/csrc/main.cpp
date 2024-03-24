@@ -104,6 +104,8 @@ int main(int argc, char *argv[]) {
 		}
 		
 		if (top->clk) { 
+			printf("inst = %08x\n", top->inst);
+
 			top->check_ebreak(&a);
 			if (a == 1) {
 				printf("Reach ebreak instruction, stop sim.\n");
@@ -111,7 +113,6 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		}
-		printf("inst = %08x\n", top->inst);
 		step_and_dump_wave();
 	} // end while(1)
 	sim_exit();
