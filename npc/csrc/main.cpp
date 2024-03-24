@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
 	/* 初始化 mem */
 	memset(mem, 0, MEM_SIZE);
 	/* load program into memory */	
-	char *image = argv[1];
-	FILE *fp = fopen(image, "rb");
+	//char *image = argv[1];
+	FILE *fp = fopen(argv[1], "rb");
 	assert(fp != 0);
 	
 	fseek(fp, 0, SEEK_END);
