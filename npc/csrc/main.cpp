@@ -55,7 +55,7 @@ void print_img(long size) {
 	for(int i = 0; i < size; i++){
 		if ( i != 0 && i % 4 == 0) 
 			printf("\n");
-		printf(" %2x", mem[i]);
+		printf(" %02x", mem[i]);
 	}
 	printf("\n");
 }
