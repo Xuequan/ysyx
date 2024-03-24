@@ -51,6 +51,14 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask) {
 	return;	
 }
 
+void print_img(long size) {
+	for(int i = 0; i < size; i++){
+		if ( i != 0 && i % 4 == 0) 
+			printf("\n");
+		printf(" %-2x", mem[i]);
+	}
+	printf("\n");
+}
 int main(int argc, char *argv[]) {
 	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", argc, argv[0], argv[1]);
 	if (argc != 2) {
@@ -64,7 +72,6 @@ int main(int argc, char *argv[]) {
 	FILE *fp = fopen(argv[1], "rb");
 	assert(fp != 0);
 	
-	printf("here1\n");
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
 
@@ -74,7 +81,7 @@ int main(int argc, char *argv[]) {
 
 	fclose(fp);
 	/* load mem end */		
-	printf("here2\n");
+	print_img(size);
 	sim_init();
 	
 	const svScope scope = svGetScopeFromName("TOP.top");
