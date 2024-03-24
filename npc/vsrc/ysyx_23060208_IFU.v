@@ -24,7 +24,7 @@ always @(posedge clk) begin
 		next_pc_r <= next_pc;
 end
 assign next_pc = inst_jal_jalr ? nextpc_from_jal_jalr : 
-										pc + ADDR_WIDTH'('h4);
+										next_pc_r + ADDR_WIDTH'('h4);
 
 ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 	.clk(clk),
