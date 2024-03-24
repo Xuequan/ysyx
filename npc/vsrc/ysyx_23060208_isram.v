@@ -1,8 +1,8 @@
 // 本模块模拟 sram, 输入地址，得到指令
 module ysyx_23060208_isram
 	#(DATA_WIDTH = 32, ADDR_WIDTH = 32) (
-	//input clk,
-	//input rst,
+	input clk,
+	input rst,
 	input valid,
 	// read data address
 	input [ADDR_WIDTH-1:0] raddr,
@@ -21,12 +21,15 @@ import "DPI-C" function void pmem_write(
 reg [DATA_WIDTH-1:0] rdata;
 assign inst_o = rdata;
 
-always @(*) begin
-	if (valid) begin  // 有读写请求时
-		rdata = pmem_read(raddr);
+always @(posedge clk) begin
+	if (rst) begin
+		rdata <= 0;
+	end 
+	else if (valid) begin  // 有读写请求时
+		rdata <= pmem_read(raddr);
 	end
 	else begin
-		rdata = 0;
+		rdata <= 0;
 	end
 end
 

@@ -31,8 +31,8 @@ wire [DATA_WIDTH-1:0] idu_to_exu_to_mem_data;
 wire 									to_regfile_wen;
 
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) isram_i0(
-	//.clk(clk),
-	//.rst(rst),
+	.clk(clk),
+	.rst(rst),
 	.valid(valid),
 	.raddr(addr),
 	.waddr(exu_to_isram_to_mem_addr),
