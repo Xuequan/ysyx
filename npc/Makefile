@@ -48,7 +48,7 @@ default: sim
 sim: $(BIN)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
-	@$^ $(IMAGE).bin
+	@$^ ARGS="$(IMAGE).bin"
 	
 include ../Makefile
 
