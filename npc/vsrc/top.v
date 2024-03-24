@@ -3,6 +3,7 @@ module top
 		REG_WIDTH = 5)(
 	input clk,
 	input rst,
+	output [DATA_WIDTH-1:0] inst,
 	output inst_ebreak
 );
 
@@ -14,7 +15,6 @@ wire [REG_WIDTH-1 :0] rd;
 wire [2						:0] op;
 
 wire [ADDR_WIDTH-1:0] pc;
-wire [DATA_WIDTH-1:0] inst;
 wire 									valid;
 
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) isram_i0(
