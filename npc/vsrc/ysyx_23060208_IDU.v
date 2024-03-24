@@ -23,7 +23,6 @@ module ysyx_23060208_IDU
 		// to memory: dest = 0; to register: 1
 	output 									dest, // mem or register
 	output [DATA_WIDTH-1:0] to_mem_data_o,
-	
 
 	output 									inst_ebreak
 );

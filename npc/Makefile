@@ -11,7 +11,7 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
-VCD_FILE = wave.vcd
+VCD_FILE = dump.vcd
 
 $(shell mkdir -p $(BUILD_DIR))
 
@@ -57,8 +57,8 @@ sim: $(BIN)
 	
 include ../Makefile
 
-wave: $(VCD_FILE)
-	gtkwave $<
+wave:
+	gtkwave $(VCD_FILE)
 
 clean:
 	-@rm -rf $(BUILD_DIR)

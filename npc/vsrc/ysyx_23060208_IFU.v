@@ -12,24 +12,29 @@ module ysyx_23060208_IFU
 
 	output reg 							valid,						
 	output [DATA_WIDTH-1:0] pc,  // to IDU
-
 	output [ADDR_WIDTH-1:0] addr    // to inst ram
 );
 
-wire [ADDR_WIDTH-1:0] next_pc;  // to IDU
+reg [ADDR_WIDTH-1:0] next_pc_r; 
+reg [ADDR_WIDTH-1:0] next_pc; 
+always @(posedge clk) begin
+	if (rst) 
+		next_pc_r <= ADDR_WIDTH'('h8000_0000);
+	else
+		next_pc_r <= next_pc;
+end
 assign next_pc = inst_jal_jalr ? nextpc_from_jal_jalr : 
-															pc_reg + ADDR_WIDTH'('h4);
+										pc + ADDR_WIDTH'('h4);
 
-reg [ADDR_WIDTH-1:0] pc_reg;  
-ysyx_23060208_PCreg #(.ADDR_WIDTH(ADDR_WIDTH)) PCreg_i0(
+ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
-	.next_pc(next_pc),
-	.pc(pc_reg)
+	.wen(1'b1),
+	.next_pc(next_pc_r),
+	.pc(pc)
 );
 
 assign valid = 1'b1;
-assign pc = pc_reg;
-assign addr = pc_reg;
+assign addr = next_pc_r;
 
 endmodule
