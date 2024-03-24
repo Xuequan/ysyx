@@ -8,7 +8,6 @@
 #include <assert.h>
 #include <string.h>
 
-
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
 
