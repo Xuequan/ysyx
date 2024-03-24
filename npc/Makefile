@@ -53,7 +53,7 @@ sim: $(BIN)
 	@echo IMG=$(IMG)
 	@echo $^
 	@echo =======================================
-	@$^ ARGS="$(IMAGE).bin"
+	@$^ $(IMG)
 	
 include ../Makefile
 
