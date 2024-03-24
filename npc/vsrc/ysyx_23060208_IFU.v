@@ -15,26 +15,25 @@ module ysyx_23060208_IFU
 	output [ADDR_WIDTH-1:0] addr    // to inst ram
 );
 
-reg [ADDR_WIDTH-1:0] next_pc_r; 
 reg [ADDR_WIDTH-1:0] next_pc; 
 always @(posedge clk) begin
 	if (rst) 
-		next_pc_r <= ADDR_WIDTH'('h8000_0000);
+		next_pc <= ADDR_WIDTH'('h8000_0000);
+	else if (inst_jal_jalr)
+		next_pc <= nextpc_from_jal_jalr;
 	else
-		next_pc_r <= next_pc;
+		next_pc <= next_pc + ADDR_WIDTH'('h4);
 end
-assign next_pc = inst_jal_jalr ? nextpc_from_jal_jalr : 
-										addr + ADDR_WIDTH'('h4);
 
 ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
 	.wen(1'b1),
-	.next_pc(next_pc_r),
+	.next_pc(next_pc),
 	.pc(pc)
 );
 
 assign valid = 1'b1;
-assign addr = inst_jal_jalr ? nextpc_from_jal_jalr : next_pc_r;
+assign addr = next_pc;
 
 endmodule
