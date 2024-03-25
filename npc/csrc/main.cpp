@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 
 			top->check_ebreak(&a);
 			if (a == 1) {
-				printf("Reach ebreak instruction, stop sim.\n");
+				printf("\nReach ebreak instruction, stop sim.\n\n");
 				step_and_dump_wave();
 				break;
 			}
