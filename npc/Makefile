@@ -7,6 +7,8 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
+VERILATOR_CFLGAS += --debug
+VERILATOR_CFLGAS += --gdbbt
 # for gdb
 VERILATOR_CFLAGS += -CFLAGS -ggdb -LDFLAGS -ggdb -CFLAGS -DVL_DEBUG=1 -CFLAGS -D_GLIBCXX_DEBUG
 
@@ -64,7 +66,7 @@ sim: $(BIN)
 include ../Makefile
 
 gdb: $(BIN)
-	gdb -s $^ $(IMG)
+	gdb -s $^ --args $(IMG)
 
 wave:
 	gtkwave $(VCD_FILE)
