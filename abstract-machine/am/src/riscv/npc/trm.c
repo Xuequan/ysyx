@@ -19,10 +19,8 @@ void putch(char ch) {
 
 void halt(int code) {
   while (1) {
-	if (code) 
-		__asm("ebreak");
-	else
-		__asm("ret");
+		if (code) 
+			__asm("ebreak");
 	}
 }
 
