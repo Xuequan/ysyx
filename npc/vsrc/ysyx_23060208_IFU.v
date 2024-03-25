@@ -29,5 +29,4 @@ ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 );
 
 assign valid = 1'b1;
-//assign addr = next_pc;
 endmodule
