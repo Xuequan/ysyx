@@ -18,8 +18,12 @@ void putch(char ch) {
 }
 
 void halt(int code) {
-  while (1);
-	//__asm("ebreak");
+  while (1) {
+	if (code) 
+		__asm("ebreak");
+	else
+		__asm("ret");
+	}
 }
 
 void _trm_init() {
