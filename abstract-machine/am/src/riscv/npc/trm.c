@@ -19,8 +19,13 @@ void putch(char ch) {
 
 void halt(int code) {
   while (1) {
+	/*
+		if (code) {
+			putch
+		}
+	*/
 		if (code) 
-			__asm("ebreak");
+			asm volatile("mv a0, %0; ebreak" : : "r"(code));
 	}
 }
 
