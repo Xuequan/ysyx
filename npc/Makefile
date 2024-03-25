@@ -66,7 +66,7 @@ sim: $(BIN)
 include ../Makefile
 
 gdb: $(BIN)
-	gdb -s $(VERILATOR) --args $(IMG) $^
+	gdb -s $^ --args $(IMG) $^
 
 wave:
 	gtkwave $(VCD_FILE)
