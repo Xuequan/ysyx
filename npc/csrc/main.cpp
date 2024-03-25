@@ -5,14 +5,8 @@
 #include "verilated.h"
 
 #include <stdio.h>
-//#include "/home/chuan/ysyx-workbench/nemu/include/memory"
-
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <map>
-#include <fstream>
-using namespace std;
+#include <assert.h>
+#include <string.h>
 
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
@@ -38,92 +32,58 @@ void sim_init() {
 void sim_exit() {
 	tfp->close();
 }
-/*
-void nvboard_bind_all_pins(Vtop *top) {
-	nvboard_bind_pin(&top->a, false, true, 1, LD0);
-	nvboard_bind_pin(&top->b, false, true, 1, LD1);
-	nvboard_bind_pin(&top->f, false, true, 1, LD2);
-}
-*/
 
-// 读入指令
-map<string, string> instructions;
-//map<string, unsigned int> instructions;
-void ram_init(void) {
-	ifstream infile;
-	infile.open("/home/chuan/ysyx-workbench/npc/csrc/ram.txt");
-	if (! infile) {
-		printf("Open ram.txt wrong!\n");
-		return;
-	}
-	string __addr, addr;
-	string inst;
-	string line;
-	while (getline(infile, line) ){
-		istringstream stream(line);
-		stream >> __addr;
-		addr = __addr.substr(0, 8);
-		addr = "0x" + addr;
-		stream >> inst;
-		instructions[addr] = inst;
-	}
-	infile.close();
+#define MEM_BASE 0x80000000
+#define MEM_SIZE 1024
+static uint8_t mem[MEM_SIZE];  // memory
+// 总是读取地址为 raddr & ~0x3u 的4字节返回
+// raddr 是 vaddr
+extern "C" int pmem_read(int raddr) {
+	int ret = 0;
+	memcpy(&ret, (mem + (uint8_t)(raddr - MEM_BASE) ), sizeof(int));
+	return ret; 
+}
+	// 总是往地址为 'waddr & ~0x3u '的4字节按写掩码 'wmask' 写入 'wdata'
+	// 'wmask' 中每比特表示 'wdata' 中1个字节的掩码，
+	// 如 'wmask = 0x3' 代表只写入最低2个字节，内存中的其它字节保持不变
+extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+	return;	
 }
 
-void print_instructions() {
-	printf("==============================\n");
-	map<string, string>::iterator it = instructions.begin();
-	for ( ; it != instructions.end(); it++)
-		cout << it->first << ": " << it->second << endl;
-		//printf("%#x, %#x\n", it->first, it->second);
-	printf("==============================\n");
-}
-
-unsigned int pmem_read(unsigned int addr, bool *success) {
-	printf("pmem_read(): input addr = %#x\n", addr);
-	map<string, string>::iterator it;
-	it = instructions.begin();
-	char buf[12];
-	for ( ; it != instructions.end(); ++it) {
-		string tmp = it->first;
-		//printf("pmem_read() :\n");
-		unsigned int tmp2 = (unsigned int)strtol(tmp.c_str(), NULL, 16);
-		/*
-		printf("------%#x\n", tmp2);
-		int i = 0;
-		for (auto c : it->first)
-		{
-			buf[i] = c;
-			i++;
-		}
-		buf[i] = '\0';
-		printf("== %#x\n", *(unsigned int *)buf);
-		if (*(unsigned int *)buf == addr)
-			break; 
-		*/
-		if (tmp2 == addr)
-			break;
+void print_img(long size) {
+	for(int i = 0; i < size; i++){
+		if ( i != 0 && i % 4 == 0) 
+			printf("\n");
+		printf(" %02x", mem[i]);
 	}
-
-	if (it == instructions.end() ){
-		printf("Cannot find a instruction at address %#x\n", addr);
-		
-		printf("\n");
-		*success = 0;
+	printf("\n");
+}
+int main(int argc, char *argv[]) {
+	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", argc, argv[0], argv[1]);
+	if (argc != 2) {
+		printf("Error, cannot get image file\n");
 		return 0;
-	}
-	string inst = it->second;
-	unsigned int ret;
-	sscanf(inst.c_str(), "%x", &ret);
-	*success = 1;
-	return ret;
-}
+	}	
+	/* 初始化 mem */
+	memset(mem, 0, MEM_SIZE);
+	/* load program into memory */	
+	//char *image = argv[1];
+	FILE *fp = fopen(argv[1], "rb");
+	assert(fp != 0);
+	
+	fseek(fp, 0, SEEK_END);
+	long size = ftell(fp);
+
+	fseek(fp, 0, SEEK_SET);
+	int ret = fread(mem, size, 1, fp);
+	assert(ret == 1);
+
+	fclose(fp);
+	/* load mem end */		
+	print_img(size);
 
 
-int main() {
 	sim_init();
-	ram_init();	
-	print_instructions();
 	
 	const svScope scope = svGetScopeFromName("TOP.top");
 	assert(scope);
@@ -142,25 +102,16 @@ int main() {
 			top->rst = 0;	
 		}
 		
-		bool success = 0;
-
 		if (top->clk) { 
-			top->inst = pmem_read((unsigned int)top->pc, &success);
-			if (!success)	{
-				printf("Failed to get pc at %#x\n", top->pc);
-				break;
-			}
+			printf("inst = %08x\n", top->inst);
 
 			top->check_ebreak(&a);
 			if (a == 1) {
-				printf("Reach ebreak instruction, stop sim.\n");
+				printf("\nReach ebreak instruction, stop sim.\n\n");
 				step_and_dump_wave();
 				break;
 			}
-
-			printf("%d: top->clk = %d, top->pc = %#x, top->inst= %#x \n", i, top->clk, top->pc, top->inst);
 		}
-
 		step_and_dump_wave();
 	} // end while(1)
 	sim_exit();

@@ -17,8 +17,13 @@ static const char mainargs[] = MAINARGS;
 void putch(char ch) {
 }
 
+// 实际上的 npc_trap() 还未实现，现在只不过是遇到 ebreak 就停止了罢了
+#define npc_trap(code) asm volatile("ebreak")
 void halt(int code) {
-  while (1);
+	npc_trap(code);
+
+  while (1) {
+	}
 }
 
 void _trm_init() {

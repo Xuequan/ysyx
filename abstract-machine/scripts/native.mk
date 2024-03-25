@@ -19,10 +19,16 @@ LDFLAGS_CXX = $(addprefix -Wl$(comma), $(LDFLAGS))
 
 image:
 	@echo + LD "->" $(IMAGE_REL)
+	@echo =========================
+	@echo IMAGE=$(IMAGE) 
+	@echo LINKAGE=$(LINKAGE)
+	@echo LDFLAGS_CXX=$(LDFLAGS_CXX)
+	@echo LDFLAGS=$(LDFLAGS)
+	@echo =========================
 	@g++ -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -lSDL2 -ldl
 
 run: image
-	$(IMAGE)
+	$(IMAGE)  
 
 gdb: image
 	gdb -ex "handle SIGUSR1 SIGUSR2 SIGSEGV noprint nostop" $(IMAGE)

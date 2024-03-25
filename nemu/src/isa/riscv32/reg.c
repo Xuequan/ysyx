@@ -24,7 +24,6 @@ const char *regs[] = {
 };
 
 #define NR_REGS ARRLEN(regs)
-
 void isa_reg_display() {
 	int i = 0;
 	for (; i < NR_REGS; i++) {

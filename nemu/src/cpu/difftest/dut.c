@@ -99,6 +99,10 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
   }
 }
 
+/* 会在 cpu-exec() 中被调用，在NEMU执行完一条指令后，就在
+** difftest_step() 中让REF 执行相同的指令，然后读出REF
+** 中的寄存器，并进行对比
+*/
 void difftest_step(vaddr_t pc, vaddr_t npc) {
   CPU_state ref_r;
 

@@ -30,12 +30,24 @@ OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o) $(CXXSRC:%.cc=$(OBJ_DIR)/%.o)
 # Compilation patterns
 $(OBJ_DIR)/%.o: %.c
 	@echo + CC $<
+	@echo ===============================
+	@echo inside scripts/build.mk
+	@echo $@ 
+	@echo OBJ_DIR = $(OBJ_DIR)
+	@echo $<
+	@echo ===============================
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 	$(call call_fixdep, $(@:.o=.d), $@)
 
 $(OBJ_DIR)/%.o: %.cc
 	@echo + CXX $<
+	@echo ===============================
+	@echo inside scripts/build.mk
+	@echo $@ 
+	@echo OBJ_DIR = $(OBJ_DIR)
+	@echo $<
+	@echo ===============================
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 	$(call call_fixdep, $(@:.o=.d), $@)

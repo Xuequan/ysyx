@@ -34,6 +34,17 @@ NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 run-env: $(BINARY) $(DIFF_REF_SO)
 
 run: run-env
+	@echo "========================"
+	@echo "inside nemu/scripts/native.mk"
+	@echo BINARY = $(BINARY)
+	@echo OBJ_DIR = $(OBJ_DIR)
+	@echo OBJS= $(OBJS)
+	@echo ARGS=$(ARGS)
+	@echo CXXSRC=$(CXXSRC) 
+	@echo SRCS=$(SRCS)
+	@echo IMG=$(IMG)
+	@echo NEMU_EXEC = $(NEMU_EXEC)
+	@echo "========================"
 	$(call git_commit, "run NEMU")
 	$(NEMU_EXEC)
 
