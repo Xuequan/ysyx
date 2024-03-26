@@ -132,11 +132,10 @@ int main(int argc, char *argv[]) {
 	/* 初始化 memory */
 	init_mem(argv[1]);
 
-
 	/* 初始化仿真 */
 	sim_init();
 	
-	execute(-1);
+	execute(1);
 
 	sim_exit();
 	return 0;
