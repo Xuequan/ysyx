@@ -1,6 +1,5 @@
 #include "Vtop.h"
 #include <stdlib.h>
-//#include "nvboard.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
 
@@ -10,11 +9,12 @@
 
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
+#include <stdint.h>
 
+static svBit a; 
+static Vtop* top;
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
-
-static Vtop* top;
 
 void step_and_dump_wave() {
 	top->eval();
@@ -28,11 +28,47 @@ void sim_init() {
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
+ // 仿真复位放这里
+	int i = -1;
+	while (i < 5) {
+		i++;
+		top->clk = i % 2;
+		top->rst = 1;	
+		step_and_dump_wave();
+	}
+	top->rst = 0;	
 }
+
 void sim_exit() {
 	tfp->close();
 }
 
+// 执行一个cycle or instruction
+// return 1 if program ended
+static int exec_once() {
+	top->clk = 1;
+	step_and_dump_wave();
+
+	printf("inst = %08x\n", top->inst);
+
+	top->check_ebreak(&a);
+	if (a == 1) {
+		printf("\nReach ebreak instruction, stop sim.\n\n");
+		return 1;
+	}
+	step_and_dump_wave();
+	top->clk = 0;
+	step_and_dump_wave();
+
+	return 0;
+}
+static void execute(uint64_t n) {
+	for( ; n > 0; n--) {
+		if( exec_once() ) {
+			printf("program ended\n");
+		}
+	}
+}
 #define MEM_BASE 0x80000000
 #define MEM_SIZE 1024
 static uint8_t mem[MEM_SIZE];  // memory
@@ -58,17 +94,13 @@ void print_img(long size) {
 	}
 	printf("\n");
 }
-int main(int argc, char *argv[]) {
-	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", argc, argv[0], argv[1]);
-	if (argc != 2) {
-		printf("Error, cannot get image file\n");
-		return 0;
-	}	
+
+
+void init_mem(char *image_file) {
 	/* 初始化 mem */
 	memset(mem, 0, MEM_SIZE);
 	/* load program into memory */	
-	//char *image = argv[1];
-	FILE *fp = fopen(argv[1], "rb");
+	FILE *fp = fopen(image_file, "rb");
 	assert(fp != 0);
 	
 	fseek(fp, 0, SEEK_END);
@@ -81,39 +113,28 @@ int main(int argc, char *argv[]) {
 	fclose(fp);
 	/* load mem end */		
 	print_img(size);
+}
 
+int main(int argc, char *argv[]) {
+	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", argc, argv[0], argv[1]);
+	if (argc != 2) {
+		printf("Error, cannot get image file\n");
+		return 0;
+	}	
 
-	sim_init();
-	
+	/* 初始化 memory */
+	init_mem(argv[1]);
+
+	/* DPI-C 接口 */
 	const svScope scope = svGetScopeFromName("TOP.top");
 	assert(scope);
 	svSetScope(scope);
-	svBit a; 
 
-	int i = -1;
-	while (1) {
-		i++;
-		top->clk = i % 2;
-		if (i < 5) { 
-			top->rst = 1;	
-			step_and_dump_wave();
-			continue;
-		} else { 
-			top->rst = 0;	
-		}
-		
-		if (top->clk) { 
-			printf("inst = %08x\n", top->inst);
+	/* 初始化仿真 */
+	sim_init();
+	
+	execute(-1);
 
-			top->check_ebreak(&a);
-			if (a == 1) {
-				printf("\nReach ebreak instruction, stop sim.\n\n");
-				step_and_dump_wave();
-				break;
-			}
-		}
-		step_and_dump_wave();
-	} // end while(1)
 	sim_exit();
 	return 0;
 }
