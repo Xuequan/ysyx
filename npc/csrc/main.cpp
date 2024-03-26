@@ -11,10 +11,10 @@
 #include "svdpi.h"
 #include <stdint.h>
 
-static svBit a; 
 static Vtop* top;
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
+static svBit a; 
 
 void step_and_dump_wave() {
 	top->eval();
@@ -27,6 +27,12 @@ void sim_init() {
 	top = new Vtop;
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
+
+	/* DPI-C 接口 */
+	const svScope scope = svGetScopeFromName("TOP.top");
+	assert(scope);
+	svSetScope(scope);
+
 	tfp->open("dump.vcd");
  // 仿真复位放这里
 	int i = -1;
@@ -125,10 +131,6 @@ int main(int argc, char *argv[]) {
 	/* 初始化 memory */
 	init_mem(argv[1]);
 
-	/* DPI-C 接口 */
-	const svScope scope = svGetScopeFromName("TOP.top");
-	assert(scope);
-	svSetScope(scope);
 
 	/* 初始化仿真 */
 	sim_init();
