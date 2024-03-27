@@ -112,30 +112,40 @@ void init_mem(char *image_file) {
 	
 	fseek(fp, 0, SEEK_END);
 	long size = ftell(fp);
-
+	if (size > MEM_SIZE){
+		printf("load '%s' size('%ld') is too big\n", image_file, size);
+		fclose(fp);
+		return;  
+	}
 	fseek(fp, 0, SEEK_SET);
 	int ret = fread(mem, size, 1, fp);
 	assert(ret == 1);
 
 	fclose(fp);
-	/* load mem end */		
+	// print image content
 	print_img(size);
 }
 
 int main(int argc, char *argv[]) {
-	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", argc, argv[0], argv[1]);
+
+	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", 
+					argc, argv[0], argv[1]);
 	if (argc != 2) {
 		printf("Error, cannot get image file\n");
 		return 0;
 	}	
 
+	init_monitor(argc, argv);
+
 	/* 初始化 memory */
-	init_mem(argv[1]);
+	//init_mem();
 
 	/* 初始化仿真 */
 	sim_init();
 	
-	execute(1);
+	sdb_mainloop() 
+
+
 
 	sim_exit();
 	return 0;

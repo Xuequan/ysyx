@@ -16,6 +16,7 @@
 #include <isa.h>
 #include <memory/paddr.h>
 #include <elf.h>
+#include <getopt.h>
 
 void init_rand();
 void init_log(const char *log_file);
@@ -23,7 +24,7 @@ void init_mem();
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
-void init_disasm(const char *triple);
+//void init_disasm(const char *triple);
 void init_elf();
 
 static void welcome() {
@@ -36,8 +37,6 @@ static void welcome() {
   printf("For help, type \"help\"\n");
 }
 
-#ifndef CONFIG_TARGET_AM
-#include <getopt.h>
 
 void sdb_set_batch_mode();
 
@@ -66,7 +65,7 @@ static long load_img() {
   assert(ret == 1);
 
   fclose(fp);
-  return size;
+n size;
 }
 
 static int parse_args(int argc, char *argv[]) {
@@ -120,10 +119,7 @@ void init_monitor(int argc, char *argv[]) {
   init_mem();
 
   /* Initialize devices. */
-  IFDEF(CONFIG_DEVICE, init_device());
-
-  /* Perform ISA dependent initialization. */
-  init_isa();
+  //IFDEF(CONFIG_DEVICE, init_device());
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
@@ -134,21 +130,10 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize the simple debugger. */
   init_sdb();
 
-#ifndef CONFIG_ISA_loongarch32r
-  IFDEF(CONFIG_ITRACE, init_disasm(
-    MUXDEF(CONFIG_ISA_x86,     "i686",
-    MUXDEF(CONFIG_ISA_mips32,  "mipsel",
-    MUXDEF(CONFIG_ISA_riscv,
-      MUXDEF(CONFIG_RV64,      "riscv64",
-                               "riscv32"),
-                               "bad"))) "-pc-linux-gnu"
-  ));
-#endif
-
   /* Display welcome message. */
   welcome();
 }
-#else // CONFIG_TARGET_AM
+
 static long load_img() {
   extern char bin_start, bin_end;
   size_t size = &bin_end - &bin_start;
@@ -157,12 +142,3 @@ static long load_img() {
   return size;
 }
 
-void am_init_monitor() {
-  init_rand();
-  init_mem();
-  init_isa();
-  load_img();
-  IFDEF(CONFIG_DEVICE, init_device());
-  welcome();
-}
-#endif
