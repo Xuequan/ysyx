@@ -15,9 +15,12 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include "memory.h"
+#include <cstdlib>
+#include "arch.h"
 
-/*chuan */
-#include <memory/vaddr.h>
+int exec_once();
+void execute(uint64_t n);
 
 static int is_batch_mode = false;
 
@@ -33,7 +36,7 @@ static char* rl_gets() {
     line_read = NULL;
   }
 
-  line_read = readline("(nemu) ");
+  line_read = readline("(npc) ");
 
   if (line_read && *line_read) {
     add_history(line_read);
@@ -45,13 +48,13 @@ static char* rl_gets() {
 /* should stop at breakpoints if exist */
 static int cmd_c(char *args) {
 	// -1 transfer to a big uint64_t number
-  cpu_exec(-1);
+	execute(-1);
   return 0;
 }
 
 
 static int cmd_q(char *args) {
-	nemu_state.state = NEMU_QUIT;
+	npc_state.state = NPC_QUIT;
   return -1;
 }
 
@@ -61,9 +64,9 @@ static int cmd_help(char *args);
 static int cmd_si(char *args) {
 	/* chuan, if no number, set 1 */
 	if (args == NULL) 
-		cpu_exec(1);
+		execute(1);
 	else
-  	cpu_exec(*args);
+  	execute(*args);
   return 0;
 }
 
@@ -233,7 +236,7 @@ static struct {
 } cmd_table [] = {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
-  { "q", "Exit NEMU", cmd_q },
+  { "q", "Exit NPC", cmd_q },
 
   /* TODO: Add more commands */
 	{"si", "Step one instruction exactly", cmd_si},

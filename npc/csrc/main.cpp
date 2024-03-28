@@ -46,12 +46,15 @@ void sim_init() {
 }
 
 void sim_exit() {
+	delete top;
+	//delete tfp;
+	delete contextp;
 	tfp->close();
 }
 
 // 执行一个cycle or instruction
 // return 1 if program ended
-static int exec_once() {
+int exec_once() {
 	top->clk = 1;
 	step_and_dump_wave();
 
@@ -68,7 +71,8 @@ static int exec_once() {
 
 	return 0;
 }
-static void execute(uint64_t n) {
+
+void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		if( exec_once() ) {
 			printf("program ended\n");
@@ -126,6 +130,9 @@ void init_mem(char *image_file) {
 	print_img(size);
 }
 
+void init_monitor(int argc, char *argv[]);
+void sdb_mainloop();
+
 int main(int argc, char *argv[]) {
 
 	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", 
@@ -143,9 +150,7 @@ int main(int argc, char *argv[]) {
 	/* 初始化仿真 */
 	sim_init();
 	
-	sdb_mainloop() 
-
-
+	sdb_mainloop(); 
 
 	sim_exit();
 	return 0;

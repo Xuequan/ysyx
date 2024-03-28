@@ -12,18 +12,28 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
+uint8_t* guest_to_host(paddr_t paddr);
 
-#include <isa.h>
-#include <memory/paddr.h>
+paddr_t host_to_guest(uint8_t *haddr);
 
-word_t vaddr_ifetch(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-}
+static word_t pmem_read(paddr_t addr, int len);
 
-word_t vaddr_read(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-}
+static void pmem_write(paddr_t addr, int len, word_t data);
 
-void vaddr_write(vaddr_t addr, int len, word_t data) {
-  paddr_write(addr, len, data);
-}
+static void out_of_bound(paddr_t addr);
+
+void init_mem();
+
+word_t paddr_read(paddr_t addr, int len);
+
+void paddr_write(paddr_t addr, int len, word_t data);
+
+static inline word_t host_read(void *addr, int len);
+
+static inline void host_write(void *addr, int len, word_t data);
+
+word_t vaddr_ifetch(vaddr_t addr, int len);
+
+word_t vaddr_read(vaddr_t addr, int len) ;
+
+void vaddr_write(vaddr_t addr, int len, word_t data);

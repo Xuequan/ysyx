@@ -12,9 +12,12 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-#include <isa.h>
 #include <elf.h>
-#include <string.h>
+#include <cstring>
+#include "common.h"
+#include <cstdio>
+
+#define CONFIG_RV64 0;
 
 extern char *elf_file;
 

@@ -13,20 +13,37 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <isa.h>
-#include <memory/paddr.h>
 #include <elf.h>
 #include <getopt.h>
+#include <time.h>
+#include "common.h"
+#include "memory.h"
+#include <cstdlib>
+
 
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
-void init_difftest(char *ref_so_file, long img_size, int port);
+//void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
 //void init_disasm(const char *triple);
 void init_elf();
 
+void init_rand() {
+	srand(time(0) );
+}
+
+FILE *log_fp = NULL;
+void init_log(const char *log_file) {
+	log_fp = stdout;
+	if (log_file != NULL) {
+		FILE *fp = fopen(log_file, "w");
+		Assert(fp, "Cannot open '%s'", log_file);
+		log_fp = fp;
+	}
+	Log("Log is written to %s", log_file ? log_file : "stdout");
+}
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
@@ -65,7 +82,7 @@ static long load_img() {
   assert(ret == 1);
 
   fclose(fp);
-n size;
+	return size;
 }
 
 static int parse_args(int argc, char *argv[]) {
@@ -113,7 +130,7 @@ void init_monitor(int argc, char *argv[]) {
   init_log(log_file);
 
 	/* Read ELF file and get strtab & symtab. */
-  init_elf(elf_file);
+  init_elf();
 
   /* Initialize memory. */
   init_mem();
@@ -125,7 +142,7 @@ void init_monitor(int argc, char *argv[]) {
   long img_size = load_img();
 
   /* Initialize differential testing. */
-  init_difftest(diff_so_file, img_size, difftest_port);
+ // init_difftest(diff_so_file, img_size, difftest_port);
 
   /* Initialize the simple debugger. */
   init_sdb();
@@ -134,6 +151,7 @@ void init_monitor(int argc, char *argv[]) {
   welcome();
 }
 
+/*
 static long load_img() {
   extern char bin_start, bin_end;
   size_t size = &bin_end - &bin_start;
@@ -141,4 +159,4 @@ static long load_img() {
   memcpy(guest_to_host(RESET_VECTOR), &bin_start, size);
   return size;
 }
-
+*/

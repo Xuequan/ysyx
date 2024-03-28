@@ -12,17 +12,20 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
-#include <isa.h>
-#include "stack.h"
-
+#include <cassert>
+#include <cmath>
+#include <stack>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
 
-#include <math.h>
-#include <memory/vaddr.h>
+#include "common.h"
+#include <cstring>
+#include "arch.h"
+#include "memory.h"
+
+using namespace std;
 
 word_t expr(char *e, bool *success);
 void init_regex();
@@ -215,10 +218,6 @@ static void check_tokens_type(int tokens_length) {
 		
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			/*
-			memcpy(tokens[i].str, &cpu.pc, sizeof(cpu.pc));
-			tokens[i].str[sizeof(cpu.pc)] = '\0';
-			*/
 			sprintf(tokens[i].str, "%#x", cpu.pc);
 		} 
 	} 
@@ -533,28 +532,27 @@ static int find_main_op(int p, int q) {
 static bool check_paren_valid(int p, int q) {
 	assert(p <= q);
 
+	stack <int> stack;
 	/* 遍历; 遇到“(" 则入栈；遇到“）” 则出栈 */
 	for(; p <= q; p++) {
 		switch(tokens[p].type) {
 			case TK_OPAREN: 
-				push(TK_OPAREN);
+				stack.push(TK_OPAREN);
 				break;
 
 			case TK_CPAREN: 
-				if ( is_empty() ) {
+				if ( stack.empty() ) {
 					//printf("check_paren_valid(%d, %d): bad expression\n", p, q);
-					destroy_stack();
 					return false;
 				}else{
-					pop();
+					stack.pop();
 					break;
 				} 
 			default:;
 		}//end switch
 	}// end for
 
-	if ( !is_empty() ) {
-		destroy_stack();
+	if ( !stack.empty() ) {
 		return false;
 	}
 
@@ -577,7 +575,7 @@ static bool check_parentheses(int p, int q) {
 }//end function
 
 /* --------------------------------------------------- */
-static char *code_format =                                        
+static char code_format[] =  
 "#include <stdio.h>\n"
 "int main() { \n"
 "  unsigned result = %s; \n"

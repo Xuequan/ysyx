@@ -14,23 +14,12 @@
 ***************************************************************************************/
 
 #include "sdb.h"
-
-#include <isa.h>
-#include <utils.h>
+#include <utility>
+#include <cstdio>
+#include <cstdlib>
+#include "arch.h"
 
 #define NR_WP 32
-
-// I move this struct WP in sdb.h
-/*
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  // TODO: Add more members if necessary 
-	char *expr;
-	word_t val; // expr value
-} WP;
-*/
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
@@ -162,7 +151,7 @@ void scan_wp_pool() {
       assert(0);
     }
     if (now_result != ptr->val) {
-      nemu_state.state = NEMU_STOP;
+      npc_state.state = NPC_STOP;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
       printf("Old vaule = %d, ", ptr->val);
       printf("New value = %u\n", now_result);
@@ -172,7 +161,7 @@ void scan_wp_pool() {
 		
 		/* check if reach memory address */
 		if (cpu.pc - 4 == strtol(ptr->expr+1, NULL, 16) ) {
-      nemu_state.state = NEMU_STOP;
+      npc_state.state = NPC_STOP;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
 			return;
 		}	
