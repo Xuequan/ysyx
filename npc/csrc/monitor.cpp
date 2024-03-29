@@ -127,7 +127,7 @@ void init_monitor(int argc, char *argv[]) {
   //init_rand();
 
   /* Open the log file. */
-  //init_log(log_file);
+  init_log(log_file);
 
 	/* Read ELF file and get strtab & symtab. */
   //init_elf();
