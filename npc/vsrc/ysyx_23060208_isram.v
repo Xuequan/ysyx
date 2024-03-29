@@ -23,7 +23,7 @@ assign inst_o = rdata;
 
 always @(posedge clk) begin
 	if (rst) begin
-		rdata <= DATA_WIDTH'('h8000_0000);
+		rdata <= 0;
 	end 
 	else if (valid) begin  // 有读写请求时
 		rdata <= pmem_read(raddr);
