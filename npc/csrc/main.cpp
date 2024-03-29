@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
 	//init_monitor(argc, argv);
 
 	/* 初始化 memory */
-	//init_mem();
+	init_mem( argv[1]);
 
 	/* 初始化仿真 */
 	sim_init();
