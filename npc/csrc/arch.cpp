@@ -86,8 +86,8 @@ void execute(uint64_t n) {
 				npc_state.state = NPC_RUNNING;
 	}
 
-  top->clk ^= 1;
 	for( ; n > 0; n--) {
+  	top->clk ^= 1;
 		printf(" n = %ld, top->clk = %d\n", n, top->clk);
 		exec_once();
 	}
