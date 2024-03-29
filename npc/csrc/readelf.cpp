@@ -111,6 +111,7 @@ void init_elf() {
   MUXDEF(CONFIG_RV64, Elf64_Shdr, Elf32_Shdr) shdr[ehdr.e_shnum][ehdr.e_shentsize];
 		// seek section header table and read 
 	if (fseek(fp, ehdr.e_shoff, SEEK_SET) != 0) {
+		printf("ehdr.e_shoff = %d\n", ehdr.e_shoff);
 		printf("init_elf(): Unable to set section header table postion\n");
 		fclose(fp);
 		return;
