@@ -64,7 +64,6 @@ extern void step_and_dump_wave();
 // 执行一个cycle or instruction
 // return 1 if program ended
 void exec_once() {
-  top->clk ^= 1;
   step_and_dump_wave();
 	if ( top->clk == 1) {
   	printf("inst = %08x\n", top->inst);
@@ -87,6 +86,7 @@ void execute(uint64_t n) {
 				npc_state.state = NPC_RUNNING;
 	}
 
+  top->clk ^= 1;
 	for( ; n > 0; n--) {
 		printf(" n = %ld, top->clk = %d\n", n, top->clk);
 		exec_once();
