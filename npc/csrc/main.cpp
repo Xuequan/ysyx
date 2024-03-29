@@ -24,12 +24,10 @@ void step_and_dump_wave() {
 	tfp->dump(contextp->time());
 }
 void sim_init() {
-
 	contextp = new VerilatedContext;
 	tfp = new VerilatedVcdC;
 	top = new Vtop;
 	contextp->traceEverOn(true);
-
 
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
@@ -45,8 +43,8 @@ void sim_reset(Vtop *dut, uint64_t sim_reset_time) {
 	dut->rst = 0;
 	while (sim_reset_time--) {
 		dut->rst = 1;
-		printf("%ld - sim_reset(), here\n", sim_reset_time);
 		step_and_dump_wave();
+		printf("%ld - sim_reset(), here\n", sim_reset_time);
 	}
 }
 
@@ -172,9 +170,9 @@ int main(int argc, char *argv[]) {
 
 	/* 初始化仿真 */
 	sim_init();
+	top->clk ^= 1;
 	sim_reset(top, 5);
 	top->rst = 0;
-	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
 	/*
