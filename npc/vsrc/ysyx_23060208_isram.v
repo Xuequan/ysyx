@@ -26,8 +26,8 @@ always @(posedge clk) begin
 		rdata <= 0;
 	end 
 	else if (valid) begin  // 有读写请求时
+		$display("%x", raddr);
 		rdata <= pmem_read(raddr);
-		//$display("%x", rdata);
 	end
 	else begin
 		rdata <= 0;
