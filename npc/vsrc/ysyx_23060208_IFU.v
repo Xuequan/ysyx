@@ -20,10 +20,18 @@ module ysyx_23060208_IFU
 assign addr = inst_jal_jalr ? nextpc_from_jal_jalr :
 													pc + 4;
 
+reg pc_wen_r;
+wire pc_wen;
+assign pc_wen = pc_wen_r;
+always @(posedge clk) begin
+	if (rst) pc_wen_r <= 1'b0;
+	else 		 pc_wen_r <= 1'b1;
+end
+
 ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
-	.wen(1'b1),
+	.wen(pc_wen),
 	.next_pc(addr),
 	.pc(pc)
 );
