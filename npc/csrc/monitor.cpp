@@ -17,10 +17,10 @@
 #include <getopt.h>
 #include <time.h>
 #include "common.h"
-#include "memory.h"
 #include <cstdlib>
 
 
+uint8_t* guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
@@ -124,16 +124,16 @@ void init_monitor(int argc, char *argv[]) {
   parse_args(argc, argv);
 
   /* Set random seed. */
-  init_rand();
+  //init_rand();
 
   /* Open the log file. */
-  init_log(log_file);
+  //init_log(log_file);
 
 	/* Read ELF file and get strtab & symtab. */
-  init_elf();
+  //init_elf();
 
   /* Initialize memory. */
-  init_mem();
+  //init_mem();
 
   /* Initialize devices. */
   //IFDEF(CONFIG_DEVICE, init_device());
@@ -145,7 +145,7 @@ void init_monitor(int argc, char *argv[]) {
  // init_difftest(diff_so_file, img_size, difftest_port);
 
   /* Initialize the simple debugger. */
-  init_sdb();
+  //init_sdb();
 
   /* Display welcome message. */
   welcome();

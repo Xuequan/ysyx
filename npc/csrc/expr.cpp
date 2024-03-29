@@ -19,14 +19,16 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
-
-#include "common.h"
 #include <cstring>
 #include "arch.h"
-#include "memory.h"
+#include "common.h"
+#include <cstdio>
 
 using namespace std;
 
+word_t vaddr_read(vaddr_t, int);
+uint8_t* guest_to_host(paddr_t);
+/* below function in this file */
 word_t expr(char *e, bool *success);
 void init_regex();
 static bool make_token(char *e);

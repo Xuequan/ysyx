@@ -32,9 +32,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
-#CXXFLAGS += -lreadline
-
-LDFLAGS += -lreadline
+CXXFLAGS += -lreadline
 
 #$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 $(BIN): $(VSRCS) $(CSRCS)
@@ -54,7 +52,6 @@ print:
 		--exe -o $(abspath $(BIN))
 	@echo CFLGAS=$(CFLAGS)
 	@echo LDFLAGS=$(LDFLAGS)
-	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo "================"
 
 default: sim

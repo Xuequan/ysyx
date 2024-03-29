@@ -11,10 +11,10 @@
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
 
-static Vtop* top;
+Vtop* top;
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
-static svBit a; 
+svBit a; 
 
 void step_and_dump_wave() {
 	top->eval();
@@ -47,16 +47,17 @@ void sim_reset(Vtop *dut, uint64_t sim_reset_time) {
 }
 
 void sim_exit() {
+	tfp->close();
 	delete top;
 	//delete tfp;
 	delete contextp;
-	tfp->close();
 }
 
 // 执行一个cycle or instruction
 // return 1 if program ended
+/*
 int exec_once() {
-	//top->clk = 1;
+	top->clk ^= 1;
 	step_and_dump_wave();
 
 	printf("inst = %08x\n", top->inst);
@@ -69,7 +70,7 @@ int exec_once() {
 
 	return 0;
 }
-
+*/
 /*
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
@@ -107,7 +108,7 @@ void print_img(long size) {
 }
 
 
-void load_img(char *image_file) {
+void load_img_in_main(char *image_file) {
 	/* 初始化 mem */
 	memset(mem, 0, MEM_SIZE);
 	/* load program into memory */	
@@ -132,6 +133,7 @@ void load_img(char *image_file) {
 
 void init_monitor(int argc, char *argv[]);
 void sdb_mainloop();
+void execute(uint64_t n);
 
 int main(int argc, char *argv[]) {
 
@@ -142,10 +144,10 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}	
 
-	//init_monitor(argc, argv);
+	/* load image into mem */
+	load_img_in_main( argv[1]);
 
-	/* load image into mem*/
-	load_img( argv[1]);
+	//init_monitor(argc, argv);
 
 	/* 初始化仿真 */
 	sim_init();
@@ -154,13 +156,12 @@ int main(int argc, char *argv[]) {
 	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
+	/*
 	for (int i = 0; i < 10; i++) {
-		top->clk ^= 1;
-		printf("%d: ", i);
 		exec_once();
-		printf("top->rst = %d, top->clk = %d\n", top->rst, top->clk);
-		printf("\n");
 	}
+	*/
+	execute(-1);
 	sim_exit();
 	return 0;
 }

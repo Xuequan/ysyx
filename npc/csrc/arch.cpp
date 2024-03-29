@@ -16,6 +16,10 @@
 #include "arch.h"
 #include <cstdio>
 
+#include "Vtop.h"
+#include "Vtop__Dpi.h"
+#include "svdpi.h"
+
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
@@ -47,6 +51,31 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 	}
 	word_t reg_val = gpr(i);	
   return reg_val;
+}
+
+void assert_fail_msg() {
+	isa_reg_display();
+	//statistic();
+}
+
+extern Vtop* top;
+extern svBit a;
+extern void step_and_dump_wave();
+// 执行一个cycle or instruction
+// return 1 if program ended
+int exec_once() {
+  top->clk ^= 1;
+  step_and_dump_wave();
+
+  printf("inst = %08x\n", top->inst);
+
+  top->check_ebreak(&a);
+  if (a == 1) {
+    printf("\nReach ebreak instruction, stop sim.\n\n");
+    return 1;
+  }
+
+  return 0;
 }
 
 void execute(uint64_t n) {

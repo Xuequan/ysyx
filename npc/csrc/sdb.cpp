@@ -15,9 +15,11 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-#include "memory.h"
 #include <cstdlib>
+#include <cstdio>
 #include "arch.h"
+
+word_t vaddr_read(vaddr_t, int);
 
 int exec_once();
 void execute(uint64_t n);

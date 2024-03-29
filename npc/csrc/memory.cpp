@@ -14,8 +14,10 @@
 ***************************************************************************************/
 #include "common.h"
 #include "arch.h"
-#include "memory.h"
 #include <cinttypes>
+
+uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
+paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static inline word_t host_read(void *addr, int len) {
   switch (len) {
@@ -33,6 +35,11 @@ static inline void host_write(void *addr, int len, word_t data) {
     case 2: *(uint16_t *)addr = data; return;
     case 4: *(uint32_t *)addr = data; return;
   }
+}
+
+static word_t pmem_read(paddr_t addr, int len) {
+  word_t ret = host_read(guest_to_host(addr), len);
+  return ret;
 }
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
@@ -54,7 +61,15 @@ void init_mem() {
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
-
+word_t paddr_read(paddr_t addr, int len) {
+	if (likely(in_pmem(addr))) {
+		word_t num = pmem_read(addr, len); 
+		log_write("Read from mem: address = %#x, length = %d, data = %#x\n", addr, len, num); 
+		return num;
+	}
+	out_of_bound(addr);
+	return 0;
+}
 
 word_t vaddr_ifetch(vaddr_t addr, int len) {
   return paddr_read(addr, len);
@@ -64,28 +79,6 @@ word_t vaddr_read(vaddr_t addr, int len) {
   return paddr_read(addr, len);
 }
 
-void vaddr_write(vaddr_t addr, int len, word_t data) {
-  paddr_write(addr, len, data);
-}
-
-uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
-paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
-
-static word_t pmem_read(paddr_t addr, int len) {
-  word_t ret = host_read(guest_to_host(addr), len);
-  return ret;
-}
-
-word_t paddr_read(paddr_t addr, int len) {
-  if (likely(in_pmem(addr))) {
-		word_t num = pmem_read(addr, len); 
-		log_write("Read from mem: address = %#x, length = %d, data = %#x\n", addr, len, num); 
-		return num;
-	}
-  out_of_bound(addr);
-  return 0;
-}
-
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
 		log_write("Write to mem: address = %#x, length = %d, data = %#x\n", addr, len, data); 
@@ -93,4 +86,8 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		return; 
 	}
   out_of_bound(addr);
+}
+
+void vaddr_write(vaddr_t addr, int len, word_t data) {
+  paddr_write(addr, len, data);
 }
