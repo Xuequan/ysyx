@@ -24,6 +24,7 @@ assign inst_o = rdata;
 always @(posedge clk) begin
 	if (rst) begin
 		rdata <= 0;
+		$display("here in isram.v rst, raddr = %x", raddr);
 	end 
 	else if (valid) begin  // 有读写请求时
 		$display("here in isram.v raddr = %x", raddr);
