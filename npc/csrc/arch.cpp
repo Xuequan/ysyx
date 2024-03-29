@@ -48,3 +48,39 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 	word_t reg_val = gpr(i);	
   return reg_val;
 }
+
+void execute(uint64_t n) {
+	//g_print_step = (n < MAX_INST_TO_PRINT);
+	switch (npc_state.state) {
+		case NPC_END: case NPC_ABORT:
+			printf("Program execution has ended. To restart the program, please exit and restart\n");
+			return;
+		default: 
+				npc_state.state = NPC_RUNNING;
+	}
+
+	for( ; n > 0 ; n--) {
+		if (exec_once() ) {
+			printf("NPC program ended\n");
+			break;
+		}
+	}
+
+	switch (npc_state.state) {
+		case NPC_RUNNING: 
+			npc_state.state = NPC_STOP; break;
+
+	    case NPC_END: case NPC_ABORT:
+      Log("npc: %s at pc = " FMT_WORD,
+          (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
+           (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
+                                       ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
+          npc_state.halt_pc);
+			/*
+      if (npc_state.halt_ret != 0)
+        print_iringbuf();
+			*/
+      // fall through
+    	case NPC_QUIT: ;//statistic(); 
+  	}
+}

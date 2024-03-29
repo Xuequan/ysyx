@@ -21,12 +21,14 @@ typedef struct {
 } CPU_state;
 
 static CPU_state cpu;
+
 // decode
 typedef struct {
   union {
     uint32_t val;
   } inst;
 } riscv32_ISADecodeInfo;
+
 
 //#define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
 

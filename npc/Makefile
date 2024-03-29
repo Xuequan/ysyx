@@ -5,7 +5,7 @@ INC_PATH ?=
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
-VERILATOR_CFLAGS += --trace-depth 2
+VERILATOR_CFLAGS += --trace
 
 #VERILATOR_CFLGAS += --debug
 #VERILATOR_CFLGAS += --gdbbt
@@ -22,7 +22,8 @@ $(shell mkdir -p $(BUILD_DIR))
 
 # project source
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS = $(shell find $(abspath ./csrc) -name "main.cpp")
+#CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 # rules for NVboard
 # include $(NVBOARD_HOME)/scripts/nvboard.mk
@@ -67,8 +68,8 @@ sim: $(BIN)
 	
 include ../Makefile
 
-gdb: $(BIN)
-	gdb -s $^ --args $(IMG) $^
+#gdb: $(BIN)
+#	gdb -s $^ --args $(IMG) $^
 
 wave:
 	gtkwave $(VCD_FILE)

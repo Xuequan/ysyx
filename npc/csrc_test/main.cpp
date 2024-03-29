@@ -22,13 +22,10 @@ void step_and_dump_wave() {
 	tfp->dump(contextp->time());
 }
 void sim_init() {
-
 	contextp = new VerilatedContext;
 	tfp = new VerilatedVcdC;
 	top = new Vtop;
 	contextp->traceEverOn(true);
-
-
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
 
