@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 	/* 初始化仿真 */
 	sim_init();
 	sim_reset(top, 5);
-
+	top->rst = 0;
 	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
