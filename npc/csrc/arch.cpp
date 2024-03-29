@@ -63,19 +63,18 @@ extern svBit a;
 extern void step_and_dump_wave();
 // 执行一个cycle or instruction
 // return 1 if program ended
-int exec_once() {
+void exec_once() {
   top->clk ^= 1;
   step_and_dump_wave();
+	if ( top->clk == 1) {
+  	printf("inst = %08x\n", top->inst);
 
-  printf("inst = %08x\n", top->inst);
-
-  top->check_ebreak(&a);
-  if (a == 1) {
-    printf("\nReach ebreak instruction, stop sim.\n\n");
-    return 1;
-  }
-
-  return 0;
+  	top->check_ebreak(&a);
+  	if (a == 1) {
+    	printf("\nReach ebreak instruction, stop sim.\n\n");
+			npc_state.state = NPC_END;
+  	}
+	}
 }
 
 void execute(uint64_t n) {
@@ -89,10 +88,7 @@ void execute(uint64_t n) {
 	}
 
 	for( ; n > 0 ; n--) {
-		if (exec_once() ) {
-			printf("NPC program ended\n");
-			break;
-		}
+		exec_once();
 	}
 
 	switch (npc_state.state) {
