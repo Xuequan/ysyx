@@ -66,7 +66,7 @@ extern void step_and_dump_wave();
 int exec_once() {
   step_and_dump_wave();
 	if ( top->clk == 1) {
-  	printf("inst = %08x\n", top->inst);
+  	printf("pc = %08x, inst = %08x\n",top->pc,  top->inst);
 
   	top->check_ebreak(&a);
   	if (a == 1) {
@@ -90,7 +90,6 @@ void execute(uint64_t n) {
 
 	for( ; n > 0; n--) {
   	top->clk ^= 1;
-		printf(" n = %ld, top->clk = %d\n", n, top->clk);
 		if (1 == exec_once()) {
 			break;
 		}
