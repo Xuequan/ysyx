@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
 	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
-	execute(10);
+	execute(30);
 
 	sim_exit();
 	return 0;
