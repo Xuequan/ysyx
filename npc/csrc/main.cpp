@@ -11,6 +11,8 @@
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
 
+#include "common.h"
+
 Vtop* top;
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
@@ -81,6 +83,22 @@ void execute(uint64_t n) {
 	}
 }
 */
+
+//extern uint8_t pmem;
+
+word_t vaddr_ifetch(vaddr_t addr, int len);
+// 总是读取地址为 raddr & ~0x3u 的4字节返回
+// raddr 是 vaddr
+extern "C" int pmem_read(int raddr) {
+	return vaddr_ifetch(raddr, 4); 
+}
+	// 总是往地址为 'waddr & ~0x3u '的4字节按写掩码 'wmask' 写入 'wdata'
+	// 'wmask' 中每比特表示 'wdata' 中1个字节的掩码，
+	// 如 'wmask = 0x3' 代表只写入最低2个字节，内存中的其它字节保持不变
+extern "C" void pmem_write(int waddr, int wdata, char wmask) {
+	return;	
+}
+/*
 #define MEM_BASE 0x80000000
 #define MEM_SIZE 1024
 static uint8_t mem[MEM_SIZE];  // memory
@@ -107,11 +125,10 @@ void print_img(long size) {
 	printf("\n");
 }
 
-
 void load_img_in_main(char *image_file) {
-	/* 初始化 mem */
+	// 初始化 mem 
 	memset(mem, 0, MEM_SIZE);
-	/* load program into memory */	
+	// load program into memory 
 	FILE *fp = fopen(image_file, "rb");
 	assert(fp != 0);
 	
@@ -130,6 +147,7 @@ void load_img_in_main(char *image_file) {
 	// print image content
 	print_img(size);
 }
+*/
 
 void init_monitor(int argc, char *argv[]);
 void sdb_mainloop();
@@ -161,7 +179,8 @@ int main(int argc, char *argv[]) {
 		exec_once();
 	}
 	*/
-	execute(-1);
+	execute(10);
+
 	sim_exit();
 	return 0;
 }

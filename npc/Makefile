@@ -71,8 +71,8 @@ sim: $(BIN)
 	
 include ../Makefile
 
-#gdb: $(BIN)
-#	gdb -s $^ --args $(IMG) $^
+gdb: $(BIN)
+	gdb -s $^ --args $(IMG) $^
 
 wave:
 	gtkwave $(VCD_FILE)
