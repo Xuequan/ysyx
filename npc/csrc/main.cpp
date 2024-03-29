@@ -36,6 +36,15 @@ void sim_init() {
 	const svScope scope = svGetScopeFromName("TOP.top");
 	assert(scope);
 	svSetScope(scope);
+
+	int i = -1;
+	while ( i < 5) {
+		i++;
+		top->clk ^= 1;
+		top->rst = 1;
+		step_and_dump_wave();
+	}
+	top->rst = 0;
 }
 
  // 仿真复位
@@ -169,10 +178,8 @@ int main(int argc, char *argv[]) {
 
 	/* 初始化仿真 */
 	sim_init();
-	sim_reset(5);
+	//sim_reset(5);
 	top->clk ^= 1;
-	step_and_dump_wave();
-	top->rst = 0;
 	
 	//sdb_mainloop(); 
 	/*
