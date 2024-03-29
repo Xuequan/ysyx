@@ -41,6 +41,7 @@ void sim_init() {
  // 仿真复位
 void sim_reset(uint64_t sim_reset_time) {
 	top->rst = 0;
+	top->clk ^= 1;
 	while (sim_reset_time--) {
 		top->rst = 1;
 		step_and_dump_wave();
@@ -170,7 +171,7 @@ int main(int argc, char *argv[]) {
 
 	/* 初始化仿真 */
 	sim_init();
-	top->clk ^= 1;
+	//top->clk ^= 1;
 	sim_reset(5);
 	top->rst = 0;
 	
