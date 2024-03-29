@@ -150,12 +150,14 @@ int main(int argc, char *argv[]) {
 	/* 初始化仿真 */
 	sim_init();
 	sim_reset(top, 5);
+
 	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
 	for (int i = 0; i < 10; i++) {
 		printf("%d: ", i);
 		exec_once();
+		printf("top->rst = %d, top->clk = %d\n", top->rst, top->clk);
 		printf("\n");
 	}
 	sim_exit();
