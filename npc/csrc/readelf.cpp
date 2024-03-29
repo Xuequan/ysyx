@@ -17,7 +17,7 @@
 #include "common.h"
 #include <cstdio>
 
-#define CONFIG_RV64 0;
+#define CONFIG_RV64 0
 
 extern char *elf_file;
 
@@ -81,6 +81,7 @@ void init_elf() {
 
 	if ( fread(&ehdr, sizeof(ehdr), 1, fp) == 0) {
 		printf("init_elf(): Cannot read ElfN_Ehdr.\n");
+		printf("CONFIG_RV64 = %d\n", CONFIG_RV64);
 		fclose(fp);
 		return;
 	}
