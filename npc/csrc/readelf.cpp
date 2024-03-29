@@ -29,7 +29,6 @@ static struct {
 #define STRTAB_SIZE 1024
 static char strtab[STRTAB_SIZE];	
 
-/*
 // for test only, print strtab
 static void print_strtab(char buf[], int strtab_size) {
 	printf("========== print strtab start =============\n");
@@ -61,7 +60,6 @@ static void print_strtab2(char buf[]) {
 	}//end-for
 	printf("========== print2 strtab end =============\n");
 }
-*/
 
 
 /* read from ELF file and get strtab & symtab */
@@ -109,7 +107,6 @@ void init_elf() {
   Elf32_Shdr shdr[ehdr.e_shnum][ehdr.e_shentsize];
 		// seek section header table and read 
 	if (fseek(fp, ehdr.e_shoff, SEEK_SET) != 0) {
-		printf("ehdr.e_shoff = %ld\n", ehdr.e_shoff);
 		printf("init_elf(): Unable to set section header table postion\n");
 		fclose(fp);
 		return;
@@ -195,8 +192,8 @@ void init_elf() {
 	}
 
 	/* printf strtab just for test */
-	//print_strtab(strtab, strtab_size);
-	//print_strtab2(strtab);
+	print_strtab(strtab, strtab_size);
+	print_strtab2(strtab);
 
 	fclose(fp);
 	return;	
