@@ -27,7 +27,7 @@ always @(posedge clk) begin
 		$display("here in isram.v rst, raddr = %x", raddr);
 	end 
 	else if (valid) begin  // 有读写请求时
-		$display("here in isram.v raddr = %x", raddr);
+		$display("here in isram.v,  raddr = %x", raddr);
 		rdata <= pmem_read(raddr);
 	end
 	else begin
