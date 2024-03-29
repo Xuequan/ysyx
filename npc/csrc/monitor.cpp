@@ -130,7 +130,7 @@ void init_monitor(int argc, char *argv[]) {
   init_log(log_file);
 
 	/* Read ELF file and get strtab & symtab. */
-  //init_elf();
+  init_elf();
 
   /* Initialize memory. */
   //init_mem();
