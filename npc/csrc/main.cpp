@@ -145,9 +145,9 @@ int main(int argc, char *argv[]) {
 	}	
 
 	/* load image into mem */
-	load_img_in_main( argv[1]);
+	//load_img_in_main( argv[1]);
 
-	//init_monitor(argc, argv);
+	init_monitor(argc, argv);
 
 	/* 初始化仿真 */
 	sim_init();
