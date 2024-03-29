@@ -151,6 +151,7 @@ int main(int argc, char *argv[]) {
 	sim_init();
 	sim_reset(top, 5);
 	top->rst = 0;
+	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
 	for (int i = 0; i < 10; i++) {
