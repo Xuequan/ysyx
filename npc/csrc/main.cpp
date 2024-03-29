@@ -32,6 +32,10 @@ void sim_init() {
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
 
+	/* DPI-C 接口 */
+	const svScope scope = svGetScopeFromName("TOP.top");
+	assert(scope);
+	svSetScope(scope);
 }
 
  // 仿真复位
@@ -142,11 +146,6 @@ int main(int argc, char *argv[]) {
 
 	/* load image into mem*/
 	load_img( argv[1]);
-
-	/* DPI-C 接口 */
-	const svScope scope = svGetScopeFromName("TOP.top");
-	assert(scope);
-	svSetScope(scope);
 
 	/* 初始化仿真 */
 	sim_init();
