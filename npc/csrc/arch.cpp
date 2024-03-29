@@ -88,7 +88,7 @@ void execute(uint64_t n) {
 	}
 
 	for( ; n > 0; n--) {
-		printf(" n = %d\n", n);
+		printf(" n = %ld, top->clk = %d\n", n, top->clk);
 		exec_once();
 	}
 
