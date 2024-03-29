@@ -151,10 +151,10 @@ int main(int argc, char *argv[]) {
 	sim_init();
 	sim_reset(top, 5);
 	top->rst = 0;
-	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
 	for (int i = 0; i < 10; i++) {
+		top->clk ^= 1;
 		printf("%d: ", i);
 		exec_once();
 		printf("top->rst = %d, top->clk = %d\n", top->rst, top->clk);
