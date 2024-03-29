@@ -17,15 +17,13 @@
 #include "common.h"
 #include <cstdio>
 
-#define CONFIG_RV64 0
-
 extern char *elf_file;
 
 #define ENTRY_NUM 100
 static struct {
 	// actual symtab entry number
 	word_t entnum;
-	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
+	Elf32_Sym sym[ENTRY_NUM];
 } symtab;
 
 #define STRTAB_SIZE 1024
@@ -77,11 +75,10 @@ void init_elf() {
 	}
 
 	/* 1. get Ehdr and ELF file check */
-	MUXDEF(CONFIG_RV64, Elf64_Ehdr, Elf32_Ehdr) ehdr;
+	Elf32_Ehdr ehdr;
 
 	if ( fread(&ehdr, sizeof(ehdr), 1, fp) == 0) {
 		printf("init_elf(): Cannot read ElfN_Ehdr.\n");
-		printf("CONFIG_RV64 = %d\n", CONFIG_RV64);
 		fclose(fp);
 		return;
 	}
@@ -107,16 +104,9 @@ void init_elf() {
 		return;
 	}
 		
-	fseek(fp, 0, SEEK_END);
-	long elf_size = ftell(fp);
-	printf("sizeof(Elf32_Shdr) = %ld, sizeof(ELf64_shdr) = %ld , sizeof(ehdr) = %ld\n", 
-		sizeof(Elf32_Shdr), sizeof(Elf64_Shdr), sizeof(ehdr) );
-	MUXDEF(CONFIG_RV64, int , char) a;
-	printf("sizeof(a) = %ld\n", sizeof(a));
-	
 
 	/* 2. get section header table */
-  MUXDEF(CONFIG_RV64, Elf64_Shdr, Elf32_Shdr) shdr[ehdr.e_shnum][ehdr.e_shentsize];
+  Elf32_Shdr shdr[ehdr.e_shnum][ehdr.e_shentsize];
 		// seek section header table and read 
 	if (fseek(fp, ehdr.e_shoff, SEEK_SET) != 0) {
 		printf("ehdr.e_shoff = %ld\n", ehdr.e_shoff);
@@ -233,7 +223,7 @@ char *vaddr2func(vaddr_t addr, bool *success, int choose){
 		}
 
 		if (cond) {
-			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
+			if ( ELF32_ST_TYPE(symtab.sym[i].st_info) == STT_FUNC ) {
 				ret = strtab + symtab.sym[i].st_name; 	
 				*success = true;
 				break;
