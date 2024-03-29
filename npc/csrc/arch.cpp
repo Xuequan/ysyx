@@ -72,6 +72,8 @@ int exec_once() {
   	if (a == 1) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
+			npc_state.halt_pc = top->pc;
+			npc_state.halt_ret = 0;
 			return 1;
   	}
 	}

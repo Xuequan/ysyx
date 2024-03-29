@@ -20,9 +20,10 @@ VCD_FILE = dump.vcd
 
 $(shell mkdir -p $(BUILD_DIR))
 
+override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
+
 # project source
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-#CSRCS = $(shell find $(abspath ./csrc) -name "main.cpp" -name "arch.cpp")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 # rules for NVboard
@@ -31,8 +32,6 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-
-#CXXFLAGS += -lreadline
 
 LDFLAGS += -lreadline
 
@@ -59,7 +58,11 @@ print:
 
 default: sim
 
-sim: $(BIN)
+NPC_EXEC := $(BIN) $(ARGS) $(IMG)
+
+sim-env: $(BIN)
+
+sim: sim-env
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	@echo ========inside npc/makefile ==========
@@ -67,7 +70,8 @@ sim: $(BIN)
 	@echo IMG=$(IMG)
 	@echo $^
 	@echo =======================================
-	@$^ $(IMG)
+	#@$^ $(IMG)
+	$(NPC_EXEC)
 	
 include ../Makefile
 
