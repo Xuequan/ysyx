@@ -111,6 +111,9 @@ void init_elf() {
 	long elf_size = ftell(fp);
 	printf("sizeof(Elf32_Shdr) = %ld, sizeof(ELf64_shdr) = %ld , sizeof(ehdr) = %ld\n", 
 		sizeof(Elf32_Shdr), sizeof(Elf64_Shdr), sizeof(ehdr) );
+	MUXDEF(CONFIG_RV64, int , char) a;
+	printf("sizeof(a) = %ld\n", sizeof(a));
+	
 
 	/* 2. get section header table */
   MUXDEF(CONFIG_RV64, Elf64_Shdr, Elf32_Shdr) shdr[ehdr.e_shnum][ehdr.e_shentsize];
