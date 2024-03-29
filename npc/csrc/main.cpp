@@ -45,7 +45,8 @@ void sim_reset(Vtop *dut, uint64_t sim_reset_time) {
 	dut->rst = 0;
 	while (sim_reset_time--) {
 		dut->rst = 1;
-		printf("%d - sim_reset(), here\n", sim_reset_time);
+		printf("%ld - sim_reset(), here\n", sim_reset_time);
+		step_and_dump_wave();
 	}
 }
 
