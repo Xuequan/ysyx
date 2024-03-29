@@ -4,6 +4,7 @@ module top
 	input clk,
 	input rst,
 	output [DATA_WIDTH-1:0] inst,
+	output [ADDR_WIDTH-1:0] pc,
 	output inst_ebreak
 );
 
@@ -15,8 +16,8 @@ wire [REG_WIDTH-1 :0] rd;
 wire [2						:0] op;
 
 wire [DATA_WIDTH-1:0] addr;
-wire [ADDR_WIDTH-1:0] pc;
-wire [ADDR_WIDTH-1:0] pc_o;
+//wire [ADDR_WIDTH-1:0] pc;
+wire [ADDR_WIDTH-1:0] idu_to_exu_pc;
 wire 									valid;
 
 wire 									inst_jal_jalr;
@@ -62,7 +63,7 @@ ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 	.wen(to_regfile_wen),
 
 	.inst_jal_jalr(inst_jal_jalr),
-	.pc_o(pc_o),
+	.pc_o(idu_to_exu_pc),
 	.src1(src1),
 	.src2(src2),
 	.rd(rd),
@@ -77,7 +78,7 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH), .ADDR_WIDTH(
 	.clk(clk),
 	.rst(rst),
 	.inst_jal_jalr(inst_jal_jalr),
-	.pc(pc_o),
+	.pc(idu_to_exu_pc),
 	.src1(src1),
 	.src2(src2),
 	.rd(rd),
