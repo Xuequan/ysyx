@@ -47,19 +47,9 @@ void sim_init() {
 	top->rst = 0;
 }
 
- // 仿真复位
-void sim_reset(uint64_t sim_reset_time) {
-	top->rst = 0;
-	while (sim_reset_time--) {
-		top->rst = 1;
-		printf("%ld - sim_reset(), here\n", sim_reset_time);
-	}
-}
-
 void sim_exit() {
 	tfp->close();
 	delete top;
-	//delete tfp;
 	delete contextp;
 }
 
@@ -164,29 +154,12 @@ void execute(uint64_t n);
 
 int main(int argc, char *argv[]) {
 
-	printf("argc = %d, argv[0] = %s, argv[1] = %s\n", 
-					argc, argv[0], argv[1]);
-	if (argc != 2) {
-		printf("Error, cannot get image file\n");
-		return 0;
-	}	
-
-	/* load image into mem */
-	//load_img_in_main( argv[1]);
-
 	init_monitor(argc, argv);
 
-	/* 初始化仿真 */
 	sim_init();
-	//sim_reset(5);
 	top->clk ^= 1;
 	
 	//sdb_mainloop(); 
-	/*
-	for (int i = 0; i < 10; i++) {
-		exec_once();
-	}
-	*/
 	execute(10);
 
 	sim_exit();

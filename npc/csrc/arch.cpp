@@ -87,7 +87,8 @@ void execute(uint64_t n) {
 				npc_state.state = NPC_RUNNING;
 	}
 
-	for( ; n > 0 ; n--) {
+	for( ; n > 0; n--) {
+		printf(" n = %d\n", n);
 		exec_once();
 	}
 
