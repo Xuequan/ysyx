@@ -61,10 +61,12 @@ void assert_fail_msg() {
 extern Vtop* top;
 extern svBit a;
 extern void step_and_dump_wave();
-// 执行一个cycle or instruction
+// 执行一个cycle
 // return 1 if program ended
 int exec_once() {
-  step_and_dump_wave();
+	if (top->clk == 0) 
+  	step_and_dump_wave();
+	top->clk ^= 1;
 	if ( top->clk == 1) {
   	printf("pc = %08x, inst = %08x\n",top->pc,  top->inst);
 
