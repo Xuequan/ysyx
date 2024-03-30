@@ -20,6 +20,11 @@
 #include <cstdlib>
 #include "disasm.cc"
 
+#define CONFIG_ITRACE 1
+#define CONFIG_ISA_x86 0
+#define CONFIG_ISA_mips32 0
+#define CONFIG_ISA_riscv 1
+#define CONFIG_RV64 0
 
 uint8_t* guest_to_host(paddr_t);
 void init_rand();
@@ -28,7 +33,7 @@ void init_mem();
 //void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
-//void init_disasm(const char *triple);
+void init_disasm(const char *triple);
 void init_elf();
 
 void init_rand() {
@@ -148,8 +153,21 @@ void init_monitor(int argc, char *argv[]) {
   /* Initialize the simple debugger. */
   init_sdb();
 
+	init_disasm("riscv32-pc-linux-gnu");
   //IFDEF(1, init_disasm("riscv32"), "-pc-linux-gnu");
-	init_disasm("riscv32");
+	//__KEEP(init_disasm("riscv32" "-pc-linux-gnu"));
+//IFDEF(CONFIG_ITRACE, init_disasm("riscv32" "-pc-linux-gnu")); 
+	//init_disasm("riscv32" "-pc-linux-gnu");
+	/*
+  IFDEF(CONFIG_ITRACE, init_disasm( 
+    MUXDEF(CONFIG_ISA_x86,     "i686",
+    MUXDEF(CONFIG_ISA_mips32,  "mipsel",
+    MUXDEF(CONFIG_ISA_riscv,
+      MUXDEF(CONFIG_RV64,      "riscv64",
+                               "riscv32"),
+                               "bad"))) "-pc-linux-gnu"
+  )); 
+	*/
 
   /* Display welcome message. */
   welcome();
