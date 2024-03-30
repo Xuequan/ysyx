@@ -48,6 +48,10 @@ void sim_init() {
 }
 
 void sim_exit() {
+	int i = 2;
+	while (i--) {	
+		top->rst = 1;
+	}
 	tfp->close();
 	delete top;
 	delete contextp;
