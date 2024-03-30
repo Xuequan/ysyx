@@ -64,12 +64,14 @@ extern void step_and_dump_wave();
 // 执行一个cycle
 // return 1 if program ended
 int exec_once() {	
-	if (top->clk == 0) 
+	int ret = 0;
+	for(int i = 0; i < 2; i++) {
+		top->clk ^= 1;
   	step_and_dump_wave();
-	top->clk ^= 1;
-	if ( top->clk == 1) {
-  	printf("pc = %08x, inst = %08x, clk->rst = %d\n",
-			top->pc,  top->inst, top->rst);
+		if ( top->clk == 1) {
+  		printf("pc = %08x, inst = %08x, clk->rst = %d\n",
+				top->pc,  top->inst, top->rst);
+		}
 
   	top->check_ebreak(&a);
   	if (a == 1) {
@@ -77,10 +79,10 @@ int exec_once() {
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = top->pc;
 			npc_state.halt_ret = 0;
-			return 1;
+			ret = 1;
   	}
-	}
-	return 0;
+	} // end for
+	return ret;
 }
 
 void execute(uint64_t n) {
@@ -94,7 +96,6 @@ void execute(uint64_t n) {
 	}
 
 	for( ; n > 0; n--) {
-  	top->clk ^= 1;
 		if (1 == exec_once()) {
 			break;
 		}
