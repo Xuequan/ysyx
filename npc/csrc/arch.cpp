@@ -71,7 +71,7 @@ int exec_once() {
 		top->clk ^= 1;
   	step_and_dump_wave();
 		if ( top->clk == 1) {
-  		printf("pc = %08#x, inst = %08x, clk->rst = %d\n",
+  		printf("here pc = %08#x, inst = %08x, clk->rst = %d\n",
 				top->pc,  top->inst, top->rst);
 			char *p = logbuf;
 			p += snprintf(p, sizeof(logbuf), FMT_WORD ":", top->pc);
