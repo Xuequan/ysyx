@@ -81,6 +81,7 @@ int exec_once() {
 			}
 			memset(p, ' ', 1);
 			p += 1;
+			printf("here \n");
 			disassemble(p, logbuf + sizeof(logbuf) - p, top->pc, inst, 4);	
 			printf("here \n");
 			printf("here logbuf = %s\n", logbuf);
