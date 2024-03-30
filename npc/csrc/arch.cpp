@@ -82,6 +82,7 @@ int exec_once() {
 			memset(p, ' ', 1);
 			p += 1;
 			disassemble(p, logbuf + sizeof(logbuf) - p, top->pc, inst, 4);	
+			printf("logbuf = %s\n", logbuf);
 		}
 
   	top->check_ebreak(&a);
