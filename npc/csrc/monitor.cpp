@@ -133,7 +133,7 @@ void init_monitor(int argc, char *argv[]) {
   init_elf();
 
   /* Initialize memory. */
-  //init_mem();
+  init_mem();
 
   /* Initialize devices. */
   //IFDEF(CONFIG_DEVICE, init_device());
