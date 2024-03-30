@@ -71,16 +71,18 @@ void sdb_mainloop();
 void execute(uint64_t n);
 
 int main(int argc, char *argv[]) {
+
 	for (int i = 0; i < argc; i++) {
 		printf("argv[%d] = %s\n", i, argv[i]);
 	}
+
 	init_monitor(argc, argv);
 
 	sim_init();
 	top->clk ^= 1;
 	
-	//sdb_mainloop(); 
-	execute(30);
+	sdb_mainloop(); 
+	//execute(30);
 
 	sim_exit();
 	return 0;
