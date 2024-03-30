@@ -85,7 +85,6 @@ int main(int argc, char *argv[]) {
 	init_monitor(argc, argv);
 
 	sim_init();
-	top->clk ^= 1;
 	
 	sdb_mainloop(); 
 	//execute(30);
