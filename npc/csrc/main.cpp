@@ -11,7 +11,7 @@
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
 
-#include "common.h"
+#include "common2.h"
 
 Vtop* top;
 VerilatedContext* contextp = NULL;

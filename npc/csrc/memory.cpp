@@ -12,7 +12,7 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-#include "common.h"
+#include "common2.h"
 #include "arch.h"
 #include <cinttypes>
 

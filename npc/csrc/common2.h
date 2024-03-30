@@ -12,6 +12,10 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
+
+#ifndef __COMMON2_H__
+#define __COMMON2_H__
+
 #include <cstdint>
 #include <cassert>
 #include <cstdarg>
@@ -205,3 +209,4 @@ uint64_t get_time();
 
 
 
+#endif

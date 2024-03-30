@@ -21,7 +21,7 @@
 #include <regex.h>
 #include <cstring>
 #include "arch.h"
-#include "common.h"
+#include "common2.h"
 #include <cstdio>
 
 using namespace std;

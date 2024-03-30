@@ -14,7 +14,7 @@
 ***************************************************************************************/
 #include <elf.h>
 #include <cstring>
-#include "common.h"
+#include "common2.h"
 #include <cstdio>
 
 extern char *elf_file;
