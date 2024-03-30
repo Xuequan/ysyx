@@ -18,6 +18,7 @@
 #include <time.h>
 #include "common.h"
 #include <cstdlib>
+#include "disasm.cc"
 
 
 uint8_t* guest_to_host(paddr_t);
@@ -146,6 +147,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize the simple debugger. */
   init_sdb();
+
+  //IFDEF(1, init_disasm("riscv32"), "-pc-linux-gnu");
+	init_disasm("riscv32");
 
   /* Display welcome message. */
   welcome();
