@@ -7,10 +7,7 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
-#VERILATOR_CFLGAS += --debug
-#VERILATOR_CFLGAS += --gdbbt
-# for gdb
-#VERILATOR_CFLAGS += -CFLAGS -ggdb -LDFLAGS -ggdb -CFLAGS -DVL_DEBUG=1 -CFLAGS -D_GLIBCXX_DEBUG
+VERILATOR_CFLGAS += --debug
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -33,6 +30,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
+CXXFLAGS += -g
 LDFLAGS += -lreadline
 
 #$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
@@ -76,7 +74,9 @@ sim: sim-env
 include ../Makefile
 
 gdb: $(BIN)
-	gdb -s $^ --args $(IMG) $^
+	#gdb -s $^ --args $(IMG) $^
+	#gdb -s $(NPC_EXEC)
+	gdb -s $(BIN)
 
 wave:
 	gtkwave $(VCD_FILE)

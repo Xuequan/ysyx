@@ -29,3 +29,6 @@ run: image
 gdb: image
 	@$(MAKE) -s -C $(NPC_HOME) gdb ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
+print: image
+	@$(MAKE) -s -C $(NPC_HOME) print ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
+	
