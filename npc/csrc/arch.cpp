@@ -58,8 +58,7 @@ void assert_fail_msg() {
 	//statistic();
 }
 
-void disassemble(char *str, int size, uint64_t pc, uint8_t *code,int nbyte);
-static char logbuf[128];
+//static char logbuf[128];
 extern Vtop* top;
 extern svBit a;
 extern void step_and_dump_wave();
@@ -71,20 +70,8 @@ int exec_once() {
 		top->clk ^= 1;
   	step_and_dump_wave();
 		if ( top->clk == 1) {
-  		printf("here pc = %08#x, inst = %08x, clk->rst = %d\n",
+  		printf("pc = 08%08x, inst = 08%08x, clk->rst = %d\n",
 				top->pc,  top->inst, top->rst);
-			char *p = logbuf;
-			p += snprintf(p, sizeof(logbuf), FMT_WORD ":", top->pc);
-			uint8_t* inst = (uint8_t*)&top->inst;
-			for(i = 3; i >= 0; i--) {
-				p += snprintf(p, 4, " %02x", inst[i]);
-			}
-			memset(p, ' ', 1);
-			p += 1;
-			printf("here \n");
-			disassemble(p, logbuf + sizeof(logbuf) - p, top->pc, inst, 4);	
-			printf("here \n");
-			printf("here logbuf = %s\n", logbuf);
 		}
 
   	top->check_ebreak(&a);
