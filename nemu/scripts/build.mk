@@ -42,7 +42,7 @@ $(OBJ_DIR)/%.o: %.c
 
 $(OBJ_DIR)/%.o: %.cc
 	@echo + CXX $<
-	@echo ===============================
+	@echo ========= inside build.mk======================
 	@echo inside scripts/build.mk
 	@echo $@ 
 	@echo OBJ_DIR = $(OBJ_DIR)
