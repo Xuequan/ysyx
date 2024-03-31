@@ -67,6 +67,8 @@ $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo + LD $@
 	@echo ==========================here======================================
 	@echo LDFLAGS=$(LDFLAGS)
+	@echo LIBS=$(LIBS)
+	@echo ==========================here======================================
 	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
 clean:
