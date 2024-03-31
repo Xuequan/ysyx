@@ -31,7 +31,9 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
+# llvm-config -cxxflags: print the C++ compiler flags needed to use LLVM headers
 CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
+# llvm-config --libs: print all the libraries needed to link against the specified LLVM components
 LIBS += $(shell llvm-config --libs)
 
 LDFLAGS += -lreadline
@@ -59,6 +61,8 @@ print:
 	@echo CFLGAS=$(CFLAGS)
 	@echo LDFLAGS=$(LDFLAGS)
 	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo 1-----$(shell llvm-config --cxxflags)
+	@echo 2-----$(shell llvm-config --libs)
 	@echo "================"
 
 default: sim
