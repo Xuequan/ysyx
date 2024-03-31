@@ -67,6 +67,7 @@ sim: sim-env
 	@echo ARGS=$(ARGS)
 	@echo IMG=$(IMG)
 	@echo $^
+	@echo NPC_EXEC=$(NPC_EXEC)
 	@echo =======================================
 	#@$^ $(IMG)
 	$(NPC_EXEC)
