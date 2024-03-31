@@ -37,6 +37,9 @@ LIBS += $(shell llvm-config --libs)
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
+LDFLAGS += -ldl
+LDFLAGS += -pie
+
 #$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 $(BIN): $(VSRCS) $(CSRCS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
