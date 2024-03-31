@@ -51,7 +51,7 @@ $(OBJ_DIR)/%.o: %.cc
 	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo CXX=$(CXX)
 	@echo $(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
-	@echo ===============================
+	@echo ==================000000000000=============
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 	$(call call_fixdep, $(@:.o=.d), $@)
