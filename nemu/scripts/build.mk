@@ -49,6 +49,7 @@ $(OBJ_DIR)/%.o: %.cc
 	@echo $<
 	@echo CFLAGS=$(CFLAGS) 
 	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo CXX=$(CXX)
 	@echo $(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 	@echo ===============================
 	@mkdir -p $(dir $@)
