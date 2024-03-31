@@ -8,6 +8,7 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 VERILATOR_CFLAGS += --trace
 
 VERILATOR_CFLGAS += --debug
+VERILATOR_CFLGAS += --gdbbt
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -30,7 +31,6 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
-CXXFLAGS += -g
 LDFLAGS += -lreadline
 
 #$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
