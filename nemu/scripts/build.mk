@@ -47,7 +47,8 @@ $(OBJ_DIR)/%.o: %.cc
 	@echo $@ 
 	@echo OBJ_DIR = $(OBJ_DIR)
 	@echo $<
-	@echo CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS)
+	@echo CFLAGS=$(CFLAGS) 
+	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo $(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 	@echo ===============================
 	@mkdir -p $(dir $@)
@@ -68,6 +69,7 @@ $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo ==========================here======================================
 	@echo LDFLAGS=$(LDFLAGS)
 	@echo LIBS=$(LIBS)
+	@echo ARCHIVES=$(ARCHIVES)
 	@echo ==========================here======================================
 	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
