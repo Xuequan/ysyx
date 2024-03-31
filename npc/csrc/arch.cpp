@@ -58,7 +58,8 @@ void assert_fail_msg() {
 	//statistic();
 }
 
-//static char logbuf[128];
+void disassemble(char *str, int size, uint64_t pc, uint8_t* code, int nbyte);
+static char logbuf[128];
 extern Vtop* top;
 extern svBit a;
 extern void step_and_dump_wave();
@@ -72,6 +73,15 @@ int exec_once() {
 		if ( top->clk == 1) {
   		printf("pc = %#08x, inst = %#08x, clk->rst = %d\n",
 				top->pc,  top->inst, top->rst);
+
+			char *p = logbuf;
+			uint8_t* inst = (uint8_t *)&top->inst;
+			for(int k = 3; k >= 0; k--) {
+				p += snprintf(p, 4, " %02x", inst[k]);
+			}
+			printf("logbuf = %s\n", logbuf);
+			disassemble(p, logbuf + sizeof(logbuf) - p, 
+				top->pc, inst, 4);
 		}
 
   	top->check_ebreak(&a);

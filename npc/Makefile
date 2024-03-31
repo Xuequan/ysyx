@@ -8,7 +8,7 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 VERILATOR_CFLAGS += --trace
 
 VERILATOR_CFLGAS += --debug
-VERILATOR_CFLGAS += --gdbbt
+#VERILATOR_CFLGAS += --gdbbt
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -31,7 +31,11 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
+CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
+LIBS += $(shell llvm-config --libs)
+
 LDFLAGS += -lreadline
+LDFLAGS += $(LIBS)
 
 #$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 $(BIN): $(VSRCS) $(CSRCS)
@@ -68,6 +72,7 @@ sim: sim-env
 	@echo IMG=$(IMG)
 	@echo $^
 	@echo NPC_EXEC=$(NPC_EXEC)
+	@echo LIBS=$(LIBS)
 	@echo =======================================
 	#@$^ $(IMG)
 	$(NPC_EXEC)

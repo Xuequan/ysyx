@@ -42,6 +42,8 @@ run: run-env
 	@echo ARGS=$(ARGS)
 	@echo CXXSRC=$(CXXSRC) 
 	@echo SRCS=$(SRCS)
+	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo LIBS=$(LIBS)
 	@echo IMG=$(IMG)
 	@echo NEMU_EXEC = $(NEMU_EXEC)
 	@echo "========================"

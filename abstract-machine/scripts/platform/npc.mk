@@ -15,6 +15,7 @@ LDFLAGS   += --gc-sections -e _start
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 
+
 NPCFLAGS += -l $(NPC_HOME)/build/npc-log.txt
 NPCFLAGS += -f $(IMAGE).elf
 
