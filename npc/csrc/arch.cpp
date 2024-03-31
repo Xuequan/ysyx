@@ -70,7 +70,7 @@ int exec_once() {
 		top->clk ^= 1;
   	step_and_dump_wave();
 		if ( top->clk == 1) {
-  		printf("pc = 08%08x, inst = 08%08x, clk->rst = %d\n",
+  		printf("pc = %#08x, inst = %#08x, clk->rst = %d\n",
 				top->pc,  top->inst, top->rst);
 		}
 
