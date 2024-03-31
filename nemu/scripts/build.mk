@@ -41,12 +41,14 @@ $(OBJ_DIR)/%.o: %.c
 	$(call call_fixdep, $(@:.o=.d), $@)
 
 $(OBJ_DIR)/%.o: %.cc
-	@echo + CXX $<
 	@echo ========= inside build.mk======================
+	@echo + CXX $<
 	@echo inside scripts/build.mk
 	@echo $@ 
 	@echo OBJ_DIR = $(OBJ_DIR)
 	@echo $<
+	@echo CFLAGS=$(CFLAGS) CXXFLAGS=$(CXXFLAGS)
+	@echo $(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 	@echo ===============================
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
