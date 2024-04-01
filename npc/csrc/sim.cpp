@@ -1,5 +1,11 @@
 #include <cstdlib>
+#include <cstdint>
 #include "sim.h"
+#include "Vtop.h"
+#include "verilated_vcd_c.h"
+#include "verilated.h"
+#include "Vtop__Dpi.h"
+#include "svdpi.h"
 
 static Vtop* top;
 static VerilatedContext* contextp;
