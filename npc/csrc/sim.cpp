@@ -21,7 +21,8 @@ void sim_init() {
 	tfp->open("dump.vcd");
 
 	/* DPI-C 接口 */
-	const svScope scope = svGetScopeFromName("TOP.top");
+	//const svScope scope = svGetScopeFromName("TOP.top");
+	const svScope scope = svGetScopeFromName("TOP.top.ifu");
 	//scope = svGetScopeFromName("TOP.top->ysyx_23060208_IDU");
 	assert(scope);
 	svSetScope(scope);
