@@ -1,12 +1,3 @@
-/*
-#include <cstdlib>
-#include "Vtop.h"
-#include "verilated_vcd_c.h"
-#include "verilated.h"
-#include "Vtop__Dpi.h"
-#include "svdpi.h"
-*/
-
 #include "sim.h"
 
 static Vtop* top;
@@ -43,14 +34,6 @@ void sim_init() {
 }
 
 void sim_exit() {
-	/*
-	int i = 2;
-	while (i--) {	
-		top->clk ^= 1;
-		//printf("top->clk = %d\n", top->clk);
-		top->rst = 1;
-	}
-	*/
 	tfp->close();
 	delete tfp;
 	delete top;
@@ -59,7 +42,7 @@ void sim_exit() {
 
 bool inst_ebreak() {
 	svBit a; 
-	top->check_ebreak(&a);
+	top->check_if_ebreak(&a);
 	if ( a == 1) return true;
 	else 				 return false;
 } 

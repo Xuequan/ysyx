@@ -97,9 +97,11 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH), .ADDR_WIDTH(
 	.to_mem_data_o(exu_to_isram_to_mem_data)
 );
 
+/*
 export "DPI-C" task check_ebreak;
 task check_ebreak (output bit o);
 	o = inst_ebreak;
 endtask
+*/
 
 endmodule

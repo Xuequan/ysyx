@@ -116,4 +116,10 @@ assign write_to_mem = inst_sw;
 assign dest = write_to_mem ? 0 : 1;
 
 assign to_mem_data_o = src2_from_reg;
+
+// DPI-C 
+export "DPI-C" task check_if_ebreak;
+task check_if_ebreak (output bit o);
+	o = inst_ebreak;
+endtask
 endmodule
