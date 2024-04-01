@@ -39,31 +39,13 @@ LIBS += $(shell llvm-config --libs)
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
-LDFLAGS += -ldl
-LDFLAGS += -pie
+LDFLAGS += $(shell llvm-config --ldflags)
 
-#$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 $(BIN): $(VSRCS) $(CSRCS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
-	@echo "===== verilator end ====="
-
-print:
-	@echo "================"
-	@echo  $(VERILATOR) $(VERILATOR_CFLAGS)  \
-		--top-module $(TOPNAME) $^ \
-		$(addprefix -CFLAGS , $(CXXFLAGS)) \
-		$(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) \
-		--exe -o $(abspath $(BIN))
-	@echo CFLGAS=$(CFLAGS)
-	@echo LDFLAGS=$(LDFLAGS)
-	@echo CXXFLAGS=$(CXXFLAGS)
-	@echo 1-----$(shell llvm-config --cxxflags)
-	@echo 2-----$(shell llvm-config --libs)
-	@echo "================"
 
 default: sim
 
@@ -99,3 +81,18 @@ clean:
 	-@rm $(VCD_FILE)
 
 .PHONY: clean default wave sim
+
+print:
+	@echo "================"
+	@echo  $(VERILATOR) $(VERILATOR_CFLAGS)  \
+		--top-module $(TOPNAME) $^ \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) \
+		$(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) \
+		--exe -o $(abspath $(BIN))
+	@echo CFLGAS=$(CFLAGS)
+	@echo LDFLAGS=$(LDFLAGS)
+	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo 1-----$(shell llvm-config --cxxflags)
+	@echo 2-----$(shell llvm-config --libs)
+	@echo "================"

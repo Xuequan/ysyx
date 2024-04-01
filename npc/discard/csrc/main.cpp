@@ -13,10 +13,10 @@
 
 #include "common2.h"
 
-Vtop* top;
-VerilatedContext* contextp = NULL;
-VerilatedVcdC* tfp = NULL;
-svBit a; 
+static Vtop* top;
+static VerilatedContext* contextp = NULL;
+static VerilatedVcdC* tfp = NULL;
+static svBit a; 
 
 void step_and_dump_wave() {
 	top->eval();
