@@ -7,6 +7,10 @@
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
 
+#ifndef __STDC_FORMAT_MACROS
+#define __STDC_FORMAT_MACROS
+#endif
+
 static Vtop* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
