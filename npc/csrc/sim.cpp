@@ -78,26 +78,3 @@ void sim_once() {
 	top->clk ^= 1;
 	step_and_dump_wave();
 }
-/* return 1 if reach ebreak instruction else 0 */
-/*
-void get_assemble();
-int exec_once() {
-	int ret = 0;
-	uint32_t pc;
-	uint32_t inst;
-	for(int i = 0; i < 2; i++) {
-		top->clk ^= 1;
-		step_and_dump_wave();
-		if (top->clk == 1) {
-			get_assemble();
-			//printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
-
-			if (inst_ebreak() ) {
-				ret = 1;
-				break;
-			}	
-		}
-	}// end for
-	return ret;
-}
-*/
