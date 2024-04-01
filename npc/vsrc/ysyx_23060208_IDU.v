@@ -122,4 +122,15 @@ export "DPI-C" task check_if_ebreak;
 task check_if_ebreak (output bit o);
 	o = inst_ebreak;
 endtask
+
+export "DPI-C" task check_if_jal;
+task check_if_jal (output bit o);
+	o = inst_jal;
+endtask
+
+export "DPI-C" task check_if_jalr;
+task check_if_jalr (output bit o);
+	o = inst_jalr;
+endtask
+
 endmodule

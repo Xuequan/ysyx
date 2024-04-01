@@ -47,6 +47,7 @@ void get_assemble() {
 	printf("%#08x:%s %s\n",pc, logbuf, p);
 }
 
+bool inst_ebreak();
 /* return 1 if reach ebreak instruction else 0 */
 int exec_once() {
   int ret = 0;

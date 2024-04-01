@@ -11,7 +11,7 @@
 void step_and_dump_wave();
 void sim_init();
 void sim_exit();
-bool inst_ebreak();
+//bool inst_ebreak();
 uint32_t get_pc_from_top();
 uint32_t get_inst_from_top();
 void sim_once();

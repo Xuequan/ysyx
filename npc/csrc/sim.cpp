@@ -44,12 +44,14 @@ void sim_exit() {
 	delete contextp;
 }
 
+/*
 bool inst_ebreak() {
 	svBit a; 
 	top->check_if_ebreak(&a);
 	if ( a == 1) return true;
 	else 				 return false;
 } 
+*/
 
 uint32_t get_pc_from_top(){
 	return top->pc;
