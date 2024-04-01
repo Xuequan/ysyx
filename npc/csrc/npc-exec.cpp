@@ -17,6 +17,20 @@
 #include <cstdio>
 #include "sim.h"
 
+/*iringbuf */
+#define IRINGBUF_LEN 15
+static char iringbuf[IRINGBUF_LEN][128];
+static int iindex;
+
+static void print_iringbuf(void) {
+	for(int i = 0; i < IRINGBUF_LEN; i++){
+		if (strlen(iringbuf[i]) != 0) {
+			if (i == iindex - 1) 
+				printf("--> ");
+			printf("%s\n", iringbuf[i]);
+		}
+	}
+}
 void disassemble(char *str, int size, uint64_t pc, uint8_t* code, int nbyte);
 static char logbuf[128];
 
@@ -33,6 +47,24 @@ void get_assemble() {
 	printf("%#08x:%s %s\n",pc, logbuf, p);
 }
 
+/* return 1 if reach ebreak instruction else 0 */
+int exec_once() {
+  int ret = 0;
+  uint32_t pc; 
+  uint32_t inst;
+  for(int i = 0; i < 2; i++) {
+		sim_once();
+    if (get_clk_from_top() == 1) {
+      get_assemble();
+      //printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
+      if (inst_ebreak() ) { 
+        ret = 1;
+        break;
+      }   
+    }   
+  }// end for
+  return ret;
+}
 void execute(uint64_t n) {
 	//g_print_step = (n < MAX_INST_TO_PRINT);
 	switch (npc_state.state) {
@@ -50,6 +82,10 @@ void execute(uint64_t n) {
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 0;
+			
+			if (iindex == IRINGBUF_LEN) iindex = 0;
+			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
+
 			break;
 		}
 	}

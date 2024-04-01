@@ -1,9 +1,11 @@
+/*
 #include <cstdlib>
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "verilated.h"
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
+*/
 
 #include "sim.h"
 
@@ -68,9 +70,17 @@ uint32_t get_pc_from_top(){
 uint32_t get_inst_from_top(){
 	return top->inst;
 }
+uint32_t get_clk_from_top(){
+	return top->clk;
+}
 
-void get_assemble();
+void sim_once() {
+	top->clk ^= 1;
+	step_and_dump_wave();
+}
 /* return 1 if reach ebreak instruction else 0 */
+/*
+void get_assemble();
 int exec_once() {
 	int ret = 0;
 	uint32_t pc;
@@ -90,3 +100,4 @@ int exec_once() {
 	}// end for
 	return ret;
 }
+*/
