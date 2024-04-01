@@ -29,10 +29,8 @@ void get_assemble() {
 		p += snprintf(p, 4, " %02x", inst[k]);
 	}
 	p += 1;
-	printf("logbuf = %s\n", logbuf);
-	disassemble(p, logbuf + sizeof(logbuf) - p, 
-				pc, inst, 4);
-	printf("2--logbuf = %s, p = %s\n", logbuf, p);
+	disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, 4);
+	printf("%#08x: %s, %s\n",pc, logbuf, p);
 }
 
 void execute(uint64_t n) {
@@ -48,7 +46,6 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
-			get_assemble();
 
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
