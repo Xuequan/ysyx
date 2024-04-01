@@ -133,4 +133,8 @@ task check_if_jalr (output bit o);
 	o = inst_jalr;
 endtask
 
+export "DPI-C" task rs1_reg;
+task rs1_reg (output [4:0] o);
+	o = rs1;
+endtask
 endmodule

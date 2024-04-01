@@ -1,4 +1,5 @@
 #include "memory.h"
+#include <cstdint>
 #include "Vtop__Dpi.h"
 
 word_t vaddr_ifetch(vaddr_t addr, int len);
@@ -14,7 +15,7 @@ extern "C" void dsram_write(int waddr, int wdata, char wmask) {
   return;
 }
 
-extern void check_if_ebreak(svBit o);
+extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak() {
 	svBit a;
 	check_if_ebreak(&a);
@@ -22,7 +23,7 @@ bool inst_is_ebreak() {
 	else				return false;
 }
 
-extern void check_if_jal(svBit o);
+extern void check_if_jal(svBit* o);
 bool inst_is_jal() {
 	svBit a;
 	check_if_jal(&a);
@@ -30,10 +31,17 @@ bool inst_is_jal() {
 	else				return false;
 }
 
-extern void check_if_jalr(svBit o);
+extern void check_if_jalr(svBit* o);
 bool inst_is_jalr() {
 	svBit a;
 	check_if_jalr(&a);
 	if (a == 1) return true;
 	else				return false;
+}
+
+extern void rs1_reg(svLogicVecVal* o);
+uint32_t rs1(){
+	svLogicVecVal o;
+	rs1_reg(&o);
+	return o.aval;
 }
