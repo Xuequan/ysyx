@@ -1,9 +1,9 @@
 #include <cstdlib>
 #include "sim.h"
 
-static Vtop* top = new Vtop;
-static VerilatedContext* contextp = new VerilatedContext;
-static VerilatedVcdC* tfp = new VerilatedVcdC;
+static Vtop* top;
+static VerilatedContext* contextp;
+static VerilatedVcdC* tfp;
 
 void step_and_dump_wave() {
 	top->eval();
@@ -11,6 +11,10 @@ void step_and_dump_wave() {
 	tfp->dump(contextp->time());
 }
 void sim_init() {
+ 	contextp = new VerilatedContext;
+	tfp = new VerilatedVcdC;
+	top = new Vtop;
+
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
@@ -38,6 +42,7 @@ void sim_exit() {
 		top->rst = 1;
 	}
 	tfp->close();
+	delete tfp;
 	delete top;
 	delete contextp;
 }
