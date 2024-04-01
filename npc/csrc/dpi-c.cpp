@@ -1,7 +1,6 @@
 #include "memory.h"
 #include "Vtop__Dpi.h"
 
-
 word_t vaddr_ifetch(vaddr_t addr, int len);
 // 总是读取地址为 raddr & ~0x3u 的4字节返回
 // raddr 是 vaddr                                                               
@@ -16,11 +15,25 @@ extern "C" void dsram_write(int waddr, int wdata, char wmask) {
 }
 
 extern void check_if_ebreak(svBit o);
-bool inst_ebreak() {
+bool inst_is_ebreak() {
 	svBit a;
 	check_if_ebreak(&a);
 	if (a == 1) return true;
 	else				return false;
 }
+
 extern void check_if_jal(svBit o);
+bool inst_is_jal() {
+	svBit a;
+	check_if_jal(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+
 extern void check_if_jalr(svBit o);
+bool inst_is_jalr() {
+	svBit a;
+	check_if_jalr(&a);
+	if (a == 1) return true;
+	else				return false;
+}

@@ -47,7 +47,7 @@ void get_assemble() {
 	printf("%#08x:%s %s\n",pc, logbuf, p);
 }
 
-bool inst_ebreak();
+bool inst_is_ebreak();
 /* return 1 if reach ebreak instruction else 0 */
 int exec_once() {
   int ret = 0;
@@ -60,7 +60,7 @@ int exec_once() {
 			if (iindex == IRINGBUF_LEN) iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
       //printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
-      if (inst_ebreak() ) { 
+      if (inst_is_ebreak() ) { 
         ret = 1;
         break;
       }   
