@@ -41,12 +41,14 @@ void sim_init() {
 }
 
 void sim_exit() {
+	/*
 	int i = 2;
 	while (i--) {	
 		top->clk ^= 1;
-		printf("top->clk = %d\n", top->clk);
+		//printf("top->clk = %d\n", top->clk);
 		top->rst = 1;
 	}
+	*/
 	tfp->close();
 	delete tfp;
 	delete top;
