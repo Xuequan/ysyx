@@ -19,6 +19,7 @@
 
 void disassemble(char *str, int size, uint64_t pc, uint8_t* code, int nbyte);
 static char logbuf[128];
+
 void get_assemble() {
 	char *p = logbuf;
 	uint32_t pc 				 = get_pc_from_top();
@@ -30,6 +31,7 @@ void get_assemble() {
 	printf("logbuf = %s\n", logbuf);
 	disassemble(p, logbuf + sizeof(logbuf) - p, 
 				pc, inst, 4);
+	printf("2--logbuf = %s, p = %s\n", logbuf, p);
 }
 
 void execute(uint64_t n) {
@@ -45,6 +47,8 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
+			get_assemble();
+
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 0;
