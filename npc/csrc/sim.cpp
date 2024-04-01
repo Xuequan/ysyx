@@ -4,6 +4,8 @@ static Vtop* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
+static svScope scope;
+
 void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
@@ -19,7 +21,8 @@ void sim_init() {
 	tfp->open("dump.vcd");
 
 	/* DPI-C 接口 */
-	const svScope scope = svGetScopeFromName("TOP.top");
+	//const svScope scope = svGetScopeFromName("TOP.top");
+	scope = svGetScopeFromName("TOP.top");
 	assert(scope);
 	svSetScope(scope);
 
