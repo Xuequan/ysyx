@@ -1,6 +1,7 @@
 #include <cstdio>
 #include "common2.h"
 
+/*
 word_t vaddr_ifetch(vaddr_t addr, int len);
 // 总是读取地址为 raddr & ~0x3u 的4字节返回
 // raddr 是 vaddr
@@ -13,6 +14,7 @@ extern "C" int pmem_read(int raddr) {
 extern "C" void pmem_write(int waddr, int wdata, char wmask) {
   return; 
 }   
+*/
 
 void init_monitor(int argc, char *argv[]);
 void sdb_mainloop();
