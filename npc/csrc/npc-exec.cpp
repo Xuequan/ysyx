@@ -56,6 +56,8 @@ int exec_once() {
 		sim_once();
     if (get_clk_from_top() == 1) {
       get_assemble();
+			if (iindex == IRINGBUF_LEN) iindex = 0;
+			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
       //printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
       if (inst_ebreak() ) { 
         ret = 1;
@@ -78,14 +80,9 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
-
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 0;
-			
-			if (iindex == IRINGBUF_LEN) iindex = 0;
-			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
-
 			break;
 		}
 	}
@@ -100,10 +97,9 @@ void execute(uint64_t n) {
            (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
                                        ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           npc_state.halt_pc);
-			/*
+
       if (npc_state.halt_ret != 0)
         print_iringbuf();
-			*/
       // fall through
     	case NPC_QUIT: ;//statistic(); 
   	}

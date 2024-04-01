@@ -8,11 +8,6 @@
 #include "Vtop__Dpi.h"
 #include "svdpi.h"
 
-
-#ifndef __STDC_FORMAT_MACROS
-#define __STDC_FORMAT_MACROS
-#endif
-
 void step_and_dump_wave();
 void sim_init();
 void sim_exit();
