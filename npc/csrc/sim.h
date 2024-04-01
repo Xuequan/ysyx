@@ -1,9 +1,10 @@
 #ifndef __SIM_H__
 #define __SIM_H__
 
-#include "verilated.h"
-#include "verilated_vcd_c.h"
-#include "Vtop.h"
+#include <cstdint>
+//#include "verilated.h"
+//#include "verilated_vcd_c.h"
+//#include "Vtop.h"
 
 /*
 extern VerilatedContext* contextp = new VerilatedContext;
