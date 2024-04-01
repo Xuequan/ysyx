@@ -48,6 +48,8 @@ void get_assemble() {
 }
 
 bool inst_is_ebreak();
+bool inst_is_jal();
+bool inst_is_jalr();
 /* return 1 if reach ebreak instruction else 0 */
 int exec_once() {
   int ret = 0;
@@ -60,6 +62,10 @@ int exec_once() {
 			if (iindex == IRINGBUF_LEN) iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
       //printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
+			if (inst_is_jal() )
+				printf("this is jal instruction");
+			if (inst_is_jalr() )
+				printf("this is jalr instruction");
       if (inst_is_ebreak() ) { 
         ret = 1;
         break;
