@@ -30,7 +30,7 @@ void get_assemble() {
 	}
 	p += 1;
 	disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, 4);
-	printf("%#08x: %s, %s\n",pc, logbuf, p);
+	printf("%#08x:%s %s\n",pc, logbuf, p);
 }
 
 void execute(uint64_t n) {
