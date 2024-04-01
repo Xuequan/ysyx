@@ -28,6 +28,7 @@ void get_assemble() {
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
 	}
+	p += 1;
 	printf("logbuf = %s\n", logbuf);
 	disassemble(p, logbuf + sizeof(logbuf) - p, 
 				pc, inst, 4);

@@ -66,6 +66,8 @@ uint32_t get_pc_from_top(){
 uint32_t get_inst_from_top(){
 	return top->inst;
 }
+
+void get_assemble();
 /* return 1 if reach ebreak instruction else 0 */
 int exec_once() {
 	int ret = 0;
@@ -75,12 +77,14 @@ int exec_once() {
 		top->clk ^= 1;
 		step_and_dump_wave();
 		if (top->clk == 1) {
-			printf("pc = %#08x, inst = %#08x\n", top->pc, top->inst);
+			get_assemble();
+			printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
+
+			if (inst_ebreak() ) {
+				ret = 1;
+				break;
+			}	
 		}
-		if (inst_ebreak() ) {
-			ret = 1;
-			break;
-		}	
-	}
+	}// end for
 	return ret;
 }
