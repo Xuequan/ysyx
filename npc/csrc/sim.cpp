@@ -22,7 +22,7 @@ void sim_init() {
 
 	/* DPI-C 接口 */
 	//const svScope scope = svGetScopeFromName("TOP.top");
-	scope = svGetScopeFromName("TOP.top");
+	scope = svGetScopeFromName("TOP.top->ysyx_23060208_IDU");
 	assert(scope);
 	svSetScope(scope);
 
