@@ -22,6 +22,7 @@
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 uint64_t g_nr_guest_inst = 0;
+
 /* return 1 if function call
 ** return 2 if function ret
 ** else return 0
@@ -97,7 +98,7 @@ void get_assemble() {
 	}
 	p += 1;
 	disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, 4);
-	printf("%#08x:%s %s\n",pc, logbuf, p);
+	//printf("%#08x:%s %s\n",pc, logbuf, p);
 }
 
 bool inst_is_ebreak();
