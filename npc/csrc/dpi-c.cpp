@@ -28,7 +28,7 @@ bool inst_is_ebreak() {
 
 //extern void check_if_jal(svBit* o);
 bool inst_is_jal() {
-	const svScope scope = svGetScopeFromName("Top.top.idu");
+	const svScope scope = svGetScopeFromName("TOP.top.idu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
