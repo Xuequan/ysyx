@@ -16,7 +16,8 @@
 #include "arch.h"
 #include <cstdio>
 #include "sim.h"
-#include "Vtop___024root.h"
+//#include "Vtop___024root.h"
+//#include <iostream>
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -28,13 +29,28 @@ const char *regs[] = {
 };
 
 #define NR_REGS ARRLEN(regs)
+/*
 void isa_reg_display() {
 	int i = 0;
 	for (; i < NR_REGS; i++) {
 		printf("%-5s %#x\n", regs[i], gpr(i));  
 	}
 }
-
+*/
+/*
+void isa_reg_display() {
+	VlUnpacked<IData, 32> tmp = top.rootp->top__DOT__idu__DOT__regfile__DOT__rf;
+	for( int i = 0; i < 32; i++){
+		std::cout << "reg: " << tmp.m_storage[i] <<std::endl;
+	}
+}
+*/
+/*
+void get_reg_value() {
+	VlUnpacked<Idata, 16> regs;
+		
+}
+*/
 word_t isa_reg_str2val(const char *s, bool *success) {
 	int i = 0;
 	for( ; i < NR_REGS; i++) {

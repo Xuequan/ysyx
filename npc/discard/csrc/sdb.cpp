@@ -20,6 +20,7 @@
 #include "arch.h"
 
 word_t vaddr_read(vaddr_t, int);
+void isa_reg_display();
 
 int exec_once();
 void execute(uint64_t n);

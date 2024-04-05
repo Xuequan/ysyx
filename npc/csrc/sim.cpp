@@ -1,4 +1,5 @@
 #include "sim.h"
+#include <iostream>
 
 static Vtop* top;
 static VerilatedContext* contextp;
@@ -48,4 +49,11 @@ uint32_t get_clk_from_top(){
 void sim_once() {
 	top->clk ^= 1;
 	step_and_dump_wave();
+}
+
+void isa_reg_display() {
+  VlUnpacked<IData, 32> tmp = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf;
+  for( int i = 0; i < 32; i++){
+    std::cout << "reg: " << tmp.m_storage[i] <<std::endl;
+  }
 }
