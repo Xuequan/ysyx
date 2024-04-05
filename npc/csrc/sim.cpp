@@ -54,6 +54,6 @@ extern const char *regs[];
 void isa_reg_display() {
   VlUnpacked<IData, 32> tmp = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf;
   for( int i = 0; i < 16; i++){
-		printf("%s: %d\n", regs[i], tmp.m_storage[i]);
+		printf("%s: %#08x\n", regs[i], tmp.m_storage[i]);
   }
 }
