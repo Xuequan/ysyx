@@ -16,6 +16,7 @@
 #include "arch.h"
 #include <cstdio>
 #include "sim.h"
+#include "Vtop___024root.h"
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
