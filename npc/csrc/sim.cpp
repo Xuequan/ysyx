@@ -1,5 +1,4 @@
 #include "sim.h"
-#include <iostream>
 
 static Vtop* top;
 static VerilatedContext* contextp;
@@ -55,7 +54,6 @@ extern const char *regs[];
 void isa_reg_display() {
   VlUnpacked<IData, 32> tmp = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf;
   for( int i = 0; i < 16; i++){
-    //std::cout << "%s: " << regs[i] << "%d" << tmp.m_storage[i] <<std::endl;
-    std::cout << regs[i] << ": " << tmp.m_storage[i] <<std::endl;
+		printf("%s: %d\n", regs[i], tmp.m_storage[i]);
   }
 }
