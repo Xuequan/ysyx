@@ -38,6 +38,34 @@ static int identify_inst() {
 		return 0;
 	}
 }
+
+static int space = 4;
+char *vaddr2func(vaddr_t addr, bool *success, int choose);
+
+static void ftrace() {
+  bool success1 = false;
+  bool success2 = false;
+
+  int ident = identify_inst();
+  if (1 == ident){ // maybe a function call, should double check
+    char* next_func = vaddr2func(nextpc(), &success1, 1); 
+    if (success1){ // double check, if next_pc is a function, then a function call
+      space++;
+      printf("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", next_func, nextpc());  
+    }
+  }else if(2 == ident){ // ret
+      // call vaddr2func just for function name only
+    char* now_func  = vaddr2func(get_pc_from_top(), &success2, 0); 
+    if (success2){
+      space--;
+      printf("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
+    }else{  
+        // should never be here
+      printf("Should be checked! '%#x': inst = '%#x' is not a function entry!\n", get_pc_from_top(), get_inst_from_top());
+    }                                                                
+  }
+	
+}
 /*iringbuf */
 #define IRINGBUF_LEN 15
 static char iringbuf[IRINGBUF_LEN][128];
@@ -82,8 +110,9 @@ int exec_once() {
       get_assemble();
 			if (iindex == IRINGBUF_LEN) iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
+			
+			ftrace();
       //printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
-			printf("rs1 is %d\n", rs1());
       if (inst_is_ebreak() ) { 
         ret = 1;
         break;

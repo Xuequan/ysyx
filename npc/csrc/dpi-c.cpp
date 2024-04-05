@@ -18,7 +18,7 @@ extern "C" void dsram_write(int waddr, int wdata, char wmask) {
   return;
 }
 
-extern void check_if_ebreak(svBit* o);
+//extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak() {
 	svBit a;
 	check_if_ebreak(&a);
@@ -26,7 +26,7 @@ bool inst_is_ebreak() {
 	else				return false;
 }
 
-extern void check_if_jal(svBit* o);
+//extern void check_if_jal(svBit* o);
 bool inst_is_jal() {
 	svBit a;
 	check_if_jal(&a);
@@ -34,7 +34,7 @@ bool inst_is_jal() {
 	else				return false;
 }
 
-extern void check_if_jalr(svBit* o);
+//extern void check_if_jalr(svBit* o);
 bool inst_is_jalr() {
 	svBit a;
 	check_if_jalr(&a);
@@ -42,15 +42,22 @@ bool inst_is_jalr() {
 	else				return false;
 }
 
-extern void rs1_reg(svLogicVecVal* o);
+//extern void rs1_reg(svLogicVecVal* o);
 uint32_t rs1(){
 	svLogicVecVal o;
 	rs1_reg(&o);
 	return o.aval;
 }
-extern void rd_reg(svLogicVecVal* o);
+//extern void rd_reg(svLogicVecVal* o);
 uint32_t rd(){
 	svLogicVecVal o;
 	rd_reg(&o);
+	return o.aval;
+}
+
+//extern void nextPC(svLogicVecVal* o);
+uint32_t nextpc(){
+	svLogicVecVal o;
+	nextPC(&o);
 	return o.aval;
 }

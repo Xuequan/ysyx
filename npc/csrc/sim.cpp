@@ -27,6 +27,10 @@ void sim_init() {
 	assert(scope);
 	svSetScope(scope);
 
+	const svScope scope2 = svGetScopeFromName("TOP.top.ifu");
+	assert(scope2);
+	svSetScope(scope2);
+
 	int i = -1;
 	while ( i < 5) {
 		i++;
@@ -43,15 +47,6 @@ void sim_exit() {
 	delete top;
 	delete contextp;
 }
-
-/*
-bool inst_ebreak() {
-	svBit a; 
-	top->check_if_ebreak(&a);
-	if ( a == 1) return true;
-	else 				 return false;
-} 
-*/
 
 uint32_t get_pc_from_top(){
 	return top->pc;

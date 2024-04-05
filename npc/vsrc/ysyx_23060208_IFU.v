@@ -38,4 +38,9 @@ ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
 );
 
 assign valid = 1'b1;
+
+export "DPI-C" task nextPC;
+task nextPC (output [ADDR_WIDTH-1:0] o);
+	o = addr;
+endtask
 endmodule

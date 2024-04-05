@@ -11,6 +11,7 @@ extern "C" int isram_read(int raddr);
   // 如 'wmask = 0x3' 代表只写入最低2个字节，内存中的其它字节保持不>变
 extern "C" void dsram_write(int waddr, int wdata, char wmask);
 
+// below from ysyx_23060208_IDU
 extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak();
 
@@ -25,3 +26,7 @@ uint32_t rs1();
 
 extern void rd_reg(svLogicVecVal* o);
 uint32_t rd();
+
+// below from ysyx_23060208_IFU
+extern void nectPC(svLogicVecVal* o);
+uint32_t nextpc();
