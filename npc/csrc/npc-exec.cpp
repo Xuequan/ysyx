@@ -96,6 +96,7 @@ void get_assemble() {
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
 	}
+	memset(p, ' ', 1);
 	p += 1;
 	disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, 4);
 	//printf("%#08x:%s %s\n",pc, logbuf, p);
@@ -117,7 +118,6 @@ int exec_once() {
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 			
 			ftrace();
-      //printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
       if (inst_is_ebreak() ) { 
         ret = 1;
         break;
