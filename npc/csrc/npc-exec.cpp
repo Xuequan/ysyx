@@ -138,6 +138,17 @@ void execute(uint64_t n) {
 	}
 }
 
+void scan_wp_pool();
+static void trace_and_difftest(){
+	log_write("%s\n", logbuf);
+	
+	if (g_print_step) 
+		puts(logbuf);
+
+	//difftest_step(get_pc_from_top(), nextpc());
+
+	scan_wp_pool();
+}
 void statistic() {
   //IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
   setlocale(LC_NUMERIC, "");
