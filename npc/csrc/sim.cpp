@@ -54,7 +54,8 @@ void sim_once() {
 extern const char *regs[];
 void isa_reg_display() {
   VlUnpacked<IData, 32> tmp = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf;
-  for( int i = 0; i < 32; i++){
-    std::cout << "%s: " << regs[i] << "%d" << tmp.m_storage[i] <<std::endl;
+  for( int i = 0; i < 16; i++){
+    //std::cout << "%s: " << regs[i] << "%d" << tmp.m_storage[i] <<std::endl;
+    std::cout << regs[i] << ": " << tmp.m_storage[i] <<std::endl;
   }
 }
