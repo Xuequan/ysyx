@@ -4,8 +4,6 @@ static Vtop* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
-//static svScope scope;
-
 void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
@@ -19,18 +17,6 @@ void sim_init() {
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
-
-	/* DPI-C 接口 */
-	//const svScope scope = svGetScopeFromName("TOP.top");
-	//const svScope scope = svGetScopeFromName("TOP.top.idu");
-	//assert(scope);
-	//svSetScope(scope);
-
-	/*
-	const svScope scope2 = svGetScopeFromName("TOP.top.ifu");
-	assert(scope2);
-	svSetScope(scope2);
-	*/
 
 	int i = -1;
 	while ( i < 5) {
