@@ -137,4 +137,8 @@ export "DPI-C" task rs1_reg;
 task rs1_reg (output [4:0] o);
 	o = rs1;
 endtask
+export "DPI-C" task rd_reg;
+task rd_reg (output [4:0] o);
+	o = rd;
+endtask
 endmodule

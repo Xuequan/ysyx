@@ -16,7 +16,28 @@
 #include "arch.h"
 #include <cstdio>
 #include "sim.h"
+#include "dpi-c.h"
 
+/* return 1 if function call
+** return 2 if function ret
+** else return 0
+*/
+static int identify_inst() {
+	if (inst_is_jal() ){
+		return 1;
+	} else if (inst_is_jalr()){
+		if (rs1() == 1 && rd() == 0)  // ret
+			return 2;
+		else if (rs1() == 1 && rd() == 1)
+			return 2;
+		else if (rs1() == 6 && rd() == 0)
+			return 2;
+		else 
+			return 1;
+	} else{
+		return 0;
+	}
+}
 /*iringbuf */
 #define IRINGBUF_LEN 15
 static char iringbuf[IRINGBUF_LEN][128];
@@ -50,7 +71,6 @@ void get_assemble() {
 bool inst_is_ebreak();
 bool inst_is_jal();
 bool inst_is_jalr();
-uint32_t rs1();
 /* return 1 if reach ebreak instruction else 0 */
 int exec_once() {
   int ret = 0;
