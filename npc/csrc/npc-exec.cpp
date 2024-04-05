@@ -126,8 +126,23 @@ int exec_once() {
   }// end for
   return ret;
 }
+
+void scan_wp_pool();
+static void trace_and_difftest(){
+
+	log_write("%s\n", logbuf);
+	if (g_print_step) 
+		//puts(logbuf);
+		printf("here %s\n", logbuf);
+
+	//difftest_step(get_pc_from_top(), nextpc());
+
+	scan_wp_pool();
+}
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
+		g_nr_guest_inst ++;
+		trace_and_difftest();
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
@@ -138,18 +153,6 @@ void execute(uint64_t n) {
 	}
 }
 
-void scan_wp_pool();
-static void trace_and_difftest(){
-	log_write("%s\n", logbuf);
-	
-	if (g_print_step) 
-		//puts(logbuf);
-		printf("%s\n", logbuf);
-
-	//difftest_step(get_pc_from_top(), nextpc());
-
-	scan_wp_pool();
-}
 void statistic() {
   //IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
   setlocale(LC_NUMERIC, "");
