@@ -17,7 +17,7 @@ module ysyx_23060208_Regfile
 reg [DATA_WIDTH-1:0] rf [2**REG_WIDTH-1:0];
 always @(posedge clk) begin
 	if (wen) 
-		rf[waddr] <= wdata;
+		rf[waddr] <= (waddr == 'b0) ? 'b0 : wdata;
 end
 
 assign rdata1 = (raddr1 == 'b0) ? 'b0 : rf[raddr1];
