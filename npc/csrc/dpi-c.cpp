@@ -20,6 +20,9 @@ extern "C" void dsram_write(int waddr, int wdata, char wmask) {
 
 //extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak() {
+	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	assert(scope);
+	svSetScope(scope);
 	svBit a;
 	check_if_ebreak(&a);
 	if (a == 1) return true;
@@ -39,6 +42,9 @@ bool inst_is_jal() {
 
 //extern void check_if_jalr(svBit* o);
 bool inst_is_jalr() {
+	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	assert(scope);
+	svSetScope(scope);
 	svBit a;
 	check_if_jalr(&a);
 	if (a == 1) return true;
@@ -47,12 +53,18 @@ bool inst_is_jalr() {
 
 //extern void rs1_reg(svLogicVecVal* o);
 uint32_t rs1(){
+	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	assert(scope);
+	svSetScope(scope);
 	svLogicVecVal o;
 	rs1_reg(&o);
 	return o.aval;
 }
 //extern void rd_reg(svLogicVecVal* o);
 uint32_t rd(){
+	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	assert(scope);
+	svSetScope(scope);
 	svLogicVecVal o;
 	rd_reg(&o);
 	return o.aval;
@@ -60,6 +72,9 @@ uint32_t rd(){
 
 //extern void nextPC(svLogicVecVal* o);
 uint32_t nextpc(){
+	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	assert(scope);
+	svSetScope(scope);
 	svLogicVecVal o;
 	nextPC(&o);
 	return o.aval;
