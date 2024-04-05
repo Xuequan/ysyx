@@ -23,7 +23,7 @@ word_t vaddr_read(vaddr_t, int);
 void isa_reg_display();
 
 int exec_once();
-void execute(uint64_t n);
+void npc_exec(uint64_t n);
 
 static int is_batch_mode = false;
 
@@ -51,7 +51,7 @@ static char* rl_gets() {
 /* should stop at breakpoints if exist */
 static int cmd_c(char *args) {
 	// -1 transfer to a big uint64_t number
-	execute(-1);
+	npc_exec(-1);
   return 0;
 }
 
@@ -67,9 +67,9 @@ static int cmd_help(char *args);
 static int cmd_si(char *args) {
 	/* chuan, if no number, set 1 */
 	if (args == NULL) 
-		execute(1);
+		npc_exec(1);
 	else
-  	execute(*args);
+  	npc_exec(*args);
   return 0;
 }
 

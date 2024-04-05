@@ -67,7 +67,8 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   return reg_val;
 }
 
+extern void statistic();
 void assert_fail_msg() {
 	isa_reg_display();
-	//statistic();
+	statistic();
 }

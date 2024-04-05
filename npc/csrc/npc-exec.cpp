@@ -18,6 +18,10 @@
 #include "sim.h"
 #include "dpi-c.h"
 
+#define MAX_INST_TO_PRINT 10
+static uint64_t g_timer = 0; // unit: us
+static bool g_print_step = false;
+uint64_t g_nr_guest_inst = 0;
 /* return 1 if function call
 ** return 2 if function ret
 ** else return 0
@@ -122,15 +126,6 @@ int exec_once() {
   return ret;
 }
 void execute(uint64_t n) {
-	//g_print_step = (n < MAX_INST_TO_PRINT);
-	switch (npc_state.state) {
-		case NPC_END: case NPC_ABORT:
-			printf("Program execution has ended. To restart the program, please exit and restart\n");
-			return;
-		default: 
-				npc_state.state = NPC_RUNNING;
-	}
-
 	for( ; n > 0; n--) {
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
@@ -140,6 +135,34 @@ void execute(uint64_t n) {
 			break;
 		}
 	}
+}
+
+void statistic() {
+  //IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
+  setlocale(LC_NUMERIC, "");
+#define NUMBERIC_FMT MUXDEF(false, "%", "%'") PRIu64
+  Log("host time spent = " NUMBERIC_FMT " us", g_timer);
+  Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
+  if (g_timer > 0) Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
+  else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
+}
+
+void npc_exec(uint64_t n) {
+	g_print_step = (n < MAX_INST_TO_PRINT);
+	switch (npc_state.state) {
+		case NPC_END: case NPC_ABORT:
+			printf("Program execution has ended. To restart the program, please exit and restart\n");
+			return;
+		default: 
+				npc_state.state = NPC_RUNNING;
+	}
+	
+	uint64_t timer_start = get_time();
+
+	execute(n);
+
+	uint64_t timer_end = get_time();
+	g_timer += timer_end - timer_start;
 
 	switch (npc_state.state) {
 		case NPC_RUNNING: 
@@ -155,6 +178,6 @@ void execute(uint64_t n) {
       if (npc_state.halt_ret != 0)
         print_iringbuf();
       // fall through
-    	case NPC_QUIT: ;//statistic(); 
+    	case NPC_QUIT: ; statistic(); 
   	}
 }
