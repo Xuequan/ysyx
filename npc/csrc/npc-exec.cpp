@@ -109,8 +109,6 @@ bool inst_is_jalr();
 /* return 1 if reach ebreak instruction else 0 */
 int exec_once() {
   int ret = 0;
-  uint32_t pc; 
-  uint32_t inst;
   for(int i = 0; i < 2; i++) {
 		sim_once();
     if (get_clk_from_top() == 1) {
@@ -130,17 +128,14 @@ int exec_once() {
 
 void scan_wp_pool();
 static void trace_and_difftest(){
-
 	log_write("%s\n", logbuf);
 	if (g_print_step){
-		//puts(logbuf);
 		printf("clk = %d, %#x: %s\n", get_clk_from_top(), get_pc_from_top(), logbuf);
 	}
-
 	//difftest_step(get_pc_from_top(), nextpc());
-
 	scan_wp_pool();
 }
+
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
