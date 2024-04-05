@@ -134,7 +134,7 @@ static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
 	if (g_print_step) 
 		//puts(logbuf);
-		printf("%d: %s\n", get_pc_from_top(), logbuf);
+		printf("%#x: %s\n", get_pc_from_top(), logbuf);
 
 	//difftest_step(get_pc_from_top(), nextpc());
 
