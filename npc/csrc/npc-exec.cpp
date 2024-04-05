@@ -93,6 +93,7 @@ void get_assemble() {
 	uint32_t pc 				 = get_pc_from_top();
 	uint32_t instruction = get_inst_from_top();
 	uint8_t* inst = (uint8_t *)&instruction;
+	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
 	}
@@ -133,7 +134,7 @@ static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
 	if (g_print_step) 
 		//puts(logbuf);
-		printf("%s\n", logbuf);
+		printf("%s: %s\n", get_pc_from_top(), logbuf);
 
 	//difftest_step(get_pc_from_top(), nextpc());
 
