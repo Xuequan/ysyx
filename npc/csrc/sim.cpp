@@ -27,9 +27,11 @@ void sim_init() {
 	assert(scope);
 	svSetScope(scope);
 
+	/*
 	const svScope scope2 = svGetScopeFromName("TOP.top.ifu");
 	assert(scope2);
 	svSetScope(scope2);
+	*/
 
 	int i = -1;
 	while ( i < 5) {
