@@ -95,7 +95,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
-	puts("i am here\n");
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 	// chceck if reach breakpoint
 	scan_wp_pool();
