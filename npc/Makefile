@@ -9,6 +9,7 @@ VERILATOR_CFLAGS += --trace
 
 VERILATOR_CFLGAS += --debug
 #VERILATOR_CFLGAS += --gdbbt
+VERILATOR_CFLGAS += -fsanitize=address
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
