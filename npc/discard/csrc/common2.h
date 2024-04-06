@@ -103,6 +103,11 @@ uint64_t get_time();
 
 #define ANSI_FMT(str, fmt) fmt str ANSI_NONE
 
+bool log_enable() {
+  return (g_nr_guest_inst >= 0) &&
+         (g_nr_guest_inst <= 10000);
+}  
+
 #define log_write(...) \
   do { \
     extern FILE* log_fp; \
