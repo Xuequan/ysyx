@@ -193,7 +193,5 @@ void npc_exec(uint64_t n) {
         print_iringbuf();
       // fall through
     	case NPC_QUIT: ; statistic(); 
-        print_iringbuf();
-
   	}
 }
