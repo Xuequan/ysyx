@@ -15,9 +15,7 @@
 #include "common2.h"
 #include "arch.h"
 #include <cstdio>
-#include "sim.h"
-//#include "Vtop___024root.h"
-//#include <iostream>
+//#include "sim.h"
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -68,6 +66,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 }
 
 extern void statistic();
+extern void isa_reg_display();
 void assert_fail_msg() {
 	isa_reg_display();
 	statistic();
