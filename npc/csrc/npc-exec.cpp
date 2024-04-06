@@ -107,7 +107,7 @@ void scan_wp_pool();
 static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
 	if (g_print_step){
-		printf("clk = %d, %#x: %s\n", get_clk_from_top(), get_pc_from_top(), logbuf);
+		printf("clk = %d, %s\n", get_clk_from_top(), logbuf);
 	}
 	//difftest_step(get_pc_from_top(), nextpc());
 	scan_wp_pool();
