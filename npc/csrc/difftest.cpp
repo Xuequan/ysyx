@@ -18,10 +18,6 @@
 #include "common2.h"
 #include <cstdio>
 
-#define PMEM_LEFT ((paddr_t)CONFIG_MBASE)
-#define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE -1)
-#define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
-
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
 extern uint32_t* npc_regs;
