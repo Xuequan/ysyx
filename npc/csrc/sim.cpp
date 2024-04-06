@@ -19,7 +19,7 @@ void sim_init() {
 	tfp->open("dump.vcd");
 
 	int i = -1;
-	while ( i < 6) {
+	while ( i < 5) {
 		i++;
 		top->clk ^= 1;
 		top->rst = 1;
