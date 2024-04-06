@@ -122,8 +122,8 @@ int exec_once() {
   for(int i = 0; i < 2; i++) {
 		sim_once();
     if (get_clk_from_top() == 1) {
-			trace_and_difftest();
       get_assemble();
+			trace_and_difftest();
 			if (iindex == IRINGBUF_LEN) iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 			
