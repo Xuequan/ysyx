@@ -64,6 +64,10 @@ sim: sim-env
 	@echo $^
 	@echo NPC_EXEC=$(NPC_EXEC)
 	@echo LIBS=$(LIBS)
+	@echo $(VERILATOR) $(VERILATOR_CFLAGS) \
+		--top-module $(TOPNAME) $^  \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
 	@echo =======================================
 	#@$^ $(IMG)
 	$(NPC_EXEC)
