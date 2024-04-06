@@ -22,9 +22,7 @@ module ysyx_23060208_IDU
 	// to EXU 
 		// to memory: dest = 0; to register: 1
 	output 									dest, // mem or register
-	output [DATA_WIDTH-1:0] to_mem_data_o,
-
-	output 									inst_ebreak
+	output [DATA_WIDTH-1:0] to_mem_data_o
 );
 
 // 解析指令
@@ -48,6 +46,7 @@ wire									src1_from_zero;
 // 判断inst 最终是写入 register or mem
 wire									write_to_mem;
 wire inst_addi; 
+wire inst_ebreak;
 wire inst_auipc;
 wire inst_lui;
 wire inst_jal;
@@ -117,7 +116,7 @@ assign dest = write_to_mem ? 0 : 1;
 
 assign to_mem_data_o = src2_from_reg;
 
-// DPI-C 
+//======================== DPI-C ================================
 export "DPI-C" task check_if_ebreak;
 task check_if_ebreak (output bit o);
 	o = inst_ebreak;

@@ -4,8 +4,7 @@ module top
 	input clk,
 	input rst,
 	output [DATA_WIDTH-1:0] inst,
-	output [ADDR_WIDTH-1:0] pc,
-	output inst_ebreak
+	output [ADDR_WIDTH-1:0] pc
 );
 
 wire [DATA_WIDTH-1:0] wdata;
@@ -70,8 +69,7 @@ ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 	.op(op),
 
 	.dest(dest),
-	.to_mem_data_o(idu_to_exu_to_mem_data),
-	.inst_ebreak(inst_ebreak)
+	.to_mem_data_o(idu_to_exu_to_mem_data)
 );
 
 ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) exu(
