@@ -18,6 +18,7 @@ CFLAGS += -DMAINARGS=\"$(mainargs)\"
 
 NPCFLAGS += -l $(NPC_HOME)/build/npc-log.txt
 NPCFLAGS += -f $(IMAGE).elf
+NPCFLAGS += -d $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
 
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
