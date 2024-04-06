@@ -9,7 +9,6 @@ VERILATOR_CFLAGS += --trace
 
 VERILATOR_CFLGAS += --debug
 #VERILATOR_CFLGAS += --gdbbt
-VERILATOR_CFLGAS += -fsanitize=address
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -36,6 +35,8 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
 # llvm-config --libs: print all the libraries needed to link against the specified LLVM components
 LIBS += $(shell llvm-config --libs)
+
+CXXFLGAS += -fsanitize=address
 
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
