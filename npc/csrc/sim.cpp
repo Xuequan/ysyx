@@ -60,7 +60,7 @@ void isa_reg_display() {
   }
 
   for( int i = 0; i < 16; i++){
-		printf("%d: %#x\n", i, npc_regs[i]);
+		//printf("%d: %#x\n", i, npc_regs[i]);
   }
 }
 
