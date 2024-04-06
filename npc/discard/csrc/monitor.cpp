@@ -41,7 +41,9 @@ void init_log(const char *log_file) {
 		Assert(fp, "Cannot open '%s'", log_file);
 		log_fp = fp;
 	}
+	printf("herellllllllllll");
 	Log("Log is written to %s", log_file ? log_file : "stdout");
+	printf("2herellllllllllll");
 }
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
