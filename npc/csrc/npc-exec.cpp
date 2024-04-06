@@ -103,6 +103,16 @@ void get_assemble() {
 	//printf("%#08x:%s %s\n",pc, logbuf, p);
 }
 
+void scan_wp_pool();
+static void trace_and_difftest(){
+	log_write("%s\n", logbuf);
+	if (g_print_step){
+		printf("clk = %d, %#x: %s\n", get_clk_from_top(), get_pc_from_top(), logbuf);
+	}
+	//difftest_step(get_pc_from_top(), nextpc());
+	scan_wp_pool();
+}
+
 bool inst_is_ebreak();
 bool inst_is_jal();
 bool inst_is_jalr();
@@ -112,6 +122,7 @@ int exec_once() {
   for(int i = 0; i < 2; i++) {
 		sim_once();
     if (get_clk_from_top() == 1) {
+			trace_and_difftest();
       get_assemble();
 			if (iindex == IRINGBUF_LEN) iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
@@ -126,20 +137,10 @@ int exec_once() {
   return ret;
 }
 
-void scan_wp_pool();
-static void trace_and_difftest(){
-	log_write("%s\n", logbuf);
-	if (g_print_step){
-		printf("clk = %d, %#x: %s\n", get_clk_from_top(), get_pc_from_top(), logbuf);
-	}
-	//difftest_step(get_pc_from_top(), nextpc());
-	scan_wp_pool();
-}
 
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
-		trace_and_difftest();
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
