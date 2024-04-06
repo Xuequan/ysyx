@@ -45,6 +45,7 @@ void init_log(const char *log_file) {
 	Log("Log is written to %s", log_file ? log_file : "stdout");
 	printf("2herellllllllllll");
 }
+#define CONFIG_TRACE 1
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
