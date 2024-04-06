@@ -17,12 +17,24 @@
 #include <cpu/cpu.h>
 #include <difftest-def.h>
 #include <memory/paddr.h>
+#include <string.h>
 
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
-  assert(0);
+	if (direction == DIFFTEST_TO_REF) {
+		memcpy(guest_to_host(addr), buf, n);
+	} else {
+		memcpy(buf, guest_to_host(addr), n);
+	}	
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
+	/*
+	if (direction == DIFFTEST_TO_REF) {
+		memcpy(addr, buf, n);
+	} else {
+		memcpy(buf, addr, n);
+	}	
+	*/
   assert(0);
 }
 
