@@ -6,7 +6,6 @@
 #include "verilated_vcd_c.h"
 #include "verilated.h"
 #include "Vtop__Dpi.h"
-//#include "svdpi.h"
 #include "Vtop___024root.h"
 
 void step_and_dump_wave();
