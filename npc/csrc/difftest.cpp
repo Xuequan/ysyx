@@ -27,7 +27,7 @@ void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) =
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(uint32_t NO) = NULL;
-void (*ref_difftest_init)(int port) = NULL;
+//void (*ref_difftest_init)(int port) = NULL;
 
 //#ifdef CONFIG_DIFFTEST
 
@@ -84,15 +84,17 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_raise_intr = (void (*)(word_t))dlsym(handle, "difftest_raise_intr");
   assert(ref_difftest_raise_intr);
 
+	/*
   ref_difftest_init = (void (*)(int))dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
+	*/
 
   Log("Differential testing: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
   Log("The result of every instruction will be compared with %s. "
       "This will help you a lot for debugging, but also significantly reduce the performance. "
       "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
 
-  ref_difftest_init(port);
+  //ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
   ref_difftest_regcpy((void *)npc_regs, DIFFTEST_TO_REF);
 
