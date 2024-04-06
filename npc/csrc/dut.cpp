@@ -14,9 +14,9 @@
 ***************************************************************************************/
 
 #include <dlfcn.h>
-#include <utils.h>
+#include <utility>
 #include "common2.h"
-#include <stdio.h>
+#include <cstdio>
 //#include <difftest-def.h>
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
