@@ -20,7 +20,7 @@
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
-extern uint32_t* npc_regs;
+//extern uint32_t* npc_regs;
 uint8_t* guest_to_host(paddr_t paddr);
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
