@@ -59,6 +59,7 @@ void difftest_skip_dut(int nr_ref, int nr_dut) {
 void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(ref_so_file != NULL);
 
+	printf("1here in init_difftest\n");
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
   assert(handle);
@@ -86,6 +87,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+	printf("here in init_difftest\n");
 }
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {
