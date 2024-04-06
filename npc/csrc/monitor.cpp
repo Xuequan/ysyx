@@ -142,9 +142,7 @@ void init_monitor(int argc, char *argv[]) {
   long img_size = load_img();
 
   /* Initialize differential testing. */
-	printf("before init_diff\n");
  	init_difftest(diff_so_file, img_size, difftest_port);
-	printf("after init_diff\n");
 
   /* Initialize the simple debugger. */
   init_sdb();
