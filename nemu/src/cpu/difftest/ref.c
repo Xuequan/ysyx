@@ -23,23 +23,24 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 	if (direction == DIFFTEST_TO_REF) {
 		memcpy(guest_to_host(addr), buf, n);
 	} else {
-		memcpy(buf, guest_to_host(addr), n);
+  	assert(0);
 	}	
 }
 
+// void *dut = (VlUnpacked<IData, 32> *)&top->rootp->top__DOT__idu__DOT__regfile__DOT__rf
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
-	/*
 	if (direction == DIFFTEST_TO_REF) {
-		memcpy(addr, buf, n);
+		for(int i = 0; i < RISCV_GPR_NUM; i++) {
+			//gpr(i) = dut->m_storage[i];	
+			cpu.gpr[i] = *((word_t *)dut + i);	
+		}
 	} else {
-		memcpy(buf, addr, n);
+  	assert(0);
 	}	
-	*/
-  assert(0);
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
-  assert(0);
+	cpu_exec(n);
 }
 
 __EXPORT void difftest_raise_intr(word_t NO) {
