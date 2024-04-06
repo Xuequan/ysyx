@@ -41,9 +41,7 @@ void init_log(const char *log_file) {
 		Assert(fp, "Cannot open '%s'", log_file);
 		log_fp = fp;
 	}
-	printf("herellllllllllll");
 	Log("Log is written to %s", log_file ? log_file : "stdout");
-	printf("2herellllllllllll");
 }
 #define CONFIG_TRACE 1
 static void welcome() {
