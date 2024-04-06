@@ -107,7 +107,7 @@ void scan_wp_pool();
 static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
 	if (g_print_step){
-		printf("clk = %d, %s\n", get_clk_from_top(), logbuf);
+		printf("%s\n",logbuf);
 	}
 	//difftest_step(get_pc_from_top(), nextpc());
 	scan_wp_pool();
@@ -193,5 +193,7 @@ void npc_exec(uint64_t n) {
         print_iringbuf();
       // fall through
     	case NPC_QUIT: ; statistic(); 
+        print_iringbuf();
+
   	}
 }
