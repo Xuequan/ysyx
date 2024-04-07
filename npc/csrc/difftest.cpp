@@ -27,14 +27,16 @@ void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) =
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(word_t NO) = NULL;
-//void (*ref_difftest_init)(int port) = NULL;
+void (*ref_difftest_init)(int port) = NULL;
 
 void init_difftest(char *ref_so_file, long img_size, int port) {
 	
 	printf("1here in init_difftest\n");
+
   assert(ref_so_file != NULL);
 
 	printf("2here in init_difftest\n");
+
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
   assert(handle);
@@ -51,10 +53,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_raise_intr = (void (*)(word_t))dlsym(handle, "difftest_raise_intr");
   assert(ref_difftest_raise_intr);
 
-	/*
   ref_difftest_init = (void (*)(int))dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
-	*/
 
   Log("Differential testing: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
   Log("The result of every instruction will be compared with %s. "
