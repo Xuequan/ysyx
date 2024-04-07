@@ -35,7 +35,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
 	printf("2here in init_difftest\n");
 
-  void *handle;
+  void *handle = NULL;
   handle = dlopen(ref_so_file, RTLD_LAZY);
 	if (handle == NULL) {
 		printf("cannot open so file\n");
