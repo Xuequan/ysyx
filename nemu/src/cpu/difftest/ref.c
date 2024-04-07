@@ -27,7 +27,6 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 	}	
 }
 
-// void *dut = (VlUnpacked<IData, 32> *)&top->rootp->top__DOT__idu__DOT__regfile__DOT__rf
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
 	if (direction == DIFFTEST_TO_REF) {
 		for(int i = 0; i < RISCV_GPR_NUM; i++) {
