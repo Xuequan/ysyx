@@ -33,6 +33,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 	
   assert(ref_so_file != NULL);
 
+	printf("ref_so_file : %s\n", ref_so_file);
+
 	printf("2here in init_difftest\n");
 
   void *handle = NULL;
