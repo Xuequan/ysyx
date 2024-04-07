@@ -37,6 +37,10 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   void *handle;
   handle = dlopen(ref_so_file, RTLD_LAZY);
+	if (handle == NULL) {
+		printf("cannot open so file\n");
+		return;
+	}
   assert(handle);
 
   ref_difftest_memcpy = (void (*)(paddr_t, void *, size_t, bool))dlsym(handle, "difftest_memcpy");
