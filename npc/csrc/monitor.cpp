@@ -23,7 +23,7 @@ uint8_t* guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
-//void init_difftest(char *ref_so_file, long img_size, int port);
+void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
@@ -142,7 +142,7 @@ void init_monitor(int argc, char *argv[]) {
   long img_size = load_img();
 
   /* Initialize differential testing. */
- //	init_difftest(diff_so_file, img_size, difftest_port);
+ 	init_difftest(diff_so_file, img_size, difftest_port);
 
   /* Initialize the simple debugger. */
   init_sdb();
