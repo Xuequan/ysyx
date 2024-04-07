@@ -35,8 +35,6 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
 	printf("ref_so_file : %s\n", ref_so_file);
 
-	printf("2here in init_difftest\n");
-
   void *handle = NULL;
   handle = dlopen(ref_so_file, RTLD_LAZY);
 	if (handle == NULL) {
@@ -46,6 +44,10 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(handle);
 
   ref_difftest_memcpy = (void (*)(paddr_t, void *, size_t, bool))dlsym(handle, "difftest_memcpy");
+	if (ref_difftest_memcpy == NULL) {
+		printf("get ref_difftest_memcpy error\n");
+		return;
+	}
   assert(ref_difftest_memcpy);
 
 	printf("3here in init_difftest\n");
