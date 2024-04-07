@@ -20,7 +20,7 @@
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
-//extern uint32_t* npc_regs;
+extern uint32_t* npc_regs;
 uint8_t* guest_to_host(paddr_t paddr);
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
@@ -59,7 +59,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   //ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  //ref_difftest_regcpy((void *)npc_regs, DIFFTEST_TO_REF);
+  ref_difftest_regcpy((void *)npc_regs, DIFFTEST_TO_REF);
 
 	dlclose(handle);
 	printf("here in init_difftest\n");
