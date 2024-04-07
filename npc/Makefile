@@ -36,7 +36,7 @@ CXXFLAGS += $(shell llvm-config --cxxflags)
 # llvm-config --libs: print all the libraries needed to link against the specified LLVM components
 LIBS += $(shell llvm-config --libs)
 
-LDFLAGS += -ldl
+LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
