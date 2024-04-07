@@ -39,6 +39,7 @@ LIBS += $(shell llvm-config --libs)
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
+LDFLAGS += -ldl
 LDFLAGS += $(shell llvm-config --ldflags)
 
 $(BIN): $(VSRCS) $(CSRCS)
