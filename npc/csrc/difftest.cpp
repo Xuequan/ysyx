@@ -64,53 +64,26 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_regcpy(npc_regs, DIFFTEST_TO_REF);
 
 	dlclose(handle);
-	printf("here in init_difftest\n");
 }
-
-/*
-static void checkregs(CPU_state *ref, vaddr_t pc) {
-  if (!isa_difftest_checkregs(ref, pc)) {
-    nemu_state.state = NEMU_ABORT;
-    nemu_state.halt_pc = pc;
-    isa_reg_display();
-  }
-}
-*/
 
 /* 会在 cpu-exec() 中被调用，在NEMU执行完一条指令后，就在
 ** difftest_step() 中让REF 执行相同的指令，然后读出REF
 ** 中的寄存器，并进行对比
 */
-/*
 void difftest_step(vaddr_t pc, vaddr_t npc) {
-  CPU_state ref_r;
-
-  if (skip_dut_nr_inst > 0) {
-    ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
-    if (ref_r.pc == npc) {
-      skip_dut_nr_inst = 0;
-      checkregs(&ref_r, npc);
-      return;
-    }
-    skip_dut_nr_inst --;
-    if (skip_dut_nr_inst == 0)
-      panic("can not catch up with ref.pc = " FMT_WORD " at pc = " FMT_WORD, ref_r.pc, pc);
-    return;
-  }
-
-  if (is_skip_ref) {
-    // to skip the checking of an instruction, just copy the reg state to reference design
-    ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-    is_skip_ref = false;
-    return;
-  }
 
   ref_difftest_exec(1);
-  ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
+	// 得到 ref 的 regs
+	uint32_t ref_regs[16] = {0};
+  ref_difftest_regcpy(ref_regs, DIFFTEST_TO_DUT);
 
-  checkregs(&ref_r, pc);
+	get_npc_regs();
+	int i = 0;
+	for( ; i < 16; i++) {
+		if (npc_regs[i] != ref_regs[i]) {
+    	npc_state.state = NPC_ABORT;
+    	npc_state.halt_pc = get_pc_from_top();
+    	isa_reg_display();
+		}	
+	}
 }
-*/
-//#else
-//void init_difftest(char *ref_so_file, long img_size, int port) { }
-//#endif

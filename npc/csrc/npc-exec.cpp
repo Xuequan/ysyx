@@ -109,7 +109,7 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
-	//difftest_step(get_pc_from_top(), nextpc());
+	difftest_step(get_pc_from_top(), nextpc());
 	scan_wp_pool();
 }
 

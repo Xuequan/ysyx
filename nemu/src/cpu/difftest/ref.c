@@ -34,8 +34,10 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 			//gpr(i) = dut->m_storage[i];	
 			cpu.gpr[i] = *((word_t *)dut + i);	
 		}
-	} else {
-  	assert(0);
+	} else { // copy nemu(REF) regs to dut
+		for(int i = 0; i < RISCV_GPR_NUM; i++) {
+			*((word_t *)dut + i) = cpu.gpr[i];	
+		}
 	}	
 }
 
