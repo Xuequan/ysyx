@@ -51,7 +51,7 @@ void sim_once() {
 }
 
 extern const char *regs[];
-uint32_t* npc_regs = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf.data();
+//uint32_t* npc_regs = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf.data();
 
 void isa_reg_display() {
 	uint32_t* npc_regs = NULL;
