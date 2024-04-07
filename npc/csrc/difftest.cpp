@@ -47,7 +47,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 	if (ref_difftest_memcpy == NULL) {
 		printf("get ref_difftest_memcpy error\n");
 		return;
-	}
+	}else
+		printf("get ref_difftest_memcpy ok\n");
   assert(ref_difftest_memcpy);
 
 	printf("3here in init_difftest\n");
