@@ -84,6 +84,7 @@ void difftest_step() {
 	// 得到 ref 的 regs
 	uint32_t ref_regs[16] = {0};
   ref_difftest_regcpy(ref_regs, DIFFTEST_TO_DUT);
+	printf("after ref_difftest_regcpy\n");
 
 	get_npc_regs();
 	int i = 0;
