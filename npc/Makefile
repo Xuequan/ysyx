@@ -36,10 +36,10 @@ CXXFLAGS += $(shell llvm-config --cxxflags)
 # llvm-config --libs: print all the libraries needed to link against the specified LLVM components
 LIBS += $(shell llvm-config --libs)
 
+LDFLAGS += -ldl
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
-LDFLAGS += -ldl
 LDFLAGS += $(shell llvm-config --ldflags)
 
 $(BIN): $(VSRCS) $(CSRCS)
