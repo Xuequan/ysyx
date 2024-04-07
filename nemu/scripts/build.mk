@@ -58,6 +58,7 @@ $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo BINARY=$(BINARY)
 	@echo OBJS=$(OBJS)
 	@echo ARCHIVES=$(ARCHIVES)
+	@echo $(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 	@echo ======================inside scripts/build.mk===========
 	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
