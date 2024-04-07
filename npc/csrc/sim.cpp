@@ -53,10 +53,13 @@ void sim_once() {
 extern const char *regs[];
 //uint32_t* npc_regs = (top->rootp->top__DOT__idu__DOT__regfile__DOT__rf).data();
 
-uint32_t* get_npc_regs() {
-	uint32_t* npc_regs = NULL;
-	npc_regs = (top->rootp->top__DOT__idu__DOT__regfile__DOT__rf).data();
-	return npc_regs;
+uint32_t npc_regs[16];
+void get_npc_regs() {
+	uint32_t* ptr = NULL;
+	ptr = (top->rootp->top__DOT__idu__DOT__regfile__DOT__rf).data();
+	for(int i = 0; i < 16; i++){
+		npc_regs[i] = ptr[i];
+	}
 }
 
 void isa_reg_display() {
@@ -68,9 +71,9 @@ void isa_reg_display() {
 		
   }
 	*/
-	uint32_t *npc_regs = get_npc_regs();
+	get_npc_regs();
   for( int i = 0; i < 16; i++){
-		printf("%s: %#x\n", regs[i], *(npc_regs + i));
+		printf("%s: %#x\n", regs[i], npc_regs[i]);
   }
 }
 
