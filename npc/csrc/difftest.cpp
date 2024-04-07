@@ -17,11 +17,12 @@
 #include <utility>
 #include "common2.h"
 #include <cstdio>
+#include "arch.h"
+#include "sim.h"
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
 extern uint32_t npc_regs[16];
-void get_npc_regs();
 uint8_t* guest_to_host(paddr_t paddr);
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
@@ -70,7 +71,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 ** difftest_step() 中让REF 执行相同的指令，然后读出REF
 ** 中的寄存器，并进行对比
 */
-void difftest_step(vaddr_t pc, vaddr_t npc) {
+void difftest_step() {
 
   ref_difftest_exec(1);
 	// 得到 ref 的 regs

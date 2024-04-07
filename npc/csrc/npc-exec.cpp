@@ -104,12 +104,13 @@ void get_assemble() {
 }
 
 void scan_wp_pool();
+void difftest_step();
 static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
-	difftest_step(get_pc_from_top(), nextpc());
+	difftest_step();
 	scan_wp_pool();
 }
 
