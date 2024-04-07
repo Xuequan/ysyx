@@ -17,6 +17,7 @@ void sim_once();
 uint32_t get_clk_from_top();
 
 void isa_reg_display();
+
 void get_npc_regs();
 
 #endif

@@ -53,8 +53,8 @@ void sim_once() {
 extern const char *regs[];
 //uint32_t* npc_regs = (top->rootp->top__DOT__idu__DOT__regfile__DOT__rf).data();
 
+// npc regs
 uint32_t npc_regs[16];
-
 void get_npc_regs() {
 	uint32_t* ptr = NULL;
 	ptr = (top->rootp->top__DOT__idu__DOT__regfile__DOT__rf).data();

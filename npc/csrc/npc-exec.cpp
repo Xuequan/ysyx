@@ -105,6 +105,7 @@ void get_assemble() {
 
 void scan_wp_pool();
 void difftest_step();
+
 static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
 	if (g_print_step){
