@@ -51,11 +51,14 @@ app: $(BINARY)
 
 $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo + LD $@
-	@echo ==========================here======================================
+	@echo ======================inside scripts/build.mk===========
 	@echo LDFLAGS=$(LDFLAGS)
 	@echo LIBS=$(LIBS)
 	@echo ARCHIVES=$(ARCHIVES)
-	@echo ==========================here======================================
+	@echo BINARY=$(BINARY)
+	@echo OBJS=$(OBJS)
+	@echo ARCHIVES=$(ARCHIVES)
+	@echo ======================inside scripts/build.mk===========
 	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
 clean:
