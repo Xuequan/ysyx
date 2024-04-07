@@ -62,7 +62,9 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   //ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
 	printf("after difftest_memcpy\n");
+
 	get_npc_regs();
+	printf("after get_npc_reg()\n");
 	uint32_t* buf[16] = {0};
 	memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
   ref_difftest_regcpy(buf, DIFFTEST_TO_REF);
