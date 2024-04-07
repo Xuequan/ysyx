@@ -65,7 +65,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
 	get_npc_regs();
 	printf("after get_npc_reg()\n");
-	uint32_t* buf[16] = {0};
+	uint32_t buf[16] = {0};
 	memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
 	printf("after memcpy\n");
   ref_difftest_regcpy(buf, DIFFTEST_TO_REF);
@@ -78,13 +78,12 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 ** difftest_step() 中让REF 执行相同的指令，然后读出REF
 ** 中的寄存器，并进行对比
 */
-uint32_t ref_regs[16];
 void difftest_step() {
 
   //ref_difftest_exec(1);
 	printf("after ref_difftest_exec(1)\n");
 	// 得到 ref 的 regs
-	//uint32_t ref_regs[16] = {0};
+	uint32_t ref_regs[16] = {0};
   ref_difftest_regcpy(ref_regs, DIFFTEST_TO_DUT);
 	printf("after ref_difftest_regcpy\n");
 
