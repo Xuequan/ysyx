@@ -33,39 +33,22 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 	
   assert(ref_so_file != NULL);
 
-	printf("ref_so_file : %s\n", ref_so_file);
-
   void *handle = NULL;
   handle = dlopen(ref_so_file, RTLD_LAZY);
-	if (handle == NULL) {
-		printf("cannot open so file\n");
-		return;
-	}else 
-		printf("open %s successful \n", ref_so_file);
-
   assert(handle);
 
   ref_difftest_memcpy = (void (*)(paddr_t, void *, size_t, bool))dlsym(handle, "difftest_memcpy");
-	if (ref_difftest_memcpy == NULL) {
-		printf("get ref_difftest_memcpy error\n");
-		return;
-	}else
-		printf("get ref_difftest_memcpy ok\n");
   assert(ref_difftest_memcpy);
 
-	printf("3here in init_difftest\n");
   ref_difftest_regcpy = (void (*)(void *, bool))dlsym(handle, "difftest_regcpy");
   assert(ref_difftest_regcpy);
 
-	printf("4here in init_difftest\n");
   ref_difftest_exec = (void (*)(uint64_t))dlsym(handle, "difftest_exec");
   assert(ref_difftest_exec);
 
-	printf("5here in init_difftest\n");
   ref_difftest_raise_intr = (void (*)(word_t))dlsym(handle, "difftest_raise_intr");
   assert(ref_difftest_raise_intr);
 
-	printf("6here in init_difftest\n");
   ref_difftest_init = (void (*)(int))dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
 
@@ -75,7 +58,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
       "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
 
   //ref_difftest_init(port);
-  //ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
+  ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
   //ref_difftest_regcpy((void *)npc_regs, DIFFTEST_TO_REF);
 
 	dlclose(handle);
