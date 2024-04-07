@@ -2,7 +2,7 @@
 #define __SIM_H__
 
 #include <cstdint>
-#include "Vtop.h"
+//#include "Vtop.h"
 #include "verilated_vcd_c.h"
 //#include "verilated.h"
 #include "Vtop__Dpi.h"
