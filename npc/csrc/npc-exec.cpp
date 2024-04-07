@@ -111,7 +111,9 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
+	printf("before difftest_step() in npc-exec\n");
 	difftest_step();
+	printf("after difftest_step() in npc-exec\n");
 	scan_wp_pool();
 }
 
