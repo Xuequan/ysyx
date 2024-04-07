@@ -36,12 +36,12 @@ CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
 # llvm-config --libs: print all the libraries needed to link against the specified LLVM components
 LIBS += $(shell llvm-config --libs)
 
-CXXFLAGS += -fsanitize=address
+#CXXFLAGS += -fsanitize=address
 
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
-LDFLAGS += -lasan
+#LDFLAGS += -lasan
 
 LDFLAGS += $(shell llvm-config --ldflags)
 
