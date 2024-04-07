@@ -32,7 +32,7 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 	if (direction == DIFFTEST_TO_REF) {
 		for(int i = 0; i < RISCV_GPR_NUM; i++) {
 			//gpr(i) = dut->m_storage[i];	
-			cpu.gpr[i] = *((word_t *)dut + i);	
+			cpu.gpr[i] = *((word_t *)*dut + i);	
 		}
 	} else {
   	assert(0);
