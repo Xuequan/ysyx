@@ -31,8 +31,6 @@ void (*ref_difftest_init)(int port) = NULL;
 
 void init_difftest(char *ref_so_file, long img_size, int port) {
 	
-	printf("1here in init_difftest\n");
-
   assert(ref_so_file != NULL);
 
 	printf("2here in init_difftest\n");
@@ -44,15 +42,19 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_memcpy = (void (*)(paddr_t, void *, size_t, bool))dlsym(handle, "difftest_memcpy");
   assert(ref_difftest_memcpy);
 
+	printf("3here in init_difftest\n");
   ref_difftest_regcpy = (void (*)(void *, bool))dlsym(handle, "difftest_regcpy");
   assert(ref_difftest_regcpy);
 
+	printf("4here in init_difftest\n");
   ref_difftest_exec = (void (*)(uint64_t))dlsym(handle, "difftest_exec");
   assert(ref_difftest_exec);
 
+	printf("5here in init_difftest\n");
   ref_difftest_raise_intr = (void (*)(word_t))dlsym(handle, "difftest_raise_intr");
   assert(ref_difftest_raise_intr);
 
+	printf("6here in init_difftest\n");
   ref_difftest_init = (void (*)(int))dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
 
