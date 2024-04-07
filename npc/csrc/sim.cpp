@@ -54,6 +54,8 @@ extern const char *regs[];
 uint32_t* npc_regs = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf.data();
 
 void isa_reg_display() {
+	uint32_t* npc_regs = NULL;
+	npc_regs = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf.data();
 	/*
   VlUnpacked<IData, 32> tmp = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf;
   for( int i = 0; i < 16; i++){
