@@ -80,7 +80,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 */
 void difftest_step() {
 
-  //ref_difftest_exec(1);
+  ref_difftest_exec(1);
 	printf("after ref_difftest_exec(1)\n");
 	// 得到 ref 的 regs
 	uint32_t ref_regs[16] = {0};
