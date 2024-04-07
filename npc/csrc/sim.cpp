@@ -51,7 +51,7 @@ void sim_once() {
 }
 
 extern const char *regs[];
-uint32_t* npc_regs = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf.m_storage;
+//uint32_t* npc_regs = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf.m_storage;
 
 void isa_reg_display() {
   VlUnpacked<IData, 32> tmp = top->rootp->top__DOT__idu__DOT__regfile__DOT__rf;
@@ -59,9 +59,11 @@ void isa_reg_display() {
 		printf("%s: %#x\n", regs[i], tmp.m_storage[i]);
   }
 
+	/*
   for( int i = 0; i < 16; i++){
 		printf("%d: %#x\n", i, npc_regs[i]);
   }
+	*/
 }
 
 

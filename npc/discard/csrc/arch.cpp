@@ -35,20 +35,6 @@ void isa_reg_display() {
 	}
 }
 */
-/*
-void isa_reg_display() {
-	VlUnpacked<IData, 32> tmp = top.rootp->top__DOT__idu__DOT__regfile__DOT__rf;
-	for( int i = 0; i < 32; i++){
-		std::cout << "reg: " << tmp.m_storage[i] <<std::endl;
-	}
-}
-*/
-/*
-void get_reg_value() {
-	VlUnpacked<Idata, 16> regs;
-		
-}
-*/
 word_t isa_reg_str2val(const char *s, bool *success) {
 	int i = 0;
 	for( ; i < NR_REGS; i++) {
