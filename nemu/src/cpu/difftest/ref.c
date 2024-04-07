@@ -28,12 +28,14 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
+
 	if (direction == DIFFTEST_TO_REF) {
 		for(int i = 0; i < RISCV_GPR_NUM; i++) {
 			cpu.gpr[i] = *((word_t *)dut + i);	
 		}
 	} else { // copy nemu(REF) regs to dut
-		memcpy(dut, cpu.gpr, 16 * sizeof(cpu.gpr[0]));
+  	assert(0);
+		//memcpy(dut, cpu.gpr, 16 * sizeof(cpu.gpr[0]));
 		/*
 		for(int i = 0; i < RISCV_GPR_NUM; i++) {
 			*((word_t *)dut + i) = cpu.gpr[i];	
