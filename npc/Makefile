@@ -32,7 +32,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 # llvm-config -cxxflags: print the C++ compiler flags needed to use LLVM headers
-CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
+CXXFLAGS += $(shell llvm-config --cxxflags)
 # llvm-config --libs: print all the libraries needed to link against the specified LLVM components
 LIBS += $(shell llvm-config --libs)
 
