@@ -140,13 +140,13 @@ void execute(uint64_t n) {
 		exec_once();
 		trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
-			break;
+			return;
      if (inst_is_ebreak() ) { 
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 0;
-			break;
+			return;
 		}
 	}
 }
@@ -193,6 +193,6 @@ void npc_exec(uint64_t n) {
           npc_state.halt_pc);
 			 }
       // fall through
-    	case NPC_QUIT: ; statistic(); 
+    	case NPC_QUIT: statistic(); 
   	}
 }
