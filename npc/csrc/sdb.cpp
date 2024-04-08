@@ -19,10 +19,10 @@
 #include <cstdio>
 #include "arch.h"
 
+NPCState npc_state;
 word_t vaddr_read(vaddr_t, int);
 void isa_reg_display();
 
-int exec_once();
 void npc_exec(uint64_t n);
 
 static int is_batch_mode = false;

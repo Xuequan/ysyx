@@ -46,9 +46,10 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
 }
 
+uint32_t get_pc_from_top();
 static void out_of_bound(paddr_t addr) {
   panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
-      addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
+      addr, PMEM_LEFT, PMEM_RIGHT, get_pc_from_top());
 }
 
 void init_mem() {

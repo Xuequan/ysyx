@@ -12,45 +12,36 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-#ifndef __ARCH_H__
-#define __ARCH_H__
+#ifndef __MEMORY_H__
+#define __MEMORY_H__
 
-#include <cassert>
 #include <cinttypes>
+#include "common2.h"
 
-typedef struct {
-  uint32_t gpr[16];
-  uint32_t pc;
-} CPU_state;
+uint8_t* guest_to_host(paddr_t paddr); 
 
-extern CPU_state cpu;
+paddr_t host_to_guest(uint8_t *haddr);
 
-//#define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
+static inline word_t host_read(void *addr, int len);
 
-static inline int check_reg_idx(int idx) {
-  assert(idx >= 0 && idx < 16);
-  return idx;
-}
+static inline void host_write(void *addr, int len, word_t data);
 
-#define gpr(idx) (cpu.gpr[check_reg_idx(idx)])
+static word_t pmem_read(paddr_t addr, int len); 
 
-static inline const char* reg_name(int idx) {
-  extern const char* regs[];
-  return regs[check_reg_idx(idx)];
-}
+static void pmem_write(paddr_t addr, int len, word_t data);
 
-//void isa_reg_display();
-uint32_t isa_reg_str2val(const char *s, bool *success);
+static void out_of_bound(paddr_t addr);
 
+void init_mem();
 
-enum { NPC_RUNNING, NPC_STOP, NPC_END, NPC_ABORT, NPC_QUIT };
+word_t paddr_read(paddr_t addr, int len);
 
-typedef struct {
-  int state;
-  uint32_t halt_pc;
-  uint32_t halt_ret;
-} NPCState; 
+word_t vaddr_ifetch(vaddr_t addr, int len);
 
-extern NPCState npc_state;
+word_t vaddr_read(vaddr_t addr, int len);
+
+void paddr_write(paddr_t addr, int len, word_t data);
+
+void vaddr_write(vaddr_t addr, int len, word_t data);
 
 #endif
