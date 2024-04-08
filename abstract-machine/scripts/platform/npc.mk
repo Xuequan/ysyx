@@ -30,7 +30,7 @@ run: image
 	@$(MAKE) -s -C $(NPC_HOME) sim ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
 gdb: image
-	@$(MAKE) -s -C $(NPC_HOME) gdb ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
+	@$(MAKE) -s -C $(NPC_HOME) gdb
 
 print: image
 	@$(MAKE) -s -C $(NPC_HOME) print ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
