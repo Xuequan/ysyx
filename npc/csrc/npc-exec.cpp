@@ -112,7 +112,7 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
-	difftest_step();
+	//difftest_step();
 
 	scan_wp_pool();
 }
@@ -139,7 +139,7 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-	//	trace_and_difftest();
+		trace_and_difftest();
 		if (npc_state.state == NPC_ABORT) 
 			printf("here\n");
 		if (npc_state.state != NPC_RUNNING) 
