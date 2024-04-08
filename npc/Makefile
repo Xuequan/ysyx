@@ -78,7 +78,7 @@ include ../Makefile
 gdb: $(BIN)
 	#gdb -s $^ --args $(IMG) $^
 	#gdb -s $(NPC_EXEC)
-	gdb -s $^ --args 
+	gdb -s $^ --args $(ARGS)
 
 wave:
 	gtkwave $(VCD_FILE)
