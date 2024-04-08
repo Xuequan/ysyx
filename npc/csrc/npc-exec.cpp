@@ -150,6 +150,8 @@ void execute(uint64_t n) {
 			npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 0;
 			break;
+		}else {
+			if (npc_state.state != NPC_RUNNING) break;
 		}
 	}
 }
