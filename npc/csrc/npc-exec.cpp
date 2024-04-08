@@ -120,38 +120,34 @@ bool inst_is_ebreak();
 bool inst_is_jal();
 bool inst_is_jalr();
 /* return 1 if reach ebreak instruction else 0 */
-int exec_once() {
-  int ret = 0;
+void exec_once() {
   for(int i = 0; i < 2; i++) {
 		sim_once();
     if (get_clk_from_top() == 1) {
       get_assemble();
-			if (iindex == IRINGBUF_LEN) iindex = 0;
+			if (iindex == IRINGBUF_LEN) 
+				iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
-			trace_and_difftest();
 			ftrace();
-      if (inst_is_ebreak() ) { 
-        ret = 1;
-        break;
-      }   
     }   
   }// end for
-  return ret;
 }
 
 
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
-		if (1 == exec_once()) {
+		exec_once();
+		trace_and_difftest();
+		if (npc_state.state != NPC_RUNNING) 
+			break;
+     if (inst_is_ebreak() ) { 
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 0;
 			break;
 		}
-		if (npc_state.state != NPC_RUNNING) 
-			break;
 	}
 }
 
