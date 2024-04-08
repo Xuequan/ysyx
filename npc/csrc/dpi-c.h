@@ -32,8 +32,8 @@ extern void nectPC(svLogicVecVal* o);
 uint32_t nextpc();
 
 // 给出下个周期要更新的 regfile
-extern void update_regfile_no(svLogicVecVal* o);
+extern void update_regfile_no(svLogicVecVal* reg_no);
 uint32_t update_reg_no();
 
-extern void update_regfile_data(svLogicVecVal* o);
+extern void update_regfile_data(svLogicVecVal* din);
 uint32_t update_reg_data();
