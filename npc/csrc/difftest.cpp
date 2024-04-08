@@ -71,7 +71,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_regcpy(buf, DIFFTEST_TO_REF);
 
 	printf("after difftest_regcpy\n");
-	dlclose(handle);
+	//dlclose(handle);
 }
 
 /* 会在 cpu-exec() 中被调用，在NEMU执行完一条指令后，就在
