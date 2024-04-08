@@ -93,9 +93,7 @@ assign src1 = src1_from_pc ? pc_i :
 							src1_is_zero ? 0 : src1_from_reg;
 
 // get src2
-// 故意弄错 addi, 测试 difftest
-//assign src2_from_imm = inst_addi || inst_auipc || inst_lui ||
-assign src2_from_imm = inst_auipc || inst_lui ||
+assign src2_from_imm = inst_addi || inst_auipc || inst_lui ||
 										inst_jalr || inst_jal || inst_sw;
 assign imm = ({32{inst_addi  | inst_jalr}} & immI) |
 						 ({32{inst_auipc | inst_lui}} & immU) |

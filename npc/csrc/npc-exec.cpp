@@ -18,7 +18,6 @@
 #include "sim.h"
 #include "dpi-c.h"
 
-//NPCState npc_state;
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
