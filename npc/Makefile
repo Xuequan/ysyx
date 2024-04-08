@@ -8,7 +8,7 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 VERILATOR_CFLAGS += --trace
 
 VERILATOR_CFLGAS += --debug
-#VERILATOR_CFLGAS += --gdbbt
+VERILATOR_CFLGAS += --gdbbt
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -30,6 +30,7 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CXXFLAGS += -g
 
 # llvm-config -cxxflags: print the C++ compiler flags needed to use LLVM headers
 CXXFLAGS += $(shell llvm-config --cxxflags)
@@ -70,7 +71,6 @@ sim: sim-env
 	@echo llvm-config --ldflags = $(shell llvm-config --ldflags)
 	@echo llvm-config --libs = $(shell llvm-config --libs)
 	@echo =======================================
-	#@$^ $(IMG)
 	$(NPC_EXEC)
 	
 include ../Makefile
@@ -78,7 +78,7 @@ include ../Makefile
 gdb: $(BIN)
 	#gdb -s $^ --args $(IMG) $^
 	#gdb -s $(NPC_EXEC)
-	gdb -s $(BIN)
+	gdb -s $(NPC_EXEC)
 
 wave:
 	gtkwave $(VCD_FILE)
