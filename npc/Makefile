@@ -7,8 +7,8 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
-VERILATOR_CFLGAS += --debug
-VERILATOR_CFLGAS += --gdbbt
+VERILATOR_CFLAGS += --debug
+VERILATOR_CFLAGS += --gdbbt
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -30,7 +30,6 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-CXXFLAGS += -g
 
 # llvm-config -cxxflags: print the C++ compiler flags needed to use LLVM headers
 CXXFLAGS += $(shell llvm-config --cxxflags)
