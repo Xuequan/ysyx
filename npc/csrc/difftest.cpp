@@ -18,11 +18,14 @@
 #include "common2.h"
 #include <cstdio>
 #include "arch.h"
-#include "sim.h"
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
 extern uint32_t npc_regs[16];
+void isa_reg_display();
+void get_npc_regs();
+uint32_t get_pc_from_top();
+
 uint8_t* guest_to_host(paddr_t paddr);
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
