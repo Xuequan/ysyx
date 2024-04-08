@@ -88,8 +88,9 @@ void difftest_step() {
     	npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 1;
     	isa_reg_display();
+			// print REF registers
 			for(int k = 0; k < 16; k++)
-				printf("regs[%d]: %d\n", k, ref_regs[k]);
+				printf("regs[%d]: %#x\n", k, ref_regs[k]);
 			return;
 		}	
 	}

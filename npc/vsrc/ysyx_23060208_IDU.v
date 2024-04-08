@@ -42,7 +42,7 @@ wire [DATA_WIDTH-1:0] src2_from_reg;
 wire 									src2_from_imm;
 // 判断 src1 的来源
 wire 									src1_from_pc;
-wire									src1_from_zero;
+wire									src1_is_zero;
 // 判断inst 最终是写入 register or mem
 wire									write_to_mem;
 wire inst_addi; 
@@ -87,9 +87,9 @@ ysyx_23060208_Regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 
 // get src1
 assign src1_from_pc = inst_jal || inst_auipc;
-assign src1_from_zero = inst_lui;   // 无需相加，那么将src1 = 0
+assign src1_is_zero = inst_lui;   // 无需相加，那么将src1 = 0
 assign src1 = src1_from_pc ? pc_i : 
-							src1_from_zero ? 0 : src1_from_reg;
+							src1_is_zero ? 0 : src1_from_reg;
 
 // get src2
 // 故意弄错 addi, 测试 difftest
