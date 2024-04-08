@@ -128,7 +128,7 @@ int exec_once() {
       get_assemble();
 			if (iindex == IRINGBUF_LEN) iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
-			
+			trace_and_difftest();
 			ftrace();
       if (inst_is_ebreak() ) { 
         ret = 1;
@@ -143,16 +143,15 @@ int exec_once() {
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
-		trace_and_difftest();
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 0;
 			break;
-		}else {
-			if (npc_state.state != NPC_RUNNING) break;
 		}
+		if (npc_state.state != NPC_RUNNING) 
+			break;
 	}
 }
 
