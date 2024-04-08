@@ -138,9 +138,11 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
+		printf("1--npc_state,state = %d\n", npc_state.state);
 		trace_and_difftest();
 		if (npc_state.state == NPC_ABORT) 
 			printf("here\n");
+		printf("2--npc_state,state = %d\n", npc_state.state);
 		if (npc_state.state != NPC_RUNNING) 
 			return;
     if (inst_is_ebreak() ) { 
@@ -176,6 +178,7 @@ void npc_exec(uint64_t n) {
 	uint64_t timer_start = get_time();
 
 	execute(n);
+	printf("3--npc_state,state = %d\n", npc_state.state);
 
 	uint64_t timer_end = get_time();
 	g_timer += timer_end - timer_start;
