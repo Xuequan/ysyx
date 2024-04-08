@@ -139,9 +139,11 @@ void execute(uint64_t n) {
 		g_nr_guest_inst ++;
 		exec_once();
 		trace_and_difftest();
+		if (npc_state.state == NPC_ABORT) 
+			printf("here\n");
 		if (npc_state.state != NPC_RUNNING) 
 			return;
-     if (inst_is_ebreak() ) { 
+    if (inst_is_ebreak() ) { 
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
 			npc_state.halt_pc = get_pc_from_top();
