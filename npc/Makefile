@@ -7,8 +7,8 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
-VERILATOR_CFLAGS += --debug
-VERILATOR_CFLAGS += --gdbbt
+#VERILATOR_CFLAGS += --debug
+#VERILATOR_CFLAGS += --gdbbt
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir

@@ -88,7 +88,7 @@ void difftest_step() {
     	npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 1;
     	isa_reg_display();
-			break;
+			return;
 		}	
 	}
 }
