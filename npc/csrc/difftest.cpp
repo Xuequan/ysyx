@@ -84,6 +84,7 @@ void difftest_step() {
 	int i = 0;
 	for( ; i < 16; i++) {
 		if (npc_regs[i] != ref_regs[i]) {
+			printf("here2\n");
     	npc_state.state = NPC_ABORT;
     	npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 1;
