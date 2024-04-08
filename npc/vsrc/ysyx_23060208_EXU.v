@@ -48,5 +48,16 @@ assign to_mem_addr = alu_result;
 assign to_mem_data_o = to_mem_data_i;
 assign to_mem_wen = ~dest;
 
+//=============== DPI-C =========================
+export "DPI-C" task update_regfile_no;
+task update_regfile_no (output [REG_WIDTH-1:0] reg_no);
+	reg_no = wen ? waddr : 'b0;
+endtask
+
+export "DPI-C" task update_regfile_data;
+task update_regfile_data (output [DATA_WIDTH-1:0] din);
+	din    = wdata;
+endtask
+
 endmodule
 

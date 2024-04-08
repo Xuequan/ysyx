@@ -74,8 +74,9 @@ assign immU = { inst[31:12], 12'b0 };
 assign immS = { {20{inst[31]}}, inst[31:25], inst[11:7] };
 
 
-ysyx_23060208_Regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
+ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 	.clk(clk),
+	.rst(rst),
 	.wdata(wdata),
 	.waddr(waddr), 
 	.rdata1(src1_from_reg),

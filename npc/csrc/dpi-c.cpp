@@ -79,3 +79,20 @@ uint32_t nextpc(){
 	nextPC(&o);
 	return o.aval;
 }
+
+uint32_t update_reg_no(){
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svLogicVecVal no;
+	update_regfile_no(&no);
+	return no.aval;
+}
+uint32_t update_reg_data(){
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svLogicVecVal data;
+	update_regfile_data(&data);
+	return data.aval;
+}
