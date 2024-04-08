@@ -22,7 +22,6 @@
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
-//NPCState npc_state;
 extern uint32_t npc_regs[16];
 uint8_t* guest_to_host(paddr_t paddr);
 
@@ -85,12 +84,12 @@ void difftest_step() {
 	int i = 0;
 	for( ; i < 16; i++) {
 		if (npc_regs[i] != ref_regs[i]) {
-			printf("here2\n");
     	npc_state.state = NPC_ABORT;
     	npc_state.halt_pc = get_pc_from_top();
 			npc_state.halt_ret = 1;
     	isa_reg_display();
-			printf("4-npc_state.state = %d\n", npc_state.state);
+			for(int k = 0; k < 16; k++)
+				printf("regs[%d]: %d\n", k, ref_regs[k]);
 			return;
 		}	
 	}
