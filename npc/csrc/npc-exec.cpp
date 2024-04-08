@@ -126,7 +126,6 @@ int exec_once() {
 		sim_once();
     if (get_clk_from_top() == 1) {
       get_assemble();
-			trace_and_difftest();
 			if (iindex == IRINGBUF_LEN) iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 			
@@ -144,6 +143,7 @@ int exec_once() {
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
+		trace_and_difftest();
 		if (1 == exec_once()) {
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
