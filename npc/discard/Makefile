@@ -7,8 +7,10 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
-VERILATOR_CFLGAS += --debug
+#VERILATOR_CFLGAS += --debug
 #VERILATOR_CFLGAS += --gdbbt
+# for gdb
+#VERILATOR_CFLAGS += -CFLAGS -ggdb -LDFLAGS -ggdb -CFLAGS -DVL_DEBUG=1 -CFLAGS -D_GLIBCXX_DEBUG
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -18,10 +20,9 @@ VCD_FILE = dump.vcd
 
 $(shell mkdir -p $(BUILD_DIR))
 
-override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
-
 # project source
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+#CSRCS = $(shell find $(abspath ./csrc) -name "main.cpp" -name "arch.cpp")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 # rules for NVboard
@@ -31,56 +32,15 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
-# llvm-config -cxxflags: print the C++ compiler flags needed to use LLVM headers
-CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
-# llvm-config --libs: print all the libraries needed to link against the specified LLVM components
-LIBS += $(shell llvm-config --libs)
+CXXFLAGS += -lreadline
 
-LDFLAGS += -lreadline
-LDFLAGS += $(LIBS)
-
-LDFLAGS += $(shell llvm-config --ldflags)
-
+#$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 $(BIN): $(VSRCS) $(CSRCS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
-
-default: sim
-
-NPC_EXEC := $(BIN) $(ARGS) $(IMG)
-
-sim-env: $(BIN)
-
-sim: sim-env
-	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@echo "Write this Makefile by your self."
-	@echo ========inside npc/makefile ==========
-	@echo ARGS=$(ARGS)
-	@echo IMG=$(IMG)
-	@echo $^
-	@echo NPC_EXEC=$(NPC_EXEC)
-	@echo LIBS=$(LIBS)
-	@echo =======================================
-	#@$^ $(IMG)
-	$(NPC_EXEC)
-	
-include ../Makefile
-
-gdb: $(BIN)
-	#gdb -s $^ --args $(IMG) $^
-	#gdb -s $(NPC_EXEC)
-	gdb -s $(BIN)
-
-wave:
-	gtkwave $(VCD_FILE)
-
-clean:
-	-@rm -rf $(BUILD_DIR)
-	-@rm $(VCD_FILE)
-
-.PHONY: clean default wave sim
+	@echo "===== verilator end ====="
 
 print:
 	@echo "================"
@@ -92,7 +52,30 @@ print:
 		--exe -o $(abspath $(BIN))
 	@echo CFLGAS=$(CFLAGS)
 	@echo LDFLAGS=$(LDFLAGS)
-	@echo CXXFLAGS=$(CXXFLAGS)
-	@echo 1-----$(shell llvm-config --cxxflags)
-	@echo 2-----$(shell llvm-config --libs)
 	@echo "================"
+
+default: sim
+
+sim: $(BIN)
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
+	@echo "Write this Makefile by your self."
+	@echo ========inside npc/makefile ==========
+	@echo ARGS=$(ARGS)
+	@echo IMG=$(IMG)
+	@echo $^
+	@echo =======================================
+	@$^ $(IMG)
+	
+include ../Makefile
+
+#gdb: $(BIN)
+#	gdb -s $^ --args $(IMG) $^
+
+wave:
+	gtkwave $(VCD_FILE)
+
+clean:
+	-@rm -rf $(BUILD_DIR)
+	-@rm $(VCD_FILE)
+
+.PHONY: clean default wave sim

@@ -15,14 +15,21 @@ LDFLAGS   += --gc-sections -e _start
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 
+
+NPCFLAGS += -l $(NPC_HOME)/build/npc-log.txt
+NPCFLAGS += -f $(IMAGE).elf
+
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: image
-	@$(MAKE) -s -C $(NPC_HOME) sim IMG=$(IMAGE).bin
+	@$(MAKE) -s -C $(NPC_HOME) sim ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
 gdb: image
-	@$(MAKE) -s -C $(NPC_HOME) gdb IMG=$(IMAGE).elf
+	@$(MAKE) -s -C $(NPC_HOME) gdb ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
+print: image
+	@$(MAKE) -s -C $(NPC_HOME) print ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
+	

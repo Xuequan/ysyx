@@ -41,13 +41,17 @@ $(OBJ_DIR)/%.o: %.c
 	$(call call_fixdep, $(@:.o=.d), $@)
 
 $(OBJ_DIR)/%.o: %.cc
+	@echo ========= inside build.mk======================
 	@echo + CXX $<
-	@echo ===============================
 	@echo inside scripts/build.mk
 	@echo $@ 
 	@echo OBJ_DIR = $(OBJ_DIR)
 	@echo $<
-	@echo ===============================
+	@echo CFLAGS=$(CFLAGS) 
+	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo CXX=$(CXX)
+	@echo $(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
+	@echo ==================000000000000=============
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 	$(call call_fixdep, $(@:.o=.d), $@)
@@ -63,6 +67,11 @@ app: $(BINARY)
 
 $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo + LD $@
+	@echo ==========================here======================================
+	@echo LDFLAGS=$(LDFLAGS)
+	@echo LIBS=$(LIBS)
+	@echo ARCHIVES=$(ARCHIVES)
+	@echo ==========================here======================================
 	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
 clean:

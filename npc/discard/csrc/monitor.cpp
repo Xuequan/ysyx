@@ -13,31 +13,46 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#include <isa.h>
-#include <memory/paddr.h>
 #include <elf.h>
+#include <getopt.h>
+#include <time.h>
+#include "common2.h"
+#include <cstdlib>
 
+uint8_t* guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
-void init_difftest(char *ref_so_file, long img_size, int port);
+//void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
 
+void init_rand() {
+	srand(time(0) );
+}
+
+FILE *log_fp = NULL;
+void init_log(const char *log_file) {
+	log_fp = stdout;
+	if (log_file != NULL) {
+		FILE *fp = fopen(log_file, "w");
+		Assert(fp, "Cannot open '%s'", log_file);
+		log_fp = fp;
+	}
+	Log("Log is written to %s", log_file ? log_file : "stdout");
+}
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
         "to record the trace. This may lead to a large log file. "
         "If it is not necessary, you can disable it in menuconfig"));
   Log("Build time: %s, %s", __TIME__, __DATE__);
-  printf("Welcome to %s-NEMU!\n", ANSI_FMT(str(__GUEST_ISA__), ANSI_FG_YELLOW ANSI_BG_RED));
+  printf("Welcome to %s!\n", ANSI_FMT("NPC", ANSI_FG_YELLOW ANSI_BG_RED));
   printf("For help, type \"help\"\n");
 }
 
-#ifndef CONFIG_TARGET_AM
-#include <getopt.h>
 
 void sdb_set_batch_mode();
 
@@ -66,7 +81,7 @@ static long load_img() {
   assert(ret == 1);
 
   fclose(fp);
-  return size;
+	return size;
 }
 
 static int parse_args(int argc, char *argv[]) {
@@ -108,62 +123,32 @@ void init_monitor(int argc, char *argv[]) {
   parse_args(argc, argv);
 
   /* Set random seed. */
-  init_rand();
+  //init_rand();
 
   /* Open the log file. */
   init_log(log_file);
 
 	/* Read ELF file and get strtab & symtab. */
-  init_elf(elf_file);
+  init_elf();
 
   /* Initialize memory. */
   init_mem();
 
   /* Initialize devices. */
-  IFDEF(CONFIG_DEVICE, init_device());
-
-  /* Perform ISA dependent initialization. */
-  init_isa();
+  //IFDEF(CONFIG_DEVICE, init_device());
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
   /* Initialize differential testing. */
-  init_difftest(diff_so_file, img_size, difftest_port);
+ // init_difftest(diff_so_file, img_size, difftest_port);
 
   /* Initialize the simple debugger. */
   init_sdb();
 
-#ifndef CONFIG_ISA_loongarch32r
-  IFDEF(CONFIG_ITRACE, init_disasm(
-    MUXDEF(CONFIG_ISA_x86,     "i686",
-    MUXDEF(CONFIG_ISA_mips32,  "mipsel",
-    MUXDEF(CONFIG_ISA_riscv,
-      MUXDEF(CONFIG_RV64,      "riscv64",
-                               "riscv32"),
-                               "bad"))) "-pc-linux-gnu"
-  ));
-	//init_disasm("riscv32-pc-linux-gnu");
-#endif
+	char str[] = "riscv32-pc-linux-gnu";
+	init_disasm(str);
 
   /* Display welcome message. */
   welcome();
 }
-#else // CONFIG_TARGET_AM
-static long load_img() {
-  extern char bin_start, bin_end;
-  size_t size = &bin_end - &bin_start;
-  Log("img size = %ld", size);
-  memcpy(guest_to_host(RESET_VECTOR), &bin_start, size);
-  return size;
-}
-
-void am_init_monitor() {
-  init_rand();
-  init_mem();
-  init_isa();
-  load_img();
-  IFDEF(CONFIG_DEVICE, init_device());
-  welcome();
-}
-#endif
