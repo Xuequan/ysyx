@@ -15,10 +15,10 @@ extern "C" int isram_read(int raddr);
 extern "C" void dsram_write(int waddr, int wdata, char wmask);
 
 // below from ysyx_23060208_IDU
-extern void check_if_ebreak(svBit* o);
+//extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak();
 
-extern void check_if_jal(svBit* o);
+//extern void check_if_jal(svBit* o);
 bool inst_is_jal();
 
 extern void check_if_jalr(svBit* o);
