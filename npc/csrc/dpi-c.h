@@ -21,24 +21,24 @@ bool inst_is_ebreak();
 //extern void check_if_jal(svBit* o);
 bool inst_is_jal();
 
-extern void check_if_jalr(svBit* o);
+//extern void check_if_jalr(svBit* o);
 bool inst_is_jalr();
 
-extern void rs1_reg(svLogicVecVal* o);
+//extern void rs1_reg(svLogicVecVal* o);
 uint32_t rs1();
 
-extern void rd_reg(svLogicVecVal* o);
+//extern void rd_reg(svLogicVecVal* o);
 uint32_t rd();
 
 // below from ysyx_23060208_IFU
-extern void nectPC(svLogicVecVal* o);
+//extern void nectPC(svLogicVecVal* o);
 uint32_t nextpc();
 
 // 给出下个周期要更新的 regfile
-extern void update_regfile_no(svLogicVecVal* reg_no);
+//extern void update_regfile_no(svLogicVecVal* reg_no);
 uint32_t update_reg_no();
 
-extern void update_regfile_data(svLogicVecVal* din);
+//extern void update_regfile_data(svLogicVecVal* din);
 uint32_t update_reg_data();
 
 #endif

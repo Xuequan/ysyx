@@ -1,11 +1,7 @@
-/*
-#include "memory.h"
-#include <cstdint>
-#include "Vtop__Dpi.h"
-*/
 #include "dpi-c.h"
 
 word_t vaddr_ifetch(vaddr_t addr, int len);
+void vaddr_write(vaddr_t addr, int len, word_t data);
 // 总是读取地址为 raddr & ~0x3u 的4字节返回
 // raddr 是 vaddr                                                               
 extern "C" int isram_read(int raddr) {
@@ -15,7 +11,8 @@ extern "C" int isram_read(int raddr) {
   // 'wmask' 中每比特表示 'wdata' 中1个字节的掩码，
   // 如 'wmask = 0x3' 代表只写入最低2个字节，内存中的其它字节保持不>变
 extern "C" void dsram_write(int waddr, int wdata, char wmask) {
-  return;
+	uint32_t addr = (uint32_t)waddr & ~((uint32_t)wmask);
+  return vaddr_write(addr, 4, wdata);
 }
 
 //extern void check_if_ebreak(svBit* o);
