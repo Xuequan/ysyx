@@ -64,9 +64,8 @@ static void ftrace() {
     if (success2){
       space--;
       printf("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
-    }else{  
-        // should never be here
-      printf("Should be checked! '%#x': inst = '%#x' is not a function entry!\n", get_pc_from_top(), get_inst_from_top());
+    }else{  // should never be here
+      printf("Should be checked! %s '%#x': inst = '%#x' is not a function entry!\n", now_func, get_pc_from_top(), get_inst_from_top());
     }                                                                
   }
 	

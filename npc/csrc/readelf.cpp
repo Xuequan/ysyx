@@ -218,8 +218,8 @@ char *vaddr2func(vaddr_t addr, bool *success, int choose){
 		if (1 == choose) {
 			cond = (addr == symtab.sym[i].st_value);
 		} else {
-			cond = (addr >= symtab.sym[i].st_value && 
-				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size);
+			cond = (addr >= symtab.sym[i].st_value) && 
+				(addr <= symtab.sym[i].st_value + symtab.sym[i].st_size);
 		}
 
 		if (cond) {
