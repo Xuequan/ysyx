@@ -65,10 +65,9 @@ static void ftrace() {
       space--;
       printf("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
     }else{  // should never be here
-      printf("Should check! %s '%#x': inst = '%#x' is not a function entry!\n", now_func, get_pc_from_top(), get_inst_from_top());
-    }                                                                
+      printf("Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", now_func, get_pc_from_top(), get_inst_from_top());
+    }     
   }
-	
 }
 /*iringbuf */
 #define IRINGBUF_LEN 15

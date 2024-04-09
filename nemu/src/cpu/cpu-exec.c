@@ -96,11 +96,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-	// chceck if reach breakpoint
+	// check if reach breakpoint
 	scan_wp_pool();
 }
 
-int space = 4;
+static int space = 4;
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
@@ -125,7 +125,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
 		}else{  
 				// should never be here
-			printf("Should be checked! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
+			printf("Should check! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
 		}
 	}
 	/* ftrace end */
