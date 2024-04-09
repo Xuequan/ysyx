@@ -69,6 +69,7 @@ static void ftrace() {
     }     
   }
 }
+
 /*iringbuf */
 #define IRINGBUF_LEN 15
 static char iringbuf[IRINGBUF_LEN][128];
@@ -137,8 +138,6 @@ void execute(uint64_t n) {
 		g_nr_guest_inst ++;
 		exec_once();
 		trace_and_difftest();
-		if (npc_state.state == NPC_ABORT) 
-			printf("here\n");
 		if (npc_state.state != NPC_RUNNING) 
 			return;
     if (inst_is_ebreak() ) { 
