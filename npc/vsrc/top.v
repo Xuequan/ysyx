@@ -24,7 +24,7 @@ wire [DATA_WIDTH-1:0] src1;
 wire [DATA_WIDTH-1:0] src2;
 wire [REG_WIDTH-1 :0] rd;
 wire [17					:0] op;
-wire									regfile_mem_mux;
+wire [1           :0]	regfile_mem_mux;
 
 wire [DATA_WIDTH-1:0] store_data;
 wire [DATA_WIDTH-1:0] store_address;

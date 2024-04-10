@@ -84,17 +84,30 @@ void difftest_step() {
   ref_difftest_regcpy(ref_regs, DIFFTEST_TO_DUT);
 
 	get_npc_regs();
+	int error[16] = {0};
+	int error_cnt = 0;
+	int index = 0;
 	int i = 0;
 	for( ; i < 16; i++) {
 		if (npc_regs[i] != ref_regs[i]) {
-    	npc_state.state = NPC_ABORT;
-    	npc_state.halt_pc = get_pc_from_top();
-			npc_state.halt_ret = 1;
-    	isa_reg_display();
+			error[error_cnt++] = i;
+		}
+	}
+	if (error_cnt != 0) {
+    npc_state.state = NPC_ABORT;
+    npc_state.halt_pc = get_pc_from_top();
+		npc_state.halt_ret = 1;
+    //isa_reg_display();
+		for( int j = 0; j < error_cnt; j++){
+			index = error[j];
+			printf("Register '%s' in NPC is '%#x', should be '%#x'\n", 
+				reg_name(index), npc_regs[index], ref_regs[index]);
+		}
+	}
 			// print REF registers
+			/*
 			for(int k = 0; k < 16; k++)
 				printf("%s: %#x\n", reg_name(k), ref_regs[k]);
-			return;
-		}	
-	}
+			*/
+	return;
 }

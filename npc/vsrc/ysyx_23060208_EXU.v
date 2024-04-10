@@ -11,7 +11,10 @@ module ysyx_23060208_EXU
 	input [REG_WIDTH-1 :0] rd,
 	input [17					 :0] op,
 
-	input									 regfile_mem_mux,
+	// regfile_mem_mux == 2'b01, need updating regfile
+	// == 2'b10, write to mem; 
+	// == 2'b00, no need update both
+	input [1					 :0] regfile_mem_mux,
 
 	input [DATA_WIDTH-1:0] cond_branch_target,
 	input 								 cond_branch_inst,
@@ -66,7 +69,7 @@ assign branch_target =
 assign branch_taken = |uncond_jump_inst || cond_branch_taken;
 /* =======store instruction ============================== */
 assign store_address = alu_result; 
-assign store_en = ~regfile_mem_mux;
+assign store_en = regfile_mem_mux[1];
 assign store_data = store_data_raw; 
 assign store_bytes_num = ( {3{store_inst[0]}} & 3'b100 )
 											| ( {3{store_inst[1]}} & 3'b010 )
@@ -90,7 +93,7 @@ assign regfile_wdata = |uncond_jump_inst ? pc + 4 :
 
 assign regfile_waddr = rd;
 	// regfile 写使能
-assign regfile_wen = regfile_mem_mux;
+assign regfile_wen = regfile_mem_mux[0];
 
 /* =============== DPI-C ========================= */
 export "DPI-C" task update_regfile_no;

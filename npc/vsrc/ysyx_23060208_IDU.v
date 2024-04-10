@@ -19,9 +19,9 @@ module ysyx_23060208_IDU
 	output [17					:0] op,
 	output [REG_WIDTH-1 :0] rd,
 
-	// instruction write to regfile or memory
-	// to memory: regfile_mem_mux = 0; to register: 1
-	output 									regfile_mem_mux, 
+	// instruction write to regfile or memory or no both
+	// to memory: regfile_mem_mux = 2'b10; to register: 2'b01
+	output [1						:0]	regfile_mem_mux, 
 	// unconditional jump (jal & jalr)
 	output [1           :0]	uncond_jump_inst,
 	// conditional branch (to EXU)
@@ -319,8 +319,8 @@ assign pc_o = pc_i;
 
 // 判断指令最终目的: write to regfile or store to memory
 assign write_to_mem = inst_sw | inst_sh | inst_sb;
-// to memory: regfile_mem_mux = 0; to register: 1
-assign regfile_mem_mux = write_to_mem ? 0 : 1;
+assign regfile_mem_mux[1] = write_to_mem;
+assign regfile_mem_mux[0] = ~(write_to_mem | cond_branch_inst);
 
 assign store_data_raw = src2_from_reg;
 assign store_inst[0] = inst_sw;
