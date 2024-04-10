@@ -1,55 +1,64 @@
 module top
-	#(DATA_WIDTH = 32, ADDR_WIDTH = 32, 
-		REG_WIDTH = 5)(
+	#(DATA_WIDTH = 32, REG_WIDTH = 5)(
 	input clk,
 	input rst,
 	output [DATA_WIDTH-1:0] inst,
-	output [ADDR_WIDTH-1:0] pc
+	output [DATA_WIDTH-1:0] pc
 );
 
-wire [DATA_WIDTH-1:0] wdata;
-wire [REG_WIDTH-1 :0] waddr;
+wire [DATA_WIDTH-1:0] nextPC;
+wire [DATA_WIDTH-1:0] regfile_wdata;
+wire [REG_WIDTH-1 :0] regfile_waddr;
+wire 									regfile_wen;
+
+wire [1						:0] uncond_jump_inst;
+wire 									branch_taken;
+wire [DATA_WIDTH-1:0] branch_target;
+
+wire [DATA_WIDTH-1:0] cond_branch_target;
+wire 									cond_branch_inst;
+
+wire [4						:0] load_inst;
+
 wire [DATA_WIDTH-1:0] src1;
 wire [DATA_WIDTH-1:0] src2;
 wire [REG_WIDTH-1 :0] rd;
-wire [2						:0] op;
+wire [17					:0] op;
+wire									regfile_mem_mux;
 
-wire [DATA_WIDTH-1:0] addr;
-//wire [ADDR_WIDTH-1:0] pc;
-wire [ADDR_WIDTH-1:0] idu_to_exu_pc;
-wire 									valid;
+wire [DATA_WIDTH-1:0] store_data;
+wire [DATA_WIDTH-1:0] store_address;
+wire									store_en;
+wire [2						:0] store_inst;
+wire [2						:0] store_bytes_num;
+wire [DATA_WIDTH-1:0] store_data_raw;
 
-wire 									inst_jal_jalr;
-wire [DATA_WIDTH-1:0] nextpc_from_jal_jalr;
+wire [DATA_WIDTH-1:0] rdata;
+wire [DATA_WIDTH-1:0] raddr;
 
-wire [DATA_WIDTH-1:0] exu_to_isram_to_mem_addr;
-wire [DATA_WIDTH-1:0] exu_to_isram_to_mem_data;
-wire									to_mem_wen;
-wire									dest;
-wire [DATA_WIDTH-1:0] idu_to_exu_to_mem_data;
+wire [DATA_WIDTH-1:0] idu_to_exu_pc;
+wire 									ifu_to_isram_valid;
+wire									exu_to_dsram_valid;
 
-wire 									to_regfile_wen;
-
-ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) isram_i0(
+ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 	.clk(clk),
 	.rst(rst),
-	.valid(valid),
-	.raddr(addr),
-	.waddr(exu_to_isram_to_mem_addr),
-	.wdata(exu_to_isram_to_mem_data),
-	.wen(to_mem_wen),
+	.valid(ifu_to_isram_valid),
+	.nextPC(nextPC),
 	.inst_o(inst)
 );
 
-ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) ifu(
+ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 	.clk(clk),
 	.rst(rst),
 	.inst_i(inst),
-	.inst_jal_jalr(inst_jal_jalr),
-	.nextpc_from_jal_jalr(nextpc_from_jal_jalr),
-	.valid(valid),
+
+	.branch_target(branch_target),
+	.branch_taken(branch_taken),
+
+	.valid(ifu_to_isram_valid),
 	.pc(pc),
-	.addr(addr)
+	.nextPC(nextPC)
 );	
 
 ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
@@ -57,49 +66,75 @@ ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 	.rst(rst),
 	.inst(inst),
 	.pc_i(pc),
-	.wdata(wdata),
-	.waddr(waddr),
-	.wen(to_regfile_wen),
 
-	.inst_jal_jalr(inst_jal_jalr),
+	.regfile_wdata(regfile_wdata),
+	.regfile_waddr(regfile_waddr),
+	.regfile_wen(regfile_wen),
+
+	.uncond_jump_inst(uncond_jump_inst),
+
 	.pc_o(idu_to_exu_pc),
 	.src1(src1),
 	.src2(src2),
 	.rd(rd),
 	.op(op),
 
-	.dest(dest),
-	.to_mem_data_o(idu_to_exu_to_mem_data)
+	.regfile_mem_mux(regfile_mem_mux),
+	.cond_branch_inst(cond_branch_inst),
+	.cond_branch_target(cond_branch_target),
+
+	.load_inst(load_inst),
+
+	.store_inst(store_inst),
+	.store_data_raw(store_data_raw)
 );
 
-ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) exu(
+ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.clk(clk),
 	.rst(rst),
-	.inst_jal_jalr(inst_jal_jalr),
+	.uncond_jump_inst(uncond_jump_inst),
 	.pc(idu_to_exu_pc),
 	.src1(src1),
 	.src2(src2),
 	.rd(rd),
 	.op(op),
 
-	.dest(dest),
-	.to_mem_data_i(idu_to_exu_to_mem_data),
+	.regfile_mem_mux(regfile_mem_mux),
 
-	.nextpc_from_jal_jalr(nextpc_from_jal_jalr),
-	.waddr(waddr),
-	.wdata(wdata),
-	.wen(to_regfile_wen),
+	.cond_branch_target(cond_branch_target),
+	.cond_branch_inst(cond_branch_inst),
+
+	.load_inst(load_inst),
+
+	.branch_target(branch_target),
+	.branch_taken(branch_taken),
+
+	.regfile_wdata(regfile_wdata),
+	.regfile_waddr(regfile_waddr),
+	.regfile_wen(regfile_wen),
 	
-	.to_mem_addr(exu_to_isram_to_mem_addr),
-	.to_mem_wen(to_mem_wen),
-	.to_mem_data_o(exu_to_isram_to_mem_data)
+	.store_inst(store_inst),
+	.store_address(store_address),
+	.store_en(store_en),
+	.store_data_raw(store_data_raw),
+	.store_data(store_data),
+	.store_bytes_num(store_bytes_num),
+	
+	.rdata(rdata),
+	.raddr(raddr),
+	.valid(exu_to_dsram_valid)
 );
 
-/*
-export "DPI-C" task check_ebreak;
-task check_ebreak (output bit o);
-	o = inst_ebreak;
-endtask
-*/
+ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(
+	.clk(clk),
+	//.rst(rst),
+	.valid(exu_to_dsram_valid),
+	.wdata(store_data),
+	.waddr(store_address),
+	.wen(store_en),
+	.store_bytes_num(store_bytes_num),
+	.raddr(raddr),
+	.rdata(rdata)
+);
 
 endmodule

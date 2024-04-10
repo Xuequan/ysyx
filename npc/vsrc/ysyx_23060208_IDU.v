@@ -8,21 +8,30 @@ module ysyx_23060208_IDU
 	input [DATA_WIDTH-1:0]  pc_i,
 	
 	// from EXU 
-	input [DATA_WIDTH-1:0]  wdata,
-	input [REG_WIDTH-1 :0]  waddr,
-	input										wen,
+	input [DATA_WIDTH-1:0]  regfile_wdata,
+	input [REG_WIDTH-1 :0]  regfile_waddr,
+	input										regfile_wen,
 
 	// to EXU (for ALU)
-	output 									inst_jal_jalr,
 	output [DATA_WIDTH-1:0] pc_o,
 	output [DATA_WIDTH-1:0] src1,
 	output [DATA_WIDTH-1:0] src2,
-	output [2						:0] op,
+	output [17					:0] op,
 	output [REG_WIDTH-1 :0] rd,
-	// to EXU 
-		// to memory: dest = 0; to register: 1
-	output 									dest, // mem or register
-	output [DATA_WIDTH-1:0] to_mem_data_o
+
+	// instruction write to regfile or memory
+	// to memory: regfile_mem_mux = 0; to register: 1
+	output 									regfile_mem_mux, 
+	// unconditional jump (jal & jalr)
+	output [1           :0]	uncond_jump_inst,
+	// conditional branch (to EXU)
+	output									cond_branch_inst,
+	output [DATA_WIDTH-1:0] cond_branch_target,
+	// load instruction
+	output [4						:0] load_inst,
+	// store instruction write to memory data
+	output [2						:0] store_inst,
+	output [DATA_WIDTH-1:0] store_data_raw
 );
 
 // 解析指令
@@ -36,22 +45,9 @@ wire [DATA_WIDTH-1:0] immI;
 wire [DATA_WIDTH-1:0] immU;
 wire [DATA_WIDTH-1:0] immJ;
 wire [DATA_WIDTH-1:0] immS;
+wire [DATA_WIDTH-1:0] immB;
 wire [DATA_WIDTH-1:0] src1_from_reg;
 wire [DATA_WIDTH-1:0] src2_from_reg;
-// 判断 src2 的来源
-wire 									src2_from_imm;
-// 判断 src1 的来源
-wire 									src1_from_pc;
-wire									src1_is_zero;
-// 判断inst 最终是写入 register or mem
-wire									write_to_mem;
-wire inst_addi; 
-wire inst_ebreak;
-wire inst_auipc;
-wire inst_lui;
-wire inst_jal;
-wire inst_jalr;
-wire inst_sw;
 
 assign opcode = inst[6:0];
 assign funct3 = inst[14:12];
@@ -60,62 +56,295 @@ assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
 assign rd  = inst[11:7];
 
+/* ================ 判断alu src1, src2 来源 ========= */
+// 判断 src2 的来源
+wire 									src2_from_imm;
+// 判断 src1 的来源
+wire 									src1_from_pc;
+wire									src1_is_zero;
+wire									src1_is_none; // like lui, no need src1
+
+/*========== 判断inst 最终是写入 register or mem ====== */
+wire									write_to_mem;
+
+/* ==================inst_instruction ================*/
+// integer register-immediate instructions
+wire inst_addi; 
+wire inst_slti;
+wire inst_sltiu;
+wire inst_andi; 
+wire inst_ori; 
+wire inst_xori; 
+
+wire inst_slli;
+wire inst_srli;
+wire inst_srai;
+
+wire inst_lui;
+wire inst_auipc;
+
+// integer register-register instructions
+wire inst_add;
+wire inst_slt;
+wire inst_sltu;
+wire inst_and;
+wire inst_or;
+wire inst_xor;
+wire inst_sll;
+wire inst_srl;
+wire inst_sub;
+wire inst_sra;
+
+// NOP instruction
+//wire inst_nop;
+//assign inst_nop   = (opcode == 7'b001_0011) && (funct3 == 3'b0);
+
+// unconditional jump
+wire inst_jal;
+wire inst_jalr;
+
+// conditional branches
+wire inst_beq;
+wire inst_bne;
+wire inst_blt;
+wire inst_bltu;
+wire inst_bge;
+wire inst_bgeu;
+
+// load instructions
+wire inst_lw;
+wire inst_lb;
+wire inst_lh;
+wire inst_lbu;
+wire inst_lhu;
+
+// store instructions
+wire inst_sw;
+wire inst_sb;
+wire inst_sh;
+
+// environment call and breakpoints
+//wire inst_ecall;
+wire inst_ebreak;
+
+
+// integer register-immediate instructions
 assign inst_addi   = (opcode == 7'b001_0011) && (funct3 == 3'b0);
-assign inst_ebreak = (inst == 32'b1_00000_000_00000_111_0011); 
-assign inst_auipc  = (opcode == 7'b001_0111);
+assign inst_slti   = (opcode == 7'b001_0011) && (funct3 == 3'b010);
+assign inst_sltiu  = (opcode == 7'b001_0011) && (funct3 == 3'b011);
+assign inst_andi   = (opcode == 7'b001_0011) && (funct3 == 3'b111);
+assign inst_ori    = (opcode == 7'b001_0011) && (funct3 == 3'b110);
+assign inst_xori   = (opcode == 7'b001_0011) && (funct3 == 3'b100);
+
+assign inst_slli   = (opcode == 7'b001_0011) && (funct3 == 3'b001);
+assign inst_srli   = (opcode == 7'b001_0011) && (funct3 == 3'b101)
+									 && (inst[30] == 1'b0);
+assign inst_srai   = (opcode == 7'b001_0011) && (funct3 == 3'b101)
+									 && (inst[30] == 1'b1);
+
 assign inst_lui    = (opcode == 7'b011_0111);
+assign inst_auipc  = (opcode == 7'b001_0111);
+
+// integer register-register instructions
+assign inst_add    = (opcode == 7'b011_0011) && (funct3 == 3'b000)
+									&& (funct7 == 7'b000_0000);
+assign inst_slt    = (opcode == 7'b011_0011) && (funct3 == 3'b010)
+									&& (funct7 == 7'b000_0000);
+assign inst_sltu   = (opcode == 7'b011_0011) && (funct3 == 3'b011)
+									&& (funct7 == 7'b000_0000);
+assign inst_and    = (opcode == 7'b011_0011) && (funct3 == 3'b111)
+									&& (funct7 == 7'b000_0000);
+assign inst_or    = (opcode == 7'b011_0011) && (funct3 == 3'b110)
+									&& (funct7 == 7'b000_0000);
+assign inst_xor    = (opcode == 7'b011_0011) && (funct3 == 3'b100)
+									&& (funct7 == 7'b000_0000);
+assign inst_sll    = (opcode == 7'b011_0011) && (funct3 == 3'b001)
+									&& (funct7 == 7'b000_0000);
+assign inst_srl    = (opcode == 7'b011_0011) && (funct3 == 3'b101)
+									&& (funct7 == 7'b000_0000);
+assign inst_sub    = (opcode == 7'b011_0011) && (funct3 == 3'b000)
+									&& (funct7 == 7'b010_0000);
+assign inst_sra    = (opcode == 7'b011_0011) && (funct3 == 3'b101)
+									&& (funct7 == 7'b010_0000);
+
+// unconditional jump
 assign inst_jal 	 = (opcode == 7'b110_1111);
 assign inst_jalr	 = (opcode == 7'b110_0111) && (funct3 == 3'b0);
-assign inst_sw 		 = (opcode == 7'b010_0011) && (funct3 == 3'b010);
 
+// conditional branches
+assign inst_beq	 = (opcode == 7'b110_0011) && (funct3 == 3'b000);
+assign inst_bne	 = (opcode == 7'b110_0011) && (funct3 == 3'b001);
+assign inst_blt	 = (opcode == 7'b110_0011) && (funct3 == 3'b100);
+assign inst_bltu = (opcode == 7'b110_0011) && (funct3 == 3'b110);
+assign inst_bge	 = (opcode == 7'b110_0011) && (funct3 == 3'b101);
+assign inst_bgeu = (opcode == 7'b110_0011) && (funct3 == 3'b111);
+
+// load instructions
+assign inst_lw = (opcode == 7'b000_0011) && (funct3 == 3'b010);
+assign inst_lb = (opcode == 7'b000_0011) && (funct3 == 3'b000);
+assign inst_lh = (opcode == 7'b000_0011) && (funct3 == 3'b001);
+assign inst_lbu= (opcode == 7'b000_0011) && (funct3 == 3'b100);
+assign inst_lhu= (opcode == 7'b000_0011) && (funct3 == 3'b101);
+// store instructions
+assign inst_sw  = (opcode == 7'b010_0011) && (funct3 == 3'b010);
+assign inst_sb  = (opcode == 7'b010_0011) && (funct3 == 3'b000);
+assign inst_sh  = (opcode == 7'b010_0011) && (funct3 == 3'b001);
+
+assign inst_ebreak = (inst == 32'b1_00000_000_00000_111_0011); 
+
+/*============== 不同类型指令对应的 Imm ============ */
 assign immI = { {20{inst[31]}}, inst[31:20]};
 assign immJ = { {12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0 };
 assign immU = { inst[31:12], 12'b0 };
 assign immS = { {20{inst[31]}}, inst[31:25], inst[11:7] };
+assign immB = { {20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0 };
 
 
 ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 	.clk(clk),
 	.rst(rst),
-	.wdata(wdata),
-	.waddr(waddr), 
+	.wdata(regfile_wdata),
+	.waddr(regfile_waddr), 
 	.rdata1(src1_from_reg),
 	.raddr1(rs1),
 	.rdata2(src2_from_reg),
 	.raddr2(rs2),
-	.wen(wen)
+	.wen(regfile_wen)
 );
 
-// get src1
+/* ================ get alu src1 ====================== */
 assign src1_from_pc = inst_jal || inst_auipc;
-assign src1_is_zero = inst_lui;   // 无需相加，那么将src1 = 0
+assign src1_is_zero = 0;
+assign src1_is_none = inst_lui;
 assign src1 = src1_from_pc ? pc_i : 
-							src1_is_zero ? 0 : src1_from_reg;
+							src1_is_zero ? 0 : 
+							src1_is_none ? 0 : 
+														src1_from_reg;
 
-// get src2
-assign src2_from_imm = inst_addi || inst_auipc || inst_lui ||
-										inst_jalr || inst_jal || inst_sw;
-assign imm = ({32{inst_addi  | inst_jalr}} & immI) |
-						 ({32{inst_auipc | inst_lui}} & immU) |
-						 ({32{inst_jal}} & immJ)							|
-						 ({32{inst_sw }}  & immS);
+/* ================ get alu src2 ====================== */
+// temp variable
+wire imm_is_Itype;
+wire imm_is_Utype;
+wire imm_is_Jtype;
+wire imm_is_Stype;
+
+assign imm_is_Itype = inst_addi | inst_slti | inst_sltiu 
+								| inst_ori | inst_andi | inst_xori
+								| inst_slli | inst_srli | inst_srai
+								| inst_jalr
+								| inst_lw | inst_lb | inst_lh 
+								| inst_lhu | inst_lbu;
+assign imm_is_Utype = inst_lui  | inst_auipc;
+assign imm_is_Jtype = inst_jal;
+assign imm_is_Stype = inst_sw | inst_sh | inst_sb;
+
+assign src2_from_imm = imm_is_Itype || imm_is_Utype
+										|| imm_is_Jtype 
+										|| imm_is_Stype;
+
+assign imm = ( {32{imm_is_Itype}} & immI) |
+						 ( {32{imm_is_Utype}} & immU) |
+						 ( {32{imm_is_Jtype}} & immJ)	|
+						 ( {32{imm_is_Stype}} & immS);
 
 assign src2 = src2_from_imm ? imm : src2_from_reg;
 
-// get op
-assign op = (inst_addi || inst_auipc || inst_jal || inst_jalr || 
-						 inst_lui) ? 3'b000 : 3'b000;  
+/* ================ get op ====================== */
+wire op_add;   //加法操作
+wire op_sub;   //减法操作
+wire op_slt;   //有符号比较，小于置位
+wire op_sltu;  //无符号比较，小于置位
+wire op_and;   //按位与
+wire op_nor;   //按位或非
+wire op_or;    //按位或
+wire op_xor;   //按位异或
+wire op_sll;   //逻辑左移
+wire op_srl;   //逻辑右移
+wire op_sra;   //算术右移
+wire op_lui;   //立即数置于高半部分
+wire op_beq;
+wire op_bne;
+wire op_blt;
+wire op_bltu;
+wire op_bge;   
+wire op_bgeu;
+
+assign op_add = inst_addi | inst_auipc 
+							| inst_add  | inst_jal 
+							| inst_jalr
+							| inst_lw   | inst_lh
+							| inst_lhu  | inst_lb
+							| inst_lbu  
+							| inst_sw   | inst_sh
+							| inst_sb;
+assign op_sub = inst_sub;
+assign op_slt = inst_slti | inst_slt;
+assign op_sltu = inst_sltiu | inst_sltu;
+assign op_and = inst_andi | inst_and;
+assign op_or = inst_ori | inst_or;
+assign op_xor = inst_xori | inst_xor;
+assign op_sll = inst_slli | inst_sll;
+assign op_srl = inst_srli | inst_srl;
+assign op_sra = inst_srai | inst_sra;
+assign op_lui = inst_lui;
+assign op_beq = inst_beq;
+assign op_bne = inst_bne;
+assign op_blt = inst_blt;
+assign op_bltu= inst_bltu;
+assign op_bge = inst_bge;
+assign op_bgeu= inst_bgeu;
+
+assign op[ 0] = op_add;
+assign op[ 1] = op_sub;
+assign op[ 2] = op_slt;
+assign op[ 3] = op_sltu;
+assign op[ 4] = op_and;
+assign op[ 5] = op_nor;
+assign op[ 6] = op_or;
+assign op[ 7] = op_xor;
+assign op[ 8] = op_sll;
+assign op[ 9] = op_srl;
+assign op[10] = op_sra;
+assign op[11] = op_lui;
+assign op[12] = op_beq;
+assign op[13] = op_bne;
+assign op[14] = op_blt;
+assign op[15] = op_bltu;
+assign op[16] = op_bge;
+assign op[17] = op_bgeu;
 
 
+/* ================= assign output ============= */
 assign pc_o = pc_i;
-assign inst_jal_jalr = inst_jal || inst_jalr;
 
-// 判断指令最终目的
-assign write_to_mem = inst_sw;
-// to memory: dest = 0; to register: 1
-assign dest = write_to_mem ? 0 : 1;
+// 判断指令最终目的: write to regfile or store to memory
+assign write_to_mem = inst_sw | inst_sh | inst_sb;
+// to memory: regfile_mem_mux = 0; to register: 1
+assign regfile_mem_mux = write_to_mem ? 0 : 1;
 
-assign to_mem_data_o = src2_from_reg;
+assign store_data_raw = src2_from_reg;
+assign store_inst[0] = inst_sw;
+assign store_inst[1] = inst_sh;
+assign store_inst[2] = inst_sb;
+
+// unconditional jump
+assign uncond_jump_inst[0] = inst_jal;
+assign uncond_jump_inst[1] = inst_jalr;
+
+// conditional branch 是否跳转由比较 src1, src2 两寄存器决定
+// 该部分交给 alu
+// 跳转地址 B + pc_i
+assign cond_branch_target = immB + pc_i;
+assign cond_branch_inst = inst_beq | inst_bne
+										| inst_blt | inst_bltu
+										| inst_bge | inst_bgeu;
+
+// load instructions
+assign load_inst[0] = inst_lw;
+assign load_inst[1] = inst_lh;
+assign load_inst[2] = inst_lhu;
+assign load_inst[3] = inst_lb;
+assign load_inst[4] = inst_lbu;
 
 //======================== DPI-C ================================
 export "DPI-C" task check_if_ebreak;

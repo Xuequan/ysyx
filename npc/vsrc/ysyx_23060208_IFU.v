@@ -1,46 +1,35 @@
 // IFU 模块
 module ysyx_23060208_IFU 
-	#(DATA_WIDTH = 32, ADDR_WIDTH = 32) (
+	#(DATA_WIDTH = 32) (
 	input clk,
 	input rst,
 	input [DATA_WIDTH-1:0]  inst_i,  // from inst ram
 
-	// from IDU
-	input 								  inst_jal_jalr, 
 	// from EXU
-	input [DATA_WIDTH-1:0]  nextpc_from_jal_jalr,
+	input [DATA_WIDTH-1:0]  branch_target,
+	input 									branch_taken,
 
-	output reg 							valid,						
+	output reg 							valid, // to isram						
 	output [DATA_WIDTH-1:0] pc,  // to IDU
-	output [ADDR_WIDTH-1:0] addr    // to inst ram
+	output [DATA_WIDTH-1:0] nextPC    // to inst ram
 );
 
-//reg [ADDR_WIDTH-1:0] next_pc; 
-//assign next_pc = inst_jal_jalr ? nextpc_from_jal_jalr :
-assign addr = inst_jal_jalr ? nextpc_from_jal_jalr :
+assign nextPC = branch_taken ? branch_target :
 													pc + 4;
-/*
-reg pc_wen_r;
-wire pc_wen;
-assign pc_wen = pc_wen_r;
-always @(posedge clk) begin
-	if (rst) pc_wen_r <= 1'b0;
-	else 		 pc_wen_r <= 1'b1;
-end
-*/
 
-ysyx_23060208_PC #(.ADDR_WIDTH(ADDR_WIDTH)) PC_i0(
+ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
 	.wen(1'b1),
-	.next_pc(addr),
+	.next_pc(nextPC),
 	.pc(pc)
 );
 
 assign valid = 1'b1;
 
-export "DPI-C" task nextPC;
-task nextPC (output [ADDR_WIDTH-1:0] o);
-	o = addr;
+/* ==================== DPI-C ====================== */
+export "DPI-C" task get_nextPC;
+task get_nextPC (output [DATA_WIDTH-1:0] o);
+	o = nextPC;
 endtask
 endmodule
