@@ -38,7 +38,7 @@ wire [DATA_WIDTH-1:0] raddr;
 
 wire [DATA_WIDTH-1:0] idu_to_exu_pc;
 wire 									ifu_to_isram_valid;
-wire									exu_to_dsram_valid;
+wire									exu_to_dsram_read_en;
 
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 	.clk(clk),
@@ -122,13 +122,13 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	
 	.rdata(rdata),
 	.raddr(raddr),
-	.valid(exu_to_dsram_valid)
+	.valid(exu_to_dsram_read_en)
 );
 
 ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(
 	.clk(clk),
 	//.rst(rst),
-	.valid(exu_to_dsram_valid),
+	.valid(exu_to_dsram_read_en),
 	.wdata(store_data),
 	.waddr(store_address),
 	.wen(store_en),

@@ -3,7 +3,7 @@ module ysyx_23060208_dsram
 	#(DATA_WIDTH = 32, ADDR_WIDTH = 32) (
 	input clk,
 	//input rst,
-	input valid, // from exu
+	input valid, // from exu, read mem valid
 	// srote data to mem
 	input [ADDR_WIDTH-1:0] waddr,
 	input [DATA_WIDTH-1:0] wdata,
@@ -26,9 +26,8 @@ assign wmask[7:3] = 5'b0;
 assign wmask[2:0] = store_bytes_num;
 
 always @(*) begin
-	if (valid) begin  // 有读写请求时
-		if (wen) 		    // 有写请求时
-			dsram_write(waddr, wdata, wmask);
+	if (wen) begin	 
+		dsram_write(waddr, wdata, wmask);
 	end
 end
 
