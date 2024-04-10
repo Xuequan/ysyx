@@ -48,7 +48,6 @@ static int space = 4;
 char *vaddr2func(vaddr_t addr, bool *success, int choose);
 
 static void ftrace() {
-	printf("pc = %#x, top->clk = %d\n", get_pc_from_top(), get_clk_from_top());
   bool success1 = false;
   bool success2 = false;
 
@@ -64,8 +63,10 @@ static void ftrace() {
     char* now_func  = vaddr2func(get_pc_from_top(), &success2, 0); 
     if (success2){
       space--;
+	printf("1- pc = %#x, top->clk = %d\n", get_pc_from_top(), get_clk_from_top());
       printf("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
     }else{  // should never be here
+	printf("2- pc = %#x, top->clk = %d\n", get_pc_from_top(), get_clk_from_top());
       printf("Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", now_func, get_pc_from_top(), get_inst_from_top());
     }     
   }
