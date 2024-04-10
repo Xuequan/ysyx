@@ -125,7 +125,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
 		}else{  
 				// should never be here
-			printf("Should check! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
+			printf("NEMU-Should check! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
 		}
 	}
 	/* ftrace end */
