@@ -48,6 +48,7 @@ static int space = 4;
 char *vaddr2func(vaddr_t addr, bool *success, int choose);
 
 static void ftrace() {
+	printf("pc = %#x, top->clk = %d\n", get_pc_from_top(), get_clk_from_top());
   bool success1 = false;
   bool success2 = false;
 
@@ -118,15 +119,17 @@ static void trace_and_difftest(){
 bool inst_is_ebreak();
 bool inst_is_jal();
 bool inst_is_jalr();
-/* return 1 if reach ebreak instruction else 0 */
+
 void exec_once() {
   for(int i = 0; i < 2; i++) {
 		sim_once();
     if (get_clk_from_top() == 1) {
       get_assemble();
+
 			if (iindex == IRINGBUF_LEN) 
 				iindex = 0;
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
+
 			ftrace();
     }   
   }// end for
