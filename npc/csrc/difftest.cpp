@@ -101,8 +101,8 @@ void difftest_step() {
 		printf("\n");
 		for( int j = 0; j < error_cnt; j++){
 			index = error[j];
-			printf("Register '%s' in NPC is '%#x', should be '%#x'\n", 
-				reg_name(index), npc_regs[index], ref_regs[index]);
+			printf("PC = '%#x' Register '%s' in NPC is '%#x', should be '%#x'\n", 
+				get_pc_from_top(), reg_name(index), npc_regs[index], ref_regs[index]);
 		}
 		printf("\n");
 	}
