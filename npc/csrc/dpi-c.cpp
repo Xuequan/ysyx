@@ -1,6 +1,7 @@
 #include "dpi-c.h"
 
 word_t vaddr_ifetch(vaddr_t addr, int len);
+word_t vaddr_read(vaddr_t addr, int len);
 void vaddr_write(vaddr_t addr, int len, word_t data);
 
 /* 总是读取地址为 raddr & ~0x3u 的4字节返回  */
@@ -9,7 +10,7 @@ extern "C" int isram_read(int raddr) {
 }
 
 extern "C" int dsram_read(int raddr) {
-  return vaddr_ifetch(raddr, 4);
+  return vaddr_read(raddr, 4);
 }
 
 extern "C" void dsram_write(int waddr, int wdata, char wmask) {
