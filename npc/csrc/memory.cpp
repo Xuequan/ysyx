@@ -65,7 +65,7 @@ void init_mem() {
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
-		log_write("Read to mem at address = %#x, data = %#x, now PC = %#x\n", addr, len, num, get_pc_from_top()); 
+		log_write("Read to mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
 		return num;
 	}
 	out_of_bound(addr);
