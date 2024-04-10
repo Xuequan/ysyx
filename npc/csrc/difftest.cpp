@@ -98,11 +98,13 @@ void difftest_step() {
     npc_state.halt_pc = get_pc_from_top();
 		npc_state.halt_ret = 1;
     //isa_reg_display();
+		printf("\n");
 		for( int j = 0; j < error_cnt; j++){
 			index = error[j];
 			printf("Register '%s' in NPC is '%#x', should be '%#x'\n", 
 				reg_name(index), npc_regs[index], ref_regs[index]);
 		}
+		printf("\n");
 	}
 			// print REF registers
 			/*
