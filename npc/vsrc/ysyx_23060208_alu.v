@@ -104,10 +104,10 @@ assign integer_overflow = (op_add && ~alu_src1[31] && ~alu_src2[31] && adder_res
 
 // BEQ result
 assign beq_result[31:1] = 31'b0;
-assign beq_result[0] = (adder_cout == 1'b0) & (adder_result == 32'b0);
+assign beq_result[0] = (adder_result == 32'b0);
 // BNE result
 assign bne_result[31:1] = 31'b0;
-assign bne_result[0] = (adder_cout != 1'b0) | (adder_result != 32'b0);
+assign bne_result[0] = (adder_result != 32'b0);
 // BLT result
 assign blt_result[31:1] = 31'b0;
 assign blt_result[0] = (adder_cout == 1'b1) | (adder_cout == 1'b0

@@ -222,7 +222,6 @@ assign src1 = src1_from_pc ? pc_i :
 														src1_from_reg;
 
 /* ================ get alu src2 ====================== */
-// temp variable
 wire imm_is_Itype;
 wire imm_is_Utype;
 wire imm_is_Jtype;

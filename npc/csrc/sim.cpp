@@ -50,6 +50,7 @@ void sim_once() {
 	step_and_dump_wave();
 }
 
+// from arch.cpp
 extern const char *regs[];
 
 // npc regs

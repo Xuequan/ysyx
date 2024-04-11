@@ -127,6 +127,7 @@ void exec_once() {
 
 			if (iindex == IRINGBUF_LEN) 
 				iindex = 0;
+			memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
 			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 
 			ftrace();
