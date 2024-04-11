@@ -83,57 +83,93 @@ wire        adder_cin;
 wire [31:0] adder_result;
 wire        adder_cout;
 
-assign adder_a   = alu_src1;
-assign adder_b   = (op_sub | op_slt | op_sltu 
-									| op_beq | op_bge | op_bne
-									| op_bgeu | op_blt | op_bltu) 
-										? ~alu_src2 : alu_src2;
+// 采用减法的op
+wire 				sub_op;
+assign sub_op = op_sub | op_slt | op_sltu 
+							| op_beq | op_bge | op_bne
+							| op_bgeu | op_blt | op_bltu;
 
-assign adder_cin = (op_sub | op_slt | op_sltu 
-									| op_beq | op_bne	| op_bge 
-									| op_bgeu | op_blt | op_bltu)
-									  ? 1'b1      : 1'b0;
+assign adder_a   = alu_src1;
+assign adder_b   = sub_op ? ~alu_src2 : alu_src2;
+assign adder_cin = sub_op ? 1'b1      : 1'b0;
 
 assign {adder_cout, adder_result} = adder_a + adder_b + {31'b0, adder_cin};
 
-//对于加法：正数加正数得到负数， 负数加负数得到正数
-//对于减法：正数减负数得到负数， 负数减正数得到正数
-assign integer_overflow = (op_add && ~alu_src1[31] && ~alu_src2[31] && adder_result[31]) ||
-(op_add && alu_src1[31] && alu_src2[31] && ~adder_result[31]) ||
-(op_sub && ~alu_src1[31] && alu_src2[31] && adder_result[31]) ||(op_sub && alu_src1[31] && ~alu_src2[31] && ~adder_result[31]);
+// 有符号整数加减法运算溢出
+wire signed_overflow;
+/* 有符号数判断溢出 */
+	// 方法一
+	// 对于加法：正数加正数得到负数， 负数加负数得到正数
+	// 对于减法：正数减负数得到负数， 负数减正数得到正数
+/*
+assign signed_overflow = 
+		(op_add && ~alu_src1[31] && ~alu_src2[31] && adder_result[31]) ||
+		(op_add && alu_src1[31] && alu_src2[31] && ~adder_result[31]) ||
+		(op_sub && ~alu_src1[31] && alu_src2[31] && adder_result[31]) ||
+		(op_sub && alu_src1[31] && ~alu_src2[31] && ~adder_result[31]);
+*/
+ // 方法二
+assign signed_overflow = (adder_a[31] == adder_b[31]) 
+											&& (adder_result[31] != adder_a[31]);
 
+/*  无符号整数判断溢出 */
+// 无符号整数加减法运算溢出
+//wire unsigned_overflow;
+	// 无符号数加法溢出 <-- 进位为1；
+	// 无符号数减法溢出 <-- 进位为0；
+		// 因为无符号数减法也是如上转化为补码+1
+//assign unsigned_overflow = sub_op ? (adder_cout == 1'b0) : adder_cout;
+
+/* ================= equal compare ==================== */
+// if equal
+wire equal;
+assign equal = ~(|adder_result);
 // BEQ result
 assign beq_result[31:1] = 31'b0;
-assign beq_result[0] = (adder_result == 32'b0);
+assign beq_result[0] = equal;
 // BNE result
 assign bne_result[31:1] = 31'b0;
-assign bne_result[0] = (adder_result != 32'b0);
+assign bne_result[0] = ~equal;
+
+/* ================= signed integer compare ==================== */
+// signed compare
+wire less_signed;
+assign less_signed = adder_result[31] ^ signed_overflow;
 // BLT result
 assign blt_result[31:1] = 31'b0;
-assign blt_result[0] = (adder_cout == 1'b1) | (adder_cout == 1'b0
-																			& adder_result[31] == 1'b1);
-// BLTU result
-assign bltu_result[31:1] = 31'b0;
-assign bltu_result[0] = (adder_cout == 1'b1); 
+assign blt_result[0] = less_signed;
+
 // BGE result
 assign bge_result[31:1] = 31'b0;
-assign bge_result[0] = (adder_cout == 1'b0) & (adder_result[31] == 1'b0); 
-// BGEU result
-assign bgeu_result[31:1] = 31'b0;
-assign bgeu_result[0] = (adder_cout == 1'b0);
-// ADD, SUB result
-assign add_sub_result = adder_result;
+assign bge_result[0] = ~less_signed; 
 
 // SLT result
 assign slt_result[31:1] = 31'b0;
-assign slt_result[0]    = (alu_src1[31] & ~alu_src2[31])
-          | ((alu_src1[31] ~^ alu_src2[31]) & adder_result[31]);
+//assign slt_result[0]    = (alu_src1[31] & ~alu_src2[31])
+  //        | ((alu_src1[31] ~^ alu_src2[31]) & adder_result[31]);
+assign slt_result[0] = less_signed;
+
+/* ================= unsigned integer compare ==================== */
+// unsigned compare
+wire less_unsigned;
+//assign less_unsigned = adder_cin ^ adder_cout;
+assign less_unsigned = ~adder_cout;
+
+// BLTU result
+assign bltu_result[31:1] = 31'b0;
+assign bltu_result[0] = less_unsigned; 
+// BGEU result
+assign bgeu_result[31:1] = 31'b0;
+assign bgeu_result[0] = ~less_unsigned;
 
 // SLTU result
 assign sltu_result[31:1] = 31'b0;
-assign sltu_result[0]    = ~adder_cout;
+assign sltu_result[0]    = less_unsigned;
 
-// bitwise operation
+// ADD, SUB result
+assign add_sub_result = adder_result;
+
+/* ================= bitwise operation  ==================== */
 assign and_result = alu_src1 & alu_src2;
 assign or_result  = alu_src1 | alu_src2;
 
@@ -141,6 +177,7 @@ assign nor_result = ~or_result;
 assign xor_result = alu_src1 ^ alu_src2;
 assign lui_result = alu_src2;
 
+/* ================= shift operation  ==================== */
 // SLL result 
 assign sll_result = alu_src1 << alu_src2[4:0];
 
