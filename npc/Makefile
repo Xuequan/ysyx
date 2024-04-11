@@ -7,8 +7,8 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
-VERILATOR_CFLGAS += --debug
-#VERILATOR_CFLGAS += --gdbbt
+#VERILATOR_CFLAGS += --debug
+#VERILATOR_CFLAGS += --gdbbt
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -30,12 +30,14 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CXXFLAGS += -g 
 
 # llvm-config -cxxflags: print the C++ compiler flags needed to use LLVM headers
-CXXFLAGS += $(shell llvm-config --cxxflags) -fPIE
+CXXFLAGS += $(shell llvm-config --cxxflags)
 # llvm-config --libs: print all the libraries needed to link against the specified LLVM components
 LIBS += $(shell llvm-config --libs)
 
+LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
@@ -59,11 +61,16 @@ sim: sim-env
 	@echo ========inside npc/makefile ==========
 	@echo ARGS=$(ARGS)
 	@echo IMG=$(IMG)
-	@echo $^
 	@echo NPC_EXEC=$(NPC_EXEC)
 	@echo LIBS=$(LIBS)
+	@echo here $(VERILATOR) $(VERILATOR_CFLAGS) \
+		--top-module $(TOPNAME) $^  \
+		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
+	@echo llvm-config --cxxflags = $(shell llvm-config --cxxflags)
+	@echo llvm-config --ldflags = $(shell llvm-config --ldflags)
+	@echo llvm-config --libs = $(shell llvm-config --libs)
 	@echo =======================================
-	#@$^ $(IMG)
 	$(NPC_EXEC)
 	
 include ../Makefile
@@ -71,7 +78,7 @@ include ../Makefile
 gdb: $(BIN)
 	#gdb -s $^ --args $(IMG) $^
 	#gdb -s $(NPC_EXEC)
-	gdb -s $(BIN)
+	gdb -s $^ --args $(ARGS)
 
 wave:
 	gtkwave $(VCD_FILE)

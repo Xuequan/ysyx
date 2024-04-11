@@ -21,6 +21,8 @@ ARGS_DIFF = --diff=$(DIFF_REF_SO)
 
 ifndef CONFIG_DIFFTEST_REF_NEMU
 $(DIFF_REF_SO):
+	@echo =============in tools/difftest.mk
+	@echo $(MAKE) -s -C $(DIFF_REF_PATH) $(MKFLAGS)
 	$(MAKE) -s -C $(DIFF_REF_PATH) $(MKFLAGS)
 endif
 

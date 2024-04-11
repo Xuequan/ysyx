@@ -1,8 +1,9 @@
 // register file
-module ysyx_23060208_Regfile 
+module ysyx_23060208_regfile 
 	// REG_WIDTH: regfile address width
 	#(REG_WIDTH = 5, DATA_WIDTH = 32) (
 	input clk,
+	input rst,
 	input [DATA_WIDTH-1:0] wdata,
 	input [REG_WIDTH-1:0] waddr,
 
@@ -16,8 +17,10 @@ module ysyx_23060208_Regfile
 
 reg [DATA_WIDTH-1:0] rf [2**REG_WIDTH-1:0];
 always @(posedge clk) begin
-	if (wen) 
-		rf[waddr] <= wdata;
+	if (rst)
+		rf[waddr] <= 0;
+	else if (wen) 
+		rf[waddr] <= (waddr == 'b0) ? 'b0 : wdata;
 end
 
 assign rdata1 = (raddr1 == 'b0) ? 'b0 : rf[raddr1];

@@ -11,9 +11,9 @@ int main(int argc, char *argv[]) {
 		printf("argv[%d] = %s\n", i, argv[i]);
 	}
 
-	init_monitor(argc, argv);
-
 	sim_init();
+
+	init_monitor(argc, argv);
 	
 	sdb_mainloop(); 
 

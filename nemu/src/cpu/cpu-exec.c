@@ -96,11 +96,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-	// chceck if reach breakpoint
+	// check if reach breakpoint
 	scan_wp_pool();
 }
 
-int space = 4;
+static int space = 4;
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
@@ -123,10 +123,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		if (success2){
 			space--;
 			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
-		}else{  
-				// should never be here
-			printf("Should be checked! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
 		}
+		/*
+		else{  
+				// should never be here
+			printf("NEMU-Should check! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
+		}
+		*/
 	}
 	/* ftrace end */
 
@@ -213,13 +216,13 @@ void cpu_exec(uint64_t n) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
     case NEMU_END: case NEMU_ABORT:
+			if (nemu_state.halt_ret != 0)
+				print_iringbuf();
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             													 ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
-			if (nemu_state.halt_ret != 0)
-				print_iringbuf();
       // fall through
     case NEMU_QUIT: statistic(); 
   }

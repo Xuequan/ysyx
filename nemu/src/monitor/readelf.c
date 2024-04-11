@@ -65,6 +65,10 @@ static void print_strtab2(char buf[]) {
 
 /* read from ELF file and get strtab & symtab */
 void init_elf() {
+	if (elf_file == NULL) {
+		printf("init_elf(): no input ELF file\n");
+		return;
+	}
 	FILE *fp = fopen(elf_file, "r");
 
 	if (fp == NULL) {

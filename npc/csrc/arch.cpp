@@ -15,9 +15,9 @@
 #include "common2.h"
 #include "arch.h"
 #include <cstdio>
-#include "sim.h"
+//#include "sim.h"
 
-const char *regs[] = {
+extern const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
 	/*
@@ -27,13 +27,9 @@ const char *regs[] = {
 };
 
 #define NR_REGS ARRLEN(regs)
-void isa_reg_display() {
-	int i = 0;
-	for (; i < NR_REGS; i++) {
-		printf("%-5s %#x\n", regs[i], gpr(i));  
-	}
-}
 
+uint32_t npc_regs[16];
+void get_npc_regs();
 word_t isa_reg_str2val(const char *s, bool *success) {
 	int i = 0;
 	for( ; i < NR_REGS; i++) {
@@ -46,11 +42,14 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 	} else {
 		*success = true;
 	}
-	word_t reg_val = gpr(i);	
+	get_npc_regs();
+	word_t reg_val = npc_regs[i];	
   return reg_val;
 }
 
+void statistic();
+void isa_reg_display();
 void assert_fail_msg() {
 	isa_reg_display();
-	//statistic();
+	statistic();
 }

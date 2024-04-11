@@ -12,29 +12,21 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-#include "common.h"
-uint8_t* guest_to_host(paddr_t paddr);
 
-paddr_t host_to_guest(uint8_t *haddr);
+#include "common2.h"
+#include <sys/time.h>
 
-static word_t pmem_read(paddr_t addr, int len);
+static uint64_t boot_time = 0;
 
-static void pmem_write(paddr_t addr, int len, word_t data);
+static uint64_t get_time_internal() {
+  struct timeval now;
+  gettimeofday(&now, NULL);
+  uint64_t us = now.tv_sec * 1000000 + now.tv_usec;
+  return us;
+}
 
-static void out_of_bound(paddr_t addr);
-
-void init_mem();
-
-word_t paddr_read(paddr_t addr, int len);
-
-void paddr_write(paddr_t addr, int len, word_t data);
-
-static inline word_t host_read(void *addr, int len);
-
-static inline void host_write(void *addr, int len, word_t data);
-
-word_t vaddr_ifetch(vaddr_t addr, int len);
-
-word_t vaddr_read(vaddr_t addr, int len) ;
-
-void vaddr_write(vaddr_t addr, int len, word_t data);
+uint64_t get_time() {
+  if (boot_time == 0) boot_time = get_time_internal();
+  uint64_t now = get_time_internal();
+  return now - boot_time;
+}

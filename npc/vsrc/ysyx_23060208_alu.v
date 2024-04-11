@@ -1,56 +1,208 @@
-// ä»…æ”¯æŒæœ‰ç¬¦å·æ•°ï¼Œè‹¥æƒ³æ”¯æŒæ— ç¬¦å·æ•°ï¼Œåˆ™éœ€è¦ä¿®æ”¹
-// å¯¹äº op ä¸ºæ¯”è¾ƒå¤§å° src1 < src2 , return result == 1; else return 0
-// å¯¹äº op ä¸ºåˆ¤æ–­æ˜¯å¦ç›¸ç­‰ï¼Œç›¸ç­‰ return 1; 
-module ysyx_23060208_alu 
-	#(parameter DATA_WIDTH = 32) (
-	
-	output [DATA_WIDTH-1:0] result,
-	output overflow,
-	input [2:0] op,
-	input [DATA_WIDTH-1:0] src1,
-	input [DATA_WIDTH-1:0] src2
+/* note: alu_src1 is from pc, 0, or reg
+**       alu_src2 is from imm or reg;
+** 1. op_bge, op_bgeu, 
+**			ÈôÌø×ª£¨¼´ src1 >= src2), return alu_result = 1; 
+**			²»Ìø×ª return alu_result = 0;
+** 2. op_beq, op_bne
+**			ÈôÌø×ª return alu_result = 1; 
+**			²»Ìø×ª return alu_result = 0;
+** 3. op_blt, op_bltu
+**			ÈôÌø×ª return alu_result = 1; 
+**			²»Ìø×ª return alu_result = 0;
+*/ 
+module ysyx_23060208_alu(
+  input  [17:0] alu_op,
+  input  [31:0] alu_src1,
+  input  [31:0] alu_src2,
+  output [31:0] alu_result,
+  output 		integer_overflow
 );
-	
-	wire [DATA_WIDTH-1:0] add_sub_result;
-	wire add_sub_op;
-	wire add_sub_ow;
-	wire [DATA_WIDTH-1:0] not_result;
-	wire [DATA_WIDTH-1:0] and_result;
-	wire [DATA_WIDTH-1:0] or_result;
-	wire [DATA_WIDTH-1:0] xor_result;
-	wire compare_result;
-	wire equal_result;
-	wire less;
 
- 	// not a
-	assign not_result = ~src1;
- 	// and
- 	assign and_result = src1 & src2;
-	// or
- 	assign or_result = src1 | src2;
-	// xor
- 	assign xor_result = src1 ^ src2;
- 
-	assign add_sub_op = (op == 3'b000) ? 1'b0 : 1'b1;	
-	ysyx_23060208_adder #(.DATA_WIDTH(DATA_WIDTH)) adder0(add_sub_result, add_sub_ow, src1, src2, add_sub_op); 
+wire op_add;   //¼Ó·¨²Ù×÷
+wire op_sub;   //¼õ·¨²Ù×÷
+wire op_slt;   //ÓĞ·ûºÅ±È½Ï£¬Ğ¡ÓÚÖÃÎ»
+wire op_sltu;  //ÎŞ·ûºÅ±È½Ï£¬Ğ¡ÓÚÖÃÎ»
+wire op_and;   //°´Î»Óë
+wire op_nor;   //°´Î»»ò·Ç
+wire op_or;    //°´Î»»ò
+wire op_xor;   //°´Î»Òì»ò
+wire op_sll;   //Âß¼­×óÒÆ
+wire op_srl;   //Âß¼­ÓÒÒÆ
+wire op_sra;   //ËãÊõÓÒÒÆ
+wire op_lui;   //Á¢¼´ÊıÖÃÓÚ¸ß°ë²¿·Ö
+wire op_beq;
+wire op_bne;
+wire op_blt;
+wire op_bltu;
+wire op_bge;
+wire op_bgeu;
 
-	// å…ˆåˆ¤æ–­æ¯”è¾ƒ
-	// Less = out_s[n-1] ^ add_sub_ow
-	assign less = add_sub_result[DATA_WIDTH-1] ^ add_sub_ow;
-	assign compare_result = less ? 1 : 0;
+// control code decomposition
+assign op_add  = alu_op[ 0];
+assign op_sub  = alu_op[ 1];
+assign op_slt  = alu_op[ 2];
+assign op_sltu = alu_op[ 3];
+assign op_and  = alu_op[ 4];
+assign op_nor  = alu_op[ 5];
+assign op_or   = alu_op[ 6];
+assign op_xor  = alu_op[ 7];
+assign op_sll  = alu_op[ 8];
+assign op_srl  = alu_op[ 9];
+assign op_sra  = alu_op[10];
+assign op_lui  = alu_op[11];
+assign op_beq  = alu_op[12];
+assign op_bne  = alu_op[13];
+assign op_blt  = alu_op[14];
+assign op_bltu = alu_op[15];
+assign op_bge  = alu_op[16];
+assign op_bgeu = alu_op[17];
 
-	assign equal_result = ~(|add_sub_result);
 
-	assign overflow = add_sub_ow;
+wire [31:0] add_sub_result; 
+wire [31:0] slt_result; 
+wire [31:0] sltu_result;
+wire [31:0] and_result;
+wire [31:0] nor_result;
+wire [31:0] or_result;
+wire [31:0] xor_result;
+wire [31:0] lui_result;
+wire [31:0] sll_result; 
+wire [63:0] sr64_result; 
+wire [31:0] sr_result; 
+wire [31:0] beq_result; 
+wire [31:0] bne_result; 
+wire [31:0] blt_result; 
+wire [31:0] bltu_result; 
+wire [31:0] bge_result; 
+wire [31:0] bgeu_result; 
 
-	assign result = ({DATA_WIDTH{op == 3'b000}} & add_sub_result) |
-								 ({DATA_WIDTH{op == 3'b001}} & add_sub_result) |
-								 ({DATA_WIDTH{op == 3'b010}} & not_result) |
-								 ({DATA_WIDTH{op == 3'b011}} & and_result) |
-								 ({DATA_WIDTH{op == 3'b100}} & or_result) |
-								 ({DATA_WIDTH{op == 3'b101}} & xor_result) |
-								 ({DATA_WIDTH{op == 3'b110}} & {DATA_WIDTH{compare_result}}) |
-								 ({DATA_WIDTH{op == 3'b111}} & {DATA_WIDTH{equal_result}});
-	
-	
+// 32-bit adder
+wire [31:0] adder_a;
+wire [31:0] adder_b;
+wire        adder_cin;
+wire [31:0] adder_result;
+wire        adder_cout;
+
+// ²ÉÓÃ¼õ·¨µÄop
+wire 				sub_op;
+assign sub_op = op_sub | op_slt | op_sltu 
+							| op_beq | op_bge | op_bne
+							| op_bgeu | op_blt | op_bltu;
+
+assign adder_a   = alu_src1;
+assign adder_b   = sub_op ? ~alu_src2 : alu_src2;
+assign adder_cin = sub_op ? 1'b1      : 1'b0;
+
+assign {adder_cout, adder_result} = adder_a + adder_b + {31'b0, adder_cin};
+
+// ÓĞ·ûºÅÕûÊı¼Ó¼õ·¨ÔËËãÒç³ö
+wire signed_overflow;
+/* ÓĞ·ûºÅÊıÅĞ¶ÏÒç³ö */
+	// ·½·¨Ò»
+	// ¶ÔÓÚ¼Ó·¨£ºÕıÊı¼ÓÕıÊıµÃµ½¸ºÊı£¬ ¸ºÊı¼Ó¸ºÊıµÃµ½ÕıÊı
+	// ¶ÔÓÚ¼õ·¨£ºÕıÊı¼õ¸ºÊıµÃµ½¸ºÊı£¬ ¸ºÊı¼õÕıÊıµÃµ½ÕıÊı
+/*
+assign signed_overflow = 
+		(op_add && ~alu_src1[31] && ~alu_src2[31] && adder_result[31]) ||
+		(op_add && alu_src1[31] && alu_src2[31] && ~adder_result[31]) ||
+		(op_sub && ~alu_src1[31] && alu_src2[31] && adder_result[31]) ||
+		(op_sub && alu_src1[31] && ~alu_src2[31] && ~adder_result[31]);
+*/
+ // ·½·¨¶ş
+assign signed_overflow = (adder_a[31] == adder_b[31]) 
+											&& (adder_result[31] != adder_a[31]);
+
+/*  ÎŞ·ûºÅÕûÊıÅĞ¶ÏÒç³ö */
+// ÎŞ·ûºÅÕûÊı¼Ó¼õ·¨ÔËËãÒç³ö
+//wire unsigned_overflow;
+	// ÎŞ·ûºÅÊı¼Ó·¨Òç³ö <-- ½øÎ»Îª1£»
+	// ÎŞ·ûºÅÊı¼õ·¨Òç³ö <-- ½øÎ»Îª0£»
+		// ÒòÎªÎŞ·ûºÅÊı¼õ·¨Ò²ÊÇÈçÉÏ×ª»¯Îª²¹Âë+1
+//assign unsigned_overflow = sub_op ? (adder_cout == 1'b0) : adder_cout;
+
+/* ================= equal compare ==================== */
+// if equal
+wire equal;
+assign equal = ~(|adder_result);
+// BEQ result
+assign beq_result[31:1] = 31'b0;
+assign beq_result[0] = equal;
+// BNE result
+assign bne_result[31:1] = 31'b0;
+assign bne_result[0] = ~equal;
+
+/* ================= signed integer compare ==================== */
+// signed compare
+wire less_signed;
+assign less_signed = adder_result[31] ^ signed_overflow;
+// BLT result
+assign blt_result[31:1] = 31'b0;
+assign blt_result[0] = less_signed;
+
+// BGE result
+assign bge_result[31:1] = 31'b0;
+assign bge_result[0] = ~less_signed; 
+
+// SLT result
+assign slt_result[31:1] = 31'b0;
+//assign slt_result[0]    = (alu_src1[31] & ~alu_src2[31])
+  //        | ((alu_src1[31] ~^ alu_src2[31]) & adder_result[31]);
+assign slt_result[0] = less_signed;
+
+/* ================= unsigned integer compare ==================== */
+// unsigned compare
+wire less_unsigned;
+//assign less_unsigned = adder_cin ^ adder_cout;
+assign less_unsigned = ~adder_cout;
+
+// BLTU result
+assign bltu_result[31:1] = 31'b0;
+assign bltu_result[0] = less_unsigned; 
+// BGEU result
+assign bgeu_result[31:1] = 31'b0;
+assign bgeu_result[0] = ~less_unsigned;
+
+// SLTU result
+assign sltu_result[31:1] = 31'b0;
+assign sltu_result[0]    = less_unsigned;
+
+// ADD, SUB result
+assign add_sub_result = adder_result;
+
+/* ================= bitwise operation  ==================== */
+assign and_result = alu_src1 & alu_src2;
+assign or_result  = alu_src1 | alu_src2;
+
+assign nor_result = ~or_result;
+assign xor_result = alu_src1 ^ alu_src2;
+assign lui_result = alu_src2;
+
+/* ================= shift operation  ==================== */
+// SLL result 
+assign sll_result = alu_src1 << alu_src2[4:0];
+
+// SRL, SRA result
+assign sr64_result = { {32{op_sra & alu_src1[31]}}, alu_src1[31:0]} >> alu_src2[4:0];
+
+assign sr_result   = sr64_result[31:0];
+
+// final result mux
+assign alu_result = ({32{op_add|op_sub}} & add_sub_result)
+                  | ({32{op_slt       }} & slt_result)
+                  | ({32{op_sltu      }} & sltu_result)
+                  | ({32{op_and       }} & and_result)
+                  | ({32{op_nor       }} & nor_result)
+                  | ({32{op_or        }} & or_result)
+                  | ({32{op_xor       }} & xor_result)
+                  | ({32{op_lui       }} & lui_result)
+                  | ({32{op_sll       }} & sll_result)
+                  | ({32{op_srl|op_sra}} & sr_result)
+                  | ({32{op_beq       }} & beq_result)
+                  | ({32{op_bne       }} & bne_result)
+                  | ({32{op_blt       }} & blt_result)
+                  | ({32{op_bltu      }} & bltu_result)
+                  | ({32{op_bge       }} & bge_result)
+                  | ({32{op_bgeu      }} & bgeu_result);
+
+
 endmodule

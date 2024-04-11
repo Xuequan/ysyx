@@ -1,10 +1,3 @@
-#include <cstdlib>
-#include "Vtop.h"
-#include "verilated_vcd_c.h"
-#include "verilated.h"
-#include "Vtop__Dpi.h"
-#include "svdpi.h"
-
 #include "sim.h"
 
 static Vtop* top;
@@ -25,11 +18,6 @@ void sim_init() {
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
 
-	/* DPI-C 接口 */
-	const svScope scope = svGetScopeFromName("TOP.top");
-	assert(scope);
-	svSetScope(scope);
-
 	int i = -1;
 	while ( i < 5) {
 		i++;
@@ -41,24 +29,11 @@ void sim_init() {
 }
 
 void sim_exit() {
-	int i = 2;
-	while (i--) {	
-		top->clk ^= 1;
-		printf("top->clk = %d\n", top->clk);
-		top->rst = 1;
-	}
 	tfp->close();
 	delete tfp;
 	delete top;
 	delete contextp;
 }
-
-bool inst_ebreak() {
-	svBit a; 
-	top->check_ebreak(&a);
-	if ( a == 1) return true;
-	else 				 return false;
-} 
 
 uint32_t get_pc_from_top(){
 	return top->pc;
@@ -66,25 +41,40 @@ uint32_t get_pc_from_top(){
 uint32_t get_inst_from_top(){
 	return top->inst;
 }
-
-void get_assemble();
-/* return 1 if reach ebreak instruction else 0 */
-int exec_once() {
-	int ret = 0;
-	uint32_t pc;
-	uint32_t inst;
-	for(int i = 0; i < 2; i++) {
-		top->clk ^= 1;
-		step_and_dump_wave();
-		if (top->clk == 1) {
-			get_assemble();
-			//printf("pc = %#08x, inst = %08x\n", top->pc, top->inst);
-
-			if (inst_ebreak() ) {
-				ret = 1;
-				break;
-			}	
-		}
-	}// end for
-	return ret;
+uint32_t get_clk_from_top(){
+	return top->clk;
 }
+
+void sim_once() {
+	top->clk ^= 1;
+	step_and_dump_wave();
+}
+
+// from arch.cpp
+extern const char *regs[];
+
+// npc regs
+extern uint32_t npc_regs[16];
+
+uint32_t update_reg_no();
+uint32_t update_reg_data();
+void get_npc_regs() {
+	uint32_t* ptr = NULL;
+	ptr = (top->rootp->top__DOT__idu__DOT__regfile__DOT__rf).data();
+	for(int i = 0; i < 16; i++){
+		npc_regs[i] = ptr[i];
+	}
+	// 这是下周期要更新的 regfile 数据，本周期要拿来difftest_step
+	uint32_t no = update_reg_no();
+	if ( no != 0) {
+		npc_regs[no] = update_reg_data();
+	}
+}
+
+void isa_reg_display() {
+	get_npc_regs();
+  for( int i = 0; i < 16; i++){
+		printf("%s: %#x\n", regs[i], npc_regs[i]);
+  }
+}
+
