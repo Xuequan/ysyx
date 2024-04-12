@@ -115,16 +115,16 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		char* next_func = vaddr2func(s->dnpc, &success1, 1); 
 		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
-			//printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
-			log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
+			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
+			//log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 		}
 	}else if(2 == ident){ // ret
 			// call vaddr2func just for function name only
 		char* now_func  = vaddr2func(s->pc, &success2, 0); 
 		if (success2){
 			space--;
-			//printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
-			log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			//log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
 		}
 		/*
 		else{  
