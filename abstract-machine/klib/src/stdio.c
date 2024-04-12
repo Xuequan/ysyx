@@ -7,6 +7,7 @@
 
 // max char number to be print by printf();
 #define MAX_CHAR_CNT 512
+
 /* write output to stdout */
 int printf(const char *fmt, ...) {
 	char buf[MAX_CHAR_CNT];
@@ -23,6 +24,7 @@ int printf(const char *fmt, ...) {
 	va_copy(aq, ap);
 	va_end(ap);
 	if (sprintf(buf, fmt, aq) < 0){
+		putstr("printf() error!\n");
 		return -1;
 	}
 	// from klib-macros.h
