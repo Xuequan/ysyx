@@ -47,7 +47,7 @@ uint32_t get_clk_from_top(){
 
 void sim_once() {
 	top->clk ^= 1;
-	//step_and_dump_wave();
+	step_and_dump_wave();
 }
 
 // from arch.cpp
