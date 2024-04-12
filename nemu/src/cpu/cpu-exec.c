@@ -123,7 +123,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		char* now_func  = vaddr2func(s->pc, &success2, 0); 
 		if (success2){
 			space--;
-			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			//printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
 		}
 		/*
 		else{  
