@@ -67,6 +67,7 @@ LINKAGE   = $(OBJS) \
     $(LIBS) ))
 
 ### Print build info message
+$(info #0 MAKECMDGOLAS=$(MAKECMDGOALS))
 $(info #1 WORK_DIR:$(WORK_DIR))
 $(info #2 ARCHIVE:$(ARCHIVE))
 $(info #3 DST_DIR:$(DST_DIR))
