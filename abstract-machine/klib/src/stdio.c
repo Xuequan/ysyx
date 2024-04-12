@@ -5,9 +5,29 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+// max char number to be print by printf();
+#define MAX_CHAR_CNT 512
 /* write output to stdout */
 int printf(const char *fmt, ...) {
-  panic("Not implemented");
+	char buf[MAX_CHAR_CNT];
+	/* cannot use __VA_ARGS__ ?
+	if (sprintf(buf, fmt, __VA_ARGS__) < 0){
+		return -1;
+	}
+	*/
+	// copy all __VA_ARGS__ 
+	//void va_copy(va_list dest, va_list src);
+	va_list ap;
+	va_list aq;
+	va_start(ap, fmt);
+	va_copy(aq, ap);
+	va_end(ap);
+	if (sprintf(buf, fmt, aq) < 0){
+		return -1;
+	}
+	// from klib-macros.h
+	putstr(buf);
+	return 0;
 }
 
 /* write to the character string *out  */

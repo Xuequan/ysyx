@@ -17,7 +17,7 @@
 #include <cstdio>
 //#include "sim.h"
 
-extern const char *regs[] = {
+const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
 	/*
