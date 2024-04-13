@@ -5,30 +5,38 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-// max char number to be print by printf();
-#define MAX_CHAR_CNT 512
-
 /* write output to stdout */
 int printf(const char *fmt, ...) {
-	char buf[MAX_CHAR_CNT];
-	/* cannot use __VA_ARGS__ ?
-	if (sprintf(buf, fmt, __VA_ARGS__) < 0){
-		return -1;
-	}
-	*/
-	// copy all __VA_ARGS__ 
-	//void va_copy(va_list dest, va_list src);
 	va_list ap;
-	va_list aq;
+	int ival;
+	char *sval;
+
 	va_start(ap, fmt);
-	va_copy(aq, ap);
+
+	char c;
+	while ((c = *fmt)) {
+		switch (c) {
+			case '%':
+				break;
+
+      case 's':
+        sval = va_arg(ap, char *); 
+				putstr(sval);
+        break;
+
+      case 'd':   
+        ival = va_arg(ap, int);
+				putch(ival);
+        break;
+
+      default:
+				putch(c);
+        break;
+    }   
+    fmt++;
+	} // end while
 	va_end(ap);
-	if (sprintf(buf, fmt, aq) < 0){
-		putstr("printf() error!\n");
-		return -1;
-	}
-	// from klib-macros.h
-	putstr(buf);
+
 	return 0;
 }
 
@@ -59,7 +67,6 @@ int sprintf(char *out, const char *fmt, ...) {
 
       case 's':
         sval = va_arg(ap, char *); 
-        //printf("sval = %s\n", sval);
         memcpy(out + index, sval, strlen(sval));
         index += strlen(sval);
         break;
@@ -68,13 +75,11 @@ int sprintf(char *out, const char *fmt, ...) {
         ival = va_arg(ap, int);
         char buf2[5] = {0};
         itoa(ival, buf2); 
-        //printf("ival = %d, buf2 = %s\n", ival, buf2);
         memcpy(out+index, buf2, strlen(buf2));
         index += strlen(buf2);
         break;
 
       default:
-        //printf("default = %c\n", c); 
         out[index++] = c;
         out[index] = '\0';
         break;
