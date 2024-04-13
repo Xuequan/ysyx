@@ -30,7 +30,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 	}
 	if (cnt != 0) {
 		for(i = 0; i < cnt; i++) {
-			printf("Different register: '%s', '%#x' in NEMU, '%#x' in REF\n", reg_name(error[i]), gpr(i), ref_r->gpr[i]);
+			printf("Different register: '%s', '%#x' in NEMU, '%#x' in REF\n", reg_name(error[i]), gpr(error[i]), ref_r->gpr[error[i]]);
 		}
 		return false;
 	}
