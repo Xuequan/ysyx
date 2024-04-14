@@ -143,7 +143,7 @@ void init_elf() {
 	word_t symtab_off     = shdr[symtab_idx]->sh_offset; 
 	
 	if (symtab.entnum > ENTRY_NUM) {
-		printf("Please note, ENTRY_NUM should be bigger than %#x.\n", symtab.entnum);
+		printf("Please note, ENTRY_NUM should be bigger than %d.\n", symtab.entnum);
 		fclose(fp);
 		return; 
 	}
@@ -182,7 +182,7 @@ void init_elf() {
 	word_t strtab_size = shdr[strtab_idx]->sh_size;
 	
 	if (strtab_size > STRTAB_SIZE) {
-		printf("init_elf(): STATAB_SIZE should bigger than %#x.\n", strtab_size);
+		printf("init_elf(): STRTAB_SIZE should bigger than %d.\n", strtab_size);
 		fclose(fp);
 		return;
 	}
