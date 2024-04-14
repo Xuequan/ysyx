@@ -100,7 +100,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	scan_wp_pool();
 }
 
-#define FTRACE_LOG_LEN 128
+#define FTRACE_LOG_LEN 1024
 static int space = 4;
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
