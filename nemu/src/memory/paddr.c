@@ -64,7 +64,8 @@ word_t paddr_read(paddr_t addr, int len) {
   if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 #ifdef CONFIG_MTRACE
-		log_write("Read from mem: address = %#x, length = %d, data = %#x\n", addr, len, num); 
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from mem: address = %#x, length = %d, data = %#x\n", addr, len, num); 
 #endif
 		return num;
 	}
