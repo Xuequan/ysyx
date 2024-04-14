@@ -25,7 +25,7 @@ static struct {
 	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
 } symtab;
 
-#define STRTAB_SIZE 1024
+#define STRTAB_SIZE 2014
 static char strtab[STRTAB_SIZE];	
 
 /*
