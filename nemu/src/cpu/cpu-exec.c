@@ -112,6 +112,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	bool success2 = false;
 
 	char ftrace_log[FTRACE_LOG_LEN];
+
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident){ // maybe a function call, should double check 
 		char* next_func = vaddr2func(s->dnpc, &success1, 1); 
@@ -128,8 +129,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		char* now_func  = vaddr2func(s->pc, &success2, 0); 
 		if (success2){
 			space--;
-			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
-			//log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			memset(ftrace_log, 0, FTRACE_LOG_LEN);
+			snprintf(ftrace_log, FTRACE_LOG_LEN, "%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			//printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			log_write("%s\n",ftrace_log);
 		}
 		/*
 		else{  
