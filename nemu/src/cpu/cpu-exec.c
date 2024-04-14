@@ -119,7 +119,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
 			memset(ftrace_log, 0, FTRACE_LOG_LEN);
-			snprintf(ftrace_log, FTRACE_LOG_LEN, "%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
+			snprintf(ftrace_log, FTRACE_LOG_LEN, "%#x:%*s [%s@%#x]", s->pc, space, "call", next_func, s->dnpc);
 			//printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 			//log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
 			log_write("%s\n",ftrace_log);
@@ -130,7 +130,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		if (success2){
 			space--;
 			memset(ftrace_log, 0, FTRACE_LOG_LEN);
-			snprintf(ftrace_log, FTRACE_LOG_LEN, "%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			snprintf(ftrace_log, FTRACE_LOG_LEN, "%#x:%*s [%s]", s->pc, space, "ret ", now_func);
 			//printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
 			log_write("%s\n",ftrace_log);
 		}
