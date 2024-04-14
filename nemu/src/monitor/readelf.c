@@ -18,7 +18,7 @@
 
 extern char *elf_file;
 
-#define ENTRY_NUM 100
+#define ENTRY_NUM 512
 static struct {
 	// actual symtab entry number
 	word_t entnum;
