@@ -4,12 +4,14 @@
 #include <stdarg.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
+//#if defined(__NATIVE_USE_KLIB__)
 
 /* write output to stdout */
 int printf(const char *fmt, ...) {
 	va_list ap;
 	int ival;
 	char *sval;
+	char cval;
 
 	va_start(ap, fmt);
 
@@ -22,6 +24,11 @@ int printf(const char *fmt, ...) {
       case 's':
         sval = va_arg(ap, char *); 
 				putstr(sval);
+        break;
+
+      case 'c':
+        cval = va_arg(ap, int); 
+				putch(cval);
         break;
 
       case 'd':   
@@ -69,6 +76,14 @@ int sprintf(char *out, const char *fmt, ...) {
         sval = va_arg(ap, char *); 
         memcpy(out + index, sval, strlen(sval));
         index += strlen(sval);
+        break;
+
+      case 'c':
+        char cval = va_arg(ap, int); 
+        char buf3[5] = {0};
+        itoa(cval, buf3); 
+        memcpy(out + index, buf3, strlen(buf3));
+        index += strlen(buf3);
         break;
 
       case 'd':   
