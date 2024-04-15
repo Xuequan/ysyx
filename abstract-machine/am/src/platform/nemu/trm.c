@@ -24,9 +24,11 @@ void halt(int code) {
 
 void _trm_init() {
 	/* 不确定是不是加在这里，暂且试一试吧 */
+	/*
 	if (ioe_init() == false) {
 		panic("ioe_init() error\n");  // from klib-macro.h
 	}
+	*/
 
   int ret = main(mainargs);
   halt(ret);
