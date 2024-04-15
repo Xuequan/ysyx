@@ -12,7 +12,6 @@ void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
 	uint64_t tmp = 0;
 	memcpy(&tmp, start_time, 2 * sizeof(start_time[0]));
 	uptime->us = tmp;
-	uptime->us = 0;
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
