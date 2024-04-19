@@ -23,6 +23,7 @@
 #define FLAGS_ADAPT_EXP (1U << 11U)
 
 #define PRINTF_NTOA_BUFFER_SIZE 32U
+
 // output function type
 typedef void (*out_fct_type)(char character, void* buffer, size_t idx, size_t maxlen);
 
