@@ -20,7 +20,7 @@
 
 #include "../monitor/sdb/sdb.h"
 
-char *vaddr2func(vaddr_t addr, bool *success, int choose);
+void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len);
 
 /* iringbuf */
 #define IRINGBUF_LEN 15
@@ -100,6 +100,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	scan_wp_pool();
 }
 
+#define FUNC_NAME_LEN 52
 static int space = 4;
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
@@ -109,13 +110,16 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	/* ftrace start */
 	bool success1 = false;
 	bool success2 = false;
+	char func_name[FUNC_NAME_LEN];
+	int len = FUNC_NAME_LEN;
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident){ // maybe a function call, should double check 
-		char* next_func = vaddr2func(s->dnpc, &success1, 1); 
+		//char* next_func = vaddr2func(s->dnpc, &success1, 1); 
+		vaddr2func(s->dnpc, &success1, 1, func_name, len); 
 		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
-			log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
+			log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
 			/*
   		if (g_print_step) {
 				log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
@@ -126,10 +130,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		}
 	}else if(2 == ident){ // ret
 			// call vaddr2func just for function name only
-		char* now_func  = vaddr2func(s->pc, &success2, 0); 
+		//char* now_func  = vaddr2func(s->pc, &success2, 0); 
+		vaddr2func(s->pc, &success2, 0, func_name, len); 
 		if (success2){
 			space--;
-			log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
 			/*
   		if (g_print_step) {
 				log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);

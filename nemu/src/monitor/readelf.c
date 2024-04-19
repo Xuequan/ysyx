@@ -272,8 +272,7 @@ static void get_strtab_content(char* buf) {
 ** choose == 0, no need to be a function start (the first inst)
 ** choose == 1, should be the first inst of the function
 */
-char *ret = NULL;
-char *vaddr2func(vaddr_t addr, bool *success, int choose){
+void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len){
 	*success = false;
 	bool cond = false;
 	int i = 0;	
@@ -304,13 +303,16 @@ char *vaddr2func(vaddr_t addr, bool *success, int choose){
 				//ret = strtab_buf + sym[i]->st_name; 	
 				uint32_t k = 0;
 				for(; strtab_buf[k + sym[i]->st_name] != '\0'; k++){
-					ret[k] = strtab_buf[k + sym[i]->st_name]; 
+					if (k >= len){
+						printf("vaddr2func(): func name is too long, should increase FUNC_NAME_LEN\n");
+						return;
+					}
+					func_name[k] = strtab_buf[k + sym[i]->st_name]; 
 				}
-				ret[k] = '\0';
+				func_name[k] = '\0';
 				*success = true;
 				break;
 			}
 		} 
 	}//end-for
-	return ret;	
 }
