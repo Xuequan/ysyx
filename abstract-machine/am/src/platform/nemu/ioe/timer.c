@@ -1,7 +1,6 @@
 #include <am.h>
 #include <nemu.h>
 #include <string.h>
-#include <stdio.h>
 //#include "mmio.h"
 
 void __am_timer_init() {
