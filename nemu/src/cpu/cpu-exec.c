@@ -122,9 +122,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
 			space++;
 			//log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
   		if (g_print_step) {
-				log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
-			}else{
 				printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+			}else{
+				log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
 			}
 		}
 	}else if(2 == ident){ // ret
@@ -135,9 +135,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
 			space--;
 			//log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
   		if (g_print_step) {
-				log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
-			}else{
 				printf("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+			}else{
+				log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
 			}
 		}
 		else{  
