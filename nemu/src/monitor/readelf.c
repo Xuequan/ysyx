@@ -272,9 +272,9 @@ static void get_strtab_content(char* buf) {
 ** choose == 0, no need to be a function start (the first inst)
 ** choose == 1, should be the first inst of the function
 */
+char *ret = NULL;
 char *vaddr2func(vaddr_t addr, bool *success, int choose){
 	*success = false;
-	char *ret = NULL;
 	bool cond = false;
 	int i = 0;	
 	/* get symtab */
