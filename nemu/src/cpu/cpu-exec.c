@@ -114,6 +114,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	char func_name[FUNC_NAME_LEN];
 	int len = FUNC_NAME_LEN;
 
+	// fliter _out_char
+	char *_out_char_name = "_out_char";
+
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident){ // maybe a function call, should double check 
 		//char* next_func = vaddr2func(s->dnpc, &success1, 1); 
@@ -121,10 +124,12 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
 			//log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+			if (strcmp(_out_char_name, "_out_char") != 0) {
   		if (g_print_step) {
-				printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
-			}else{
 				log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+			}else{
+				printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+			}
 			}
 		}
 	}else if(2 == ident){ // ret
@@ -134,10 +139,12 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		if (success2){
 			space--;
 			//log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+			if (strcmp(_out_char_name, "_out_char") != 0) {
   		if (g_print_step) {
-				printf("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
-			}else{
 				log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+			}else{
+				printf("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+			}
 			}
 		}
 		else{  
