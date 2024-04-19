@@ -28,8 +28,12 @@ static struct {
 	word_t addr;    
 } symtab;
 
-#define STRTAB_SIZE 2014
-static char strtab[STRTAB_SIZE];	
+//#define STRTAB_SIZE 2014
+//static char strtab[STRTAB_SIZE];	
+static struct {
+	word_t size;
+	word_t addr;
+} strtab;
 
 /*
 // for test only, print strtab
@@ -201,9 +205,12 @@ void init_elf() {
 		return;
 	}
 
-	word_t strtab_off  = shdr[strtab_idx]->sh_offset;
-	word_t strtab_size = shdr[strtab_idx]->sh_size;
+	//word_t strtab_off  = shdr[strtab_idx]->sh_offset;
+	//word_t strtab_size = shdr[strtab_idx]->sh_size;
+	strtab.addr  = shdr[strtab_idx]->sh_offset;
+	strtab.size = shdr[strtab_idx]->sh_size;
 	
+	/*
 	if (strtab_size > STRTAB_SIZE) {
 		printf("init_elf(): STRTAB_SIZE should bigger than %d.\n", strtab_size);
 		fclose(fp);
@@ -216,6 +223,7 @@ void init_elf() {
 		fclose(fp);
 		return ;
 	}
+	*/
 
 	/* printf strtab just for test */
 	//print_strtab(strtab, strtab_size);
@@ -225,19 +233,19 @@ void init_elf() {
 	return;	
 } // end function
 
-static void get_complete_symtab(char buf[][sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym))] ){
+static void get_symtab_content(char buf[][sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym))] ){
 	FILE *fp = open_elf();
 	assert(fp != NULL);
 	// see symtab in ELF file and read
 	if (fseek(fp, symtab.addr, SEEK_SET) != 0) {
-		printf("init_elf(): Unable to set symtab postion\n");
+		printf("Unable to set symtab postion\n");
 		fclose(fp);
 		return;
 	}
 
 	for( int i = 0; i < symtab.entnum; i++) {
 		if (fread(&buf[i], symtab.entsize, 1, fp) == 0) {
-			printf("init_elf(): Unable to get symtab\n");
+			printf("Unable to get symtab\n");
 			fclose(fp);
 			return ;
 		}
@@ -245,6 +253,18 @@ static void get_complete_symtab(char buf[][sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym,
 	fclose(fp);
 }
 
+static void get_strtab_content(char* buf) {
+	FILE *fp = open_elf();
+	assert(fp != NULL);
+		// seek and get strtab
+	if ( fseek(fp, strtab.addr, SEEK_SET) != 0 ||
+			 fread(buf, strtab.size, 1, fp) == 0 ) {
+		printf("Unable to get strtab\n");
+		fclose(fp);
+		return ;
+	}
+	fclose(fp);
+}
 /* input addr(pc), &success;
 ** give a vaddr, if this vaddr of instruction inside a function
 ** output its function name in strtab and set *boolen = true
@@ -260,12 +280,17 @@ char *vaddr2func(vaddr_t addr, bool *success, int choose){
 	/* get symtab */
 	//MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
 	char symtab_buf[symtab.entnum][symtab.entsize];
-	get_complete_symtab(symtab_buf);
+	get_symtab_content(symtab_buf);
 	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *sym[symtab.entnum];
 	for(int idx = 0; idx < symtab.entnum; idx++){
 		sym[idx] = (MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *)(symtab_buf[idx]);
 	}
 	
+	/* get strtab */
+	char strtab_buf[strtab.size];
+	memset(strtab_buf, '\0', strtab.size);
+	get_strtab_content(strtab_buf);
+
 	for( ; i < symtab.entnum; i++) {
 		if (1 == choose) {
 			cond = (addr == sym[i]->st_value);
@@ -276,7 +301,12 @@ char *vaddr2func(vaddr_t addr, bool *success, int choose){
 
 		if (cond) {
 			if ( sym[i]->st_info == STT_FUNC ) {
-				ret = strtab + sym[i]->st_name; 	
+				//ret = strtab_buf + sym[i]->st_name; 	
+				uint32_t k = 0;
+				for(; strtab_buf[k + sym[i]->st_name] != '\0'; k++){
+					ret[k] = strtab_buf[k + sym[i]->st_name]; 
+				}
+				ret[k] = '\0';
 				*success = true;
 				break;
 			}
