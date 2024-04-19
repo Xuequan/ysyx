@@ -125,7 +125,7 @@ void *memmove(void *dst, const void *src, size_t n) {
 	assert(dst != NULL && src != NULL && n != 0);
 	uint8_t buf[n];
 	uint8_t *p1 = (uint8_t *)dst;
-	uint8_t *p2 = (uint8_t *)src;
+	const uint8_t *p2 = (uint8_t *)src;
 	for(int i = 0; i < n; i++){
 		buf[i] = p2[i]; 
 	}
