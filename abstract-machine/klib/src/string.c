@@ -122,11 +122,15 @@ void *memset(void *s, int c, size_t n) {
  * Return - memmove() returns the value of dst.
  */
 void *memmove(void *dst, const void *src, size_t n) {
-	char *p1 = (char *)dst;
-	char *p2 = (char *)src;
-	for( ; n > 0; n--) {
-		*p1 = *p2;
-		 p1 ++; p2 ++;
+	assert(dst != NULL && src != NULL && n != 0);
+	uint8_t buf[n];
+	uint8_t *p1 = (uint8_t *)dst;
+	uint8_t *p2 = (uint8_t *)src;
+	for(int i = 0; i < n; i++){
+		buf[i] = p2[i]; 
+	}
+	for(int i = 0; i < n; i++){
+		p1[i] = buf[i]; 
 	}
 	return dst;
 }
