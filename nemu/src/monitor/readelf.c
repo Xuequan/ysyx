@@ -18,11 +18,14 @@
 
 extern char *elf_file;
 
-#define ENTRY_NUM 258
+//#define ENTRY_NUM 258
 static struct {
 	// actual symtab entry number
 	word_t entnum;
-	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
+	word_t entsize;
+	//MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
+	// 记录 symtab 在ELF开始地址
+	word_t addr;    
 } symtab;
 
 #define STRTAB_SIZE 2014
@@ -62,9 +65,23 @@ static void print_strtab2(char buf[]) {
 }
 */
 
+static FILE* open_elf() {
+	if (elf_file == NULL) {
+		printf("init_elf(): no input ELF file\n");
+		return NULL;
+	}
+	FILE *fp = fopen(elf_file, "r");
+
+	if (fp == NULL) {
+		printf("init_elf(): Can not open '%s'\n", elf_file);
+		return NULL;
+	}
+	return fp;
+}
 
 /* read from ELF file and get strtab & symtab */
 void init_elf() {
+	/*
 	if (elf_file == NULL) {
 		printf("init_elf(): no input ELF file\n");
 		return;
@@ -75,6 +92,9 @@ void init_elf() {
 		printf("init_elf(): Can not open '%s'\n", elf_file);
 		return;
 	}
+	*/
+	FILE *fp = open_elf();
+	assert(fp != NULL);
 
 	/* 1. get Ehdr and ELF file check */
 	MUXDEF(CONFIG_RV64, Elf64_Ehdr, Elf32_Ehdr) ehdr;
@@ -139,15 +159,17 @@ void init_elf() {
 	// fill in static struct symtab 
 	symtab.entnum = shdr[symtab_idx]->sh_size / 
 											 shdr[symtab_idx]->sh_entsize;
-	word_t symtab_entsize = shdr[symtab_idx]->sh_entsize;
-	word_t symtab_off     = shdr[symtab_idx]->sh_offset; 
+	symtab.entsize = shdr[symtab_idx]->sh_entsize;
+	symtab.addr     = shdr[symtab_idx]->sh_offset; 
 	
+	/*
 	if (symtab.entnum > ENTRY_NUM) {
 		printf("Please note, ENTRY_NUM should be bigger than %d.\n", symtab.entnum);
 		fclose(fp);
 		return; 
 	}
-
+	*/
+	/*
 	// see symtab in ELF file and read
 	if (fseek(fp, symtab_off, SEEK_SET) != 0) {
 		printf("init_elf(): Unable to set symtab postion\n");
@@ -162,6 +184,7 @@ void init_elf() {
 			return ;
 		}
 	}
+	*/
 
 	/* 4. get string tables (strtab) */
 	// 这里我取巧了，直接从 symtab 开始查看，因为 .shstrtab 的 TYPE 也是 STRTAB
@@ -202,6 +225,26 @@ void init_elf() {
 	return;	
 } // end function
 
+static void get_complete_symtab(char buf[][sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym))] ){
+	FILE *fp = open_elf();
+	assert(fp != NULL);
+	// see symtab in ELF file and read
+	if (fseek(fp, symtab.addr, SEEK_SET) != 0) {
+		printf("init_elf(): Unable to set symtab postion\n");
+		fclose(fp);
+		return;
+	}
+
+	for( int i = 0; i < symtab.entnum; i++) {
+		if (fread(&buf[i], symtab.entsize, 1, fp) == 0) {
+			printf("init_elf(): Unable to get symtab\n");
+			fclose(fp);
+			return ;
+		}
+	}
+	fclose(fp);
+}
+
 /* input addr(pc), &success;
 ** give a vaddr, if this vaddr of instruction inside a function
 ** output its function name in strtab and set *boolen = true
@@ -214,17 +257,26 @@ char *vaddr2func(vaddr_t addr, bool *success, int choose){
 	char *ret = NULL;
 	bool cond = false;
 	int i = 0;	
+	/* get symtab */
+	//MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
+	char symtab_buf[symtab.entnum][symtab.entsize];
+	get_complete_symtab(symtab_buf);
+	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *sym[symtab.entnum];
+	for(int idx = 0; idx < symtab.entnum; idx++){
+		sym[idx] = (MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *)(symtab_buf[idx]);
+	}
+	
 	for( ; i < symtab.entnum; i++) {
 		if (1 == choose) {
-			cond = (addr == symtab.sym[i].st_value);
+			cond = (addr == sym[i]->st_value);
 		} else {
-			cond = (addr >= symtab.sym[i].st_value && 
-				addr <= symtab.sym[i].st_value + symtab.sym[i].st_size);
+			cond = (addr >= sym[i]->st_value && 
+				addr <= sym[i]->st_value + sym[i]->st_size);
 		}
 
 		if (cond) {
-			if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(symtab.sym[i].st_info), ELF32_ST_TYPE(symtab.sym[i].st_info)) == STT_FUNC ) {
-				ret = strtab + symtab.sym[i].st_name; 	
+			if ( sym[i]->st_info == STT_FUNC ) {
+				ret = strtab + sym[i]->st_name; 	
 				*success = true;
 				break;
 			}
