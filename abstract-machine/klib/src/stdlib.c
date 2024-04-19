@@ -29,7 +29,13 @@ int atoi(const char* nptr) {
   return x;
 }
 
+static uint8_t *heap_space = NULL;
+/* malloc() function allocates space for an object whose size is specified by 
+ * size and whose value is indeterminate.
+ * Return - returns either a null pointer or a pointer to the allocated space.
+ */
 void *malloc(size_t size) {
+	/*
   // On native, malloc() will be called during initializaion of C runtime.
   // Therefore do not call panic() here, else it will yield a dead recursion:
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
@@ -37,6 +43,22 @@ void *malloc(size_t size) {
   panic("Not implemented");
 #endif
   return NULL;
+	*/
+	/* refer nemu/src/device/io/map.c */
+	// start
+	if (heap_space == NULL) {
+		heap_space = heap.start;
+	}	
+	// 4 bytes aligned
+	size = (size_t)ROUNDUP(size, 4);
+	uint8_t *p = heap_space;
+	uint8_t *old = heap_space;
+	heap_space += size;
+	assert( IN_RANGE((void*)heap_space, heap) );	
+	for( ; old != heap_space; old ++) {
+		*old = 0;
+	}
+	return (void *)p;
 }
 
 void free(void *ptr) {
