@@ -41,6 +41,14 @@ static void handle_mulh(word_t src1, word_t src2, int rd) {
 	R(rd) = (word_t) (result >> 32);
 }
 
+#define HANDLE_MULHU(src1, src2, rd) { \
+	handle_mulhu(src1, src2, rd);\
+}
+static void handle_mulhu(word_t src1, word_t src2, int rd) {
+	unsigned long long result = (unsigned long long)src1 * (unsigned long long)src2;
+	R(rd) = (word_t)(result >> 32);
+}
+
 enum {
   TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_I_JALR, TYPE_R, TYPE_B,
   TYPE_N, // none
@@ -179,6 +187,8 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul    , R, R(rd) = (word_t)src1 * (word_t)src2); 
 	// mulh
   INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , R, HANDLE_MULH(src1, src2, rd)); 
+	// mulhu
+  INSTPAT("0000001 ????? ????? 011 ????? 01100 11", mulhu  , R, HANDLE_MULHU(src1, src2, rd)); 
 	// div
   INSTPAT("0000001 ????? ????? 100 ????? 01100 11", div    , R, R(rd) = (sword_t)src1 / (sword_t)src2); 
 	// divu
