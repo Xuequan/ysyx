@@ -308,13 +308,14 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 
 				cond = (addr >= sym[i]->st_value && 
 					addr <= sym[i]->st_value + sym[i]->st_size);
+			}
 
-				if (cond == false) {
+			if (cond == false) {
 					printf("addr = %#x, low = %#x, high = %#x\n", 
 							addr, sym[i]->st_value, sym[i]->st_value + sym[i]->st_size);
 				}
-			}
-		if (cond) {
+
+			if (cond) {
 				uint32_t k = 0;
 				for(; strtab_buf[k + sym[i]->st_name] != '\0'; k++){
 					if (k >= len){
