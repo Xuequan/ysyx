@@ -317,7 +317,7 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 						printf("vaddr2func(): func name is too long, should increase FUNC_NAME_LEN\n");
 						return;
 					}
-					func_name[k] = strtab_buf[k + sym[i]->st_name]; 
+					func_name[k] = strtab_buf[k + sym[i]->st_name ]; 
 				}
 				func_name[k] = '\0';
 
