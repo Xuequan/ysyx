@@ -294,12 +294,14 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 		memcpy(&sym[idx], symtab_buf[idx], sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym)) );
 	}
 	
+	/*
 	printf("STT_FUNC = %u\n", STT_FUNC);
 
 	for(int k = 0; k < symtab.entnum; k++){
 		if (ELF32_ST_TYPE(sym[k].st_info) == STT_FUNC) 
 			printf("%d: %#x, st_info = %u\n", k, sym[k].st_value, sym[k].st_info);
 	}
+	*/
 	
 	/* get strtab */
 	char strtab_buf[strtab.size];
@@ -307,7 +309,8 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 	get_strtab_content(strtab_buf);
 
 	for( ; i < symtab.entnum; i++) {
-		if ( sym[i].st_info == STT_FUNC ) {
+		if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(sym[i].st_info), 
+					ELF32_ST_TYPE(sym[i].st_info)) == STT_FUNC ) {
 
 			printf("1- addr = %#x, low = %#x, high = %#x\n", addr, sym[i].st_value, sym[i].st_value + sym[i].st_size);
 	
