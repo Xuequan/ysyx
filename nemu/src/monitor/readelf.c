@@ -280,6 +280,7 @@ static void get_strtab_content(char* buf) {
 void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len){
 	*success = false;
 	bool cond = false;
+	func_name[0] = '\0';
 	int i = 0;	
 	/* get symtab */
 	//MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
@@ -315,6 +316,7 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 					func_name[k] = strtab_buf[k + sym[i]->st_name]; 
 				}
 				func_name[k] = '\0';
+
 				*success = true;
 				break;
 			}
