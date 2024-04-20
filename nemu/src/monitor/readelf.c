@@ -283,12 +283,15 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 	func_name[0] = '\0';
 	int i = 0;	
 	/* get symtab */
-	//MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) sym[ENTRY_NUM];
 	char symtab_buf[symtab.entnum][symtab.entsize];
+
 	get_symtab_content(symtab_buf);
+
 	MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *sym[symtab.entnum];
+
 	for(int idx = 0; idx < symtab.entnum; idx++){
-		sym[idx] = (MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *)(symtab_buf[idx]);
+		//sym[idx] = (MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *)(symtab_buf[idx]);
+		memcpy(sym[idx], symtab_buf[idx], sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym)) );
 	}
 	
 	/* get strtab */
@@ -303,10 +306,12 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 
 			cond = (addr >= sym[i]->st_value && 
 				addr <= sym[i]->st_value + sym[i]->st_size);
+
 			if (cond == false) {
 				printf("addr = %#x, low = %#x, high = %#x\n", 
 				addr, sym[i]->st_value, sym[i]->st_value + sym[i]->st_size);
 			}
+
 		}
 
 		if (cond) {
