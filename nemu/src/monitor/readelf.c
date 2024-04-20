@@ -294,6 +294,10 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 		memcpy(&sym[idx], symtab_buf[idx], sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym)) );
 	}
 	
+	for(int k = 0; k < symtab.entnum; k++){
+		printf("%d: %#x\n", k, sym[k].st_value);
+	}
+	
 	/* get strtab */
 	char strtab_buf[strtab.size];
 	memset(strtab_buf, '\0', strtab.size);
