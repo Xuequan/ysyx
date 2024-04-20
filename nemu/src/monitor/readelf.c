@@ -310,7 +310,8 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 			}
 
 			if (cond) {
-				uint32_t k = 0;
+				int k = 0;
+				// copy strtab func name to func_name
 				for(; strtab_buf[k + sym[i]->st_name] != '\0'; k++){
 					if (k >= len){
 						printf("vaddr2func(): func name is too long, should increase FUNC_NAME_LEN\n");
