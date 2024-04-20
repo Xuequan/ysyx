@@ -291,17 +291,7 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 
 	for(int idx = 0; idx < symtab.entnum; idx++){
 		sym[idx] = (MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym) *)(symtab_buf[idx]);
-		//memcpy(&sym[idx], symtab_buf[idx], sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym)) );
 	}
-	
-	/*
-	printf("STT_FUNC = %u\n", STT_FUNC);
-
-	for(int k = 0; k < symtab.entnum; k++){
-		if (ELF32_ST_TYPE(sym[k].st_info) == STT_FUNC) 
-			printf("%d: %#x, st_info = %u\n", k, sym[k].st_value, sym[k].st_info);
-	}
-	*/
 	
 	/* get strtab */
 	char strtab_buf[strtab.size];
@@ -311,20 +301,12 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 	for( ; i < symtab.entnum; i++) {
 		if ( MUXDEF(CONFIG_RV64, ELF64_ST_TYPE(sym[i]->st_info), 
 					ELF32_ST_TYPE(sym[i]->st_info)) == STT_FUNC ) {
-
-			printf("1- addr = %#x, low = %#x, high = %#x\n", addr, sym[i]->st_value, sym[i]->st_value + sym[i]->st_size);
 	
 			if (1 == choose) {
 				cond = (addr == sym[i]->st_value);
 			} else {
-
 				cond = (addr >= sym[i]->st_value) && 
 					(addr <= sym[i]->st_value + sym[i]->st_size);
-			}
-
-			if (cond == false) {
-					printf("addr = %#x, low = %#x, high = %#x\n", 
-							addr, sym[i]->st_value, sym[i]->st_value + sym[i]->st_size);
 			}
 
 			if (cond) {
@@ -344,25 +326,3 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 		}
 	}//end-for
 }
-
-/*
-		if (cond) {
-			if ( sym[i]->st_info == STT_FUNC ) {
-				//ret = strtab_buf + sym[i]->st_name; 	
-				uint32_t k = 0;
-				for(; strtab_buf[k + sym[i]->st_name] != '\0'; k++){
-					if (k >= len){
-						printf("vaddr2func(): func name is too long, should increase FUNC_NAME_LEN\n");
-						return;
-					}
-					func_name[k] = strtab_buf[k + sym[i]->st_name]; 
-				}
-				func_name[k] = '\0';
-
-				*success = true;
-				break;
-			}
-		} 
-	}//end-for
-}
-*/

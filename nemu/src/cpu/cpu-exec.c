@@ -110,6 +110,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 	/* ftrace start */
 	bool success1 = false;
+	bool success2 = false;
 	char func_name[FUNC_NAME_LEN];
 	int len = FUNC_NAME_LEN;
 
@@ -134,7 +135,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	}else if(2 == ident){ // ret
 			// call vaddr2func just for function name only
 		//char* now_func  = vaddr2func(s->pc, &success2, 0); 
-		bool success2 = false;
 		vaddr2func(s->pc, &success2, 0, func_name, len); 
 		if (success2){
 			space--;
