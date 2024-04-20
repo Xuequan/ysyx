@@ -301,6 +301,7 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 
 	for( ; i < symtab.entnum; i++) {
 		if ( sym[i]->st_info == STT_FUNC ) {
+			printf("1- addr = %#x, low = %#x, high = %#x\n", addr, sym[i]->st_value, sym[i]->st_value + sym[i]->st_size);
 	
 			if (1 == choose) {
 				cond = (addr == sym[i]->st_value);
@@ -313,7 +314,7 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 			if (cond == false) {
 					printf("addr = %#x, low = %#x, high = %#x\n", 
 							addr, sym[i]->st_value, sym[i]->st_value + sym[i]->st_size);
-				}
+			}
 
 			if (cond) {
 				uint32_t k = 0;
