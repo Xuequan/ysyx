@@ -298,7 +298,7 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 
 	for(int k = 0; k < symtab.entnum; k++){
 		//if (sym[k].st_info == STT_FUNC) 
-			printf("%d: %#x, st_info = %d\n", k, sym[k].st_value, sym[k].st_info);
+			printf("%d: %#x, st_info = %c\n", k, sym[k].st_value, sym[k].st_info);
 	}
 	
 	/* get strtab */
