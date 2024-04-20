@@ -294,11 +294,11 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 		memcpy(&sym[idx], symtab_buf[idx], sizeof(MUXDEF(CONFIG_RV64, Elf64_Sym, Elf32_Sym)) );
 	}
 	
-	printf("STT_FUNC = %d\n", STT_FUNC);
+	printf("STT_FUNC = %u\n", STT_FUNC);
 
 	for(int k = 0; k < symtab.entnum; k++){
 		//if (sym[k].st_info == STT_FUNC) 
-			printf("%d: %#x, st_info = %c\n", k, sym[k].st_value, sym[k].st_info);
+			printf("%d: %#x, st_info = %u\n", k, sym[k].st_value, sym[k].st_info);
 	}
 	
 	/* get strtab */
