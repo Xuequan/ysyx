@@ -71,13 +71,13 @@ static void print_strtab2(char buf[]) {
 
 static FILE* open_elf() {
 	if (elf_file == NULL) {
-		printf("init_elf(): no input ELF file\n");
+		printf("no input ELF file\n");
 		return NULL;
 	}
 	FILE *fp = fopen(elf_file, "r");
 
 	if (fp == NULL) {
-		printf("init_elf(): Can not open '%s'\n", elf_file);
+		printf("Can not open '%s'\n", elf_file);
 		return NULL;
 	}
 	return fp;
@@ -97,6 +97,11 @@ void init_elf() {
 		return;
 	}
 	*/
+	if (elf_file == NULL) {
+		printf("No input ELF file\n");
+		return;
+	}
+
 	FILE *fp = open_elf();
 	assert(fp != NULL);
 
