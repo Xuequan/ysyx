@@ -18,6 +18,8 @@ CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/platform/nemu/include
 
 # NEMU 批处理
+# 现在通过输入 BATCH=-b 来实现了
+# eg: $ make ARCH=riscv32-nemu BATCH=-b run mainargs=l
 #SET_SDB_BATCH_MODE := -b
 .PHONY: $(AM_HOME)/am/src/platform/nemu/trm.c
 
