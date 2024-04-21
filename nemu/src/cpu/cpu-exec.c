@@ -115,14 +115,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	int len = FUNC_NAME_LEN;
 
 	// fliter "putch" function
-	char *_out_char_name = "putch";
+	//char *_out_char_name = "putch";
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident){ // maybe a function call, should double check 
 		vaddr2func(s->dnpc, &success1, 1, func_name, len); 
 		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
-			if (strcmp(_out_char_name, func_name) != 0) {
+			//if (strcmp(_out_char_name, func_name) != 0) {
 				log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
 				/*
   			if (g_print_step) { //单步执行
@@ -131,14 +131,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
 					printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
 				}
 				*/
-			}
+			//}
 		}
 	}else if(2 == ident){ // ret
 			// call vaddr2func just for function name only
 		vaddr2func(s->pc, &success2, 0, func_name, len); 
 		if (success2){
 			space--;
-			if (strcmp(_out_char_name, func_name) != 0) {
+			//if (strcmp(_out_char_name, func_name) != 0) {
 				log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
 				/*
   			if (g_print_step) { // 单步执行
@@ -147,7 +147,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 					printf("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
 				}
 				*/
-			}
+			//}
 		}
 		else{  // should never be here
 			log_write("NEMU-Should check! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
