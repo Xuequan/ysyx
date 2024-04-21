@@ -114,7 +114,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	char func_name[FUNC_NAME_LEN];
 	int len = FUNC_NAME_LEN;
 
-	// fliter _out_char
+	// fliter "putch" function
 	char *_out_char_name = "putch";
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);

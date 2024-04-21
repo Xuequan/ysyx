@@ -2,7 +2,6 @@
 #define RISCV_H__
 
 #include <stdint.h>
-//#include <stdio.h>
 
 static inline uint8_t  inb(uintptr_t addr) { return *(volatile uint8_t  *)addr; }
 static inline uint16_t inw(uintptr_t addr) { return *(volatile uint16_t *)addr; }
