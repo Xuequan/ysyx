@@ -123,11 +123,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
 			if (strcmp(_out_char_name, func_name) != 0) {
+				log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+				/*
   			if (g_print_step) { //单步执行
 					log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
 				}else{
 					printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
 				}
+				*/
 			}
 		}
 	}else if(2 == ident){ // ret
@@ -136,11 +139,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		if (success2){
 			space--;
 			if (strcmp(_out_char_name, func_name) != 0) {
+				log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+				/*
   			if (g_print_step) { // 单步执行
 					log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
 				}else{
 					printf("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
 				}
+				*/
 			}
 		}
 		else{  // should never be here
