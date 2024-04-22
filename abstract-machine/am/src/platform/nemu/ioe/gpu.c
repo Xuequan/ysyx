@@ -16,7 +16,7 @@ void __am_gpu_init() {
 	AM_SCREEN_SIZE_T size;
 	__am_screen_size(&size);
 	int w = size.width; 
-	int h = size.height; // todo
+	int h = size.height;
 
 	uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
 	for(i = 0; i < w * h; i++){
@@ -26,6 +26,11 @@ void __am_gpu_init() {
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
+	/*
+	uint32_t tmp = inl(VGACTL_ADDR); 
+	int width = (tmp & 0xffff0000) >> 16; 
+	int height= tmp & 0xffff ; 
+	*/
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
     .width = 0, .height = 0,
