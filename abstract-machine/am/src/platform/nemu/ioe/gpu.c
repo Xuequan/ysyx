@@ -53,7 +53,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		AM_GPU_CONFIG_T cfg;
 		__am_gpu_config(&cfg);
 		int width = cfg.width;   // screen width
-		int height = cfg.height; // screen height
+		//int height = cfg.height; // screen height
 		int x = ctl->x;          // screen x position
 		int y = ctl->y;
 
@@ -69,12 +69,13 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		
 		for(int i = 0; i < block_h; i++) {
 			for(int j = 0; j < block_w; j++) {
-				addr = block_st + (uintptr_t)(i * width + j);
+				addr = block_st + (uintptr_t)(i * block_w + j);
+				//addr = block_st + (uintptr_t)(i * width + j);
 				data = *(block_d + i * block_w + j);
 				outl(addr, data);	
 			}
 		}
-		printf("screen size: %d * %d, (%d, %d), (%d, %d) \n", width, height, x, y, block_w, block_h);
+		//printf("screen size: %d * %d, (%d, %d), (%d, %d) \n", width, height, x, y, block_w, block_h);
 	} //end else
 }
 
