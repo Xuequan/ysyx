@@ -28,7 +28,9 @@ AM_DEVREG(12, GPU_MEMCPY,   WR, uint32_t dest; void *src; int size);
 AM_DEVREG(13, GPU_RENDER,   WR, uint32_t root);
 
 // 新增，屏幕大小寄存器
-AM_DEVREG(25, SCREEN_SIZE,  RD, uint32_t width, height);
+AM_DEVREG(25, VGA_SIZE,  		RD, uint32_t width, height);
+// 新增，VGA 同步寄存器
+AM_DEVREG(26, VGA_SYNC,  		RD, int sync);
 
 AM_DEVREG(14, AUDIO_CONFIG, RD, bool present; int bufsize);
 AM_DEVREG(15, AUDIO_CTRL,   WR, int freq, channels, samples);

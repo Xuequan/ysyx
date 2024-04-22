@@ -4,7 +4,7 @@
 #define SYNC_ADDR (VGACTL_ADDR + 4)
 
 // 新增
-void __am_screen_size(AM_SCREEN_SIZE_T* size) {
+void __am_vga_size(AM_VGA_SIZE_T* size) {
 	uint32_t tmp = inl(VGACTL_ADDR); 
 	size->width = (tmp & 0xffff0000) >> 16; 
 	size->height= tmp & 0xffff ; 
@@ -13,8 +13,8 @@ void __am_screen_size(AM_SCREEN_SIZE_T* size) {
 void __am_gpu_init() {
 	int i;
 
-	AM_SCREEN_SIZE_T size;
-	__am_screen_size(&size);
+	AM_VGA_SIZE_T size;
+	__am_vga_size(&size);
 	int w = size.width; 
 	int h = size.height;
 
@@ -48,3 +48,6 @@ void __am_gpu_status(AM_GPU_STATUS_T *status) {
   status->ready = true;
 }
 
+void __am_vga_sync(AM_VGA_SYNC_T *vga_sync) {
+	vga_sync->sync = inl(SYNC_ADDR); 	
+}
