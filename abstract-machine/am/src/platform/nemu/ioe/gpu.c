@@ -5,8 +5,9 @@
 
 void __am_gpu_init() {
 	int i;
-	int w = 0; // todo
-	int h = 0; // todo
+	uint32_t tmp = inl(VGACTL_ADDR); 
+	int w = (tmp & 0xffff0000) >> 16; 
+	int h = tmp & 0xffff ; // todo
 	uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
 	for(i = 0; i < w * h; i++){
 		fb[i] = i;
