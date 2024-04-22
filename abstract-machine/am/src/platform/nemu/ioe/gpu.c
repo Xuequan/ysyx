@@ -57,12 +57,15 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		int x = ctl->x;          // screen x position
 		int y = ctl->y;
 
+		// this block start address
 		uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)(x + width * y);
 		uintptr_t addr;
 		uint32_t data;
 		
+		// this block width and height
 		int block_w = ctl->w;
 		int block_h = ctl->h;
+		// this block data array
 		uint32_t *block_d = (uint32_t *)ctl->pixels;
 		
 		for(int i = 0; i < block_h; i++) {
