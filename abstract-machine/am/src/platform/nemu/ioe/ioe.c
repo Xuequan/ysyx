@@ -17,7 +17,6 @@ void __am_audio_play(AM_AUDIO_PLAY_T *);
 void __am_disk_config(AM_DISK_CONFIG_T *cfg);
 void __am_disk_status(AM_DISK_STATUS_T *stat);
 void __am_disk_blkio(AM_DISK_BLKIO_T *io);
-
 //新增
 void __am_vga_size(AM_VGA_SIZE_T *size);
 void __am_vga_sync(AM_VGA_SYNC_T *size);

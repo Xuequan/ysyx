@@ -11,8 +11,8 @@ void __am_vga_size(AM_VGA_SIZE_T* size) {
 }
 
 void __am_gpu_init() {
+/*
 	int i;
-
 	AM_VGA_SIZE_T size;
 	__am_vga_size(&size);
 	int w = size.width; 
@@ -23,25 +23,32 @@ void __am_gpu_init() {
 		fb[i] = i;
 	}
 	outl(SYNC_ADDR, 1);
+*/
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
-	/*
-	uint32_t tmp = inl(VGACTL_ADDR); 
-	int width = (tmp & 0xffff0000) >> 16; 
-	int height= tmp & 0xffff ; 
-	*/
+
+	AM_VGA_SIZE_T size;
+	__am_vga_size(&size);
+	int w = size.width; 
+	int h = size.height;
+
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
-    .width = 0, .height = 0,
-    .vmemsz = 0
+    .width = w, .height = h,
+    .vmemsz = w * h
   };
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
-  }
+  }else{
+		uintptr_t fb = (uintptr_t)FB_ADDR;
+		for(uint32_t i = 0; i < ctl->w * ctl->h; i++){
+			outl( (fb + i), (uint32_t)((uint32_t *)ctl->pixels + i) );
+		}
+	}
 }
 
 void __am_gpu_status(AM_GPU_STATUS_T *status) {
