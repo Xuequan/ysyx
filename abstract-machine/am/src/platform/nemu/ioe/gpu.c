@@ -52,12 +52,24 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   }else{
 		AM_GPU_CONFIG_T cfg;
 		__am_gpu_config(&cfg);
-		int width = cfg.width;
-		int addr_start = ctl->x * width + ctl->y + FB_ADDR;
+		int width = cfg.width;   // screen width
+		//int height = cfg.height; // screen height
+		int x = ctl->x;          // screen x position
+		int y = ctl->y;
 
-		for(int i = 0; i < ctl->h; i++) {
-			for(int j = 0; j < ctl->w; j++) {
-				outl( (uintptr_t)(addr_start + i * ctl->h + j), *(uint32_t *)(ctl->pixels + i * ctl->h + j) );
+		uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)(x + width * y);
+		uintptr_t addr;
+		uint32_t data;
+		
+		int block_w = ctl->w;
+		int block_h = ctl->h;
+		uint32_t *block_d = (uint32_t *)ctl->pixels;
+		
+		for(int i = 0; i < block_h; i++) {
+			for(int j = 0; j < block_w; j++) {
+				addr = block_st + (uintptr_t)(i * width + j);
+				data = *(block_d + i * block_w + j);
+				outl(addr, data);	
 			}
 		}
 	}
