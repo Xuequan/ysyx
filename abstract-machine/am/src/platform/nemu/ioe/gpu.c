@@ -27,7 +27,7 @@ void __am_gpu_init() {
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
-
+	
 	AM_VGA_SIZE_T size;
 	__am_vga_size(&size);
 	int w = size.width; 
@@ -44,9 +44,15 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
   }else{
-		uintptr_t fb = (uintptr_t)FB_ADDR;
-		for(uint32_t i = 0; i < ctl->w * ctl->h; i++){
-			outl( (fb + i), *((uint32_t *)ctl->pixels + i) );
+		AM_GPU_CONFIG_T cfg;
+		__am_gpu_config(&cfg);
+		int width = cfg.width;
+		int addr_start = ctl->x * width + ctl->y + FB_ADDR;
+
+		for(int i = 0; i < ctl->h; i++) {
+			for(int j = 0; j < ctl->w; j++) {
+				outl( (uintptr_t)(addr_start + i * ctl->h + j), *(uint32_t *)(ctl->pixels + i * ctl->h + j) );
+			}
 		}
 	}
 }
