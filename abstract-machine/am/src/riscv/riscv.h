@@ -15,7 +15,7 @@ static inline void outb(uintptr_t addr, uint8_t  data) { *(volatile uint8_t  *)a
 static inline void outw(uintptr_t addr, uint16_t data) { *(volatile uint16_t *)addr = data; }
 static inline void outl(uintptr_t addr, uint32_t data) { 
 	*(volatile uint32_t *)addr = data; 
-	printf("addr = %#x, data = %#x\n", addr, data);
+	//printf("addr = %#x, data = %#x\n", addr, data);
 }
 
 #define PTE_V 0x01
