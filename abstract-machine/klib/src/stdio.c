@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-//#if defined(__NATIVE_USE_KLIB__)
 
 // internal flag definitions   
 #define FLAGS_ZEROPAD   (1U <<  0U)
@@ -421,7 +420,7 @@ static int _vsnprintf(out_fct_type out, char* buffer, const size_t maxlen, const
 /* =============================================================== */
 /* write output to stdout */
 int printf(const char* fmt, ...) {
-	putstr("use klib");
+	putstr("use klib: ");
 	va_list va;
 	va_start(va, fmt);
 	char buffer[1];
