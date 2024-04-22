@@ -15,9 +15,15 @@ AM_DEVREG( 5, TIMER_RTC,    RD, int year, month, day, hour, minute, second);
 AM_DEVREG( 6, TIMER_UPTIME, RD, uint64_t us);
 AM_DEVREG( 7, INPUT_CONFIG, RD, bool present);
 AM_DEVREG( 8, INPUT_KEYBRD, RD, bool keydown; int keycode);
+// AM 显示控制器的信息
 AM_DEVREG( 9, GPU_CONFIG,   RD, bool present, has_accel; int width, height, vmemsz);
+
 AM_DEVREG(10, GPU_STATUS,   RD, bool ready);
+
+// AM 帧缓冲控制器, x, y: 屏幕坐标, w, h: 矩形图像； pixels：矩形图像像素（行优先）
+// sync 若为 true, 则马上将帧缓冲中的内容同步到屏幕上
 AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
+
 AM_DEVREG(12, GPU_MEMCPY,   WR, uint32_t dest; void *src; int size);
 AM_DEVREG(13, GPU_RENDER,   WR, uint32_t root);
 AM_DEVREG(14, AUDIO_CONFIG, RD, bool present; int bufsize);
