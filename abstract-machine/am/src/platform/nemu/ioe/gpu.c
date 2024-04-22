@@ -40,6 +40,12 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   };
 }
 
+/* AM_CPU_FBDRAW, AM 帧缓冲控制器
+** AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
+** 向屏幕 (x,y) 坐标处绘制 w*h 的矩形图像，图像像素按行优先方式存储在
+** pixels 中，每个像素用32bit 整数以 00RRGGBB 的方式描述颜色。若 sync
+** 为 true, 则马上将帧缓冲中的内容同步到屏幕上。
+*/
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
