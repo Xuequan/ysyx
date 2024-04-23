@@ -13,7 +13,7 @@ void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
 	uint64_t tmp = 0;
 	memcpy(&tmp, start_time, 2 * sizeof(start_time[0]) );
 	uptime->us = tmp;
-	printf("uptime->us = %#lx\n", uptime->us);
+	//printf("uptime->us = %#lx\n", uptime->us);
 }
 /*
 IOMap* fetch_mmio_map(paddr_t addr);
