@@ -56,7 +56,6 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
 		// this block start address
 		uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)(x + width * y);
-		//uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)((x + width * y) * 4);
 		uintptr_t addr = 0;
 		//uint32_t data;
 		uint8_t* data_ptr = (uint8_t *)ctl->pixels;
@@ -66,15 +65,11 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		int block_h = ctl->h;
 		//uint32_t *block_d = (uint32_t *)ctl->pixels;
 		
-		for(int i = 0; i < block_h * 4; i++) {
-			addr = block_st + i * width * 4;
-			data_ptr = data_ptr + i * block_w; 
+		for(int i = 0; i < block_h; i++) {
 			for(int j = 0; j < block_w * 4; j++) {
-				//data = *(block_d + i * block_w + j);
-				//addr = block_st + (i * width * 4  + j * 4 );
-				addr += j;
-				data_ptr += j;
-				outb(addr, *(data_ptr + j));	
+				addr = block_st + i * width + j;
+				data_ptr = data_ptr + i * block_w * 4 + j; 
+				outl(addr, *data_ptr);	
 			}
 		}
   if (ctl->sync) {
