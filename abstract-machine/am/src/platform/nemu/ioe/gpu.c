@@ -70,7 +70,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 				data = *(block_d + i * block_w + j);
 
 				//addr = block_st + (i * width * 4  + j * 4 );
-				addr = block_st + (i * width   + j );
+				addr = block_st + (i * width *4   + j );
 				printf("i = %d, j = %d, addr = %#x, data = %#x\n", i, j, addr, data);
 				outl(addr, data);	
 			}
