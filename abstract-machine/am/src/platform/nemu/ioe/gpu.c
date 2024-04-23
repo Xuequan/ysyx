@@ -55,7 +55,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		int y = ctl->y;
 
 		// this block start address
-		uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)(x + width * y * 4);
+		uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)(x * 4 + width * y * 4);
 		uintptr_t addr = 0;
 		uint32_t data = 0;
 		
