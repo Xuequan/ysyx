@@ -62,7 +62,6 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		// this block width
 		int block_w = ctl->w;
 		int block_h = ctl->h;
-		//uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
 		uint32_t *block_d = (uint32_t *)ctl->pixels;
 		
 		for(int i = 0; i < block_h; i++) {
@@ -76,7 +75,6 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
   }
-		//printf("screen size: %d * %d, (%d, %d), (%d, %d) \n", width, height, x, y, block_w, block_h);
 }
 
 void __am_gpu_status(AM_GPU_STATUS_T *status) {
