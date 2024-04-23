@@ -47,9 +47,6 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 ** 为 true, 则马上将帧缓冲中的内容同步到屏幕上。
 */
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
-  if (ctl->sync) {
-    outl(SYNC_ADDR, 1);
-  }else{
 		AM_GPU_CONFIG_T cfg;
 		__am_gpu_config(&cfg);
 		int width = cfg.width;   // screen width
@@ -69,14 +66,16 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		
 		for(int i = 0; i < block_h; i++) {
 			for(int j = 0; j < block_w; j++) {
-				addr = block_st + (uintptr_t)(i * block_w + j);
-				//addr = block_st + (uintptr_t)(i * width + j);
+				//addr = block_st + (uintptr_t)(i * block_w + j);
+				addr = block_st + (uintptr_t)(i * width + j);
 				data = *(block_d + i * block_w + j);
 				outl(addr, data);	
 			}
 		}
+  if (ctl->sync) {
+    outl(SYNC_ADDR, 1);
+  }
 		//printf("screen size: %d * %d, (%d, %d), (%d, %d) \n", width, height, x, y, block_w, block_h);
-	} //end else
 }
 
 void __am_gpu_status(AM_GPU_STATUS_T *status) {
