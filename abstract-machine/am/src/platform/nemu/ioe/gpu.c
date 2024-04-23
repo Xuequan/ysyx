@@ -68,7 +68,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 			for(int j = 0; j < block_w; j++) {
 				data = *(block_d + i * block_w + j);
 
-				addr = block_st + (i * width * 4 + j * 4 );
+				addr = block_st + (i * width  + j * 4 );
 				printf("i = %d, j = %d, addr = %#x, data = %#x\n", i, j, addr, data);
 				outl(addr, data);	
 			}
