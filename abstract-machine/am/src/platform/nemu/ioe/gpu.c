@@ -57,22 +57,25 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 		// this block start address
 		uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)(x + width * y);
 		//uintptr_t block_st = (uintptr_t)FB_ADDR + (uintptr_t)((x + width * y) * 4);
-		uintptr_t addr;
-		uint32_t data;
+		uintptr_t addr = 0;
+		//uint32_t data;
+		uint8_t* data_ptr = (uint8_t *)ctl->pixels;
 		
 		// this block width
 		int block_w = ctl->w;
 		int block_h = ctl->h;
-		uint32_t *block_d = (uint32_t *)ctl->pixels;
+		//uint32_t *block_d = (uint32_t *)ctl->pixels;
 		
 		for(int i = 0; i < block_h; i++) {
+			addr = block_st + i * width;
+			data_ptr = data_ptr + i * block_w * 4; 
 			for(int j = 0; j < block_w; j++) {
-				data = *(block_d + i * block_w + j);
-
+				//data = *(block_d + i * block_w + j);
 				//addr = block_st + (i * width * 4  + j * 4 );
-				addr = block_st + (i * width *4   + j );
-				printf("i = %d, j = %d, addr = %#x, data = %#x\n", i, j, addr, data);
-				outl(addr, data);	
+				addr += j;
+				data_ptr += j;
+				for(int k = 0; k < 4; k++)
+					outb(addr + k, *(data_ptr + j));	
 			}
 		}
   if (ctl->sync) {
