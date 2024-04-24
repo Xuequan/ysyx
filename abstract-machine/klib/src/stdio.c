@@ -15,12 +15,9 @@
 #define FLAGS_SPACE     (1U <<  3U)
 #define FLAGS_HASH      (1U <<  4U)
 #define FLAGS_UPPERCASE (1U <<  5U)
-#define FLAGS_CHAR      (1U <<  6U)
-#define FLAGS_SHORT     (1U <<  7U)
 #define FLAGS_LONG      (1U <<  8U)
 #define FLAGS_LONG_LONG (1U <<  9U)
 #define FLAGS_PRECISION (1U << 10U)
-#define FLAGS_ADAPT_EXP (1U << 11U)
 
 #define PRINTF_NTOA_BUFFER_SIZE 32U
 
