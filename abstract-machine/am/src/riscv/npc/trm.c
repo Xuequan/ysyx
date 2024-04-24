@@ -16,7 +16,7 @@ Area heap = RANGE(&_heap_start, PMEM_END);
 static const char mainargs[] = MAINARGS;
 
 void putch(char ch) {
-	printf("here in npc/trm.c \n");
+	printf("here in npc-trm.c \n");
 }
 
 // 实际上的 npc_trap() 还未实现，现在只不过是遇到 ebreak 就停止了罢了
