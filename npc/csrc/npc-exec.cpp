@@ -56,16 +56,18 @@ static void ftrace() {
     char* next_func = vaddr2func(nextpc(), &success1, 1); 
     if (success1){ // double check, if next_pc is a function, then a function call
       space++;
-      printf("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", next_func, nextpc());  
+      //printf("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", next_func, nextpc());  
+      log_write("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", next_func, nextpc());  
     }
   }else if(2 == ident){ // ret
       // call vaddr2func just for function name only
     char* now_func  = vaddr2func(get_pc_from_top(), &success2, 0); 
     if (success2){
       space--;
-      printf("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
+      //printf("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
+      log_write("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
     }else{  // should never be here
-      printf("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", now_func, get_pc_from_top(), get_inst_from_top());
+      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", now_func, get_pc_from_top(), get_inst_from_top());
     }     
   }
 }
