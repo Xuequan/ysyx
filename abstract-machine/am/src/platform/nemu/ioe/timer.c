@@ -2,7 +2,7 @@
 #include <nemu.h>
 #include <string.h>
 
-#include <stdio.h>
+//#include <stdio.h>
 void __am_timer_init() {
 	//printf("am_timer_init()\n");
 	outl(RTC_ADDR, 0);
@@ -11,10 +11,8 @@ void __am_timer_init() {
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
 	uint32_t start_time[2] = {0};
-	printf("before inl()\n");
 	start_time[1] = inl(RTC_ADDR + 4);		
 	start_time[0] = inl(RTC_ADDR);	
-	printf("after inl()\n");
 	uint64_t tmp = 0;
 	memcpy(&tmp, start_time, 2 * sizeof(start_time[0]) );
 	uptime->us = tmp;

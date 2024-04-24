@@ -15,6 +15,7 @@
 #include "common2.h"
 #include "arch.h"
 #include "memory.h"
+#include <cstdio>
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
@@ -56,7 +57,6 @@ void init_mem() {
   uint32_t *p = (uint32_t *)pmem;
   int i;
   for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
-    //p[i] = rand();
 		p[i] = 0;
   }
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
@@ -85,6 +85,18 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		log_write("		Write to mem: address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc_from_top()); 
 		pmem_write(addr, len, data); 
 		return; 
+	}
+	if (addr == SERIAL_PORT) {
+		if (len == 1) { 
+			putchar((char)(data & 0xf) );
+		} else if(len == 2) {
+			putchar((char)(data & 0xff) );
+		} else if (len == 4) {
+			putchar((char)data);
+		} else {
+			printf("paddr_write(): len = %d is wrong\n");
+			return;
+		}
 	}
   out_of_bound(addr);
 }
