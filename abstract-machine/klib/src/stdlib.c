@@ -49,7 +49,7 @@ void *malloc(size_t size) {
 	if (heap_space == NULL) {
 		heap_space = heap.start;
 	}	
-	printf("use klib's malloc\n");
+	//printf("use klib's malloc\n");
 	// 4 bytes aligned
 	size = (size_t)ROUNDUP(size, 4);
 	uint8_t *p = heap_space;
