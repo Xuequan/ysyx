@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 void __am_timer_init() {
-	printf("am_timer_init()\n");
+	//printf("am_timer_init()\n");
 	outl(RTC_ADDR, 0);
 	outl(RTC_ADDR + 4, 0);	
 }

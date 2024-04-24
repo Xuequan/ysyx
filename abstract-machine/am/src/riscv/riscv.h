@@ -3,12 +3,16 @@
 
 #include <stdint.h>
 //#include <device/map.h>
+#include <stdio.h>
 
 // 我觉得应该更改这里！！
 // 通过 map_read(), map_write() 来读/写
 static inline uint8_t  inb(uintptr_t addr) { return *(volatile uint8_t  *)addr; }
 static inline uint16_t inw(uintptr_t addr) { return *(volatile uint16_t *)addr; }
-static inline uint32_t inl(uintptr_t addr) { return *(volatile uint32_t *)addr; }
+static inline uint32_t inl(uintptr_t addr) { 
+	printf("here in inl(): addr = %#x\n", addr);
+	return *(volatile uint32_t *)addr; 
+}
 
 /* 从 AM --> NEMU  */
 static inline void outb(uintptr_t addr, uint8_t  data) { *(volatile uint8_t  *)addr = data; }
