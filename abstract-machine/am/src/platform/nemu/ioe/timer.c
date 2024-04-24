@@ -4,7 +4,8 @@
 
 //#include <stdio.h>
 void __am_timer_init() {
-	
+	outl(RTC_ADDR, 0);
+	outl(RTC_ADDR + 4, 0);	
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
@@ -14,7 +15,13 @@ void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
 	uint64_t tmp = 0;
 	memcpy(&tmp, start_time, 2 * sizeof(start_time[0]) );
 	uptime->us = tmp;
-	//printf("uptime->us = %#lx\n", uptime->us);
+	//printf("uptime->us = %lld\n", uptime->us);
+	/*
+	// 下面也可以
+	uptime->us = inl(RTC_ADDR + 4);
+	uptime->us <<= 32;
+	uptime->us += inl(RTC_ADDR);
+	*/
 }
 /*
 #include <memory/paddr.h>
