@@ -95,7 +95,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		} else if (len == 4) {
 			putchar((char)data);
 		} else {
-			printf("paddr_write(): len = %d is wrong\n");
+			printf("paddr_write(): len = %d is wrong\n", len);
 			return;
 		}
 	}
