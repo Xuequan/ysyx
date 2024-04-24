@@ -86,6 +86,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		pmem_write(addr, len, data); 
 		return; 
 	}
+	printf("==========================addr = %#x\n", addr);
 	if (addr == SERIAL_PORT) {
 		if (len == 1) { 
 			putchar((char)(data & 0xf) );
