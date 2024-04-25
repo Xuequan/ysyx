@@ -418,7 +418,7 @@ static int _vsnprintf(out_fct_type out, char* buffer, const size_t maxlen, const
 /* =============================================================== */
 /* write output to stdout */
 int printf(const char* fmt, ...) {
-	//putstr("use klib's printf: \n");
+	putstr("use klib's printf: \n");
 	va_list va;
 	va_start(va, fmt);
 	char buffer[1];
