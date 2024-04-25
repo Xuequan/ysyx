@@ -87,6 +87,11 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		return; 
 	}
 
+	if (addr == (uint32_t)(SERIAL_PORT) ) {
+		printf("not equal\n");
+	} else {
+		printf("equal\n");
+	}
 	printf("==========================addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT));
 	if (addr == (uint32_t)(SERIAL_PORT) ) {
 		if (len == 1) { 
