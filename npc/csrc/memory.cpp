@@ -105,6 +105,8 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 			printf("paddr_write(): len = %d is wrong\n", len);
 			return;
 		}
+	}else {
+		printf("here, addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT) );
 	}
   out_of_bound(addr);
 }
