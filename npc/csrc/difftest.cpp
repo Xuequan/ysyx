@@ -83,17 +83,15 @@ void difftest_skip_ref() {
 */
 void difftest_step() {
 
-	if (is_skip_ref) {
-		get_npc_regs();
-		uint32_t buf[16] = {0};
-		memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
-  	ref_difftest_regcpy(buf, DIFFTEST_TO_REF);
+	// 还是要让nemu执行，否则下一周期，NEMU 还是要执行该指令；
+	// 因为这里，我没有将pc 复制给 nemu, 因此 nemu pc 不得更新...
+	// 只是不比较 regs
+  ref_difftest_exec(1);
 
+	if (is_skip_ref) {
 		is_skip_ref = false;
 		return;
 	}
-
-  ref_difftest_exec(1);
 
 	// 得到 ref 的 regs
 	uint32_t ref_regs[16] = {0};
