@@ -96,7 +96,6 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		if (len == 1) { 
 			//return putch((char)(data & 0xf) );
 			putchar((char)data);
-			//putchar((char)(data & 0xf) );
 			return;
 		} else if(len == 2) {
 			//return putch((char)(data & 0xff) );
