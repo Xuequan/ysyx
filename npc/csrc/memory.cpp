@@ -68,6 +68,7 @@ word_t paddr_read(paddr_t addr, int len) {
 		log_write("		Read to mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
 		return num;
 	}
+	printf("read ? \n");
 	out_of_bound(addr);
 	return 0;
 }
