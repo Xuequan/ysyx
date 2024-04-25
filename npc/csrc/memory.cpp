@@ -87,7 +87,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		return; 
 	}
 
-	printf("==========================addr = %#x\n", addr);
+	printf("==========================addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT));
 	if (addr == (uint32_t)(SERIAL_PORT) ) {
 		if (len == 1) { 
 			//return putch((char)(data & 0xf) );
@@ -106,7 +106,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 			return;
 		}
 	}else {
-		printf("here, addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT) );
+		printf(" not equal here, addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT) );
 		return;
 	}
   out_of_bound(addr);
