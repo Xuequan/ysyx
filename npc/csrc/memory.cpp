@@ -68,7 +68,6 @@ word_t paddr_read(paddr_t addr, int len) {
 		log_write("		Read to mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
 		return num;
 	}
-	printf("read ? \n");
 	out_of_bound(addr);
 	return 0;
 }
@@ -83,7 +82,6 @@ word_t vaddr_read(vaddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
-		//printf("==========================1-addr = %#x\n", addr);
 		log_write("		Write to mem: address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc_from_top()); 
 		pmem_write(addr, len, data); 
 		return; 
@@ -109,6 +107,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		}
 	}else {
 		printf("here, addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT) );
+		return;
 	}
   out_of_bound(addr);
 }
