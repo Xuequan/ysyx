@@ -92,10 +92,11 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		// 若是外设，则让 ref 跳过
 		difftest_skip_ref();
 
-		printf("equal-2, len = %d\n", len);
+		//printf("equal-2, len = %d\n", len);
 		if (len == 1) { 
 			//return putch((char)(data & 0xf) );
-			putchar((char)(data & 0xf) );
+			putchar((char)data);
+			//putchar((char)(data & 0xf) );
 			return;
 		} else if(len == 2) {
 			//return putch((char)(data & 0xff) );
