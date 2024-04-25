@@ -90,11 +90,17 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 	printf("==========================addr = %#x\n", addr);
 	if (addr == SERIAL_PORT) {
 		if (len == 1) { 
+			//return putch((char)(data & 0xf) );
 			putchar((char)(data & 0xf) );
+			return;
 		} else if(len == 2) {
+			//return putch((char)(data & 0xff) );
 			putchar((char)(data & 0xff) );
+			return;
 		} else if (len == 4) {
+			//return putch((char)data);
 			putchar((char)data);
+			return;
 		} else {
 			printf("paddr_write(): len = %d is wrong\n", len);
 			return;
