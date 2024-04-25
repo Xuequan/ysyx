@@ -3,8 +3,7 @@
 
 #include <klib-macros.h>
 
-#include ISA_H // the macro `ISA_H` is defined in CFLAGS
-               // it will be expanded as "x86/x86.h", "mips/mips32.h", ...
+#include "riscv/riscv.h"
 
 // 实际上 npc_trap 还未实现，只不过现在只是遇到 ebreak 就停止仿真
 #define npc_trap(code) asm volatile("ebreak")
