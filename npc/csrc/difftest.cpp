@@ -21,6 +21,8 @@
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
+static bool is_skip_ref = false;
+
 extern uint32_t npc_regs[16];
 void isa_reg_display();
 void get_npc_regs();
@@ -71,11 +73,25 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_regcpy(buf, DIFFTEST_TO_REF);
 }
 
+void difftest_skip_ref() {
+	is_skip_ref = true;
+}
+
 /* 会在 npc-exec() 中被调用，在NEMU执行完一条指令后，就在
 ** difftest_step() 中让REF 执行相同的指令，然后读出REF
 ** 中的寄存器，并进行对比
 */
 void difftest_step() {
+
+	if (is_skip_ref) {
+		get_npc_regs();
+		uint32_t buf[16] = {0};
+		memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
+  	ref_difftest_regcpy(buf, DIFFTEST_TO_REF);
+
+		is_skip_ref = false;
+		return;
+	}
 
   ref_difftest_exec(1);
 

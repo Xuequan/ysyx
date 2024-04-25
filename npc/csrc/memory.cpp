@@ -80,6 +80,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
   return paddr_read(addr, len);
 }
 
+void difftest_skip_ref();
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
 		log_write("		Write to mem: address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc_from_top()); 
@@ -90,6 +91,8 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 	printf("==========================addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT));
 
 	if (addr == (uint32_t)(SERIAL_PORT) ) {
+		// 若是外设，则让 ref 跳过
+		difftest_skip_ref();
 		printf("equal-2, len = %d\n", len);
 		if (len == 1) { 
 			//return putch((char)(data & 0xf) );
