@@ -200,7 +200,7 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 	func_name[0] = '\0';
 	int i = 0;	
 	/* get symtab */
-	char symtab_buf[symtab.entnum][sizeof(Elf32_Sym) ];
+	char symtab_buf[symtab.entnum][ sizeof(Elf32_Sym) ];
 
 	get_symtab_content(symtab_buf);
 

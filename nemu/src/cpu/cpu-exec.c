@@ -108,6 +108,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
 
+// 若是将NEMU 作为NPC 的 ref, 那么就关掉 ftrace, 因为没有 ELF 文件输入
+#ifdef CONFIG_DIFFTEST 
 	/* ftrace start */
 	bool success1 = false;
 	bool success2 = false;
@@ -154,6 +156,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		}
 	}
 	/* ftrace end */
+#endif
 
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
