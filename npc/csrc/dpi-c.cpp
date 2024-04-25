@@ -14,7 +14,6 @@ extern "C" int dsram_read(int raddr) {
 }
 
 extern "C" void dsram_write(int waddr, int wdata, char wmask) {
-	printf("here in dsram_write, waddr = %#x\n", waddr);
 	uint32_t addr = (uint32_t)waddr;
 	if ((uint8_t)wmask == 1 )
   	return vaddr_write(addr, 1, wdata);
