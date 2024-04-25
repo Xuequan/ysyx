@@ -88,8 +88,6 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		return; 
 	}
 
-	printf("==========================addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT));
-
 	if (addr == (uint32_t)(SERIAL_PORT) ) {
 		// 若是外设，则让 ref 跳过
 		difftest_skip_ref();
@@ -111,9 +109,6 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 			printf("paddr_write(): len = %d is wrong\n", len);
 			return;
 		}
-	}else {
-		printf(" not equal here, addr = %#x, SERIAL=%#x\n", addr, (uint32_t)(SERIAL_PORT) );
-		return;
 	}
   out_of_bound(addr);
 }
