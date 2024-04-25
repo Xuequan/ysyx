@@ -41,8 +41,10 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 }
 
 static void out_of_bound(paddr_t addr) {
+	#ifdef CONFIG_DIFFTEST
   panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
       addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
+	#endif
 }
 
 void init_mem() {
@@ -70,6 +72,8 @@ word_t paddr_read(paddr_t addr, int len) {
 		return num;
 	}
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
+	// 若是NEMU作为NPC的 ref，那么 CONFIG_DEVICE 也没有，那么对于I/O 就会执行到这里
+	// 进而在NPC显示里报错
   out_of_bound(addr);
   return 0;
 }
