@@ -45,29 +45,30 @@ static int identify_inst() {
 }
 
 static int space = 4;
-char *vaddr2func(vaddr_t addr, bool *success, int choose);
+char *vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len);
 
+#define FUNC_NAME_LEN 102
 static void ftrace() {
   bool success1 = false;
   bool success2 = false;
+	char func_name[FUNC_NAME_LEN];
+	int len = FUNC_NAME_LEN;
 
   int ident = identify_inst();
   if (1 == ident){ // maybe a function call, should double check
-    char* next_func = vaddr2func(nextpc(), &success1, 1); 
+    vaddr2func(nextpc(), &success1, 1, func_name, len); 
     if (success1){ // double check, if next_pc is a function, then a function call
       space++;
-      //printf("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", next_func, nextpc());  
-      log_write("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", next_func, nextpc());  
+      log_write("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", func_name, nextpc());  
     }
   }else if(2 == ident){ // ret
       // call vaddr2func just for function name only
-    char* now_func  = vaddr2func(get_pc_from_top(), &success2, 0); 
+    vaddr2func(get_pc_from_top(), &success2, 0, func_name, len); 
     if (success2){
       space--;
-      //printf("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
-      log_write("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", now_func);
+      log_write("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", func_name);
     }else{  // should never be here
-      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", now_func, get_pc_from_top(), get_inst_from_top());
+      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc_from_top(), get_inst_from_top());
     }     
   }
 }
