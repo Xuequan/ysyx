@@ -88,8 +88,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		return; 
 	}
 	printf("==========================addr = %#x\n", addr);
-	printf("========SERIAL-PORT = %#x\n", SERIAL_PORT);
-	if (addr == SERIAL_PORT) {
+	if (addr == (uint32_t)SERIAL_PORT) {
 		if (len == 1) { 
 			//return putch((char)(data & 0xf) );
 			putchar((char)(data & 0xf) );
