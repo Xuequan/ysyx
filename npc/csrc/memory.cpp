@@ -61,10 +61,11 @@ void init_mem() {
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
+uint32_t nextpc();
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
-		if (get_pc_from_top() != addr) { // 过滤掉读指令
+		if (nextpc() != addr) { // 过滤掉读指令
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
 		}
 		return num;
