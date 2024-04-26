@@ -64,7 +64,9 @@ void init_mem() {
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
-		log_write("		Read to mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
+		if (get_pc_from_top() != addr) { // 过滤掉读指令
+			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
+		}
 		return num;
 	}
 	out_of_bound(addr);
@@ -82,7 +84,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
 void difftest_skip_ref();
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
-		log_write("		Write to mem: address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc_from_top()); 
+		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc_from_top()); 
 		pmem_write(addr, len, data); 
 		return; 
 	}
