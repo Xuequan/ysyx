@@ -74,7 +74,7 @@ static uint64_t get_timer() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
-	printf("2--addr = %#x, RTC= %#X\n", addr, RTC_ADDR);
+	printf("2--addr = %#x, RTC= %#x\n", addr, RTC_ADDR);
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 
@@ -133,6 +133,12 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 			printf("paddr_write(): len = %d is wrong\n", len);
 			return;
 		}
+	}
+
+	if (addr == (uint32_t)(RTC_ADDR)) {
+		difftest_skip_ref();
+		pmem_write(addr, len, data); 
+		return;
 	}
   out_of_bound(addr);
 }
