@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
+//#if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
+#if defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 //#if defined(__NATIVE_USE_KLIB__)
 
 // internal flag definitions   
