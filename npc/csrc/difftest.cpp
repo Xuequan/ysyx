@@ -90,6 +90,12 @@ void difftest_step() {
 
 	if (is_skip_ref) {
 		is_skip_ref = false;
+		// 将NPC regs 复制给 REF
+		get_npc_regs();
+		uint32_t buf[16] = {0};
+		memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
+  	ref_difftest_regcpy(buf, DIFFTEST_TO_REF);
+
 		return;
 	}
 
