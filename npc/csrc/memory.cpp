@@ -137,7 +137,8 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 
 	if (addr == (uint32_t)(RTC_ADDR)) {
 		difftest_skip_ref();
-		pmem_write(addr, len, data); 
+		//pmem_write(addr, len, data); 
+		//关于时钟，__am_time_init() 要写入内存，NPC就直接跳过了，不写了
 		return;
 	}
   out_of_bound(addr);
