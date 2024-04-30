@@ -20,6 +20,8 @@
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
+void difftest_skip_ref();
+
 static inline word_t host_read(void *addr, int len) {
   switch (len) {
     case 1: return *(uint8_t  *)addr;
@@ -79,8 +81,11 @@ word_t paddr_read(paddr_t addr, int len) {
 		}
 		return num;
 	}
-	if (addr == (uint32_t)RTC_ADDR) {
-		return get_timer();
+	if (addr == (uint32_t)(RTC_ADDR)) {
+		difftest_skip_ref();
+		uint64_t timer = get_timer();
+		printf("timer = %ld\n", timer);
+		return timer;
 	}
 	out_of_bound(addr);
 	return 0;
@@ -93,8 +98,6 @@ word_t vaddr_ifetch(vaddr_t addr, int len) {
 word_t vaddr_read(vaddr_t addr, int len) {
   return paddr_read(addr, len);
 }
-
-void difftest_skip_ref();
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
