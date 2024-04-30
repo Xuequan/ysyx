@@ -85,11 +85,16 @@ word_t paddr_read(paddr_t addr, int len) {
 		return num;
 	}
 
-	if (addr == (uint32_t)(RTC_ADDR)) {
+	if (addr == (uint32_t)(RTC_ADDR) || 
+			addr == (uint32_t)(RTC_ADDR + 4) ) {
 		difftest_skip_ref();
 		uint64_t timer = get_timer();
 		printf("timer = %ld\n", timer);
-		return timer;
+		if (addr == (uint32_t)(RTC_ADDR) ) {	
+			return (word_t)timer;
+		}else{
+			return (word_t)(timer >> 32);
+		}
 	}
 
 	out_of_bound(addr);
@@ -135,7 +140,8 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		}
 	}
 
-	if (addr == (uint32_t)(RTC_ADDR)) {
+	if (addr == (uint32_t)(RTC_ADDR) || 
+			addr == (uint32_t)(RTC_ADDR + 4) ) {
 		difftest_skip_ref();
 		//pmem_write(addr, len, data); 
 		//关于时钟，__am_time_init() 要写入内存，NPC就直接跳过了，不写了
