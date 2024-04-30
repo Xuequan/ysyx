@@ -74,6 +74,7 @@ static uint64_t get_timer() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
+	printf("2--addr = %#x, RTC= %#X\n", addr, RTC_ADDR);
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 
@@ -84,7 +85,6 @@ word_t paddr_read(paddr_t addr, int len) {
 		return num;
 	}
 
-	printf("2--addr = %#x\n", addr);
 	if (addr == (uint32_t)(RTC_ADDR)) {
 		difftest_skip_ref();
 		uint64_t timer = get_timer();
