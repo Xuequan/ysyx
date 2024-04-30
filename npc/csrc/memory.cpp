@@ -76,17 +76,22 @@ uint32_t nextpc();
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
+
 		if (nextpc() != addr) { // 过滤掉读指令
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
 		}
+
 		return num;
 	}
+
+	printf("2--addr = %#x\n", addr);
 	if (addr == (uint32_t)(RTC_ADDR)) {
 		difftest_skip_ref();
 		uint64_t timer = get_timer();
 		printf("timer = %ld\n", timer);
 		return timer;
 	}
+
 	out_of_bound(addr);
 	return 0;
 }
