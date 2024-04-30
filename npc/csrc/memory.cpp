@@ -61,6 +61,7 @@ void init_mem() {
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
+static uint64_t get_time
 uint32_t nextpc();
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
@@ -69,6 +70,9 @@ word_t paddr_read(paddr_t addr, int len) {
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
 		}
 		return num;
+	}
+	if (addr == (uint32_t)RCT_ADDR) {
+		get_time();
 	}
 	out_of_bound(addr);
 	return 0;
@@ -83,6 +87,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
 }
 
 void difftest_skip_ref();
+
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
 		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc_from_top()); 
@@ -92,7 +97,6 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 
 	if (addr == (uint32_t)(SERIAL_PORT) ) {
 		// 若是外设，则让 ref 跳过
-		// 没什么意义了
 		difftest_skip_ref();
 
 		//printf("equal-2, len = %d\n", len);
