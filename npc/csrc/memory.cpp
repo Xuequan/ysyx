@@ -15,6 +15,7 @@
 #include "common2.h"
 #include "arch.h"
 #include "memory.h"
+#include <ctime>
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
@@ -61,8 +62,15 @@ void init_mem() {
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
-static uint64_t get_time
+static uint64_t get_timer() {
+	struct timespec now;
+	clock_gettime(CLOCK_MONOTONIC_COARSE, &now);
+	uint64_t us = now.tv_sec * 1000000 + now.tv_nsec / 1000;
+	return us;
+}
+
 uint32_t nextpc();
+
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
@@ -71,8 +79,8 @@ word_t paddr_read(paddr_t addr, int len) {
 		}
 		return num;
 	}
-	if (addr == (uint32_t)RCT_ADDR) {
-		get_time();
+	if (addr == (uint32_t)RTC_ADDR) {
+		return get_timer();
 	}
 	out_of_bound(addr);
 	return 0;
