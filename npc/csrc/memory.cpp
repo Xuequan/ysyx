@@ -93,7 +93,6 @@ word_t paddr_read(paddr_t addr, int len) {
 			return (word_t)(timer >> 32);
 		}
 	}
-
 	out_of_bound(addr);
 	return 0;
 }
