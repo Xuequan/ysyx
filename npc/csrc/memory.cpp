@@ -64,13 +64,6 @@ void init_mem() {
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
-static uint64_t get_timer() {
-	struct timespec now;
-	clock_gettime(CLOCK_MONOTONIC_COARSE, &now);
-	uint64_t us = now.tv_sec * 1000000 + now.tv_nsec / 1000;
-	return us;
-}
-
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
@@ -86,8 +79,10 @@ word_t paddr_read(paddr_t addr, int len) {
 
 	if (addr == (uint32_t)(RTC_ADDR) || 
 			addr == (uint32_t)(RTC_ADDR + 4) ) {
+
 		difftest_skip_ref();
-		uint64_t timer = get_timer();
+		uint64_t timer = get_time();
+
 		if (addr == (uint32_t)(RTC_ADDR) ) {	
 			return (word_t)timer;
 		}else{
