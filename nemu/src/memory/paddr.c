@@ -41,8 +41,10 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 }
 
 static void out_of_bound(paddr_t addr) {
+	#ifdef CONFIG_DIFFTEST
   panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
       addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
+	#endif
 }
 
 void init_mem() {
@@ -64,11 +66,14 @@ word_t paddr_read(paddr_t addr, int len) {
   if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 #ifdef CONFIG_MTRACE
-		log_write("Read from mem: address = %#x, length = %d, data = %#x\n", addr, len, num); 
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #endif
 		return num;
 	}
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
+	// 若是NEMU作为NPC的 ref，那么 CONFIG_DEVICE 也没有，那么对于I/O 就会执行到这里
+	// 进而在NPC显示里报错
   out_of_bound(addr);
   return 0;
 }
@@ -76,7 +81,7 @@ word_t paddr_read(paddr_t addr, int len) {
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
 #ifdef CONFIG_MTRACE
-		log_write("Write to mem: address = %#x, length = %d, data = %#x\n", addr, len, data); 
+		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
 #endif
 		pmem_write(addr, len, data); 
 		return; 

@@ -113,8 +113,26 @@ void *memset(void *s, int c, size_t n) {
 	return s;
 }
 
+/* The memmove() function copies n characters from the object pointed to by src 
+ * into the object pointed to by dst. Copying takes place as if the n characters
+ * from the object pointed to by src are first copied into a temporary array 
+ * of n characters that does not overlap the objects pointed to by dst and src,
+ * and then the n characters from the temporary array are copied into the 
+ * object pointed to by dst.
+ * Return - memmove() returns the value of dst.
+ */
 void *memmove(void *dst, const void *src, size_t n) {
-  panic("Not implemented");
+	assert(dst != NULL && src != NULL && n != 0);
+	uint8_t buf[n];
+	uint8_t *p1 = (uint8_t *)dst;
+	const uint8_t *p2 = (uint8_t *)src;
+	for(int i = 0; i < n; i++){
+		buf[i] = p2[i]; 
+	}
+	for(int i = 0; i < n; i++){
+		p1[i] = buf[i]; 
+	}
+	return dst;
 }
 
 /* memcpy() copies n bytes from memory area src to memory area dest.

@@ -67,6 +67,7 @@ LINKAGE   = $(OBJS) \
     $(LIBS) ))
 
 ### Print build info message
+$(info #0 MAKECMDGOALS=$(MAKECMDGOALS))
 $(info #1 WORK_DIR:$(WORK_DIR))
 $(info #2 ARCHIVE:$(ARCHIVE))
 $(info #3 DST_DIR:$(DST_DIR))
@@ -101,6 +102,8 @@ CFLAGS   += -O2 -MMD -Wall -Werror $(INCFLAGS) \
             -DARCH_H=\"$(ARCH_H)\" \
             -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector \
             -Wno-main -U_FORTIFY_SOURCE -fvisibility=hidden
+# 试试
+CFLAGS += -g
 CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
 ASFLAGS  += -MMD $(INCFLAGS)
 LDFLAGS  += -z noexecstack

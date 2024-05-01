@@ -20,8 +20,6 @@
 
 #include "../monitor/sdb/sdb.h"
 
-char *vaddr2func(vaddr_t addr, bool *success, int choose);
-
 /* iringbuf */
 #define IRINGBUF_LEN 15
 static char iringbuf[IRINGBUF_LEN][128];
@@ -51,6 +49,27 @@ static void print_iringbuf(void) {
 		}
 	}
 }
+
+static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
+	// print inst information
+	// eg: 0x80000000: 00 00 02 97 auipc	t0, 0
+#ifdef CONFIG_ITRACE_COND
+  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+	
+#endif
+  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
+  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+	// check if reach breakpoint
+	scan_wp_pool();
+}
+
+
+#ifdef CONFIG_DIFFTEST 
+
+void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len);
+#define FUNC_NAME_LEN 102
+static int space = 4;
+
 /* return 1 if function call
 ** return 2 if function ret 
 ** else return 0.
@@ -86,52 +105,62 @@ static int identify_inst(vaddr_t pc, word_t inst) {
   }
   return 0;
 }      
-
-static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-	// print inst information
-	// eg: 0x80000000: 00 00 02 97 auipc	t0, 0
-#ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
-	
 #endif
-  if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
-  IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-	// check if reach breakpoint
-	scan_wp_pool();
-}
 
-static int space = 4;
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
 
+// 若是将NEMU 作为NPC 的 ref, 那么就关掉 ftrace, 因为没有 ELF 文件输入
+#ifdef CONFIG_DIFFTEST 
 	/* ftrace start */
 	bool success1 = false;
 	bool success2 = false;
+	char func_name[FUNC_NAME_LEN];
+	int len = FUNC_NAME_LEN;
+
+	// fliter "putch" function
+	//char *_out_char_name = "putch";
 
 	int ident = identify_inst(s->pc, s->isa.inst.val);
 	if (1 == ident){ // maybe a function call, should double check 
-		char* next_func = vaddr2func(s->dnpc, &success1, 1); 
+		vaddr2func(s->dnpc, &success1, 1, func_name, len); 
 		if (success1){ // double check, if next_pc is a function, then a function call
 			space++;
-			printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", next_func, s->dnpc);
+			//if (strcmp(_out_char_name, func_name) != 0) {
+				log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+				/*
+  			if (g_print_step) { //单步执行
+					log_write("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+				}else{
+					printf("%#x:%*s [%s@%#x]\n", s->pc, space, "call", func_name, s->dnpc);
+				}
+				*/
+			//}
 		}
 	}else if(2 == ident){ // ret
 			// call vaddr2func just for function name only
-		char* now_func  = vaddr2func(s->pc, &success2, 0); 
+		vaddr2func(s->pc, &success2, 0, func_name, len); 
 		if (success2){
 			space--;
-			printf("%#x:%*s [%s]\n", s->pc, space, "ret ", now_func);
+			//if (strcmp(_out_char_name, func_name) != 0) {
+				log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+				/*
+  			if (g_print_step) { // 单步执行
+					log_write("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+				}else{
+					printf("%#x:%*s [%s]\n", s->pc, space, "ret ", func_name);
+				}
+				*/
+			//}
 		}
-		/*
-		else{  
-				// should never be here
-			printf("NEMU-Should check! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
+		else{  // should never be here
+			log_write("NEMU-Should check! '%#x': inst = '%#x' is not a function entry!\n", s->pc, s->isa.inst.val);
 		}
-		*/
 	}
 	/* ftrace end */
+#endif
 
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE

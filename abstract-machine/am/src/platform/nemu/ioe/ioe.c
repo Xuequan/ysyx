@@ -17,6 +17,9 @@ void __am_audio_play(AM_AUDIO_PLAY_T *);
 void __am_disk_config(AM_DISK_CONFIG_T *cfg);
 void __am_disk_status(AM_DISK_STATUS_T *stat);
 void __am_disk_blkio(AM_DISK_BLKIO_T *io);
+//新增
+void __am_vga_size(AM_VGA_SIZE_T *size);
+void __am_vga_sync(AM_VGA_SYNC_T *size);
 
 static void __am_timer_config(AM_TIMER_CONFIG_T *cfg) { cfg->present = true; cfg->has_rtc = true; }
 static void __am_input_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
@@ -42,6 +45,9 @@ static void *lut[128] = {
   [AM_DISK_STATUS ] = __am_disk_status,
   [AM_DISK_BLKIO  ] = __am_disk_blkio,
   [AM_NET_CONFIG  ] = __am_net_config,
+
+  [AM_VGA_SIZE 		] = __am_vga_size,
+  [AM_VGA_SYNC 		] = __am_vga_sync,
 };
 
 static void fail(void *buf) { panic("access nonexist register"); }
