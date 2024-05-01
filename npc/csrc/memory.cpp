@@ -121,8 +121,8 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		//printf("equal-2, len = %d\n", len);
 		if (len == 1) { 
 			//return putch((char)(data & 0xf) );
-			//putchar((char)data);
-			printf("%c", (char)data);
+			putchar((char)data);
+			//printf("%c", (char)data);
 			return;
 		} else if(len == 2) {
 			//return putch((char)(data & 0xff) );
