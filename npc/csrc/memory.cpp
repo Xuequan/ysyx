@@ -122,7 +122,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		if (len == 1) { 
 			//return putch((char)(data & 0xf) );
 			//putchar((char)data);
-			printf("====npc======%c\n", (char)data);
+			printf("%c\n", (char)data);
 			return;
 		} else if(len == 2) {
 			//return putch((char)(data & 0xff) );
