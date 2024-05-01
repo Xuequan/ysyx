@@ -67,7 +67,7 @@ void init_mem() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
-	if (get_pc_from_top() == 0x8002e3a8)
+	if (get_pc_from_top() == 0x8002e3a8 && nextpc() != addr)
 		printf("addr = %#x\n", addr);
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
