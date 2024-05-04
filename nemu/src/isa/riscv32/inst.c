@@ -61,6 +61,7 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 }
 
 static void handle_ecall(Decode *s, vaddr_t pc) {
+	// EVENT_YIELD = 1
 	s->dnpc = isa_raise_intr(1, pc);
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
