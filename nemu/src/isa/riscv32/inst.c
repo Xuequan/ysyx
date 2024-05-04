@@ -79,12 +79,16 @@ static void handle_csrrw(word_t src1, int rd, word_t csr){
 		printf("its mtvec\n");
 		R(rd) = cpu.mtvec;
 		cpu.mtvec = src1;
-	} else if (csr == 0x300) { // mtvec
+	} else if (csr == 0x300) { // mstatus
 		printf("its mstatus\n");
 		R(rd) = cpu.mstatus;
 		cpu.mstatus = src1;
+	} else if (csr == 0x180) { // satp
+		printf("its satp\n");
+		R(rd) = cpu.satp;
+		cpu.satp = src1;
 	} else {
-		printf("Have not implementd '%#x' CSR\n", csr);
+		printf("CSRRW: Have not implemented '%#x' CSR\n", csr);
 		return;
 	}
 }
@@ -105,12 +109,16 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 		printf("its mtvec\n");
 		R(rd) = cpu.mtvec;
 		cpu.mtvec = src1 | cpu.mtvec;
-	} else if (csr == 0x300) { // mtvec
+	} else if (csr == 0x300) { // mstatus
 		printf("its mstatus\n");
 		R(rd) = cpu.mstatus;
 		cpu.mstatus = src1 | cpu.mstatus;
+	} else if (csr == 0x180) { // satp
+		printf("its satp\n");
+		R(rd) = cpu.satp;
+		cpu.satp = src1 | cpu.satp;
 	} else {
-		printf("Have not implementd '%#x' CSR\n", csr);
+		printf("CSRRS: Have not implemented '%#x' CSR\n", csr);
 		return;
 	}
 }
