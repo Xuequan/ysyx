@@ -89,9 +89,34 @@ static void handle_csrrw(word_t src1, int rd, word_t csr){
 	}
 }
 
+#define HANDLE_CSRRS(src1, rd, csr) { \
+	handle_csrrs(src1, rd, csr); \
+}
+static void handle_csrrs(word_t src1, int rd, word_t csr){
+	if (csr == 0x341) {// mepc	
+		printf("its mepc\n");
+		R(rd) = cpu.mepc;
+		cpu.mepc = src1 | cpu.mepc;
+	} else if (csr == 0x342) { // mcause
+		printf("its mcause\n");
+		R(rd) = cpu.mcause;
+		cpu.mcause = src1 | cpu.mcause;
+	} else if (csr == 0x305) { // mtvec
+		printf("its mtvec\n");
+		R(rd) = cpu.mtvec;
+		cpu.mtvec = src1 | cpu.mtvec;
+	} else if (csr == 0x300) { // mtvec
+		printf("its mstatus\n");
+		R(rd) = cpu.mstatus;
+		cpu.mstatus = src1 | cpu.mstatus;
+	} else {
+		printf("Have not implementd '%#x' CSR\n", csr);
+		return;
+	}
+}
 enum {
   TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_I_JALR, TYPE_R, TYPE_B,
-	TYPE_I_CSRRW,
+	TYPE_I_CSRRW, TYPE_I_CSRRS,
   TYPE_N, // none
 };
 
@@ -247,6 +272,8 @@ static int decode_exec(Decode *s) {
 	/* control and status register */
 	// csrrw
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I_CSRRW, HANDLE_CSRRW(src1, rd, imm) ); 
+	// csrrs
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I_CSRRS, HANDLE_CSRRS(src1, rd, imm) ); 
 	
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
