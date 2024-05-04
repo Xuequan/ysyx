@@ -61,7 +61,7 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 }
 
 static void handle_ecall(vaddr_t pc) {
-	isa_raise_intr(0, pc);
+	isa_raise_intr(1, pc);
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
 	handle_csrrw(src1, rd, csr); \
