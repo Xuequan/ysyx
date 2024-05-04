@@ -56,12 +56,12 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 	R(rd) = (sword_t)(result >> 32);
 }
 
-#define HANDLE_ECALL(pc) { \
-	handle_ecall(pc); \
+#define HANDLE_ECALL(s, pc) { \
+	handle_ecall(s, pc); \
 }
 
-static void handle_ecall(vaddr_t pc) {
-	isa_raise_intr(1, pc);
+static void handle_ecall(Decode *s, vaddr_t pc) {
+	s->dnpc = isa_raise_intr(1, pc);
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
 	handle_csrrw(src1, rd, csr); \
@@ -154,7 +154,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb     , S, Mw(src1 + imm, 1, src2));
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
-  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, HANDLE_ECALL(s->pc) ); 
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, HANDLE_ECALL(s, s->pc) ); 
 	// start add instructions
 	// addi 
   INSTPAT("??????? ????? ????? 000 ????? 00100 11", addi	 , I, R(rd) = src1 + imm);
