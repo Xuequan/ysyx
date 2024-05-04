@@ -68,12 +68,15 @@ static void handle_ecall(vaddr_t pc) {
 }
 static void handle_csrrw(word_t src1, int rd, word_t csr){
 	if (csr == 0x341) {// mepc	
+		printf("its mepc\n");
 		R(rd) = cpu.mepc;
 		cpu.mepc = src1;
 	} else if (csr == 0x342) { // mcause
+		printf("its mcause\n");
 		R(rd) = cpu.mcause;
 		cpu.mcause = src1;
 	} else if (csr == 0x305) { // mtvec
+		printf("its mtvec\n");
 		R(rd) = cpu.mtvec;
 		cpu.mtvec = src1;;
 	} else {
