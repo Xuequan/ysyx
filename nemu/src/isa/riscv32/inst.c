@@ -78,7 +78,11 @@ static void handle_csrrw(word_t src1, int rd, word_t csr){
 	} else if (csr == 0x305) { // mtvec
 		printf("its mtvec\n");
 		R(rd) = cpu.mtvec;
-		cpu.mtvec = src1;;
+		cpu.mtvec = src1;
+	} else if (csr == 0x300) { // mtvec
+		printf("its mstatus\n");
+		R(rd) = cpu.mstatus;
+		cpu.mstatus = src1;
 	} else {
 		printf("Have not implementd '%#x' CSR\n", csr);
 		return;
