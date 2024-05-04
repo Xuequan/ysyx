@@ -165,6 +165,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_B: src1R(); src2R(); immB(); break;
 		// CSRRW, imm is csr
     case TYPE_I_CSRRW: src1R();    *imm = BITS(i, 31, 20); break;
+    case TYPE_I_CSRRS: src1R();    *imm = BITS(i, 31, 20); break;
   }
 }
 
