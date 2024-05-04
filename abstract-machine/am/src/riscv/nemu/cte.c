@@ -20,6 +20,10 @@ Context* __am_irq_handle(Context *c) {
 
 extern void __am_asm_trap(void);
 
+/* cte_init() 做两件事：
+ * 1. 设置异常入口地址
+ * 2. 注册一个事件处理回调函数
+ */
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
   asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
