@@ -123,6 +123,13 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 		return;
 	}
 }
+#define HANDLE_MRET(s) { \
+	handle_mret(s); \
+}
+static void handle_mret(Decode *s){
+	s->dnpc = cpu.mepc;	
+}
+
 enum {
   TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_I_JALR, TYPE_R, TYPE_B,
 	TYPE_I_CSRRW, TYPE_I_CSRRS,
@@ -284,6 +291,10 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I_CSRRW, HANDLE_CSRRW(src1, rd, imm) ); 
 	// csrrs
   INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I_CSRRS, HANDLE_CSRRS(src1, rd, imm) ); 
+
+	// privileged instructions
+	// mret
+	INSTPAT("0011000 00010 00000 000 00000 11100 11", mret  , N, HANDLE_MRET(s) ); 
 	
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
