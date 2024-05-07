@@ -61,6 +61,9 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 }
 
 static void handle_ecall(Decode *s, vaddr_t pc) {
+	/* etrace start */
+	log_write("Exception happened at pc = '%#x'\n", pc);
+	/* etrace end */
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
 	s->dnpc = isa_raise_intr(0xb, pc);
