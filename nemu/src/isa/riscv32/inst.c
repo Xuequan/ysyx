@@ -63,7 +63,7 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 static void handle_ecall(Decode *s, vaddr_t pc) {
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
-	s->dnpc = isa_raise_intr(0xb, pc);
+	s->dnpc = isa_raise_intr(0xb, pc + 4);
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
 	handle_csrrw(src1, rd, csr); \
