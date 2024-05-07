@@ -56,8 +56,77 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 	R(rd) = (sword_t)(result >> 32);
 }
 
+#define HANDLE_ECALL(s, pc) { \
+	handle_ecall(s, pc); \
+}
+
+static void handle_ecall(Decode *s, vaddr_t pc) {
+	/* etrace start */
+	log_write("Exception happened at pc = '%#x'\n", pc);
+	/* etrace end */
+	// ecall: Makes a request of the execution environment by raising an 
+	// 				Environment Call exception
+	s->dnpc = isa_raise_intr(0xb, pc);
+}
+#define HANDLE_CSRRW(src1, rd, csr) { \
+	handle_csrrw(src1, rd, csr); \
+}
+static void handle_csrrw(word_t src1, int rd, word_t csr){
+	if (csr == 0x341) {// mepc	
+		R(rd) = cpu.mepc;
+		cpu.mepc = src1;
+	} else if (csr == 0x342) { // mcause
+		R(rd) = cpu.mcause;
+		cpu.mcause = src1;
+	} else if (csr == 0x305) { // mtvec
+		R(rd) = cpu.mtvec;
+		cpu.mtvec = src1;
+	} else if (csr == 0x300) { // mstatus
+		R(rd) = cpu.mstatus;
+		cpu.mstatus = src1;
+	} else if (csr == 0x180) { // satp
+		R(rd) = cpu.satp;
+		cpu.satp = src1;
+	} else {
+		printf("CSRRW: Have not implemented '%#x' CSR\n", csr);
+		return;
+	}
+}
+
+#define HANDLE_CSRRS(src1, rd, csr) { \
+	handle_csrrs(src1, rd, csr); \
+}
+static void handle_csrrs(word_t src1, int rd, word_t csr){
+	if (csr == 0x341) {// mepc	
+		R(rd) = cpu.mepc;
+		cpu.mepc = src1 | cpu.mepc;
+	} else if (csr == 0x342) { // mcause
+		R(rd) = cpu.mcause;
+		cpu.mcause = src1 | cpu.mcause;
+	} else if (csr == 0x305) { // mtvec
+		R(rd) = cpu.mtvec;
+		cpu.mtvec = src1 | cpu.mtvec;
+	} else if (csr == 0x300) { // mstatus
+		R(rd) = cpu.mstatus;
+		cpu.mstatus = src1 | cpu.mstatus;
+	} else if (csr == 0x180) { // satp
+		R(rd) = cpu.satp;
+		cpu.satp = src1 | cpu.satp;
+	} else {
+		printf("CSRRS: Have not implemented '%#x' CSR\n", csr);
+		return;
+	}
+}
+#define HANDLE_MRET(s) { \
+	handle_mret(s); \
+}
+static void handle_mret(Decode *s){
+	s->dnpc = cpu.mepc;	
+}
+
 enum {
   TYPE_I, TYPE_U, TYPE_S, TYPE_J, TYPE_I_JALR, TYPE_R, TYPE_B,
+	TYPE_I_CSRRW, TYPE_I_CSRRS,
   TYPE_N, // none
 };
 
@@ -96,6 +165,9 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_I_JALR: src1R();  immI(); updateDnpc2(); setLSBZero();   break;
     case TYPE_R: src1R(); src2R(); 			   break;
     case TYPE_B: src1R(); src2R(); immB(); break;
+		// CSRRW, imm is csr
+    case TYPE_I_CSRRW: src1R();    *imm = BITS(i, 31, 20); break;
+    case TYPE_I_CSRRS: src1R();    *imm = BITS(i, 31, 20); break;
   }
 }
 
@@ -118,6 +190,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb     , S, Mw(src1 + imm, 1, src2));
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
+  INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, HANDLE_ECALL(s, s->pc) ); 
 	// start add instructions
 	// addi 
   INSTPAT("??????? ????? ????? 000 ????? 00100 11", addi	 , I, R(rd) = src1 + imm);
@@ -207,7 +280,16 @@ static int decode_exec(Decode *s) {
 	// remu
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11", remu   , R, R(rd) = (word_t)src1 % (word_t)src2); 
 
+	/* control and status register */
+	// csrrw
+  INSTPAT("??????? ????? ????? 001 ????? 11100 11", csrrw  , I_CSRRW, HANDLE_CSRRW(src1, rd, imm) ); 
+	// csrrs
+  INSTPAT("??????? ????? ????? 010 ????? 11100 11", csrrs  , I_CSRRS, HANDLE_CSRRS(src1, rd, imm) ); 
 
+	// privileged instructions
+	// mret
+	INSTPAT("0011000 00010 00000 000 00000 11100 11", mret  , N, HANDLE_MRET(s) ); 
+	
   INSTPAT("??????? ????? ????? ??? ????? ????? ??", inv    , N, INV(s->pc));
   INSTPAT_END();
 
