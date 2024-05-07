@@ -7,10 +7,11 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
+		//ev.cause = c->mcause;
     switch (c->mcause) {
 			// 根据手册 p38
 			case 12: ev.event = EVENT_PAGEFAULT; break;
-			case 11: ev.event = EVENT_YIELD; 		break;
+			case 11: ev.event = EVENT_YIELD;  	 break;
 			case 8 : ev.event = EVENT_SYSCALL; 	break;
 			case 0x10000004: ev.event = EVENT_IRQ_TIMER; break;
 			// EVENT_IRQ_IODEV	
