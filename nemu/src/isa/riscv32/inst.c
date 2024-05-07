@@ -70,23 +70,18 @@ static void handle_ecall(Decode *s, vaddr_t pc) {
 }
 static void handle_csrrw(word_t src1, int rd, word_t csr){
 	if (csr == 0x341) {// mepc	
-		printf("its mepc\n");
 		R(rd) = cpu.mepc;
 		cpu.mepc = src1;
 	} else if (csr == 0x342) { // mcause
-		printf("its mcause\n");
 		R(rd) = cpu.mcause;
 		cpu.mcause = src1;
 	} else if (csr == 0x305) { // mtvec
-		printf("its mtvec\n");
 		R(rd) = cpu.mtvec;
 		cpu.mtvec = src1;
 	} else if (csr == 0x300) { // mstatus
-		printf("its mstatus\n");
 		R(rd) = cpu.mstatus;
 		cpu.mstatus = src1;
 	} else if (csr == 0x180) { // satp
-		printf("its satp\n");
 		R(rd) = cpu.satp;
 		cpu.satp = src1;
 	} else {
@@ -100,23 +95,18 @@ static void handle_csrrw(word_t src1, int rd, word_t csr){
 }
 static void handle_csrrs(word_t src1, int rd, word_t csr){
 	if (csr == 0x341) {// mepc	
-		printf("its mepc\n");
 		R(rd) = cpu.mepc;
 		cpu.mepc = src1 | cpu.mepc;
 	} else if (csr == 0x342) { // mcause
-		printf("its mcause\n");
 		R(rd) = cpu.mcause;
 		cpu.mcause = src1 | cpu.mcause;
 	} else if (csr == 0x305) { // mtvec
-		printf("its mtvec\n");
 		R(rd) = cpu.mtvec;
 		cpu.mtvec = src1 | cpu.mtvec;
 	} else if (csr == 0x300) { // mstatus
-		printf("its mstatus\n");
 		R(rd) = cpu.mstatus;
 		cpu.mstatus = src1 | cpu.mstatus;
 	} else if (csr == 0x180) { // satp
-		printf("its satp\n");
 		R(rd) = cpu.satp;
 		cpu.satp = src1 | cpu.satp;
 	} else {
