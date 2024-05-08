@@ -50,21 +50,10 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
  * 			 结构，然后返回这一结构的指针。
  */
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-	printf("here\n");
 	Context *c = (Context *)kstack.start;
-	/*
-	&ctx.pdir = kstack.end - 1;
-	&ctx.mepc = (uintptr_t *)((uintptr_t)(kstack.end - 1) - 1);
-	&ctx.mstatus = (uintptr_t)(kstack.end - 1) - 2;
-	&ctx.mcause = (uintptr_t)(kstack.end - 1) - 3;
-	&ctx.gpr[0] = ((uintptr_t *)kstack.end - 1) - NR_REGS - 3; 
-	c = &ctx;
-	ctx.mepc = entry;
-	*/
-	//Context *ctx = (Context *)(kstack.end -NR_REGS -4);
 	Context *ctx = (Context *)kstack.end - 1;
 	c = ctx;
-
+	ctx->mepc = (uintptr_t)entry;
 	return c;
 }
 
