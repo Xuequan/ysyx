@@ -66,8 +66,8 @@ static void handle_ecall(Decode *s, vaddr_t pc) {
 	/* etrace end */
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
-	//s->dnpc = isa_raise_intr(0xb, pc);
-	s->dnpc = isa_raise_intr(0x8, pc);
+	s->dnpc = isa_raise_intr(0xb, pc);
+	//s->dnpc = isa_raise_intr(0x8, pc);
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
 	handle_csrrw(src1, rd, csr); \
