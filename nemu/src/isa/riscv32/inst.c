@@ -65,6 +65,7 @@ static void handle_ecall(Decode *s, vaddr_t pc) {
 	
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
+	printf("ecall: now pc is %#x\n", pc);
 	s->dnpc = isa_raise_intr(0xb, pc);
 	//s->dnpc = isa_raise_intr(0x8, pc);
 	/* etrace start */
@@ -133,6 +134,7 @@ static void handle_mret(Decode *s){
 	}
 */
 	s->dnpc = cpu.mepc;	
+	printf("mret: next pc is %#x\n", s->dnpc);
 }
 
 enum {
