@@ -41,8 +41,31 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
   return true;
 }
 
+/* kcontext(): 创建内核线程的上下文 */
+/* input: Area kstack --> 栈的范围；
+ * 				entry  --> 是内核线程的入口
+ * 				arg    --> 是内核线程的参数
+ * kcontext() 要求内核线程不能从 entry 返回；
+ * todo: 需要在 kstack 的底部创建一个以 entry 为入口的上下文
+ * 			 结构，然后返回这一结构的指针。
+ */
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  return NULL;
+	printf("here\n");
+	Context *c = (Context *)kstack.start;
+	/*
+	&ctx.pdir = kstack.end - 1;
+	&ctx.mepc = (uintptr_t *)((uintptr_t)(kstack.end - 1) - 1);
+	&ctx.mstatus = (uintptr_t)(kstack.end - 1) - 2;
+	&ctx.mcause = (uintptr_t)(kstack.end - 1) - 3;
+	&ctx.gpr[0] = ((uintptr_t *)kstack.end - 1) - NR_REGS - 3; 
+	c = &ctx;
+	ctx.mepc = entry;
+	*/
+	//Context *ctx = (Context *)(kstack.end -NR_REGS -4);
+	Context *ctx = (Context *)kstack.end - 1;
+	c = ctx;
+
+	return c;
 }
 
 void yield() {
