@@ -126,7 +126,6 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 	handle_mret(s); \
 }
 static void handle_mret(Decode *s){
-	printf("R(15) = %#x\n", R(15));
 	if (R(15) == 0xffffffff) {  // a5
 		s->dnpc = cpu.mepc + 4;	
 		return;
