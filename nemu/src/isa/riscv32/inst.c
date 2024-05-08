@@ -61,6 +61,14 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 }
 
 static void handle_ecall(Decode *s, vaddr_t pc) {
+#ifdef __riscv_e 
+	if (R(15) == -1) 
+		return;
+#else 
+	if (R(17) == -1) 
+		return;
+#endif
+	
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
 	s->dnpc = isa_raise_intr(0xb, pc);
