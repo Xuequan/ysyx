@@ -61,15 +61,9 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 }
 
 static void handle_ecall(Decode *s, vaddr_t pc) {
-#ifdef __riscv_e 
 	printf("R(15) = %#x\n", R(15));
 	if (R(15) == 0xffffffff)  // a5
 		return;
-#else 
-	printf("R(17) = %#x\n", R(17));
-	if (R(17) == 0xffffffff)  // a7
-		return;
-#endif
 	
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
