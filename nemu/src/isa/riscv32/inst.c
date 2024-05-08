@@ -126,10 +126,12 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 	handle_mret(s); \
 }
 static void handle_mret(Decode *s){
+/*
 	if (R(15) == 0xffffffff) {  // a5
 		s->dnpc = cpu.mepc + 4;	
 		return;
 	}
+*/
 	s->dnpc = cpu.mepc;	
 }
 
