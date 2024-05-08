@@ -24,7 +24,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 	int cnt = 0;
 	for( ; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
 		if (gpr(i) != ref_r->gpr[i]) {
-			printf("Registers of NEMU and REF are different, PC = %#x\n", pc);
+			printf("\nRegisters of NEMU and REF are different, PC = %#x\n", pc);
 			error[cnt++] = i;
 		}
 	}
