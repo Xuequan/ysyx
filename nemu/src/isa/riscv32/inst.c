@@ -77,7 +77,7 @@ static void handle_csrrw(word_t src1, int rd, word_t csr){
 		R(rd) = cpu.mepc;
 		cpu.mepc = src1;
 	} else if (csr == 0x342) { // mcause
-		printf("csrrw: src1 = %#x\n", src1);
+		//printf("csrrw: src1 = %#x\n", src1);
 		R(rd) = cpu.mcause;
 		cpu.mcause = src1;
 	} else if (csr == 0x305) { // mtvec
@@ -103,7 +103,7 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 		R(rd) = cpu.mepc;
 		cpu.mepc = src1 | cpu.mepc;
 	} else if (csr == 0x342) { // mcause
-		printf("csrrs: mcause = %#x, src1 = %#x\n", cpu.mcause, src1);
+		//printf("csrrs: mcause = %#x, src1 = %#x\n", cpu.mcause, src1);
 		R(rd) = cpu.mcause;
 		cpu.mcause = src1 | cpu.mcause;
 	} else if (csr == 0x305) { // mtvec
