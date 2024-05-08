@@ -62,10 +62,10 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 
 static void handle_ecall(Decode *s, vaddr_t pc) {
 #ifdef __riscv_e 
-	if (R(15) == -1) 
+	if (R(15) == 0xffffffff)  // a5
 		return;
 #else 
-	if (R(17) == -1) 
+	if (R(17) == 0xffffffff)  // a7
 		return;
 #endif
 	
