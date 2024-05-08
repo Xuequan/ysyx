@@ -55,8 +55,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	// eg: 0x80000000: 00 00 02 97 auipc	t0, 0
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
-	
 #endif
+
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 	// check if reach breakpoint
@@ -162,7 +162,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	/* ftrace end */
 #endif
 
-  cpu.pc = s->dnpc;
+  cpu.pc = s->dnpc;   // note: until now update cpu.pc
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);

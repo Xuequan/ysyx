@@ -63,7 +63,7 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 static void handle_ecall(Decode *s, vaddr_t pc) {
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
-	s->dnpc = isa_raise_intr(0xb, pc);
+	s->dnpc = isa_raise_intr(0xb, pc + 4);
 	//s->dnpc = isa_raise_intr(0x8, pc);
 	/* etrace start */
 	log_write("Exception happened at pc = '%#x', and exception NO will be %#x\n", pc, 0xb);
@@ -124,7 +124,7 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 	handle_mret(s); \
 }
 static void handle_mret(Decode *s){
-	s->dnpc = cpu.mepc + 4;	
+	s->dnpc = cpu.mepc;	
 }
 
 enum {
