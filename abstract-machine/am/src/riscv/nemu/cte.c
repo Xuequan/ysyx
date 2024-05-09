@@ -8,6 +8,9 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
 		//ev.cause = c->mcause;
+		
+		///*
+ 		//方便 PA4.1 调试，先注释掉，PA3.1 时需要恢复
     switch (c->mcause) {
 			// 根据手册 p38
 			case 12: ev.event = EVENT_PAGEFAULT; break;
@@ -17,6 +20,7 @@ Context* __am_irq_handle(Context *c) {
 			// EVENT_IRQ_IODEV	
       default: ev.event = EVENT_ERROR; break;
     }
+		//*/
 
     c = user_handler(ev, c);
     assert(c != NULL);
@@ -41,8 +45,22 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
   return true;
 }
 
+/* kcontext(): 创建内核线程的上下文 */
+/* input: Area kstack --> 栈的范围；
+ * 				entry  --> 是内核线程的入口
+ * 				arg    --> 是内核线程的参数
+ * kcontext() 要求内核线程不能从 entry 返回；
+ * todo: 需要在 kstack 的底部创建一个以 entry 为入口的上下文
+ * 			 结构，然后返回这一结构的指针。
+ */
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  return NULL;
+	Context *c = (Context *)kstack.start;
+	Context *ctx = (Context *)kstack.end - 1;
+	c = ctx;
+	ctx->mcause = (uintptr_t)0x8;
+	ctx->mepc = (uintptr_t)entry;
+	ctx->gpr[10] = (uintptr_t)arg;  // a0
+	return c;
 }
 
 void yield() {

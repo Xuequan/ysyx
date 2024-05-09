@@ -44,11 +44,15 @@ __am_asm_trap:
 
   MAP(REGS, PUSH)
 
-  csrr t0, mcause
+	# pa4.1, 但在 pa3.1 中还是需要将 mcause 压栈
+  #csrr t0, mcause
+
   csrr t1, mstatus
   csrr t2, mepc
 
-  STORE t0, OFFSET_CAUSE(sp)
+	# pa4.1
+  #STORE t0, OFFSET_CAUSE(sp)
+
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
 
@@ -60,8 +64,17 @@ __am_asm_trap:
   mv a0, sp
   jal __am_irq_handle
 
+	# pa4.1
+	mv sp, a0
+	LOAD t0, OFFSET_CAUSE(sp)
+
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
+	# try
+	addi t2, t2, 4
+	#pa4.1 
+	csrw mcause, t0
+
   csrw mstatus, t1
   csrw mepc, t2
 

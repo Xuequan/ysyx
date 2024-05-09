@@ -61,12 +61,13 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 }
 
 static void handle_ecall(Decode *s, vaddr_t pc) {
-	/* etrace start */
-	log_write("Exception happened at pc = '%#x'\n", pc);
-	/* etrace end */
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
+	//printf("ecall: now pc is %#x\n", pc);
 	s->dnpc = isa_raise_intr(0xb, pc);
+	/* etrace start */
+	log_write("Exception happened at pc = '%#x', and exception NO will be %#x\n", pc, 0xb);
+	/* etrace end */
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
 	handle_csrrw(src1, rd, csr); \
@@ -76,6 +77,7 @@ static void handle_csrrw(word_t src1, int rd, word_t csr){
 		R(rd) = cpu.mepc;
 		cpu.mepc = src1;
 	} else if (csr == 0x342) { // mcause
+		//printf("csrrw: src1 = %#x\n", src1);
 		R(rd) = cpu.mcause;
 		cpu.mcause = src1;
 	} else if (csr == 0x305) { // mtvec
@@ -101,6 +103,7 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 		R(rd) = cpu.mepc;
 		cpu.mepc = src1 | cpu.mepc;
 	} else if (csr == 0x342) { // mcause
+		//printf("csrrs: mcause = %#x, src1 = %#x\n", cpu.mcause, src1);
 		R(rd) = cpu.mcause;
 		cpu.mcause = src1 | cpu.mcause;
 	} else if (csr == 0x305) { // mtvec
@@ -121,7 +124,14 @@ static void handle_csrrs(word_t src1, int rd, word_t csr){
 	handle_mret(s); \
 }
 static void handle_mret(Decode *s){
+/*
+	if (R(15) == 0xffffffff) {  // a5
+		s->dnpc = cpu.mepc + 4;	
+		return;
+	}
+*/
 	s->dnpc = cpu.mepc;	
+	//printf("mret: next pc is %#x\n", s->dnpc);
 }
 
 enum {
