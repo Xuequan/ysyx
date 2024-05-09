@@ -44,7 +44,7 @@ __am_asm_trap:
 
   MAP(REGS, PUSH)
 
-  csrr t0, mcause
+  #csrr t0, mcause
   csrr t1, mstatus
   csrr t2, mepc
 
