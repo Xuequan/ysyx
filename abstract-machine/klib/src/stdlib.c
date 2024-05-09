@@ -65,6 +65,7 @@ void *malloc(size_t size) {
 void free(void *ptr) {
 }
 
+/*
 static void reverse(char s[]) {
 	char c;
 	int i, j;
@@ -91,4 +92,5 @@ void itoa(int n, char s[]) {
 	s[i] = '\0';
 	reverse(s);
 }
+*/
 #endif
