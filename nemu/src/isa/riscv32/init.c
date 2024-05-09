@@ -33,7 +33,7 @@ static void restart() {
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
 
-	/* for Difftest, set mstatus to 0x1800 */
+	/* for Difftest, riscv32, set mstatus to 0x1800 */
 	cpu.mstatus = 0x1800;
 }
 
