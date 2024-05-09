@@ -59,6 +59,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	c = ctx;
 	ctx->mcause = (uintptr_t)0x8;
 	ctx->mepc = (uintptr_t)entry;
+	ctx->gpr[10] = (uintptr_t)arg;  // a0
 	return c;
 }
 
