@@ -54,13 +54,20 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
  * 			 结构，然后返回这一结构的指针。
  */
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-	Context *c = (Context *)kstack.start;
+	Context *cp = (Context *)kstack.start;
+	/*
 	Context *ctx = (Context *)kstack.end - 1;
-	c = ctx;
+	cp = ctx;
 	ctx->mcause = (uintptr_t)0x8;
 	ctx->mepc = (uintptr_t)entry;
 	ctx->gpr[10] = (uintptr_t)arg;  // a0
-	return c;
+	*/
+	uint8_t* ctx = (uint8_t*)((uint8_t*)kstack.end - sizeof(Context) );
+	cp = (Context *)ctx;
+	cp->mcause = (uintptr_t)0x8;
+	cp->mepc = (uintptr_t)entry;
+	cp->gpr[10] = (uintptr_t)arg;  // a0
+	return cp;
 }
 
 void yield() {
