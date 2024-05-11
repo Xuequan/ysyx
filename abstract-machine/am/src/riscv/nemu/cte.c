@@ -5,6 +5,7 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
+	printf("here in __am_irq_handle, c = %#x, c->mcause = %#x\n", c, c->mcause);
   if (user_handler) {
     Event ev = {0};
 		//ev.cause = c->mcause;
