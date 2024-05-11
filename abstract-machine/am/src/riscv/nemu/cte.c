@@ -55,6 +55,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
  */
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	Context *cp = (Context *)kstack.start;
+	Context *cp1 = (Context *)kstack.start;
 	/*
 	Context *ctx = (Context *)kstack.end - 1;
 	cp = ctx;
@@ -67,7 +68,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	cp->mcause = (uintptr_t)0x8;
 	cp->mepc = (uintptr_t)entry;
 	cp->gpr[10] = (uintptr_t)arg;  // a0
-	printf("here in kcontext, Area(%#x -- %#x),*cp = %#x, cp = %#x, ctx = %#x\n", kstack.start, kstack.end, *cp, cp, ctx);
+	printf("here in kcontext, Area(%#x -- %#x),cp1 = %#x, *cp = %#x, cp = %#x, ctx = %#x\n", kstack.start, kstack.end, cp1, *cp, cp, ctx);
 	return cp;
 }
 
