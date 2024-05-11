@@ -5,7 +5,7 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
-	printf("here in __am_irq_handle, c = %#x, c->mcause = %#x\n", c, c->mcause);
+	printf("__am_irq_handle():  c = %#x, c->mcause = %#x\n", c, c->mcause);
   if (user_handler) {
     Event ev = {0};
 		//ev.cause = c->mcause;
@@ -65,6 +65,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	printf("kcontext(), Area(%#x -- %#x), ctx = %#x, cp = %#x, tentry = %#x, parameter = %#x, texit = %#x\n", 
 				kstack.start, kstack.end, ctx,  cp, cp + sizeof(Context*), cp + sizeof(Context*) + sizeof(uintptr_t), cp + sizeof(Context*) + 2*sizeof(uintptr_t) );
 
+	printf("kcontext(): mcaus = %#x\n", ctx->mcause);
 /*
 	printf("2- here in kcontext, *cp = %#x, *tentry = %#x, *parameter = %#x, *texit = %#x\n", 
 				*cp, *(cp + sizeof(Context*)), *(cp + sizeof(Context*) + sizeof(uintptr_t)), *(cp + sizeof(Context*) + 2*sizeof(uintptr_t)) );
