@@ -67,7 +67,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	cp->mcause = (uintptr_t)0x8;
 	cp->mepc = (uintptr_t)entry;
 	cp->gpr[10] = (uintptr_t)arg;  // a0
-	printf("here in kcontext, Area(%#x -- %#x)\n", kstack.start, kstack.end);
+	printf("here in kcontext, Area(%#x -- %#x), cp = %#x, ctx = %#x\n", kstack.start, kstack.end, cp, ctx);
 	return cp;
 }
 
