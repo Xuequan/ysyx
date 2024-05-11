@@ -65,6 +65,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 				kstack.start, kstack.end, ctx,  cp, cp + sizeof(Context*), cp + sizeof(Context*) + sizeof(uintptr_t), cp + sizeof(Context*) + 2*sizeof(uintptr_t) );
 	printf("here in kcontext, *cp = %#x, *tentry = %#x, *parameter = %#x, *texit = %#x\n", 
 				*cp, *(cp + sizeof(Context*)), *(cp + sizeof(Context*) + sizeof(uintptr_t)), *(cp + sizeof(Context*) + 2*sizeof(uintptr_t)) );
+	printf("\n");
 	return ctx;
 }
 /*
