@@ -322,7 +322,8 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 				func_name[k] = '\0';
 
 				*success = true;
-				break;
+				return;
+				//break;
 			}
 		}
 	}//end-for
