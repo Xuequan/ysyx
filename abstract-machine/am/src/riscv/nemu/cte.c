@@ -61,11 +61,16 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	ctx->mcause = (uintptr_t)0x8;
 	ctx->mepc = (uintptr_t)entry;
 	ctx->gpr[10] = (uintptr_t)arg;  // a0
-	printf("here in kcontext, Area(%#x -- %#x), ctx = %#x, cp = %#x, tentry = %#x, parameter = %#x, texit = %#x\n", 
+
+	printf("1- here in kcontext, Area(%#x -- %#x), ctx = %#x, cp = %#x, tentry = %#x, parameter = %#x, texit = %#x\n", 
 				kstack.start, kstack.end, ctx,  cp, cp + sizeof(Context*), cp + sizeof(Context*) + sizeof(uintptr_t), cp + sizeof(Context*) + 2*sizeof(uintptr_t) );
-	printf("here in kcontext, *cp = %#x, *tentry = %#x, *parameter = %#x, *texit = %#x\n", 
+
+/*
+	printf("2- here in kcontext, *cp = %#x, *tentry = %#x, *parameter = %#x, *texit = %#x\n", 
 				*cp, *(cp + sizeof(Context*)), *(cp + sizeof(Context*) + sizeof(uintptr_t)), *(cp + sizeof(Context*) + 2*sizeof(uintptr_t)) );
+
 	printf("\n");
+*/
 	return ctx;
 }
 /*
