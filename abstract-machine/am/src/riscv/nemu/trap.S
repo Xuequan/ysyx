@@ -31,11 +31,20 @@ f(30) f(31)
 #define PUSH(n) STORE concat(x, n), (n * XLEN)(sp);
 #define POP(n)  LOAD  concat(x, n), (n * XLEN)(sp);
 
-#define CONTEXT_SIZE  ((NR_REGS + 3) * XLEN)
+#define CONTEXT_SIZE  ((NR_REGS + 3 + 5) * XLEN)
 #define OFFSET_SP     ( 2 * XLEN)
 #define OFFSET_CAUSE  ((NR_REGS + 0) * XLEN)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
+
+# 3 parameters
+#define OFFSET_PARAM_0    ((NR_REGS + 3) * XLEN)
+#define OFFSET_PARAM_1    ((NR_REGS + 4) * XLEN)
+#define OFFSET_PARAM_2    ((NR_REGS + 5) * XLEN)
+# 'to' 
+#define OFFSET_TO    			((NR_REGS + 6) * XLEN)
+# 'from' 
+#define OFFSET_FROM    		((NR_REGS + 7) * XLEN)
 
 .align 3
 .globl __am_asm_trap
@@ -44,7 +53,7 @@ __am_asm_trap:
 
   MAP(REGS, PUSH)
 
-	# pa4.1, 但在 pa3.1 中还是需要将 mcause 压栈
+	# pa4.1 中将 mcause 压栈DiffTest 会报错, 但在 pa3.1 中还是需要将 mcause 压栈
   csrr t0, mcause
 
   csrr t1, mstatus
@@ -56,11 +65,28 @@ __am_asm_trap:
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
 
+		
+
   # set mstatus.MPRV to pass difftest
-  li a0, (1 << 17)
-  or t1, t1, a0
+  #li a0, (1 << 17)
+  li t2, (1 << 17)
+  or t1, t1, t2
   csrw mstatus, t1
 
+	# try
+	LOAD t0, OFFSET_PARAM_1(a0)
+	LOAD t1, OFFSET_PARAM_1(a0)
+	LOAD t2, OFFSET_PARAM_2(a0)
+	STORE t0, OFFSET_PARAM_0(sp)	
+	STORE t1, OFFSET_PARAM_1(sp)	
+	STORE t2, OFFSET_PARAM_2(sp)	
+
+	LOAD t0, OFFSET_TO(a0)
+	LOAD t0, OFFSET_FROM(a0)
+	STORE t0, OFFSET_TO(sp)
+	STORE t0, OFFSET_FROM(sp)
+	# try end
+	
   mv a0, sp
   jal __am_irq_handle
 
