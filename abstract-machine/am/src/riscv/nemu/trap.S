@@ -31,12 +31,13 @@ f(30) f(31)
 #define PUSH(n) STORE concat(x, n), (n * XLEN)(sp);
 #define POP(n)  LOAD  concat(x, n), (n * XLEN)(sp);
 
-#define CONTEXT_SIZE  ((NR_REGS + 3 + 1 + 5) * XLEN)
+//#define CONTEXT_SIZE  ((NR_REGS + 3 + 1 + 5) * XLEN)
+#define CONTEXT_SIZE  ((NR_REGS + 3) * XLEN)
 #define OFFSET_SP     ( 2 * XLEN)
 #define OFFSET_CAUSE  ((NR_REGS + 0) * XLEN)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
-
+/*
 #define OFFSET_PDIR   ((NR_REGS + 3) * XLEN)
 # 3 parameters
 #define OFFSET_PARAM_0    ((NR_REGS + 4) * XLEN)
@@ -46,6 +47,7 @@ f(30) f(31)
 #define OFFSET_TO    			((NR_REGS + 7) * XLEN)
 # 'from' 
 #define OFFSET_FROM    		((NR_REGS + 8) * XLEN)
+*/
 
 .align 3
 .globl __am_asm_trap
@@ -74,8 +76,9 @@ __am_asm_trap:
   or t1, t1, t2
   csrw mstatus, t1
 
+	/*
 	# try
-	LOAD t0, OFFSET_PARAM_1(a0)
+	LOAD t0, OFFSET_PARAM_0(a0)
 	LOAD t1, OFFSET_PARAM_1(a0)
 	LOAD t2, OFFSET_PARAM_2(a0)
 	STORE t0, OFFSET_PARAM_0(sp)	
@@ -87,6 +90,7 @@ __am_asm_trap:
 	STORE t0, OFFSET_TO(sp)
 	STORE t0, OFFSET_FROM(sp)
 	# try end
+	*/
 	
   mv a0, sp
   jal __am_irq_handle
