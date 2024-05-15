@@ -92,7 +92,8 @@ __am_asm_trap:
 	# try end
 	*/
 	
-  mv a0, sp
+	# rt-thread	
+  //mv a0, sp
   jal __am_irq_handle
 
 	# pa4.1
