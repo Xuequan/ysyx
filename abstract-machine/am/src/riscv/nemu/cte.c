@@ -5,7 +5,7 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
-	printf("__am_irq_handle():  c = %#x, c->mcause = %#x\n", c, c->mcause);
+	//printf("__am_irq_handle():  c = %#x, c->mcause = %#x\n", c, c->mcause);
   if (user_handler) {
     Event ev = {0};
 		//ev.cause = c->mcause;
@@ -23,7 +23,7 @@ Context* __am_irq_handle(Context *c) {
     c = user_handler(ev, c);
     assert(c != NULL);
   }
-	printf("__am_irq_handle(): return now c = %#x\n", c);
+	//printf("__am_irq_handle(): return now c = %#x\n", c);
   return c;
 }
 
@@ -59,8 +59,10 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	ctx->mepc = (uintptr_t)entry;
 	ctx->gpr[10] = (uintptr_t)arg;  // a0
 
+	/*
 	printf("\nkcontext(), Area(%#x -- %#x), c = %#x, cp = %#x, *cp = %#x\n", 
 				kstack.start, kstack.end, ctx,  cp, *cp);
+	*/
 
 	return ctx;
 }
@@ -80,7 +82,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 
 void yield() {
 #ifdef __riscv_e
-	printf("yield() \n");
+	//printf("yield() \n");
   asm volatile("li a5, -1; ecall");
 #else
   asm volatile("li a7, -1; ecall");
