@@ -26,9 +26,15 @@ const char *regs[] = {
 #define NR_REGS ARRLEN(regs)
 void isa_reg_display() {
 	int i = 0;
+#ifdef __riscv_e
+	for (; i < 16; i++) {
+		printf("%-5s %#x\n", regs[i], gpr(i));  
+	}
+#else
 	for (; i < NR_REGS; i++) {
 		printf("%-5s %#x\n", regs[i], gpr(i));  
 	}
+#endif
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
