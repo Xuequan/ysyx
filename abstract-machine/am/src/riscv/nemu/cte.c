@@ -5,7 +5,7 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
-	printf("__am_irq_handle():  input c = %#x, c->mcause = %#x, ", c, c->mcause);
+	printf("__am_irq_handle()-1:  input c = %#x, c->mcause = %#x \n", c, c->mcause);
   if (user_handler) {
     Event ev = {0};
 		//ev.cause = c->mcause;
@@ -23,7 +23,7 @@ Context* __am_irq_handle(Context *c) {
     c = user_handler(ev, c);
     assert(c != NULL);
   }
-	printf("return now c = %#x\n", c);
+	printf("__am_irq_handle()-2: return now c = %#x\n", c);
   return c;
 }
 
