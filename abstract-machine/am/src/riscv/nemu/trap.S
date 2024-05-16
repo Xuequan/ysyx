@@ -97,6 +97,9 @@ __am_asm_trap:
   jal __am_irq_handle
 
 	# pa4.1
+	// rt-thread try
+	STORE sp, 8(a0)
+	
 	mv sp, a0
 	LOAD t0, OFFSET_CAUSE(sp)
 
@@ -111,6 +114,9 @@ __am_asm_trap:
   csrw mepc, t2
 
   MAP(REGS, POP)
+
+	// rt-thread try	
+	LOAD sp, 8(a0)
 
   addi sp, sp, CONTEXT_SIZE
   mret
