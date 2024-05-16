@@ -37,8 +37,9 @@ f(30) f(31)
 #define OFFSET_CAUSE  ((NR_REGS + 0) * XLEN)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
-/*
+
 #define OFFSET_PDIR   ((NR_REGS + 3) * XLEN)
+
 # 3 parameters
 #define OFFSET_PARAM_0    ((NR_REGS + 4) * XLEN)
 #define OFFSET_PARAM_1    ((NR_REGS + 5) * XLEN)
@@ -47,7 +48,6 @@ f(30) f(31)
 #define OFFSET_TO    			((NR_REGS + 7) * XLEN)
 # 'from' 
 #define OFFSET_FROM    		((NR_REGS + 8) * XLEN)
-*/
 
 .align 3
 .globl __am_asm_trap
@@ -68,38 +68,35 @@ __am_asm_trap:
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)
 
-		
-
   # set mstatus.MPRV to pass difftest
   #li a0, (1 << 17)
   li t2, (1 << 17)
   or t1, t1, t2
   csrw mstatus, t1
 
-	/*
+	///*
 	# try
+	# copy a0 (context*c) to new context (sp)
 	LOAD t0, OFFSET_PARAM_0(a0)
 	LOAD t1, OFFSET_PARAM_1(a0)
 	LOAD t2, OFFSET_PARAM_2(a0)
+
+	LOAD t0, OFFSET_TO(a0)
+	LOAD t0, OFFSET_FROM(a0)
+
 	STORE t0, OFFSET_PARAM_0(sp)	
 	STORE t1, OFFSET_PARAM_1(sp)	
 	STORE t2, OFFSET_PARAM_2(sp)	
 
-	LOAD t0, OFFSET_TO(a0)
-	LOAD t0, OFFSET_FROM(a0)
 	STORE t0, OFFSET_TO(sp)
 	STORE t0, OFFSET_FROM(sp)
 	# try end
-	*/
+	//*/
 	
-	# rt-thread	
-  //mv a0, sp
+  mv a0, sp
   jal __am_irq_handle
 
 	# pa4.1
-	// rt-thread try
-	STORE sp, 8(a0)
-	
 	mv sp, a0
 	LOAD t0, OFFSET_CAUSE(sp)
 
@@ -114,9 +111,6 @@ __am_asm_trap:
   csrw mepc, t2
 
   MAP(REGS, POP)
-
-	// rt-thread try	
-	LOAD sp, 8(a0)
 
   addi sp, sp, CONTEXT_SIZE
   mret
