@@ -8,8 +8,6 @@ Context* __am_irq_handle(Context *c) {
 	printf("\n__am_irq_handle()-1:  input c = %#x, c->mcause = %#x \n", c, c->mcause);
   if (user_handler) {
     Event ev = {0};
-		//ev.cause = c->mcause;
-		
     switch (c->mcause) {
 			// 根据手册 p38
 			case 12: ev.event = EVENT_PAGEFAULT; break;
@@ -19,7 +17,6 @@ Context* __am_irq_handle(Context *c) {
 			// EVENT_IRQ_IODEV	
       default: ev.event = EVENT_ERROR; break;
     }
-
     c = user_handler(ev, c);
     assert(c != NULL);
   }
