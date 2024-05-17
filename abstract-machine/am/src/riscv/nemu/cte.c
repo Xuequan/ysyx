@@ -55,7 +55,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	Context** cp = (Context** ) kstack.start;
 	Context* ctx = (Context* )((uint8_t*)kstack.end - sizeof(Context) );
 	*cp = ctx;
-	ctx->mcause = (uintptr_t)0xb;
+	ctx->mcause = (uintptr_t)0x8;
 	ctx->mepc = (uintptr_t)entry;
 	ctx->gpr[10] = (uintptr_t)arg;  // a0
 
