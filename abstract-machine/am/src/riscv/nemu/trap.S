@@ -77,6 +77,9 @@ __am_asm_trap:
 	///*
 	# try
 	# copy a0 (context*c) to new context (sp)
+	# 这里 a0 可能已经变化了，它不是 context *c了，故需要还原
+	# 而原 sp 是a0的
+	addi a0, sp, CONTEXT_SIZE
 	LOAD t0, OFFSET_PARAM_0(a0)
 	LOAD t1, OFFSET_PARAM_1(a0)
 	LOAD t2, OFFSET_PARAM_2(a0)
