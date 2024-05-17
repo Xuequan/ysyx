@@ -75,7 +75,11 @@ __am_asm_trap:
   jal __am_irq_handle
 
 	# pa4.1
+	# restore sp, sp is saved in 'from'
+	LOAD t0, -8(a0)
+	mv sp, t0
   addi sp, sp, CONTEXT_SIZE
+	
 	mv sp, a0
 	LOAD t0, OFFSET_CAUSE(sp)
 
