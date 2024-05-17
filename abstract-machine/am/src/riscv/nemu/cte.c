@@ -23,7 +23,7 @@ Context* __am_irq_handle(Context *c) {
     c = user_handler(ev, c);
     assert(c != NULL);
   }
-	printf("__am_irq_handle()-2: return now c = %#x\n", c);
+	printf("__am_irq_handle()-2: return now c = %#x, c->mcause = %#x\n", c, c->mcause);
   return c;
 }
 
