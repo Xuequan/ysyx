@@ -68,20 +68,11 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 	handle_ecall(s, pc); \
 }
 
-/*
-#define GET_A5(val) asm volatile("mv a0, a5; mv )
-static int get_a5() {
-	GET_A5	
-}
-*/
 static void handle_ecall(Decode *s, vaddr_t pc) {
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
-	//printf("ecall: now pc is %#x\n", pc);
-	int a = 0;
+	int a = R(15);
 	int no = 0;
-	asm volatile("movl a5, %0" :"=r"(a) : :);
-	//asm volatile("addi %0, a5, 0" :"=r"(a) : :);
 	if (a == -1)	
 		no = 0xb;
 	else
