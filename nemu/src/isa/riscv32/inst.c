@@ -68,13 +68,28 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 	handle_ecall(s, pc); \
 }
 
+/*
+#define GET_A5(val) asm volatile("mv a0, a5; mv )
+static int get_a5() {
+	GET_A5	
+}
+*/
 static void handle_ecall(Decode *s, vaddr_t pc) {
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
 	//printf("ecall: now pc is %#x\n", pc);
-	s->dnpc = isa_raise_intr(0xb, pc);
+	int a = 0;
+	int no = 0;
+	asm volatile("movl a5, %0" :"=r"(a) : :);
+	//asm volatile("addi %0, a5, 0" :"=r"(a) : :);
+	if (a == -1)	
+		no = 0xb;
+	else
+		no = 0x8;
+
+	s->dnpc = isa_raise_intr(no, pc);
 	/* etrace start */
-	log_write("Exception happened at pc = '%#x', and exception NO will be %#x\n", pc, 0xb);
+	log_write("Exception happened at pc = '%#x', and exception NO will be %#x\n", pc, no);
 	/* etrace end */
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
