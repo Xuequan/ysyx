@@ -79,6 +79,7 @@ __am_asm_trap:
 	LOAD t0, -8(a0)
 	mv sp, t0
   addi sp, sp, CONTEXT_SIZE
+	STORE sp, -8(a0)
 	
 	mv sp, a0
 	LOAD t0, OFFSET_CAUSE(sp)
@@ -96,4 +97,7 @@ __am_asm_trap:
   MAP(REGS, POP)
 
   //addi sp, sp, CONTEXT_SIZE
+	LOAD t0, -8(sp)
+	mv sp, t0
+
   mret
