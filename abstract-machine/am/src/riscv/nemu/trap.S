@@ -69,11 +69,11 @@ __am_asm_trap:
   mv a0, sp
   jal __am_irq_handle
 	mv sp, a0
-	LOAD t0, OFFSET_CAUSE(sp)
+	//LOAD t0, OFFSET_CAUSE(sp)
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
 	addi t2, t2, 4   # mepc + 4, point to the instruction after ecall
-	csrw mcause, t0
+	//csrw mcause, t0
   csrw mstatus, t1
   csrw mepc, t2
   MAP(REGS, POP)
