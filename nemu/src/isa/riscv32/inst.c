@@ -74,11 +74,10 @@ static void handle_ecall(Decode *s, vaddr_t pc) {
 	int a = R(15);
 	int no = 0;
 	if (a == -1)	
-		no = 0x8;
-	else
 		no = 0xb;
+	else
+		no = 0x8;
 
-	printf("inst(): a = %d, no = %d\n", a, no);
 	s->dnpc = isa_raise_intr(no, pc);
 	/* etrace start */
 	log_write("Exception happened at pc = '%#x', and exception NO will be %#x\n", pc, no);
