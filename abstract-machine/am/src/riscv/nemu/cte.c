@@ -20,7 +20,7 @@ Context* __am_irq_handle(Context *c) {
     c = user_handler(ev, c);
     assert(c != NULL);
   }
-	printf("__am_irq_handle()-2: return now c = %#x, c->mcause = %#x\n", c, c->mcause);
+	printf("\n__am_irq_handle()-2: return now c = %#x, c->mcause = %#x\n", c, c->mcause);
   return c;
 }
 
@@ -56,15 +56,13 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	ctx->mepc = (uintptr_t)entry;
 	ctx->gpr[10] = (uintptr_t)arg;  // a0
 
-	printf("\nkcontext(), Area(%#x -- %#x), c = %#x, cp = %#x, *cp = %#x\n", 
-				kstack.start, kstack.end, ctx,  cp, *cp);
+	printf("\nkcontext(), Area(%#x -- %#x), c = %#x\n", kstack.start, kstack.end, ctx);
 
 	return ctx;
 }
 
 void yield() {
 #ifdef __riscv_e
-	//printf("yield() \n");
   asm volatile("li a5, -1; ecall");
 #else
   asm volatile("li a7, -1; ecall");
