@@ -56,26 +56,26 @@ f(30) f(31)
 __am_asm_trap:
   addi sp, sp, -CONTEXT_SIZE
   MAP(REGS, PUSH)
-  csrr t0, mcause
+  //csrr t0, mcause
   csrr t1, mstatus
-  csrr t2, mepc
-  STORE t0, OFFSET_CAUSE(sp)
+  //csrr t2, mepc
+  //STORE t0, OFFSET_CAUSE(sp)
   STORE t1, OFFSET_STATUS(sp)
-  STORE t2, OFFSET_EPC(sp)
+  //STORE t2, OFFSET_EPC(sp)
   # set mstatus.MPRV to pass difftest
   li t0, (1 << 17)
   or t1, t1, t0
   csrw mstatus, t1
   mv a0, sp
   jal __am_irq_handle
-  addi sp, sp, CONTEXT_SIZE
 	mv sp, a0
 	LOAD t0, OFFSET_CAUSE(sp)
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
-	addi t2, t2, 4   # mepc + 4, point to the instruction after ecall
+	//addi t2, t2, 4   # mepc + 4, point to the instruction after ecall
 	csrw mcause, t0
   csrw mstatus, t1
   csrw mepc, t2
   MAP(REGS, POP)
+  addi sp, sp, CONTEXT_SIZE
   mret
