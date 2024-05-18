@@ -61,19 +61,6 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 
 	return ctx;
 }
-/*
-Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-	Context *cp = (Context *)kstack.start;
-	Context *cp1 = (Context *)kstack.start;
-	uint8_t* ctx = (uint8_t*)((uint8_t*)kstack.end - sizeof(Context) );
-	cp = (Context *)ctx;
-	cp->mcause = (uintptr_t)0x8;
-	cp->mepc = (uintptr_t)entry;
-	cp->gpr[10] = (uintptr_t)arg;  // a0
-	printf("here in kcontext, Area(%#x -- %#x),cp1 = %#x, *cp = %#x, cp = %#x, ctx = %#x\n", kstack.start, kstack.end, cp1, *cp, cp, ctx);
-	return cp;
-}
-*/
 
 void yield() {
 #ifdef __riscv_e
