@@ -94,9 +94,31 @@ int strcmp(const char *s1, const char *s2) {
 	else 
 		return -1;
 }
-
+/* strncmp() is similar with strcmp(), except is compares only the first (at most) n bytes of s1 and s2 */
 int strncmp(const char *s1, const char *s2, size_t n) {
-  panic("Not implemented");
+	char *ptr1 = (char *) s1;
+	char *ptr2 = (char *) s2;
+	int i = 0;
+	while (*ptr1 != '\0' && *ptr2 != '\0' && i < n) {
+		if (*ptr1 == *ptr2) { 
+			ptr1++;
+			ptr2++;
+		} else if (*ptr1 > *ptr2) { 
+			return 1;	
+		} else {
+			return -1;
+		}
+		i++;
+	}	
+	if (i == n){
+		return 0;
+	} 
+	if (*ptr1 == '\0' && *ptr2 == '\0') 
+		return 0;
+	else if (*ptr1 != '\0') 
+		return 1;
+	else 
+		return -1;
 }
 
 /* memset() function fills the first n bytes of the memory area
