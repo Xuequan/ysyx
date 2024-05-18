@@ -54,6 +54,7 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+	# store sp
 	mv t2, sp
 	mv sp, a0
   addi sp, sp, -CONTEXT_SIZE
@@ -69,6 +70,7 @@ __am_asm_trap:
   or t1, t1, t0
   csrw mstatus, t1
   mv a0, sp
+	# restore sp
 	mv sp, t2
   jal __am_irq_handle
 	mv sp, a0
