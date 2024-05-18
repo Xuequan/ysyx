@@ -54,6 +54,7 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+	mv sp, a0
   addi sp, sp, -CONTEXT_SIZE
   MAP(REGS, PUSH)
   //csrr t0, mcause
