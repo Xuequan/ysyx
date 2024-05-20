@@ -68,12 +68,14 @@ wire cond_branch_taken;
 assign cond_branch_taken = cond_branch_inst && alu_result[0];
 
 // 注意：若是 jalr, 还需要将相加得来的地址LSB 设为 0；
+wire [DATA_WIDTH-1:0] branch_target;
 assign branch_target = 
 			({DATA_WIDTH{uncond_jump_inst[0]}} & alu_result)
 		| ({DATA_WIDTH{uncond_jump_inst[1]}} & {alu_result[DATA_WIDTH-1:1], 1'b0})
 		| ({DATA_WIDTH{cond_branch_taken}} & cond_branch_target);
 
 // 判断是否是 branch
+wire branch_taken;
 assign branch_taken = |uncond_jump_inst || cond_branch_taken;
 /* ========= output to IFU for nextPC generated ========= */
 		// final exu_nextpc 
@@ -102,7 +104,7 @@ assign load_data = ({DATA_WIDTH{load_inst[0]}} & rdata)
 // 若是 jal, jalr, 那么将 rd <- pc + 4
 assign regfile_wdata = |uncond_jump_inst ? pc + 4 : 
 											 |load_inst     ? load_data :
-											 |csr_inst      ? src2; // csrrw, csrrs
+											 |csr_inst      ? src2      : // csrrw, csrrs
 																				alu_result;
 
 assign regfile_waddr = rd;
@@ -110,7 +112,7 @@ assign regfile_waddr = rd;
 assign regfile_wen = regfile_mem_mux[0];
 
 /* ============= to CSR ================================= */
-assign csr_wdata = alu_reault;  // only for csrrs
+assign csr_wdata = alu_result;  // only for csrrs
 /* =============== DPI-C ========================= */
 export "DPI-C" task update_regfile_no;
 task update_regfile_no (output [REG_WIDTH-1:0] reg_no);

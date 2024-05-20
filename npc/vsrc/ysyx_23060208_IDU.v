@@ -47,8 +47,8 @@ module ysyx_23060208_IDU
 wire [6:0] opcode;
 wire [2:0] funct3;
 wire [6:0] funct7;
-wire [REG_WIDTH-1:0] rs1;
-wire [REG_WIDTH-1:0] rs2;
+wire [REG_WIDTH-1:0 ] rs1;
+wire [REG_WIDTH-1:0 ] rs2;
 wire [DATA_WIDTH-1:0] imm;
 wire [DATA_WIDTH-1:0] immI;
 wire [DATA_WIDTH-1:0] immU;
@@ -58,6 +58,7 @@ wire [DATA_WIDTH-1:0] immB;
 wire [DATA_WIDTH-1:0] src1_from_reg;
 wire [DATA_WIDTH-1:0] src2_from_reg;
 wire [DATA_WIDTH-1:0] csr_rdata;  // put into src2
+wire [11					:0] csr;
 
 assign opcode = inst[6:0];
 assign funct3 = inst[14:12];

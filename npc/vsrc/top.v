@@ -132,7 +132,7 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	
 	.rdata(rdata),
 	.raddr(raddr),
-	.valid(exu_to_dsram_read_en)
+	.valid(exu_to_dsram_read_en),
 
 	.csr_nextpc(csr_nextpc),
 	.csr_nextpc_taken(csr_nextpc_taken),
