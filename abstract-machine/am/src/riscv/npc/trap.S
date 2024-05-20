@@ -59,8 +59,10 @@ __am_asm_trap:
 	mv sp, t2
   jal __am_irq_handle
 	mv sp, a0
+	LOAD t0, OFFSET_CAUSE(sp)
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
+	csrw mcause, t0
   csrw mstatus, t1
   csrw mepc, t2
 
