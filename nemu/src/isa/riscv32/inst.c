@@ -76,7 +76,7 @@ static void handle_ecall(Decode *s, vaddr_t pc) {
 	if (a == -1)	
 		no = 0xb;
 	else
-		no = 0x8;
+		no = 0x8;  // pa3.1 , pa4.1 没用上
 
 	s->dnpc = isa_raise_intr(no, pc);
 	/* etrace start */

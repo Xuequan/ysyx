@@ -6,15 +6,15 @@ module ysyx_23060208_IFU
 	input [DATA_WIDTH-1:0]  inst_i,  // from inst ram
 
 	// from EXU
-	input [DATA_WIDTH-1:0]  branch_target,
-	input 									branch_taken,
+	input [DATA_WIDTH-1:0]  exu_nextpc,
+	input 									exu_nextpc_taken,
 
 	output reg 							valid, // to isram						
 	output [DATA_WIDTH-1:0] pc,  // to IDU
 	output [DATA_WIDTH-1:0] nextPC    // to inst ram
 );
 
-assign nextPC = branch_taken ? branch_target :
+assign nextPC = exu_nextpc_taken ? exu_nextpc :
 													pc + 4;
 
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(

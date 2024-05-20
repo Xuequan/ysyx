@@ -12,8 +12,8 @@ wire [REG_WIDTH-1 :0] regfile_waddr;
 wire 									regfile_wen;
 
 wire [1						:0] uncond_jump_inst;
-wire 									branch_taken;
-wire [DATA_WIDTH-1:0] branch_target;
+wire 									exu_nextpc_taken_to_ifu;
+wire [DATA_WIDTH-1:0] exu_nextpc_to_ifu;
 
 wire [DATA_WIDTH-1:0] cond_branch_target;
 wire 									cond_branch_inst;
@@ -40,6 +40,11 @@ wire [DATA_WIDTH-1:0] idu_to_exu_pc;
 wire 									ifu_to_isram_valid;
 wire									exu_to_dsram_read_en;
 
+wire [DATA_WIDTH-1:0] csr_nextpc;
+wire 									csr_nextpc_taken;
+wire [DATA_WIDTH-1:0] csr_wdata;
+wire [1						:0] csr_inst;
+
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 	.clk(clk),
 	.rst(rst),
@@ -53,8 +58,8 @@ ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 	.rst(rst),
 	.inst_i(inst),
 
-	.branch_target(branch_target),
-	.branch_taken(branch_taken),
+	.exu_nextpc(exu_nextpc_to_ifu),
+	.exu_nextpc_taken(exu_nextpc_taken_to_ifu),
 
 	.valid(ifu_to_isram_valid),
 	.pc(pc),
@@ -86,7 +91,12 @@ ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 	.load_inst(load_inst),
 
 	.store_inst(store_inst),
-	.store_data_raw(store_data_raw)
+	.store_data_raw(store_data_raw),
+
+	.csr_nextpc(csr_nextpc),
+	.csr_nextpc_taken(csr_nextpc_taken),
+	.csr_wdata(csr_wdata),
+	.csr_inst(csr_inst)
 );
 
 ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
@@ -106,8 +116,8 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 
 	.load_inst(load_inst),
 
-	.branch_target(branch_target),
-	.branch_taken(branch_taken),
+	.exu_nextpc(exu_nextpc_to_ifu),
+	.exu_nextpc_taken(exu_nextpc_taken_to_ifu),
 
 	.regfile_wdata(regfile_wdata),
 	.regfile_waddr(regfile_waddr),
@@ -123,6 +133,11 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.rdata(rdata),
 	.raddr(raddr),
 	.valid(exu_to_dsram_read_en)
+
+	.csr_nextpc(csr_nextpc),
+	.csr_nextpc_taken(csr_nextpc_taken),
+	.csr_inst(csr_inst),
+	.csr_wdata(csr_wdata)
 );
 
 ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(
