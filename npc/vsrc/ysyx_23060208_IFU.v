@@ -42,10 +42,11 @@ assign ifu_valid = 1'b1;
 
 assign ifu_to_idu_valid = ifu_valid;
 
-parameter IDLE = 1'b0, 
-					WAIT_READY = 1'b1;
+parameter [1:0] IDLE = 2'b00, 
+					WAIT_READY = 2'b01,
+					SENT = 2'b10;
 
-reg state, next;
+reg [1:0] state, next;
 always @(posedge clk) begin
 	if (rst) 
 		state <= IDLE;
@@ -54,33 +55,47 @@ always @(posedge clk) begin
 end 
 
 always @(state or idu_to_ifu_ready or ifu_to_idu_valid) begin
-	next = 1'b0;
+	next = IDLE;
 	case (state)
 		IDLE: 
-			if (ifu_to_idu_valid) next = WAIT_READY;
-			else 									next = IDLE;
+			if (!ifu_to_idu_valid)
+				next = IDLE;
+			else if (!idu_to_ifu_ready) 
+				next = WAIT_READY;
+			else 									
+				next = SENT;
+
 		WAIT_READY:
-			if (idu_to_ifu_ready) next = IDLE;
-			else									next = WAIT_READY;
+			if (idu_to_ifu_ready) 
+				next = SENT;
+			else 		
+				next = WAIT_READY;
+
+		SENT:
+			if (ifu_to_idu_valid && idu_to_ifu_ready)
+				next = SENT;
+			else if(ifu_to_idu_valid && !idu_to_ifu_ready)
+				next = WAIT_READY;
+			else
+				next = IDLE;
+		default:
+				next = IDLE;
 	endcase
 end	
 
 // ifu_to_idu_data_r : store the data, which should be sent to IDU
 // once idu_to_ifu_ready is received
 reg [DATA_WIDTH * 2 - 1:0] ifu_to_idu_data_r;
+wire [DATA_WIDTH*2 -1 :0] ifu_to_idu_data_n;
+assign ifu_to_idu_data_n = {pc, inst_i};
+
 always @(posedge clk) begin
 	if (rst)
 		ifu_to_idu_data_r <= 0;
-	else begin
-		ifu_to_idu_data_r <= 0;
-		case (next)
-			IDLE: 
-				ifu_to_idu_data_r <= {pc, inst_i};
-			WAIT_READY:
-				ifu_to_idu_data_r <= {pc, inst_i};
-		endcase
-	end
+	else if (next == SENT) 
+		ifu_to_idu_data_r <= ifu_to_idu_data_n;
 end
+
 assign ifu_to_idu_data_o = ifu_to_idu_data_r;	
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
