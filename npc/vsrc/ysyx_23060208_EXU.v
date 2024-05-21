@@ -22,8 +22,8 @@ module ysyx_23060208_EXU
 	//output [DATA_WIDTH-1:0] nextpc_from_jal_jalr,
 
 	// to IFU for gen nextPC
-	output [DATA_WIDTH-1:0] branch_target,
-	output									branch_taken,
+	output [DATA_WIDTH-1:0] exu_nextpc,
+	output									exu_nextpc_taken,
 	
 	// output to register file
 	output [DATA_WIDTH-1:0] regfile_wdata,
@@ -40,7 +40,15 @@ module ysyx_23060208_EXU
 		// load
 	input  [DATA_WIDTH-1:0] rdata,  // from dsram
 	output [DATA_WIDTH-1:0] raddr,
-	output									valid  // to dsram
+	output									valid,  // to dsram
+	
+	/* CSR for nextpc   */
+	input  [DATA_WIDTH-1:0] csr_nextpc, 
+	input 									csr_nextpc_taken,
+	
+	/* for CSR update, to IDU */
+	input [1:0]              csr_inst,
+	output  [DATA_WIDTH-1:0] csr_wdata
 );
 
 wire [DATA_WIDTH-1:0] alu_result;
@@ -60,13 +68,20 @@ wire cond_branch_taken;
 assign cond_branch_taken = cond_branch_inst && alu_result[0];
 
 // 注意：若是 jalr, 还需要将相加得来的地址LSB 设为 0；
+wire [DATA_WIDTH-1:0] branch_target;
 assign branch_target = 
 			({DATA_WIDTH{uncond_jump_inst[0]}} & alu_result)
 		| ({DATA_WIDTH{uncond_jump_inst[1]}} & {alu_result[DATA_WIDTH-1:1], 1'b0})
 		| ({DATA_WIDTH{cond_branch_taken}} & cond_branch_target);
 
 // 判断是否是 branch
+wire branch_taken;
 assign branch_taken = |uncond_jump_inst || cond_branch_taken;
+/* ========= output to IFU for nextPC generated ========= */
+		// final exu_nextpc 
+assign exu_nextpc = ({DATA_WIDTH{branch_taken    }} & branch_target) 
+									| ({DATA_WIDTH{csr_nextpc_taken}} & csr_nextpc  );
+assign exu_nextpc_taken = branch_taken || csr_nextpc_taken;
 /* =======store instruction ============================== */
 assign store_address = alu_result; 
 assign store_en = regfile_mem_mux[1];
@@ -89,12 +104,15 @@ assign load_data = ({DATA_WIDTH{load_inst[0]}} & rdata)
 // 若是 jal, jalr, 那么将 rd <- pc + 4
 assign regfile_wdata = |uncond_jump_inst ? pc + 4 : 
 											 |load_inst     ? load_data :
+											 |csr_inst      ? src2      : // csrrw, csrrs
 																				alu_result;
 
 assign regfile_waddr = rd;
 	// regfile 写使能
 assign regfile_wen = regfile_mem_mux[0];
 
+/* ============= to CSR ================================= */
+assign csr_wdata = csr_inst[0] ? src1 : alu_result;  // only for csrrs
 /* =============== DPI-C ========================= */
 export "DPI-C" task update_regfile_no;
 task update_regfile_no (output [REG_WIDTH-1:0] reg_no);

@@ -31,54 +31,56 @@ f(30) f(31)
 #define PUSH(n) STORE concat(x, n), (n * XLEN)(sp);
 #define POP(n)  LOAD  concat(x, n), (n * XLEN)(sp);
 
-#define CONTEXT_SIZE  ((NR_REGS + 3) * XLEN)
-#define OFFSET_SP     ( 2 * XLEN)
+#define CONTEXT_SIZE  ((NR_REGS + 3 + 1) * XLEN)
+//#define OFFSET_SP     ( 2 * XLEN)
 #define OFFSET_CAUSE  ((NR_REGS + 0) * XLEN)
 #define OFFSET_STATUS ((NR_REGS + 1) * XLEN)
 #define OFFSET_EPC    ((NR_REGS + 2) * XLEN)
 
+//#define OFFSET_PDIR   ((NR_REGS + 3) * XLEN)
+
+/*
+#define CONTEXT_SIZE  ((NR_REGS + 3 + 1 + 5) * XLEN)
+# 3 parameters
+#define OFFSET_PARAM_0    ((NR_REGS + 4) * XLEN)
+#define OFFSET_PARAM_1    ((NR_REGS + 5) * XLEN)
+#define OFFSET_PARAM_2    ((NR_REGS + 6) * XLEN)
+# 'to' 
+#define OFFSET_TO    			((NR_REGS + 7) * XLEN)
+# 'from' 
+#define OFFSET_FROM    		((NR_REGS + 8) * XLEN)
+*/
+
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+	# store sp
+	mv t2, sp
+	mv sp, a0
   addi sp, sp, -CONTEXT_SIZE
-
   MAP(REGS, PUSH)
-
-	# pa4.1, 但在 pa3.1 中还是需要将 mcause 压栈
-  #csrr t0, mcause
-
+  //csrr t0, mcause
   csrr t1, mstatus
-  csrr t2, mepc
-
-	# pa4.1
-  #STORE t0, OFFSET_CAUSE(sp)
-
+  //csrr t2, mepc
+  //STORE t0, OFFSET_CAUSE(sp)
   STORE t1, OFFSET_STATUS(sp)
-  STORE t2, OFFSET_EPC(sp)
-
+  //STORE t2, OFFSET_EPC(sp)
   # set mstatus.MPRV to pass difftest
-  li a0, (1 << 17)
-  or t1, t1, a0
+  li t0, (1 << 17)
+  or t1, t1, t0
   csrw mstatus, t1
-
   mv a0, sp
+	# restore sp
+	mv sp, t2
   jal __am_irq_handle
-
-	# pa4.1
 	mv sp, a0
 	LOAD t0, OFFSET_CAUSE(sp)
-
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
-	# try
-	addi t2, t2, 4
-	#pa4.1 
+	//addi t2, t2, 4   # mepc + 4, point to the instruction after ecall
 	csrw mcause, t0
-
   csrw mstatus, t1
   csrw mepc, t2
-
   MAP(REGS, POP)
-
   addi sp, sp, CONTEXT_SIZE
   mret

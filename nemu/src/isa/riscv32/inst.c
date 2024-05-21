@@ -31,6 +31,14 @@ static void handle_lh(word_t src1, word_t imm, int rd) {
 	int sext_ret = ((int)ret << 16 ) >> 16;
 	R(rd) = (word_t)sext_ret;
 }
+#define HANDLE_LB(src1, imm, rd) { \
+	handle_lb(src1, imm, rd); \
+}
+static void handle_lb(word_t src1, word_t imm, int rd) {
+	word_t ret = Mr(src1 + imm, 1);
+	int sext_ret = ((int)ret << 24 ) >> 24;
+	R(rd) = (word_t)sext_ret;
+}
 
 /* handle instruction MULH, before multiplication, src1 & src2 should be type casted to sword_t */
 #define HANDLE_MULH(src1, src2, rd) { \
@@ -63,10 +71,16 @@ static void handle_mulhsu(word_t src1, word_t src2, int rd) {
 static void handle_ecall(Decode *s, vaddr_t pc) {
 	// ecall: Makes a request of the execution environment by raising an 
 	// 				Environment Call exception
-	//printf("ecall: now pc is %#x\n", pc);
-	s->dnpc = isa_raise_intr(0xb, pc);
+	int a = R(15);
+	int no = 0;
+	if (a == -1)	
+		no = 0xb;
+	else
+		no = 0x8;  // pa3.1 , pa4.1 没用上
+
+	s->dnpc = isa_raise_intr(no, pc);
 	/* etrace start */
-	log_write("Exception happened at pc = '%#x', and exception NO will be %#x\n", pc, 0xb);
+	log_write("Exception happened at pc = '%#x', and exception NO will be %#x\n", pc, no);
 	/* etrace end */
 }
 #define HANDLE_CSRRW(src1, rd, csr) { \
@@ -214,12 +228,12 @@ static int decode_exec(Decode *s) {
   INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw		 , I, R(rd) = Mr(src1 + imm, 4)); 
 	// lh 
   //INSTPAT("??????? ????? ????? 001 ????? 00000 11", lh		 , I, R(rd) = Mr(src1 + imm, 2)); 
-  INSTPAT("??????? ????? ????? 001 ????? 00000 11", lh		 , I,HANDLE_LH(src1, imm, rd)); 
+  INSTPAT("??????? ????? ????? 001 ????? 00000 11", lh		 , I, HANDLE_LH(src1, imm, rd)); 
 	// lhu
   //INSTPAT("??????? ????? ????? 101 ????? 00000 11", lhu		 , I, HANDLE_LHU(src1, imm, rd) ); 
   INSTPAT("??????? ????? ????? 101 ????? 00000 11", lhu		 , I, R(rd) = Mr(src1 + imm, 2)); 
 	// lb
-  INSTPAT("??????? ????? ????? 000 ????? 00000 11", lb   	 , I, R(rd) = Mr(src1 + imm, 1));
+  INSTPAT("??????? ????? ????? 000 ????? 00000 11", lb   	 , I, HANDLE_LB(src1, imm, rd));
 	// jalr
   INSTPAT("??????? ????? ????? 000 ????? 11001 11", jalr	 , I_JALR, R(rd) = s->pc + 4); 
 	// add

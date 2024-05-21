@@ -40,23 +40,29 @@ f(30) f(31)
 .align 3
 .globl __am_asm_trap
 __am_asm_trap:
+	# store sp
+	mv t2, sp
+	mv sp, a0
   addi sp, sp, -CONTEXT_SIZE
 
   MAP(REGS, PUSH)
 
-  csrr t0, mcause
+  //csrr t0, mcause
   csrr t1, mstatus
-  csrr t2, mepc
+  //csrr t2, mepc
 
-  STORE t0, OFFSET_CAUSE(sp)
+  //STORE t0, OFFSET_CAUSE(sp)
   STORE t1, OFFSET_STATUS(sp)
-  STORE t2, OFFSET_EPC(sp)
+  //STORE t2, OFFSET_EPC(sp)
 
   mv a0, sp
+	mv sp, t2
   jal __am_irq_handle
-
+	mv sp, a0
+	LOAD t0, OFFSET_CAUSE(sp)
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
+	csrw mcause, t0
   csrw mstatus, t1
   csrw mepc, t2
 
