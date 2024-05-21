@@ -4,8 +4,11 @@ module ysyx_23060208_IDU
 	input clk,
 	input rst,
 	// from IFU
-	input [DATA_WIDTH-1:0]  inst,
-	input [DATA_WIDTH-1:0]  pc_i,
+	//input [DATA_WIDTH-1:0]  inst,
+	//input [DATA_WIDTH-1:0]  pc_i,
+	input [DATA_WIDTH * 2 - 1: 0] ifu_to_idu_data_i,
+	input 												ifu_to_idu_valid,
+	output 												idu_to_ifu_ready,
 	
 	// from EXU 
 	input [DATA_WIDTH-1:0]  regfile_wdata,
@@ -43,6 +46,11 @@ module ysyx_23060208_IDU
 	output [1:0] 					 csr_inst
 );
 
+// 从 IFU 得到数据
+wire [DATA_WIDTH-1:0] inst;
+wire [DATA_WIDTH-1:0] pc;
+assign {pc, inst} = ifu_to_idu_data_i;
+assign idu_to_ifu_ready = 1'b1;
 // 解析指令
 wire [6:0] opcode;
 wire [2:0] funct3;
@@ -245,7 +253,7 @@ ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 assign src1_from_pc = inst_jal || inst_auipc;
 assign src1_is_zero = 0;
 assign src1_is_none = inst_lui;
-assign src1 = src1_from_pc ? pc_i : 
+assign src1 = src1_from_pc ? pc : 
 							src1_is_zero ? 0 : 
 							src1_is_none ? 0 : 
 														src1_from_reg;
@@ -352,7 +360,7 @@ wire mtvec_wen;
 wire [DATA_WIDTH-1:0] mtvec_rdata;
 /*
 assign mtvec_wen = inst_ecall;
-assign mtvec_wdata = pc_i;
+assign mtvec_wdata = pc;
 */
 
 ysyx_23060208_mtvec #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mtvec(
@@ -379,7 +387,7 @@ ysyx_23060208_mcause #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mcause(
 wire mepc_wen;
 wire [DATA_WIDTH-1:0] mepc_rdata;
 wire [DATA_WIDTH-1:0] mepc_wdata;
-assign mepc_wdata = inst_ecall ? pc_i : csr_wdata;
+assign mepc_wdata = inst_ecall ? pc : csr_wdata;
 
 ysyx_23060208_mepc #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mepc(
 	.clk(clk),
@@ -411,7 +419,7 @@ assign csr_rdata =  ({DATA_WIDTH{csr == 12'h305}} & mtvec_rdata)
 									| ({DATA_WIDTH{csr == 12'h300}} & mstatus_rdata);
 
 /* ================= assign output ============= */
-assign pc_o = pc_i;
+assign pc_o = pc;
 
 assign csr_nextpc = ({DATA_WIDTH{inst_ecall}} & mtvec_rdata) 
 									| ({DATA_WIDTH{inst_mret }} & mepc_rdata );
@@ -433,8 +441,8 @@ assign uncond_jump_inst[1] = inst_jalr;
 
 // conditional branch 是否跳转由比较 src1, src2 两寄存器决定
 // 该部分交给 alu
-// 跳转地址 B + pc_i
-assign cond_branch_target = immB + pc_i;
+// 跳转地址 B + pc
+assign cond_branch_target = immB + pc;
 assign cond_branch_inst = inst_beq | inst_bne
 										| inst_blt | inst_bltu
 										| inst_bge | inst_bgeu;

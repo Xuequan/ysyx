@@ -45,6 +45,10 @@ wire 									csr_nextpc_taken;
 wire [DATA_WIDTH-1:0] csr_wdata;
 wire [1						:0] csr_inst;
 
+wire 									idu_to_ifu_ready;
+wire									ifu_to_idu_valid;
+wire [DATA_WIDTH*2-1:0] ifu_to_idu_data;
+
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 	.clk(clk),
 	.rst(rst),
@@ -56,21 +60,26 @@ ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 	.clk(clk),
 	.rst(rst),
-	.inst_i(inst),
 
 	.exu_nextpc(exu_nextpc_to_ifu),
 	.exu_nextpc_taken(exu_nextpc_taken_to_ifu),
 
+	.inst_i(inst),
 	.valid(ifu_to_isram_valid),
-	.pc(pc),
-	.nextPC(nextPC)
+	.nextPC(nextPC),
+	
+	.ifu_to_idu_data_o(ifu_to_idu_data),
+	.idu_to_ifu_ready(idu_to_ifu_ready),
+	.ifu_to_idu_valid(ifu_to_idu_valid)
 );	
 
 ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 	.clk(clk),
 	.rst(rst),
-	.inst(inst),
-	.pc_i(pc),
+
+	.ifu_to_idu_data_i(ifu_to_idu_data),
+	.ifu_to_idu_valid(ifu_to_idu_valid),
+	.idu_to_ifu_ready(idu_to_ifu_ready),
 
 	.regfile_wdata(regfile_wdata),
 	.regfile_waddr(regfile_waddr),
