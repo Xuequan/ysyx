@@ -8,7 +8,6 @@ module ysyx_23060208_IFU
 	input [DATA_WIDTH-1:0]  exu_nextpc,
 	input 									exu_nextpc_taken,
 
-
 	/* connect with isram */
 	input [DATA_WIDTH-1:0]  inst_i,  
 	output reg 							valid,  
@@ -55,7 +54,7 @@ always @(posedge clk) begin
 end 
 
 always @(state or idu_to_ifu_ready or ifu_to_idu_valid) begin
-	next = IDLE;
+	next = SENT;
 	case (state)
 		IDLE: 
 			if (!ifu_to_idu_valid)
