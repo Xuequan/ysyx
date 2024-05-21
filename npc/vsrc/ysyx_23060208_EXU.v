@@ -112,7 +112,7 @@ assign regfile_waddr = rd;
 assign regfile_wen = regfile_mem_mux[0];
 
 /* ============= to CSR ================================= */
-assign csr_wdata = alu_result;  // only for csrrs
+assign csr_wdata = csr_inst[0] ? src1 : alu_result;  // only for csrrs
 /* =============== DPI-C ========================= */
 export "DPI-C" task update_regfile_no;
 task update_regfile_no (output [REG_WIDTH-1:0] reg_no);
