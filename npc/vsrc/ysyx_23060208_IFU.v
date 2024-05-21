@@ -14,7 +14,6 @@ module ysyx_23060208_IFU
 	output [DATA_WIDTH-1:0] nextPC, 
 
 	/* connect with IDU */
-	//output [DATA_WIDTH-1:0] pc,  
 	output [DATA_WIDTH * 2 - 1:0] ifu_to_idu_data_o,  
 	input										idu_to_ifu_ready,
 	output 									ifu_to_idu_valid
@@ -82,20 +81,15 @@ always @(state or idu_to_ifu_ready or ifu_to_idu_valid) begin
 	endcase
 end	
 
-// ifu_to_idu_data_r : store the data, which should be sent to IDU
-// once idu_to_ifu_ready is received
-reg [DATA_WIDTH * 2 - 1:0] ifu_to_idu_data_r;
-wire [DATA_WIDTH*2 -1 :0] ifu_to_idu_data_n;
-assign ifu_to_idu_data_n = {pc, inst_i};
-
+reg [DATA_WIDTH-1:0] inst_r;
 always @(posedge clk) begin
 	if (rst)
-		ifu_to_idu_data_r <= 0;
+		inst_r <= 0;
 	else if (next == SENT) 
-		ifu_to_idu_data_r <= ifu_to_idu_data_n;
+		inst_r <= inst_i;
 end
 
-assign ifu_to_idu_data_o = ifu_to_idu_data_r;	
+assign ifu_to_idu_data_o = {pc, inst_i};
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
 task get_nextPC (output [DATA_WIDTH-1:0] o);
