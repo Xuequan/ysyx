@@ -5,7 +5,7 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
-	printf("\n__am_irq_handle()-1:  input c = %#x, c->mcause = %#x \n", c, c->mcause);
+	//printf("\n__am_irq_handle()-1:  input c = %#x, c->mcause = %#x \n", c, c->mcause);
   if (user_handler) {
     Event ev = {0};
     switch (c->mcause) {
@@ -14,13 +14,12 @@ Context* __am_irq_handle(Context *c) {
 			case 11: ev.event = EVENT_YIELD;  	 break;
 			case 8 : ev.event = EVENT_SYSCALL; 	break;
 			case 0x10000004: ev.event = EVENT_IRQ_TIMER; break;
-			// EVENT_IRQ_IODEV	
       default: ev.event = EVENT_ERROR; break;
     }
     c = user_handler(ev, c);
     assert(c != NULL);
   }
-	printf("\n__am_irq_handle()-2: return now c = %#x, c->mcause = %#x\n", c, c->mcause);
+	//printf("\n__am_irq_handle()-2: return now c = %#x, c->mcause = %#x\n", c, c->mcause);
   return c;
 }
 
@@ -56,7 +55,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 	ctx->mepc = (uintptr_t)entry;
 	ctx->gpr[10] = (uintptr_t)arg;  // a0
 
-	printf("\nkcontext(), Area(%#x -- %#x), c = %#x\n", kstack.start, kstack.end, ctx);
+	//printf("\nkcontext(), Area(%#x -- %#x), c = %#x\n", kstack.start, kstack.end, ctx);
 
 	return ctx;
 }
