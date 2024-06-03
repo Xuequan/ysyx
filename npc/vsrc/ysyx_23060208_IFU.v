@@ -90,7 +90,7 @@ ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.pc(pc)
 );
 
-assign ifu_to_idu_bus = {pc, inst_r};
+assign ifu_to_idu_bus = {pc, isram_rdata};
 
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;

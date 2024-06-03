@@ -43,7 +43,7 @@ wire [1           :0] uncond_jump_inst;
 	// conditional branch 
 wire [DATA_WIDTH-1:0] cond_branch_target;
 wire                 cond_branch_inst;
-wire [DATA_WIDTH-1:0] pc; 
+wire [DATA_WIDTH-1:0] idu_pc; 
 
 assign idu_to_exu_bus = 
 			 {regfile_mem_mux, 
@@ -53,7 +53,7 @@ assign idu_to_exu_bus =
         uncond_jump_inst,
         cond_branch_target,
         cond_branch_inst,
-        pc  
+        idu_pc  
         };
 
 wire [11          :0] csr_idx;
@@ -87,7 +87,7 @@ end
 reg [DATA_WIDTH*2-1:0] ifu_to_idu_bus_r;
 // 从 IFU 得到数据
 wire [DATA_WIDTH-1:0] inst;
-assign {pc, inst} = ifu_to_idu_bus_r;
+assign {idu_pc, inst} = ifu_to_idu_bus_r;
 
 always @(posedge clk) begin
 	if (rst) 
@@ -324,7 +324,7 @@ ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 assign src1_from_pc = inst_jal || inst_auipc;
 assign src1_is_zero = 0;
 assign src1_is_none = inst_lui;
-assign src1 = src1_from_pc ? pc : 
+assign src1 = src1_from_pc ? idu_pc : 
 							src1_is_zero ? 0 : 
 							src1_is_none ? 0 : 
 														src1_from_reg;
@@ -454,8 +454,8 @@ assign uncond_jump_inst[1] = inst_jalr;
 
 // conditional branch 是否跳转由比较 src1, src2 两寄存器决定
 // 该部分交给 alu
-// 跳转地址 B + pc
-assign cond_branch_target = immB + pc;
+// 跳转地址 B + idu_pc
+assign cond_branch_target = immB + idu_pc;
 assign cond_branch_inst = inst_beq | inst_bne
 										| inst_blt | inst_bltu
 										| inst_bge | inst_bgeu;
