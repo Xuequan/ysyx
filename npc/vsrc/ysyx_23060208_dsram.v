@@ -11,8 +11,6 @@ module ysyx_23060208_dsram
 	
 	// 写数据通道
 	input [DATA_WIDTH-1:0] dsram_wdata,
-	//input 			 					 dsram_wen,
-	//input [2					 :0] dsram_wmask,
 	input [2					 :0] dsram_wstrb,
 	input									 dsram_wvalid,
 	output								 dsram_wready,

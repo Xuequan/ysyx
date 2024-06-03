@@ -67,10 +67,6 @@ void init_mem() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
-	/*
-	if (get_pc_from_top() == 0x8002e3a8 && nextpc() != addr)
-		printf("addr = %#x\n", addr);
-	*/
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 
@@ -93,6 +89,7 @@ word_t paddr_read(paddr_t addr, int len) {
 			return (word_t)(timer >> 32);
 		}
 	}
+	printf("read out of bound\n");	
 	out_of_bound(addr);
 	return 0;
 }
@@ -116,18 +113,13 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		// 若是外设，则让 ref 跳过
 		difftest_skip_ref();
 
-		//printf("equal-2, len = %d\n", len);
 		if (len == 1) { 
-			//return putch((char)(data & 0xf) );
 			putchar(data);
-			//printf("%c", (char)data);
 			return;
 		} else if(len == 2) {
-			//return putch((char)(data & 0xff) );
 			putchar((char)(data & 0xff) );
 			return;
 		} else if (len == 4) {
-			//return putch((char)data);
 			putchar((char)data);
 			return;
 		} else {
@@ -143,6 +135,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		//关于时钟，__am_time_init() 要写入内存，NPC就直接跳过了，不写了
 		return;
 	}
+	printf("write out of bound\n");	
   out_of_bound(addr);
 }
 
