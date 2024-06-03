@@ -77,7 +77,7 @@ end
 wire [DATA_WIDTH-1:0] pc;
 wire [DATA_WIDTH-1:0] nextPC;
 assign isram_raddr = nextPC;
-assign nextPC = exu_nextpc_taken ? exu_nextpc :
+assign nextPC = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 													pc + 4;
 
 /* get PC from register PC */

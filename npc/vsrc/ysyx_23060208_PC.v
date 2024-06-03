@@ -6,6 +6,7 @@ module ysyx_23060208_PC
 	input rst,
 	input 									wen,
 	input  [DATA_WIDTH-1:0] next_pc,
+
 	output [DATA_WIDTH-1:0] pc
 );
 

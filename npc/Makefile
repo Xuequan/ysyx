@@ -1,6 +1,5 @@
 TOPNAME = top
 # NXDC_FILES = constr/top.nxdc
-#INC_PATH ?= $(shell find $(abspath ./vsrc))
 INC_PATH ?= 
 
 VERILATOR = verilator

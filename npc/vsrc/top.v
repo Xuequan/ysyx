@@ -10,6 +10,9 @@ module top
 wire [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus;
 wire											 exu_to_ifu_valid;
 wire [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus;
+
+assign {pc, inst} = ifu_to_idu_bus;
+
 wire											 ifu_to_idu_valid;
 
 wire											 idu_allowin;
