@@ -55,7 +55,6 @@ $(BIN): $(CSRCS)
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
 
 default: sim
-		#--top-module $(TOPNAME) $^  
 
 NPC_EXEC := $(BIN) $(ARGS) $(IMG)
 

@@ -38,7 +38,11 @@ void (*ref_difftest_init)(int port) = NULL;
 
 void init_difftest(char *ref_so_file, long img_size, int port) {
 	
-  assert(ref_so_file != NULL);
+  //assert(ref_so_file != NULL);
+  if (ref_so_file == NULL) {
+		printf("no input ref_so_file\n");
+		return;
+	}
 
   void *handle = NULL;
   handle = dlopen(ref_so_file, RTLD_LAZY);
