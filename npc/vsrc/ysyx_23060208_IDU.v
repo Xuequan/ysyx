@@ -74,7 +74,8 @@ wire idu_ready_go;
 // 由于现在IDU是一个周期可以完成任务，因此将ready_go 设为1 
 assign idu_ready_go = 1'b1;
 assign idu_to_exu_valid = idu_valid && idu_ready_go;
-assign idu_allowin = !idu_valid || (idu_ready_go  && exu_allowin);
+//assign idu_allowin = !idu_valid || (idu_ready_go  && exu_allowin);
+assign idu_allowin = ~exu_allowin;
 
 always @(posedge clk) begin
 	if (rst) 
