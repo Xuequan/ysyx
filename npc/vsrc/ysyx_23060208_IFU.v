@@ -1,28 +1,86 @@
 // IFU 模块
+`include "ysyx_23060208_npc.h"    
 module ysyx_23060208_IFU 
 	#(DATA_WIDTH = 32) (
 	input clk,
 	input rst,
 
-	// from EXU
-	input [DATA_WIDTH-1:0]  exu_nextpc,
-	input 									exu_nextpc_taken,
-
-	/* connect with isram */
-	input [DATA_WIDTH-1:0]  inst_i,  
-	output reg 							valid,  
-	output [DATA_WIDTH-1:0] nextPC, 
+	/* connect with EXU */
+	input [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus,
+	input												exu_to_ifu_valid,
 
 	/* connect with IDU */
-	output [DATA_WIDTH * 2 - 1:0] ifu_to_idu_data_o,  
-	input										idu_to_ifu_ready,
-	output 									ifu_to_idu_valid
+	output [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus,  
+	output 											 ifu_to_idu_valid,
+	input												 idu_allowin,
+
+	/* connect with isram */
+	input [DATA_WIDTH-1:0]  isram_rdata,  
+	input										isram_ready,
+	output [DATA_WIDTH-1:0] isram_raddr,
+
+	output									ifu_allowin
 );
 
+// ifu_valid 表示当前 IFU 有有效的数据
+wire ifu_valid;
+// 表示当前取到的 instruction 有效
+reg has_inst_valid;
+// 表示 EXU 传过来的数据有效
+reg exu_data_valid;
+
+assign ifu_valid = has_inst_valid;
+
+reg ifu_ready_go;
+assign ifu_ready_go = 1'b1;
+
+always @(posedge clk) begin
+	if (rst)  
+	 has_inst_valid <= 0;
+	else if(ifu_allowin) 	 
+	 has_inst_valid <= isram_ready;
+end
+
+always @(posedge clk) begin
+	if (rst)  
+	 exu_data_valid <= 0;
+	else if(ifu_allowin) 	 
+	 exu_data_valid <= exu_to_ifu_valid;
+end
+
+assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
+assign ifu_allowin = !ifu_valid || (ifu_ready_go && idu_allowin);
+
+/* reveive instruction from isram */
+reg [DATA_WIDTH-1:0] inst_r;
+always @(posedge clk) begin
+	if (rst)
+		inst_r <= 0;
+	else if (ifu_allowin && isram_ready) 
+		inst_r <= isram_rdata;
+end
+
+/* handle data from exu */
+wire [DATA_WIDTH-    1:0] exu_nextpc;
+wire											exu_nextpc_taken;
+reg [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus_r;
+assign {exu_nextpc_taken, exu_nextpc} = exu_to_ifu_bus_r;
+
+always @(posedge clk) begin
+	if (rst) 
+		exu_to_ifu_bus_r <= 0;
+	else if (ifu_allowin)
+		exu_to_ifu_bus_r <= exu_to_ifu_bus;
+end
+
+/* ====================  get the nextPC ================*/
 wire [DATA_WIDTH-1:0] pc;
+wire [DATA_WIDTH-1:0] nextPC;
+assign isram_raddr = nextPC;
 assign nextPC = exu_nextpc_taken ? exu_nextpc :
 													pc + 4;
 
+/* get PC from register PC */
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
@@ -31,65 +89,8 @@ ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.pc(pc)
 );
 
-assign valid = 1'b1;
+assign ifu_to_idu_bus = {pc, inst_r};
 
-/* =================== 异步总线 ==================== */
-// ifu_valid 表示当前 IFU 有有效的数据
-wire ifu_valid;
-assign ifu_valid = 1'b1;
-
-assign ifu_to_idu_valid = ifu_valid;
-
-parameter [1:0] IDLE = 2'b00, 
-					WAIT_READY = 2'b01,
-					SENT = 2'b10;
-
-reg [1:0] state, next;
-always @(posedge clk) begin
-	if (rst) 
-		state <= IDLE;
-	else 
-		state <= next;
-end 
-
-always @(state or idu_to_ifu_ready or ifu_to_idu_valid) begin
-	next = SENT;
-	case (state)
-		IDLE: 
-			if (!ifu_to_idu_valid)
-				next = IDLE;
-			else if (!idu_to_ifu_ready) 
-				next = WAIT_READY;
-			else 									
-				next = SENT;
-
-		WAIT_READY:
-			if (idu_to_ifu_ready) 
-				next = SENT;
-			else 		
-				next = WAIT_READY;
-
-		SENT:
-			if (ifu_to_idu_valid && idu_to_ifu_ready)
-				next = SENT;
-			else if(ifu_to_idu_valid && !idu_to_ifu_ready)
-				next = WAIT_READY;
-			else
-				next = IDLE;
-		default:
-				next = IDLE;
-	endcase
-end	
-
-reg [DATA_WIDTH-1:0] inst_r;
-always @(posedge clk) begin
-	if (rst)
-		inst_r <= 0;
-	else if (next == SENT) 
-		inst_r <= inst_i;
-end
-
-assign ifu_to_idu_data_o = {pc, inst_i};
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
 task get_nextPC (output [DATA_WIDTH-1:0] o);

@@ -21,7 +21,7 @@ $(shell mkdir -p $(BUILD_DIR))
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 
 # project source
-VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v" or -name "*.h")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 # rules for NVboard

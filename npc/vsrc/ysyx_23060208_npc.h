@@ -1,0 +1,6 @@
+`ifndef YSYX_23060208_NPC_H
+	`define IFU_TO_IDU_BUS  (2 * DATA_WIDTH) 
+	`define EXU_TO_IFU_BUS  (DATA_WIDTH + 1)
+	`define IDU_TO_EXU_ALU_BUS (2*DATA_WIDTH + REG_WIDTH + 18)
+	`define IDU_TO_EXU_BUS (3*DATA_WIDTH + 13)
+`endif
