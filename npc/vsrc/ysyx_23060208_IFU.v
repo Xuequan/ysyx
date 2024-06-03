@@ -75,22 +75,22 @@ always @(posedge clk) begin
 end
 
 /* ====================  get the nextPC ================*/
-wire [DATA_WIDTH-1:0] pc;
+wire [DATA_WIDTH-1:0] ifu_pc;
 wire [DATA_WIDTH-1:0] nextPC;
 assign isram_raddr = nextPC;
 assign nextPC = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
-													pc + 4;
+													ifu_pc + 4;
 
-/* get PC from register PC */
+/* get pc from register PC */
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
 	.wen(1'b1),
 	.next_pc(nextPC),
-	.pc(pc)
+	.pc(ifu_pc)
 );
 
-assign ifu_to_idu_bus = {pc, isram_rdata};
+assign ifu_to_idu_bus = {ifu_pc, isram_rdata};
 
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
