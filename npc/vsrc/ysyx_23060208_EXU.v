@@ -238,7 +238,7 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
 			if (!dsram_bready)
 				next_w = SHAKED_W;
 			else if (!dsram_bvalid)
-				next_w = WAIT_BVALID);
+				next_w = WAIT_BVALID;
 			else
 				next_w = SHAKED_B;
 		WAIT_BVALID:
@@ -327,14 +327,14 @@ assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 assign dsram_awaddr = alu_result; 
 //assign dsram_wen = regfile_mem_mux[1];
 assign dsram_awvalid = regfile_mem_mux[1];
-assign dsram_awdata = store_data_raw; 
+assign dsram_wdata = store_data_raw; 
 //assign dsram_wmask = ( {3{store_inst[0]}} & 3'b100 )
 assign dsram_wstrb = ( {3{store_inst[0]}} & 3'b100 )
 											| ( {3{store_inst[1]}} & 3'b010 )
 											| ( {3{store_inst[2]}} & 3'b001 );
 /* =======load instruction ============================== */
 assign dsram_arvalid = |load_inst && exu_valid;
-assign dsram_araddr = alu_result && exu_valid;
+assign dsram_araddr = alu_result;
 wire [DATA_WIDTH-1:0] load_data;
 assign load_data = ({DATA_WIDTH{load_inst[0]}} & rdata_r)
 | ({DATA_WIDTH{load_inst[1]}} & {{16{rdata_r[15]}}, rdata_r[15:0]})

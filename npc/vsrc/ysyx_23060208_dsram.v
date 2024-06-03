@@ -2,7 +2,7 @@
 module ysyx_23060208_dsram
 	#(DATA_WIDTH = 32, ADDR_WIDTH = 32) (
 	input clk,
-	//input rst,
+	input rst,
 	
 	// 写地址通道
 	input [ADDR_WIDTH-1:0] dsram_awaddr,
@@ -36,7 +36,7 @@ module ysyx_23060208_dsram
 
 import "DPI-C" function int dsram_read(input int dsram_araddr);
 import "DPI-C" function void dsram_write(
-	input int dsram_waddr, input int dsram_wdata, input byte wmask);
+	input int awaddr, input int dsram_wdata, input byte wmask);
 
 /* write to dsram */
 parameter [2:0] IDLE_W = 3'b000, WAIT_AWVALID = 3'b001, SHAKED_AW = 3'b010,
@@ -81,7 +81,7 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
       if (!dsram_bvalid)
         next_w = SHAKED_W;
       else if (!dsram_bready)
-        next_w = WAIT_BREADY);
+        next_w = WAIT_BREADY;
       else
         next_w = SHAKED_B;
     WAIT_BREADY:
@@ -105,7 +105,7 @@ assign dsram_awready = awready_r;
 always @(posedge clk) begin
   if (rst) awready_r <= 1'b0;
   else if (next_w == IDLE_W || next_w == WAIT_AWVALID 
-		|| next_w = SHAKED_B)
+		|| next_w == SHAKED_B)
     awready_r <= 1'b1;
   else
     awready_r <= 1'b0;
@@ -130,14 +130,24 @@ always @(posedge clk) begin
     bvalid_r <= 1'b0;
 end
 
+reg [DATA_WIDTH-1:0] awaddr_r;
+always @(posedge clk) begin
+	if (rst) awaddr_r <= 0;
+	else if (next_w == SHAKED_AW)
+		awaddr_r <= dsram_awaddr;
+end
+
 wire [7:0] wmask;
 assign wmask[7:3] = 5'b0;
-assign wmask[2:0] = dsram_wmask;
+assign wmask[2:0] = dsram_wstrb;
 
 assign dsram_wready = 1'b1;
+
+wire [DATA_WIDTH-1:0] awaddr;
+assign awaddr = awaddr_r;
 always @(*) begin
-	if (dsram_wen) begin	 
-		dsram_write(dsram_waddr, dsram_wdata, wmask);
+	if (next_w == SHAKED_W) begin	 
+		dsram_write(awaddr, dsram_wdata, wmask);
 	end
 end
 
@@ -193,7 +203,7 @@ end
 reg arready_r;
 assign dsram_arready = arready_r;
 always @(posedge clk) begin
-	if (reset)
+	if (rst)
 		arready_r <= 0;
 	else if (next == IDLE || next == WAIT_ARVA || next == SHAKED_R)
 		arready_r <= 1'b1;
@@ -204,7 +214,7 @@ end
 reg rvalid_r;
 assign dsram_rvalid = rvalid_r;
 always @(posedge clk) begin
-	if (reset)
+	if (rst)
 		rvalid_r <= 0;
 	else if (next == SHAKED_AR || next == WAIT_RREADY)
 		rvalid_r <= 1'b1;
@@ -218,7 +228,7 @@ always @(posedge clk) begin
 	if (rst)
 		dsram_rdata_r <= 0;
 	else if (next == SHAKED_AR)
-		dsram_rdata_r = dsram_read(dsram_araddr);
+		dsram_rdata_r <= dsram_read(dsram_araddr);
 end
 
 endmodule

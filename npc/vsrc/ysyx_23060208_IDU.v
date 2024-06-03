@@ -18,10 +18,10 @@ module ysyx_23060208_IDU
 	input										regfile_wen,
 
 	/* connect with EXU */
-	output ['IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus,
-	output ['IDU_TO_EXU_BUS-1:0] idu_to_exu_bus,
+	output [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus,
+	output [`IDU_TO_EXU_BUS-1:0] idu_to_exu_bus,
 	// CSR for nextpc
-	output [IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus,
+	output [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus,
 
 	output 								 idu_to_exu_valid,
 	input									 exu_allowin,

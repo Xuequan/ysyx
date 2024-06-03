@@ -9,7 +9,7 @@ module top
 
 wire [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus;
 wire											 exu_to_ifu_valid;
-wire ['IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus;
+wire [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus;
 wire											 ifu_to_idu_valid;
 
 wire											 idu_allowin;
@@ -132,22 +132,22 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.regfile_waddr(regfile_waddr),
 	.regfile_wen(regfile_wen),
 	
-	.dsram_awaddr(.dsram_awaddr),
-	.dsram_awvalid(.dsram_awvalid),
-	.dsram_awready(.dsram_awready),
+	.dsram_awaddr(dsram_awaddr),
+	.dsram_awvalid(dsram_awvalid),
+	.dsram_awready(dsram_awready),
 
-	.dsram_wdata(.dsram_wdata),
-	.dsram_wstrb(.dsram_wstrb),
-	.dsram_wvalid(.dsram_wvalid),
-	.dsram_wready(.dsram_wready),
+	.dsram_wdata(dsram_wdata),
+	.dsram_wstrb(dsram_wstrb),
+	.dsram_wvalid(dsram_wvalid),
+	.dsram_wready(dsram_wready),
 	
 	.dsram_bresp(dsram_bresp),
 	.dsram_bvalid(dsram_bvalid),
 	.dsram_bready(dsram_bready),
 
-	.dsram_araddr(.dsram_araddr),
-	.dsram_arvalid(.dsram_arvalid),
-	.dsram_arready(.dsram_arready),
+	.dsram_araddr(dsram_araddr),
+	.dsram_arvalid(dsram_arvalid),
+	.dsram_arready(dsram_arready),
 
 	.dsram_rdata(dsram_rdata),
 	.dsram_rresp(dsram_rresp),
@@ -169,23 +169,23 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 
 ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(
 	.clk(clk),
-	//.rst(rst),
-	.dsram_awaddr(.dsram_awaddr),
-	.dsram_awvalid(.dsram_awvalid),
-	.dsram_awready(.dsram_awready),
+	.rst(rst),
+	.dsram_awaddr(dsram_awaddr),
+	.dsram_awvalid(dsram_awvalid),
+	.dsram_awready(dsram_awready),
 
-	.dsram_wdata(.dsram_wdata),
-	.dsram_wstrb(.dsram_wstrb),
-	.dsram_wvalid(.dsram_wvalid),
-	.dsram_wready(.dsram_wready),
+	.dsram_wdata(dsram_wdata),
+	.dsram_wstrb(dsram_wstrb),
+	.dsram_wvalid(dsram_wvalid),
+	.dsram_wready(dsram_wready),
 	
 	.dsram_bresp(dsram_bresp),
 	.dsram_bvalid(dsram_bvalid),
 	.dsram_bready(dsram_bready),
 
-	.dsram_araddr(.dsram_araddr),
-	.dsram_arvalid(.dsram_arvalid),
-	.dsram_arready(.dsram_arready),
+	.dsram_araddr(dsram_araddr),
+	.dsram_arvalid(dsram_arvalid),
+	.dsram_arready(dsram_arready),
 
 	.dsram_rdata(dsram_rdata),
 	.dsram_rresp(dsram_rresp),
