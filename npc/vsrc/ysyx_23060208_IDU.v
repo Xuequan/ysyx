@@ -26,6 +26,7 @@ module ysyx_23060208_IDU
 	output 								 idu_to_exu_valid,
 	input									 exu_allowin,
 
+	output											idu_valid_o,
 	output								 			idu_allowin
 );
 wire [DATA_WIDTH-1:0] src1;
@@ -44,8 +45,9 @@ wire [1           :0] uncond_jump_inst;
 wire [DATA_WIDTH-1:0] cond_branch_target;
 wire                 cond_branch_inst;
 wire [DATA_WIDTH-1:0] idu_pc; 
+wire [DATA_WIDTH-1:0] idu_inst;
 wire [DATA_WIDTH-1:0] inst;
-
+assign inst = idu_inst;
 assign idu_to_exu_bus = 
 			 {regfile_mem_mux, 
         store_inst, 
@@ -55,7 +57,7 @@ assign idu_to_exu_bus =
         cond_branch_target,
         cond_branch_inst,
         idu_pc,
-				inst 
+				idu_inst 
         };
 
 wire [11          :0] csr_idx;
@@ -71,13 +73,13 @@ assign idu_to_exu_csr_bus =
 
 
 reg idu_valid;
+assign idu_valid_o = idu_valid;
 wire idu_ready_go;
 
 // 由于现在IDU是一个周期可以完成任务，因此将ready_go 设为1 
 assign idu_ready_go = 1'b1;
 assign idu_to_exu_valid = idu_valid && idu_ready_go;
-//assign idu_allowin = !idu_valid || (idu_ready_go  && exu_allowin);
-assign idu_allowin = exu_allowin;
+assign idu_allowin = !idu_valid || (idu_ready_go  && exu_allowin);
 
 always @(posedge clk) begin
 	if (rst) 

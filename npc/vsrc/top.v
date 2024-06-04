@@ -61,6 +61,8 @@ wire [1:           0]  dsram_rresp;
 wire                  dsram_rvalid;
 wire                  dsram_rready;
 
+wire	idu_valid;
+
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 	.clk(clk),
 	.rst(rst),
@@ -91,7 +93,8 @@ ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 
 	.ifu_to_idu_bus(ifu_to_idu_bus),
 	.ifu_to_idu_valid(ifu_to_idu_valid),
-	.idu_allowin(idu_allowin),
+	//.idu_allowin(idu_allowin),
+	.idu_valid(idu_valid),
 	
 	.isram_rdata(isram_rdata),
 	.isram_ready(isram_ready),
@@ -120,6 +123,7 @@ ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 
 	.idu_to_exu_valid(idu_to_exu_valid),
 	.exu_allowin(exu_allowin),
+	.idu_valid_o(idu_valid),
 	.idu_allowin(idu_allowin)
 );
 

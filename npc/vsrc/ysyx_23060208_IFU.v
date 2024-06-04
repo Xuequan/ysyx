@@ -12,7 +12,8 @@ module ysyx_23060208_IFU
 	/* connect with IDU */
 	output [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus,  
 	output 											 ifu_to_idu_valid,
-	input												 idu_allowin,
+	//input												 idu_allowin,
+	input												 idu_valid,
 
 	/* connect with isram */
 	input [DATA_WIDTH-1:0]  isram_rdata,  
@@ -50,7 +51,7 @@ end
 
 assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
 //assign ifu_allowin = !ifu_valid || (ifu_ready_go && idu_allowin);
-assign ifu_allowin = idu_allowin;
+assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 /* reveive instruction from isram */
 reg [DATA_WIDTH-1:0] inst_r;
