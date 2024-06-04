@@ -91,6 +91,8 @@ ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 	.exu_to_ifu_bus(exu_to_ifu_bus),
 	.exu_to_ifu_valid(exu_to_ifu_valid),
 
+	.exu_allowin(exu_allowin),
+
 	.ifu_to_idu_bus(ifu_to_idu_bus),
 	.ifu_to_idu_valid(ifu_to_idu_valid),
 	//.idu_allowin(idu_allowin),

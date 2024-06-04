@@ -9,6 +9,7 @@ module ysyx_23060208_IFU
 	input [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus,
 	input												exu_to_ifu_valid,
 
+	input												exu_allowin,
 	/* connect with IDU */
 	output [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus,  
 	output 											 ifu_to_idu_valid,
