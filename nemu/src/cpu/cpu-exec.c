@@ -42,7 +42,8 @@ void device_update();
 
 static void print_iringbuf(void) {
 	for( int i = 0; i < IRINGBUF_LEN; i++) {
-		if (strlen(iringbuf[i]) != 0) {
+		//if (strlen(iringbuf[i]) != '\0') {
+		if (iringbuf[i][0] != '\0') {
 			if ( i == iindex - 1)
 				printf("--> ");
 			printf("%s\n", iringbuf[i]);
@@ -190,6 +191,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	
 	if (iindex == IRINGBUF_LEN) 
 	{	iindex = 0;	}
+	memset(iringbuf[iindex], '\0', 128);
 	memcpy(iringbuf[iindex], s->logbuf, strlen(s->logbuf));
 	iindex++; 
 
