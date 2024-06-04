@@ -225,7 +225,7 @@ assign dsram_rdata = dsram_rdata_r;
 always @(posedge clk) begin
 	if (rst)
 		dsram_rdata_r <= 0;
-	else if (next == SHAKED_AR)
+	else if (next == SHAKED_R)
 		dsram_rdata_r <= dsram_read(dsram_araddr);
 end
 

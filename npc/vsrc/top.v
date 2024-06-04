@@ -18,9 +18,6 @@ wire											 idu_allowin;
 wire											 ifu_allowin;
 wire											 exu_allowin;
 
-wire [DATA_WIDTH-1:0] isram_rdata;
-wire [DATA_WIDTH-1:0] isram_raddr;
-wire									isram_ready;
 
 wire [DATA_WIDTH-1:0] regfile_wdata;
 wire [REG_WIDTH-1 :0] regfile_waddr;
@@ -61,15 +58,29 @@ wire [1:           0]  dsram_rresp;
 wire                  dsram_rvalid;
 wire                  dsram_rready;
 
+wire [DATA_WIDTH-1:0] isram_araddr;
+wire                  isram_arvalid; 
+wire                   isram_arready;
+
+wire [DATA_WIDTH-1:0]  isram_rdata;  
+wire [1:           0]  isram_rresp;
+wire                  isram_rvalid;
+wire                  isram_rready;
+
 wire	idu_valid;
 
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 	.clk(clk),
 	.rst(rst),
 	.ifu_allowin(ifu_allowin),
-	.isram_raddr(isram_raddr),
-	.isram_ready(isram_ready),
-	.isram_rdata(isram_rdata)
+	.isram_araddr(isram_araddr),
+	.isram_arvalid(isram_arvalid),
+	.isram_arready(isram_arready),
+
+	.isram_rdata(isram_rdata),
+	.isram_rresp(isram_rresp),
+	.isram_rvalid(isram_rvalid),
+	.isram_rready(isram_rready)
 );
 ysyx_23060208_CSR	#(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) csr(
 	.clk(clk),
@@ -98,10 +109,14 @@ ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 	//.idu_allowin(idu_allowin),
 	.idu_valid(idu_valid),
 	
-	.isram_rdata(isram_rdata),
-	.isram_ready(isram_ready),
-	.isram_raddr(isram_raddr),
+	.isram_araddr(isram_araddr),
+	.isram_arvalid(isram_arvalid),
+	.isram_arready(isram_arready),
 
+	.isram_rdata(isram_rdata),
+	.isram_rresp(isram_rresp),
+	.isram_rvalid(isram_rvalid),
+	.isram_rready(isram_rready),
 	.ifu_allowin(ifu_allowin)
 );	
 
