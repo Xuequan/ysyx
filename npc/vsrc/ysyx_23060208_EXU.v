@@ -53,7 +53,11 @@ module ysyx_23060208_EXU
 
 	input 									idu_to_exu_valid,
 	
-	output									exu_allowin
+	output									exu_allowin,
+	
+	// for debug
+	output [DATA_WIDTH-1:0] exu_pc,
+	output [DATA_WIDTH-1:0] exu_inst
 );
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
@@ -73,7 +77,6 @@ wire [DATA_WIDTH-1:0] store_data_raw;
 wire [1           :0] uncond_jump_inst;
 wire [DATA_WIDTH-1:0] cond_branch_target;
 wire 								 cond_branch_inst;
-wire [DATA_WIDTH-1:0] pc;
 assign {regfile_mem_mux, 
 				store_inst, 
 				load_inst, 
@@ -81,7 +84,8 @@ assign {regfile_mem_mux,
 				uncond_jump_inst,
 				cond_branch_target,
 				cond_branch_inst,
-				pc 
+				exu_pc,
+				exu_inst
 				} = idu_to_exu_bus_r;
 
 wire [11					:0] csr_idx;
@@ -343,8 +347,8 @@ assign load_data = ({DATA_WIDTH{load_inst[0]}} & rdata_r)
 | ({DATA_WIDTH{load_inst[4]}} & { 24'b0, rdata_r[7:0]});
 
 /* ============ to regfile ============================== */
-// 若是 jal, jalr, 那么将 rd <- pc + 4
-assign regfile_wdata = |uncond_jump_inst ? pc + 4 : 
+// 若是 jal, jalr, 那么将 rd <- exu_pc + 4
+assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 : 
 											 |load_inst     ? load_data :
 											 (csr_inst[0] || csr_inst[1]) ? src2 : // csrrw, csrrs
 																				alu_result;
@@ -361,10 +365,10 @@ assign regfile_wen = regfile_mem_mux[0] && exu_valid;
 /* ============= to CSR ================================= */
 // csrrw: rd <- csr, csr <- crc1;
 // csrrs: rd <- csr, csr <- src1 | csr (这个结果经ALU);
-// ecall: mepc <- pc, mcause <- 0xb
+// ecall: mepc <- exu_pc, mcause <- 0xb
 assign csr_wdata = csr_inst[0] ? src1 
 								: csr_inst[1] ? alu_result // only for csrrs
-								: pc; // only for ecall
+								: exu_pc; // only for ecall
 assign csr_waddr  = csr_inst[2] ? 12'h341 : csr_idx;
 									
 // csr_wdata2 & csr_waddr2 only for ecall, write to mcause

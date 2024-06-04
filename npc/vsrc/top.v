@@ -3,6 +3,7 @@ module top
 	#(DATA_WIDTH = 32, REG_WIDTH = 5)(
 	input clk,
 	input rst,
+	// inst, pc in EXU
 	output [DATA_WIDTH-1:0] inst,
 	output [DATA_WIDTH-1:0] pc
 );
@@ -10,8 +11,6 @@ module top
 wire [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus;
 wire											 exu_to_ifu_valid;
 wire [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus;
-
-assign {pc, inst} = ifu_to_idu_bus;
 
 wire											 ifu_to_idu_valid;
 
@@ -167,7 +166,10 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.idu_to_exu_csr_bus(idu_to_exu_csr_bus),
 
 	.idu_to_exu_valid(idu_to_exu_valid),
-	.exu_allowin(exu_allowin)
+	.exu_allowin(exu_allowin),
+	
+	.exu_pc(pc),
+	.exu_inst(inst)
 );
 
 ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(

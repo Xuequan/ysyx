@@ -44,6 +44,7 @@ wire [1           :0] uncond_jump_inst;
 wire [DATA_WIDTH-1:0] cond_branch_target;
 wire                 cond_branch_inst;
 wire [DATA_WIDTH-1:0] idu_pc; 
+wire [DATA_WIDTH-1:0] inst;
 
 assign idu_to_exu_bus = 
 			 {regfile_mem_mux, 
@@ -53,7 +54,8 @@ assign idu_to_exu_bus =
         uncond_jump_inst,
         cond_branch_target,
         cond_branch_inst,
-        idu_pc  
+        idu_pc,
+				inst 
         };
 
 wire [11          :0] csr_idx;
@@ -86,7 +88,6 @@ end
 
 reg [DATA_WIDTH*2-1:0] ifu_to_idu_bus_r;
 // 从 IFU 得到数据
-wire [DATA_WIDTH-1:0] inst;
 assign {idu_pc, inst} = ifu_to_idu_bus_r;
 
 always @(posedge clk) begin
