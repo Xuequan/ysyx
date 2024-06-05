@@ -54,21 +54,6 @@ always @(posedge clk) begin
 		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 													ifu_pc + 4;
 end
-/*
-assign nextpc = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
-													ifu_pc + 4;
-*/
-
-/* get pc from register PC */
-wire pc_reg_wen;
-assign pc_reg_wen = ifu_allowin;
-ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
-	.clk(clk),
-	.rst(rst),
-	.wen(pc_reg_wen),
-	.next_pc(nextpc),
-	.pc(ifu_pc)
-);
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
 reg ifu_valid;
@@ -138,6 +123,16 @@ always @(state or isram_arvalid or isram_arready or isram_rvalid or isram_rready
   endcase 
 end
 
+reg arvalid_r;
+assign isram_arvalid = arvalid_r;
+always @(posedge clk) begin
+	if (rst) arvalid_r <= 0;
+	else if (next != IDLE_R || next != WAIT_ARREADY)
+		arvalid_r <= 0;
+	else if (ifu_allowin)
+		arvalid_r <= 1'b1;
+end
+
 reg ifu_ready_go_r;
 assign ifu_ready_go = ifu_ready_go_r;
 always @(posedge clk) begin
@@ -174,8 +169,22 @@ end
 
 
 assign isram_araddr = nextpc;
-assign isram_arvalid = ifu_allowin;
 assign ifu_to_idu_bus = {ifu_pc, inst_r};
+
+//================= get pc from register PC ==============================
+wire pc_reg_wen;
+assign pc_reg_wen = (next == SHAKED_R);
+ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
+	.clk(clk),
+	.rst(rst),
+	.wen(pc_reg_wen),
+	.next_pc(nextpc),
+	.pc(ifu_pc)
+);
+
+
+
+
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
 task get_nextPC (output [DATA_WIDTH-1:0] o);
