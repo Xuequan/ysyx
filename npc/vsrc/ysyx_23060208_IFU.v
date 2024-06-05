@@ -52,7 +52,7 @@ always @(posedge clk) begin
 	if(rst) 
 		nextpc_r <= DATA_WIDTH'('h8000_0000);
 	else  
-		nextpc_r <= (exu_nextpc_taken) ? exu_nextpc : ifu_pc + 4;
+		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc : ifu_pc + 4;
 end
 /*
 always @(posedge clk) begin
