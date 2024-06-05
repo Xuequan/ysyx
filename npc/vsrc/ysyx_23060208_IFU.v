@@ -127,10 +127,10 @@ reg arvalid_r;
 assign isram_arvalid = arvalid_r;
 always @(posedge clk) begin
 	if (rst) arvalid_r <= 0;
-	else if (next != IDLE_R || next != WAIT_ARREADY)
-		arvalid_r <= 0;
-	else if (ifu_allowin)
+	else if ((next == IDLE_R || next == WAIT_ARREADY) && ifu_allowin)
 		arvalid_r <= 1'b1;
+	else
+		arvalid_r <= 1'b0;
 end
 
 reg ifu_ready_go_r;
