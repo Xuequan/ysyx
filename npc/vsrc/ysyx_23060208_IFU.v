@@ -120,6 +120,7 @@ assign isram_arvalid = arvalid_r;
 always @(posedge clk) begin
 	if (rst) arvalid_r <= 0;
 	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
+					 (state == IDLE_R && next == SHAKED_AR) ||
 					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
 		arvalid_r <= 1'b1;
 	else
@@ -131,6 +132,7 @@ always @(posedge clk) begin
 	if (rst) 
 		araddr_r <= 0;
 	else if ((state == IDLE_R && next == WAIT_ARREADY) ||
+					 (state == IDLE_R && next == SHAKED_AR) ||
 					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
 		araddr_r <= nextpc;
 end
