@@ -49,8 +49,8 @@ wire [DATA_WIDTH-1:0] nextpc;
 reg [DATA_WIDTH-1:0] nextpc_r;
 assign nextpc = nextpc_r;
 always @(posedge clk) begin
-	if(rst) nextpc_r <= 0;
-	else if(exu_to_ifu_valid || ifu_allowin)
+	if(rst) nextpc_r <= DATA_WIDTH'('h8000_0000);
+	else if(exu_to_ifu_valid)
 		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 													ifu_pc + 4;
 end
