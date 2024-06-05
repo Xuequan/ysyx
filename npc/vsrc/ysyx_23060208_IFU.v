@@ -42,26 +42,10 @@ always @(posedge clk) begin
 	else if (ifu_allowin)
 		exu_to_ifu_bus_r <= exu_to_ifu_bus;
 end
-
 /* ====================  get the nextpc ================*/
 wire [DATA_WIDTH-1:0] ifu_pc;
 wire [DATA_WIDTH-1:0] nextpc;
-reg [DATA_WIDTH-1:0] nextpc_r;
-assign nextpc = nextpc_r;
-always @(posedge clk) begin
-	if(rst) 
-		nextpc_r <= DATA_WIDTH'('h8000_0000);
-	else if (state == IDLE_R && next == WAIT_ARREADY)   
-		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc : ifu_pc + 4;
-end
-/*
-always @(posedge clk) begin
-	if(rst) nextpc_r <= DATA_WIDTH'('h8000_0000);
-	else if(exu_to_ifu_valid)
-		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
-													ifu_pc + 4;
-end
-*/
+assign nextpc = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc : ifu_pc + 4;
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
 reg ifu_valid;
@@ -141,6 +125,15 @@ always @(posedge clk) begin
 	else
 		arvalid_r <= 1'b0;
 end
+reg [DATA_WIDTH-1:0] araddr_r;
+assign isram_araddr = araddr_r;
+always @(posedge clk) begin
+	if (rst) 
+		araddr_r <= 0;
+	else if ((state == IDLE_R && next == WAIT_ARREADY) ||
+					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
+		araddr_r <= nextpc;
+end
 
 reg ifu_ready_go_r;
 assign ifu_ready_go = ifu_ready_go_r;
@@ -180,7 +173,6 @@ end
 
 
 
-assign isram_araddr = nextpc;
 assign ifu_to_idu_bus = {ifu_pc, isram_rdata};
 
 //================= get pc from register PC ==============================
