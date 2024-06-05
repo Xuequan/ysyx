@@ -33,15 +33,17 @@ module ysyx_23060208_IFU
 /* handle data from exu */
 wire [DATA_WIDTH-    1:0] exu_nextpc;
 wire											exu_nextpc_taken;
-reg [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus_r;
-assign {exu_nextpc_taken, exu_nextpc} = exu_to_ifu_bus_r;
+//reg [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus_r;
+assign {exu_nextpc_taken, exu_nextpc} = exu_to_ifu_bus;
 
+/*
 always @(posedge clk) begin
 	if (rst) 
 		exu_to_ifu_bus_r <= 0;
 	else if (ifu_allowin)
 		exu_to_ifu_bus_r <= exu_to_ifu_bus;
 end
+*/
 /* ====================  get the nextpc ================*/
 wire [DATA_WIDTH-1:0] ifu_pc;
 wire [DATA_WIDTH-1:0] nextpc;
