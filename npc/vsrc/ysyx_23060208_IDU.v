@@ -47,7 +47,6 @@ wire                 cond_branch_inst;
 wire [DATA_WIDTH-1:0] idu_pc; 
 wire [DATA_WIDTH-1:0] idu_inst;
 wire [DATA_WIDTH-1:0] inst;
-assign inst = idu_inst;
 assign idu_to_exu_bus = 
 			 {regfile_mem_mux, 
         store_inst, 
@@ -90,7 +89,8 @@ end
 
 reg [DATA_WIDTH*2-1:0] ifu_to_idu_bus_r;
 // 从 IFU 得到数据
-assign {idu_pc, inst} = ifu_to_idu_bus_r;
+assign {idu_pc, idu_inst} = ifu_to_idu_bus_r;
+assign inst = idu_inst;
 
 always @(posedge clk) begin
 	if (rst) 
