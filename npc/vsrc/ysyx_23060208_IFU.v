@@ -156,6 +156,7 @@ always @(posedge clk) begin
 	else if (next == SHAKED_R) 
 		inst_r <= isram_rdata;
 end
+
 reg rready_r;
 assign isram_rready = rready_r;
 always @(posedge clk) begin
@@ -169,7 +170,7 @@ end
 
 
 assign isram_araddr = nextpc;
-assign ifu_to_idu_bus = {ifu_pc, inst_r};
+assign ifu_to_idu_bus = {ifu_pc, isram_rdata};
 
 //================= get pc from register PC ==============================
 wire pc_reg_wen;
