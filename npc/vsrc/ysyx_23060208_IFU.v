@@ -43,19 +43,19 @@ always @(posedge clk) begin
 		exu_to_ifu_bus_r <= exu_to_ifu_bus;
 end
 
-/* ====================  get the nextPC ================*/
+/* ====================  get the nextpc ================*/
 wire [DATA_WIDTH-1:0] ifu_pc;
-wire [DATA_WIDTH-1:0] nextPC;
-reg [DATA_WIDTH-1:0] nextPC_r;
-assign nextPC = nextPC_r;
+wire [DATA_WIDTH-1:0] nextpc;
+reg [DATA_WIDTH-1:0] nextpc_r;
+assign nextpc = nextpc_r;
 always @(posedge clk) begin
-	if(rst) nextPC_r <= 0;
+	if(rst) nextpc_r <= 0;
 	else if(ifu_allowin)
-		nextPC_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
+		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 													ifu_pc + 4;
 end
 /*
-assign nextPC = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
+assign nextpc = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 													ifu_pc + 4;
 */
 
@@ -66,7 +66,7 @@ ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
 	.wen(pc_reg_wen),
-	.next_pc(nextPC),
+	.next_pc(nextpc),
 	.pc(ifu_pc)
 );
 /* ======================================================== */
@@ -173,12 +173,12 @@ end
 
 
 
-assign isram_araddr = ifu_pc;
+assign isram_araddr = nextpc;
 assign isram_arvalid = ifu_allowin;
 assign ifu_to_idu_bus = {ifu_pc, inst_r};
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
 task get_nextPC (output [DATA_WIDTH-1:0] o);
-	o = nextPC;
+	o = nextpc;
 endtask
 endmodule
