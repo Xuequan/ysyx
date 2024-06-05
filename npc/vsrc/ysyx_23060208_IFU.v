@@ -60,7 +60,7 @@ assign nextPC = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 */
 
 /* get pc from register PC */
-wire pc_wen;
+wire pc_reg_wen;
 assign pc_reg_wen = ifu_allowin;
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
