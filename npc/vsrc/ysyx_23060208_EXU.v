@@ -200,9 +200,6 @@ always @(posedge clk) begin
 end
 
 /* ===================== write FSM =======================*/
-wire write_to_mem;
-assign write_to_mem = regfile_mem_mux[1] & exu_valid; 
-
 parameter [2:0] IDLE_W = 3'b000, WAIT_AWREADY = 3'b001, SHAKED_AW = 3'b010,
 								WAIT_WREADY = 3'b011, SHAKED_W = 3'b100, 
 								WAIT_BVALID = 3'b101, SHAKED_B = 3'b110;
@@ -214,11 +211,11 @@ always @(posedge clk) begin
 		state_w <= next_w;
 end
 
-always @(state_w or write_to_mem or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wready or dsram_bvalid or dsram_bready) begin
+always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wready or dsram_bvalid or dsram_bready) begin
 	next_w = IDLE_W;
 	case (state_w)
 		IDLE_W: 
-			if (!write_to_mem) 
+			if (!dsram_awvalid) 
 				next_w = IDLE_W;
 			else if (!dsram_awready)
 				next_w = WAIT_AWREADY;
@@ -268,11 +265,14 @@ reg awvalid_r;
 assign dsram_awvalid = awvalid_r;
 always @(posedge clk) begin
 	if (rst) awvalid_r <= 0;
-	else if (next_w == WAIT_AWREADY)
+	else if (next_w == IDLE_W)
+		awvalid_r <= regfile_mem_mux[1] & exu_valid;
+	else if (next_w == WAIT_AWREADY)	
 		awvalid_r <= 1'b1;
-	else
+	else 	
 		awvalid_r <= 0;
 end
+
 reg bready_r;
 assign dsram_bready = bready_r;
 always @(posedge clk) begin
