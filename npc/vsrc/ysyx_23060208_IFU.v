@@ -51,7 +51,7 @@ assign nextpc = nextpc_r;
 always @(posedge clk) begin
 	if(rst) 
 		nextpc_r <= DATA_WIDTH'('h8000_0000);
-	else  
+	else if (state == IDLE_R && next == WAIT_ARREADY)   
 		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc : ifu_pc + 4;
 end
 /*
@@ -93,11 +93,11 @@ always @(posedge clk) begin
     state <= next;
 end
 
-always @(state or isram_arvalid or isram_arready or isram_rvalid or isram_rready) begin
+always @(state or ifu_allowin or isram_arvalid or isram_arready or isram_rvalid or isram_rready) begin
   next = IDLE_R;
   case (state)
     IDLE_R: 
-      if (!isram_arvalid) 
+      if (!ifu_allowin) 
         next = IDLE_R;
       else if (!isram_arready)
         next = WAIT_ARREADY;
@@ -135,7 +135,8 @@ reg arvalid_r;
 assign isram_arvalid = arvalid_r;
 always @(posedge clk) begin
 	if (rst) arvalid_r <= 0;
-	else if ((next == IDLE_R || next == WAIT_ARREADY) && ifu_allowin)
+	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
+					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
 		arvalid_r <= 1'b1;
 	else
 		arvalid_r <= 1'b0;
