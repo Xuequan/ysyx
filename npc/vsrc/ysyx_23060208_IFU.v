@@ -177,11 +177,11 @@ end
 
 
 
-assign ifu_to_idu_bus = {ifu_pc, isram_rdata};
+assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
 
 //================= get pc from register PC ==============================
 wire pc_reg_wen;
-assign pc_reg_wen = (next == SHAKED_R);
+assign pc_reg_wen = (next == SHAKED_AR);
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
