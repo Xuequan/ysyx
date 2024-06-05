@@ -30,17 +30,42 @@ module ysyx_23060208_IFU
 	output									ifu_allowin
 );
 
+/* handle data from exu */
+wire [DATA_WIDTH-    1:0] exu_nextpc;
+wire											exu_nextpc_taken;
+reg [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus_r;
+assign {exu_nextpc_taken, exu_nextpc} = exu_to_ifu_bus_r;
+
+always @(posedge clk) begin
+	if (rst) 
+		exu_to_ifu_bus_r <= 0;
+	else if (ifu_allowin)
+		exu_to_ifu_bus_r <= exu_to_ifu_bus;
+end
+
 /* ====================  get the nextPC ================*/
 wire [DATA_WIDTH-1:0] ifu_pc;
 wire [DATA_WIDTH-1:0] nextPC;
+reg [DATA_WIDTH-1:0] nextPC_r;
+assign nextPC = nextPC_r;
+always @(posedge clk) begin
+	if(rst) nextPC_r <= 0;
+	else if(ifu_allowin)
+		nextPC_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
+													ifu_pc + 4;
+end
+/*
 assign nextPC = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 													ifu_pc + 4;
+*/
 
 /* get pc from register PC */
+wire pc_wen;
+assign pc_reg_wen = ifu_allowin;
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
-	.wen(1'b1),
+	.wen(pc_reg_wen),
 	.next_pc(nextPC),
 	.pc(ifu_pc)
 );
@@ -63,23 +88,10 @@ assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 
-/* handle data from exu */
-wire [DATA_WIDTH-    1:0] exu_nextpc;
-wire											exu_nextpc_taken;
-reg [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus_r;
-assign {exu_nextpc_taken, exu_nextpc} = exu_to_ifu_bus_r;
-
-always @(posedge clk) begin
-	if (rst) 
-		exu_to_ifu_bus_r <= 0;
-	else if (ifu_allowin)
-		exu_to_ifu_bus_r <= exu_to_ifu_bus;
-end
-
 
 /*============================ read FSM ========================*/
 parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
-                WAIT_RVA = 3'b011, SHAKED_R = 3'b100;
+                WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
 always @(posedge clk) begin
   if (rst) 
@@ -107,14 +119,14 @@ always @(state or isram_arvalid or isram_arready or isram_rvalid or isram_rready
       if (!isram_rready)
         next = SHAKED_AR;
       else if (!isram_rvalid)
-        next = WAIT_RVA;
+        next = WAIT_RVALID;
       else 
         next = SHAKED_R;
-    WAIT_RVA:
+    WAIT_RVALID:
       if (isram_rvalid)
         next = SHAKED_R;
       else 
-        next = WAIT_RVA;
+        next = WAIT_RVALID;
     SHAKED_R:
       if (!isram_arvalid)
         next = IDLE_R;
@@ -149,11 +161,19 @@ always @(posedge clk) begin
 	else if (next == SHAKED_R) 
 		inst_r <= isram_rdata;
 end
+reg rready_r;
+assign isram_rready = rready_r;
+always @(posedge clk) begin
+	if (rst) rready_r <= 0;
+	else if (next == SHAKED_AR || next == WAIT_RVALID)
+		rready_r <= 1'b1;
+	else
+		rready_r <= 1'b0;
+end
 
 
 
-
-assign isram_araddr = nextPC;
+assign isram_araddr = ifu_pc;
 assign isram_arvalid = ifu_allowin;
 assign ifu_to_idu_bus = {ifu_pc, inst_r};
 /* ==================== DPI-C ====================== */

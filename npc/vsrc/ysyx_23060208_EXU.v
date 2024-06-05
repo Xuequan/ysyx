@@ -128,7 +128,7 @@ assign exu_ready_go = |store_inst ? store_ready_go :
 assign exu_allowin = !exu_valid || exu_ready_go;
 /*============================ read FSM ========================*/
 parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
-								WAIT_RVA = 3'b011, SHAKED_R = 3'b100;
+								WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
 always @(posedge clk) begin
 	if (rst) 
@@ -156,14 +156,14 @@ always @(state or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rready
 			if (!dsram_rready)
 				next = SHAKED_AR;
 			else if (!dsram_rvalid)
-				next = WAIT_RVA;
+				next = WAIT_RVALID;
 			else 
 				next = SHAKED_R;
-		WAIT_RVA:
+		WAIT_RVALID:
 			if (dsram_rvalid)
 				next = SHAKED_R;
 			else 
-				next = WAIT_RVA;
+				next = WAIT_RVALID;
 		SHAKED_R:
 			if (!dsram_arvalid)
 				next = IDLE_R;
@@ -179,7 +179,7 @@ reg rready_r;
 assign dsram_rready = rready_r;
 always @(posedge clk) begin
 	if (rst) rready_r <= 1'b0;
-	else if (next == SHAKED_AR || next == WAIT_RVA)
+	else if (next == SHAKED_AR || next == WAIT_RVALID)
 		rready_r <= 1'b1;
 	else
 		rready_r <= 1'b0;
