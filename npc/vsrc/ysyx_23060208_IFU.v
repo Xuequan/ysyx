@@ -45,7 +45,7 @@ end
 /* ====================  get the nextpc ================*/
 wire [DATA_WIDTH-1:0] ifu_pc;
 wire [DATA_WIDTH-1:0] nextpc;
-assign nextpc = (exu_nextpc_taken && exu_data_valid) ? exu_nextpc : ifu_pc + 4;
+assign nextpc = exu_nextpc_taken ? exu_nextpc : ifu_pc + 4;
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
 reg ifu_valid;
