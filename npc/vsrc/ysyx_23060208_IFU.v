@@ -147,6 +147,8 @@ always @(posedge clk) begin
 	if (rst) ifu_valid <= 0;
 	else if (next == SHAKED_R)
 		ifu_valid <= 1'b1;
+	else 
+		ifu_valid <= 1'b0;
 end
 /* reveive instruction from isram */
 reg [DATA_WIDTH-1:0] inst_r;
