@@ -50,10 +50,18 @@ reg [DATA_WIDTH-1:0] nextpc_r;
 assign nextpc = nextpc_r;
 always @(posedge clk) begin
 	if(rst) nextpc_r <= DATA_WIDTH'('h8000_0000);
+	else if ((next == IDLE_R || next == WAIT_ARREADY) && ifu_allowin)
+		nextpc_r <= (exu_nextpc_taken) ? exu_nextpc :
+													ifu_pc + 4;
+end
+/*
+always @(posedge clk) begin
+	if(rst) nextpc_r <= DATA_WIDTH'('h8000_0000);
 	else if(exu_to_ifu_valid)
 		nextpc_r <= (exu_nextpc_taken && exu_data_valid) ? exu_nextpc :
 													ifu_pc + 4;
 end
+*/
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
 reg ifu_valid;
