@@ -196,12 +196,14 @@ always @(posedge clk) begin
 	else
 		rready_r <= 1'b0;
 end
+/*
 reg [DATA_WIDTH-1:0] rdata_r;
 always @(posedge clk) begin
 	if (rst) rdata_r <= 0;
 	else if (next_r == SHAKED_R) 
 		rdata_r <= dsram_rdata; 
 end
+*/
 
 always @(posedge clk) begin
 	if (rst) load_ready_go <= 0;
