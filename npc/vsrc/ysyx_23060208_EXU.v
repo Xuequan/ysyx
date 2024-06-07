@@ -276,7 +276,7 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
 end
 
 reg awvalid_r;
-assign dsram_awvalid = awvalid_r;
+assign dsram_awvalid = awvalid_r & exu_valid;
 always @(posedge clk) begin
 	if (rst) awvalid_r <= 0;
 	else if (next_w == IDLE_W)
