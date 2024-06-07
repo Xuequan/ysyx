@@ -129,57 +129,69 @@ assign exu_allowin = !exu_valid || exu_ready_go;
 /*============================ read FSM ========================*/
 parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
 								WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
-reg [2:0] state, next;
+reg [2:0] state_r, next_r;
 always @(posedge clk) begin
 	if (rst) 
-		state <= IDLE_R;
+		state_r <= IDLE_R;
 	else 
-		state <= next;
+		state_r <= next_r;
 end
 
-always @(state or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rready) begin
-	next = IDLE_R;
-	case (state)
+always @(state_r or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rready) begin
+	next_r = IDLE_R;
+	case (state_r)
 		IDLE_R: 
 			if (!dsram_arvalid) 
-				next = IDLE_R;
+				next_r = IDLE_R;
 			else if (!dsram_arready)
-				next = WAIT_ARREADY;
+				next_r = WAIT_ARREADY;
 			else 
-				next = SHAKED_AR;
+				next_r = SHAKED_AR;
 		WAIT_ARREADY:
 			if (dsram_arready)
-				next = SHAKED_AR;
+				next_r = SHAKED_AR;
 			else
-				next = WAIT_ARREADY;
+				next_r = WAIT_ARREADY;
 		SHAKED_AR:
 			if (!dsram_rready)
-				next = SHAKED_AR;
+				next_r = SHAKED_AR;
 			else if (!dsram_rvalid)
-				next = WAIT_RVALID;
+				next_r = WAIT_RVALID;
 			else 
-				next = SHAKED_R;
+				next_r = SHAKED_R;
 		WAIT_RVALID:
 			if (dsram_rvalid)
-				next = SHAKED_R;
+				next_r = SHAKED_R;
 			else 
-				next = WAIT_RVALID;
+				next_r = WAIT_RVALID;
 		SHAKED_R:
 			if (!dsram_arvalid)
-				next = IDLE_R;
+				next_r = IDLE_R;
 			else if (!dsram_arready)
-				next = WAIT_ARREADY;
+				next_r = WAIT_ARREADY;
 			else 
-				next = SHAKED_AR;
+				next_r = SHAKED_AR;
 		default: ;
 	endcase	
 end
 
+//assign dsram_arvalid = |load_inst && exu_valid;
+reg arvalid_r;
+assign dsram_arvalid = arvalid_r;
+always @(posedge clk) begin
+	if (rst) arvalid_r <= 0;
+	else if (next_r == IDLE_R)
+		arvalid_r <= |load_inst && exu_valid;
+	else if (next_r == WAIT_ARREADY)
+		arvalid_r <= 1'b1;
+	else
+		arvalid_r <= 0;
+end
 reg rready_r;
 assign dsram_rready = rready_r;
 always @(posedge clk) begin
 	if (rst) rready_r <= 1'b0;
-	else if (next == SHAKED_AR || next == WAIT_RVALID)
+	else if (next_r == SHAKED_AR || next_r == WAIT_RVALID)
 		rready_r <= 1'b1;
 	else
 		rready_r <= 1'b0;
@@ -187,13 +199,13 @@ end
 reg [DATA_WIDTH-1:0] rdata_r;
 always @(posedge clk) begin
 	if (rst) rdata_r <= 0;
-	else if (next == SHAKED_R) 
+	else if (next_r == SHAKED_R) 
 		rdata_r <= dsram_rdata; 
 end
 
 always @(posedge clk) begin
 	if (rst) load_ready_go <= 0;
-	else if (next == SHAKED_R) 
+	else if (next_r == SHAKED_R) 
 		load_ready_go <= 1'b1;
 	else 
 		load_ready_go <= 0;
@@ -349,14 +361,13 @@ assign dsram_wstrb = ( {3{store_inst[0]}} & 3'b100 )
 											| ( {3{store_inst[1]}} & 3'b010 )
 											| ( {3{store_inst[2]}} & 3'b001 );
 /* =======load instruction ============================== */
-assign dsram_arvalid = |load_inst && exu_valid;
 assign dsram_araddr = alu_result;
 wire [DATA_WIDTH-1:0] load_data;
-assign load_data = ({DATA_WIDTH{load_inst[0]}} & rdata_r)
-| ({DATA_WIDTH{load_inst[1]}} & {{16{rdata_r[15]}}, rdata_r[15:0]})
-| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, rdata_r[15:0]})
-| ({DATA_WIDTH{load_inst[3]}} & {{24{rdata_r[7]}}, rdata_r[7:0]})
-| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, rdata_r[7:0]});
+assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata)
+| ({DATA_WIDTH{load_inst[1]}} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
+| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, dsram_rdata[15:0]})
+| ({DATA_WIDTH{load_inst[3]}} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
+| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, dsram_rdata[7:0]});
 
 /* ============ to regfile ============================== */
 // 若是 jal, jalr, 那么将 rd <- exu_pc + 4
