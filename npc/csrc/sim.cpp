@@ -5,9 +5,9 @@ static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
 void step_and_dump_wave() {
-	/* 不生成波形图了
 	top->eval();
 	contextp->timeInc(1);
+	/*
 	tfp->dump(contextp->time());
 	*/
 }
