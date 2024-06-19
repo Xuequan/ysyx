@@ -1,48 +1,131 @@
 // IDU 模块
+`include "ysyx_23060208_npc.h"    
 module ysyx_23060208_IDU
 	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
 	input clk,
 	input rst,
-	// from IFU
-	input [DATA_WIDTH-1:0]  inst,
-	input [DATA_WIDTH-1:0]  pc_i,
+	/* connect with IFU   */
+	input [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus,
+	input 											ifu_to_idu_valid,
 	
-	// from EXU 
+	/* connect with CSR, read from CSR */
+	output [11:0] 					csr_raddr,
+	input [DATA_WIDTH-1:0]  csr_rdata,
+
+	/* update regfile, from EXU */
 	input [DATA_WIDTH-1:0]  regfile_wdata,
 	input [REG_WIDTH-1 :0]  regfile_waddr,
 	input										regfile_wen,
 
-	// to EXU (for ALU)
-	output [DATA_WIDTH-1:0] pc_o,
-	output [DATA_WIDTH-1:0] src1,
-	output [DATA_WIDTH-1:0] src2,
-	output [17					:0] op,
-	output [REG_WIDTH-1 :0] rd,
-
-	// instruction write to regfile or memory or no both
-	// to memory: regfile_mem_mux = 2'b10; to register: 2'b01
-	output [1						:0]	regfile_mem_mux, 
-	// unconditional jump (jal & jalr)
-	output [1           :0]	uncond_jump_inst,
-	// conditional branch (to EXU)
-	output									cond_branch_inst,
-	output [DATA_WIDTH-1:0] cond_branch_target,
-	// load instruction
-	output [4						:0] load_inst,
-	// store instruction write to memory data
-	output [2						:0] store_inst,
-	output [DATA_WIDTH-1:0] store_data_raw,
-
+	/* connect with EXU */
+	output [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus,
+	output [`IDU_TO_EXU_BUS-1:0] idu_to_exu_bus,
 	// CSR for nextpc
-	output [DATA_WIDTH-1:0] csr_nextpc,
-	output									csr_nextpc_taken,
-	
-	// from EXU, CSR write data 
-	input [DATA_WIDTH-1:0] csr_wdata,
-	// to EXU
-	output [1:0] 					 csr_inst
-);
+	output [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus,
 
+	output 								 idu_to_exu_valid,
+	input									 exu_allowin,
+
+	output											idu_valid_o,
+	output								 			idu_allowin
+);
+wire [DATA_WIDTH-1:0] src1;
+wire [DATA_WIDTH-1:0] src2;
+wire [REG_WIDTH-1 :0] rd; 
+wire [17          :0] op; 
+assign idu_to_exu_alu_bus = {src1, src2, rd, op};
+
+wire [1           :0] regfile_mem_mux;
+wire [2           :0] store_inst;
+wire [4           :0] load_inst;
+wire [DATA_WIDTH-1:0] store_data_raw; 
+	// unconditional jump (jal & jalr)
+wire [1           :0] uncond_jump_inst;
+	// conditional branch 
+wire [DATA_WIDTH-1:0] cond_branch_target;
+wire                 cond_branch_inst;
+wire [DATA_WIDTH-1:0] idu_pc; 
+wire [DATA_WIDTH-1:0] idu_inst;
+wire [DATA_WIDTH-1:0] inst;
+assign idu_to_exu_bus = 
+			 {regfile_mem_mux, 
+        store_inst, 
+        load_inst, 
+        store_data_raw,
+        uncond_jump_inst,
+        cond_branch_target,
+        cond_branch_inst,
+        idu_pc,
+				idu_inst 
+        };
+
+wire [11          :0] csr_idx;
+wire [2           :0] csr_inst;
+wire [DATA_WIDTH-1:0] csr_nextpc; 
+wire                  csr_nextpc_taken;
+assign idu_to_exu_csr_bus = 
+			 {csr_idx,
+        csr_inst,
+        csr_nextpc,
+        csr_nextpc_taken
+        };
+
+
+reg idu_valid;
+assign idu_valid_o = idu_valid;
+wire idu_ready_go;
+
+// 由于现在IDU是一个周期可以完成任务，因此将ready_go 设为1 
+assign idu_ready_go = 1'b1;
+assign idu_to_exu_valid = idu_valid && idu_ready_go;
+assign idu_allowin = !idu_valid || (idu_ready_go  && exu_allowin);
+
+always @(posedge clk) begin
+	if (rst) 
+		idu_valid <= 1'b0;
+	else if(idu_allowin)
+		idu_valid <= ifu_to_idu_valid;
+end
+
+reg [DATA_WIDTH*2-1:0] ifu_to_idu_bus_r;
+// 从 IFU 得到数据
+assign {idu_pc, idu_inst} = ifu_to_idu_bus_r;
+assign inst = idu_inst;
+
+always @(posedge clk) begin
+	if (rst) 
+		ifu_to_idu_bus_r <= 0;
+	else if (idu_allowin)
+		ifu_to_idu_bus_r <= ifu_to_idu_bus;
+end
+/*
+//======================= FSM ==================================
+parameter [1:0] IDLE = 2'b00, WAIT_ALLOWIN = 2'b01, SENT = 2'b10;
+reg [1:0] state, next;
+always @(posedge clk) begin
+	if (rst) state <= IDLE;
+	else     state <= next;
+end
+
+always @(state or idu_to_exu_valid or exu_allowin) begin
+	next = IDLE;
+	case (state)
+		IDLE:
+			if 			(!idu_to_exu_valid)		next <= IDLE;
+			else if (!exu_allowin) 	next <= WAIT_ALLOWIN;
+			else													next <= SENT;
+		WAIT_ALLOWIN:
+			if 			(exu_allowin)    next <= SENT;
+			else													next <= WAIT_ALLOWIN;
+		SENT:
+			if (idu_to_exu_valid && exu_allowin) next <= SENT;
+			else if(idu_to_exu_valid && !exu_allowin) next <= WAIT_ALLOWIN;
+			else 																					 next <= IDLE;
+		default:;
+	endcase
+end
+*/
+//==========================================================================
 // 解析指令
 wire [6:0] opcode;
 wire [2:0] funct3;
@@ -57,7 +140,6 @@ wire [DATA_WIDTH-1:0] immS;
 wire [DATA_WIDTH-1:0] immB;
 wire [DATA_WIDTH-1:0] src1_from_reg;
 wire [DATA_WIDTH-1:0] src2_from_reg;
-wire [DATA_WIDTH-1:0] csr_rdata;  // put into src2
 wire [11					:0] csr;
 
 assign opcode = inst[6:0];
@@ -65,7 +147,7 @@ assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
-assign rd  = inst[11:7];
+assign rd  = inst[11: 7];
 assign csr = inst[31:20]; 
 /* ================ 判断alu src1, src2 来源 ========= */
 // 判断 src2 的来源
@@ -245,7 +327,7 @@ ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 assign src1_from_pc = inst_jal || inst_auipc;
 assign src1_is_zero = 0;
 assign src1_is_none = inst_lui;
-assign src1 = src1_from_pc ? pc_i : 
+assign src1 = src1_from_pc ? idu_pc : 
 							src1_is_zero ? 0 : 
 							src1_is_none ? 0 : 
 														src1_from_reg;
@@ -346,79 +428,21 @@ assign op[15] = op_bltu;
 assign op[16] = op_bge;
 assign op[17] = op_bgeu;
 
-/* ================ CSRs ====================== */
-wire mtvec_wen;
-//wire [DATA_WIDTH-1:0] mtvec_wdata;
-wire [DATA_WIDTH-1:0] mtvec_rdata;
-/*
-assign mtvec_wen = inst_ecall;
-assign mtvec_wdata = pc_i;
-*/
-
-ysyx_23060208_mtvec #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mtvec(
-	.clk(clk),
-	.rst(rst),
-	.wdata(csr_wdata),
-	.rdata(mtvec_rdata),
-	.wen(mtvec_wen)
-);
-
-wire mcause_wen;
-wire [DATA_WIDTH-1:0] mcause_rdata;
-wire [DATA_WIDTH-1:0] mcause_wdata;
-assign mcause_wdata = inst_ecall ? 32'hb : csr_wdata;
-
-ysyx_23060208_mcause #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mcause(
-	.clk(clk),
-	.rst(rst),
-	.wdata(mcause_wdata),
-	.rdata(mcause_rdata),
-	.wen(mcause_wen)
-);
-
-wire mepc_wen;
-wire [DATA_WIDTH-1:0] mepc_rdata;
-wire [DATA_WIDTH-1:0] mepc_wdata;
-assign mepc_wdata = inst_ecall ? pc_i : csr_wdata;
-
-ysyx_23060208_mepc #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mepc(
-	.clk(clk),
-	.rst(rst),
-	.wdata(mepc_wdata),
-	.rdata(mepc_rdata),
-	.wen(mepc_wen)
-);
-wire mstatus_wen;
-wire [DATA_WIDTH-1:0] mstatus_rdata;
-//wire [DATA_WIDTH-1:0] mstatus_wdata;
-ysyx_23060208_mstatus #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mstatus(
-	.clk(clk),
-	.rst(rst),
-	.wdata(csr_wdata),
-	.rdata(mstatus_rdata),
-	.wen(mstatus_wen)
-);
-
+/* ================ read from CSR ====================== */
+assign csr_raddr = inst_ecall ? 12'h305 
+									: inst_mret  ? 12'h341 
+									: (inst_csrrw || inst_csrrs) ? csr 
+									: 0;
 /* ================ write to CSRs ============= */
-assign mtvec_wen = (csr == 12'h305 && (inst_csrrw | inst_csrrs)) ;
-assign mepc_wen  = (csr == 12'h341 && (inst_csrrw | inst_csrrs)) || inst_ecall;
-assign mcause_wen = (csr == 12'h342 && (inst_csrrw | inst_csrrs)) || inst_ecall;
-assign mstatus_wen = (csr == 12'h300 && (inst_csrrw | inst_csrrs));  
+assign csr_idx = csr;
 
-assign csr_rdata =  ({DATA_WIDTH{csr == 12'h305}} & mtvec_rdata) 
-									| ({DATA_WIDTH{csr == 12'h341}} & mepc_rdata)
-									| ({DATA_WIDTH{csr == 12'h342}} & mcause_rdata)
-									| ({DATA_WIDTH{csr == 12'h300}} & mstatus_rdata);
-
-/* ================= assign output ============= */
-assign pc_o = pc_i;
-
-assign csr_nextpc = ({DATA_WIDTH{inst_ecall}} & mtvec_rdata) 
-									| ({DATA_WIDTH{inst_mret }} & mepc_rdata );
+assign csr_nextpc = ({DATA_WIDTH{inst_ecall || inst_mret}} & csr_rdata); 
 assign csr_nextpc_taken = inst_ecall | inst_mret;
 
 // 判断指令最终目的: write to regfile or store to memory
 assign write_to_mem = inst_sw | inst_sh | inst_sb;
+	// instruction write to regfile or memory or no both
+	// to memory: regfile_mem_mux = 2'b10; to register: 2'b01
 assign regfile_mem_mux[1] = write_to_mem;
 assign regfile_mem_mux[0] = ~(write_to_mem | cond_branch_inst);
 
@@ -433,8 +457,8 @@ assign uncond_jump_inst[1] = inst_jalr;
 
 // conditional branch 是否跳转由比较 src1, src2 两寄存器决定
 // 该部分交给 alu
-// 跳转地址 B + pc_i
-assign cond_branch_target = immB + pc_i;
+// 跳转地址 B + idu_pc
+assign cond_branch_target = immB + idu_pc;
 assign cond_branch_inst = inst_beq | inst_bne
 										| inst_blt | inst_bltu
 										| inst_bge | inst_bgeu;
@@ -448,6 +472,10 @@ assign load_inst[4] = inst_lbu;
 
 assign csr_inst[0] = inst_csrrw;
 assign csr_inst[1] = inst_csrrs;
+assign csr_inst[2] = inst_ecall;
+
+
+
 //======================== DPI-C ================================
 export "DPI-C" task check_if_ebreak;
 task check_if_ebreak (output bit o);

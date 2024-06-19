@@ -1,155 +1,222 @@
+`include "ysyx_23060208_npc.h"
 module top
 	#(DATA_WIDTH = 32, REG_WIDTH = 5)(
 	input clk,
 	input rst,
+	// inst, pc in EXU
 	output [DATA_WIDTH-1:0] inst,
 	output [DATA_WIDTH-1:0] pc
 );
 
-wire [DATA_WIDTH-1:0] nextPC;
+wire [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus;
+wire											 exu_to_ifu_valid;
+wire [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus;
+
+wire											 ifu_to_idu_valid;
+
+wire											 idu_allowin;
+wire											 ifu_allowin;
+wire											 exu_allowin;
+
+
 wire [DATA_WIDTH-1:0] regfile_wdata;
 wire [REG_WIDTH-1 :0] regfile_waddr;
 wire 									regfile_wen;
 
-wire [1						:0] uncond_jump_inst;
-wire 									exu_nextpc_taken_to_ifu;
-wire [DATA_WIDTH-1:0] exu_nextpc_to_ifu;
-
-wire [DATA_WIDTH-1:0] cond_branch_target;
-wire 									cond_branch_inst;
-
-wire [4						:0] load_inst;
-
-wire [DATA_WIDTH-1:0] src1;
-wire [DATA_WIDTH-1:0] src2;
-wire [REG_WIDTH-1 :0] rd;
-wire [17					:0] op;
-wire [1           :0]	regfile_mem_mux;
-
-wire [DATA_WIDTH-1:0] store_data;
-wire [DATA_WIDTH-1:0] store_address;
-wire									store_en;
-wire [2						:0] store_inst;
-wire [2						:0] store_bytes_num;
-wire [DATA_WIDTH-1:0] store_data_raw;
-
-wire [DATA_WIDTH-1:0] rdata;
-wire [DATA_WIDTH-1:0] raddr;
-
-wire [DATA_WIDTH-1:0] idu_to_exu_pc;
-wire 									ifu_to_isram_valid;
-wire									exu_to_dsram_read_en;
-
-wire [DATA_WIDTH-1:0] csr_nextpc;
-wire 									csr_nextpc_taken;
+wire [11:0]           csr_raddr;
+wire [DATA_WIDTH-1:0] csr_rdata;
+wire [11:0]           csr_waddr;
+wire [11:0]           csr_waddr2;
 wire [DATA_WIDTH-1:0] csr_wdata;
-wire [1						:0] csr_inst;
+wire [DATA_WIDTH-1:0] csr_wdata2;
+
+wire [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus;
+wire [`IDU_TO_EXU_BUS-1		 :0] idu_to_exu_bus;
+wire [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus;
+
+wire	idu_to_exu_valid;
+
+wire [DATA_WIDTH-1:0] dsram_awaddr;
+wire                  dsram_awvalid;
+wire                   dsram_awready;
+
+wire [DATA_WIDTH-1:0] dsram_wdata; 
+wire [2           :0] dsram_wstrb;
+wire                  dsram_wvalid;
+wire                   dsram_wready;
+
+wire  [1            :0] dsram_bresp;
+wire                   dsram_bvalid;
+wire                   dsram_bready;
+
+wire [DATA_WIDTH-1:0] dsram_araddr;
+wire                  dsram_arvalid; 
+wire                   dsram_arready;
+
+wire [DATA_WIDTH-1:0]  dsram_rdata;  
+wire [1:           0]  dsram_rresp;
+wire                  dsram_rvalid;
+wire                  dsram_rready;
+
+wire [DATA_WIDTH-1:0] isram_araddr;
+wire                  isram_arvalid; 
+wire                   isram_arready;
+
+wire [DATA_WIDTH-1:0]  isram_rdata;  
+wire [1:           0]  isram_rresp;
+wire                  isram_rvalid;
+wire                  isram_rready;
+
+wire	idu_valid;
 
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
 	.clk(clk),
 	.rst(rst),
-	.valid(ifu_to_isram_valid),
-	.nextPC(nextPC),
-	.inst_o(inst)
+	.ifu_allowin(ifu_allowin),
+	.isram_araddr(isram_araddr),
+	.isram_arvalid(isram_arvalid),
+	.isram_arready(isram_arready),
+
+	.isram_rdata(isram_rdata),
+	.isram_rresp(isram_rresp),
+	.isram_rvalid(isram_rvalid),
+	.isram_rready(isram_rready)
+);
+ysyx_23060208_CSR	#(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) csr(
+	.clk(clk),
+	.rst(rst),
+
+	.csr_raddr(csr_raddr),
+	.csr_rdata(csr_rdata),
+	
+	.csr_waddr(csr_waddr),
+	.csr_wdata(csr_wdata),
+	.csr_waddr2(csr_waddr2),
+	.csr_wdata2(csr_wdata2)
 );
 
 ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 	.clk(clk),
 	.rst(rst),
-	.inst_i(inst),
 
-	.exu_nextpc(exu_nextpc_to_ifu),
-	.exu_nextpc_taken(exu_nextpc_taken_to_ifu),
+	.exu_to_ifu_bus(exu_to_ifu_bus),
+	.exu_to_ifu_valid(exu_to_ifu_valid),
 
-	.valid(ifu_to_isram_valid),
-	.pc(pc),
-	.nextPC(nextPC)
+	.exu_allowin(exu_allowin),
+
+	.ifu_to_idu_bus(ifu_to_idu_bus),
+	.ifu_to_idu_valid(ifu_to_idu_valid),
+	//.idu_allowin(idu_allowin),
+	.idu_valid(idu_valid),
+	
+	.isram_araddr(isram_araddr),
+	.isram_arvalid(isram_arvalid),
+	.isram_arready(isram_arready),
+
+	.isram_rdata(isram_rdata),
+	.isram_rresp(isram_rresp),
+	.isram_rvalid(isram_rvalid),
+	.isram_rready(isram_rready),
+	.ifu_allowin(ifu_allowin)
 );	
 
 ysyx_23060208_IDU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) idu(
 	.clk(clk),
 	.rst(rst),
-	.inst(inst),
-	.pc_i(pc),
+
+	.ifu_to_idu_bus(ifu_to_idu_bus),
+	.ifu_to_idu_valid(ifu_to_idu_valid),
+
+	.csr_raddr(csr_raddr),
+	.csr_rdata(csr_rdata),
 
 	.regfile_wdata(regfile_wdata),
 	.regfile_waddr(regfile_waddr),
 	.regfile_wen(regfile_wen),
 
-	.uncond_jump_inst(uncond_jump_inst),
+	.idu_to_exu_alu_bus(idu_to_exu_alu_bus),
+	.idu_to_exu_bus(idu_to_exu_bus),
+	.idu_to_exu_csr_bus(idu_to_exu_csr_bus),
 
-	.pc_o(idu_to_exu_pc),
-	.src1(src1),
-	.src2(src2),
-	.rd(rd),
-	.op(op),
-
-	.regfile_mem_mux(regfile_mem_mux),
-	.cond_branch_inst(cond_branch_inst),
-	.cond_branch_target(cond_branch_target),
-
-	.load_inst(load_inst),
-
-	.store_inst(store_inst),
-	.store_data_raw(store_data_raw),
-
-	.csr_nextpc(csr_nextpc),
-	.csr_nextpc_taken(csr_nextpc_taken),
-	.csr_wdata(csr_wdata),
-	.csr_inst(csr_inst)
+	.idu_to_exu_valid(idu_to_exu_valid),
+	.exu_allowin(exu_allowin),
+	.idu_valid_o(idu_valid),
+	.idu_allowin(idu_allowin)
 );
 
 ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.clk(clk),
 	.rst(rst),
-	.uncond_jump_inst(uncond_jump_inst),
-	.pc(idu_to_exu_pc),
-	.src1(src1),
-	.src2(src2),
-	.rd(rd),
-	.op(op),
 
-	.regfile_mem_mux(regfile_mem_mux),
-
-	.cond_branch_target(cond_branch_target),
-	.cond_branch_inst(cond_branch_inst),
-
-	.load_inst(load_inst),
-
-	.exu_nextpc(exu_nextpc_to_ifu),
-	.exu_nextpc_taken(exu_nextpc_taken_to_ifu),
+	.exu_to_ifu_bus(exu_to_ifu_bus),
+	.exu_to_ifu_valid(exu_to_ifu_valid),
 
 	.regfile_wdata(regfile_wdata),
 	.regfile_waddr(regfile_waddr),
 	.regfile_wen(regfile_wen),
 	
-	.store_inst(store_inst),
-	.store_address(store_address),
-	.store_en(store_en),
-	.store_data_raw(store_data_raw),
-	.store_data(store_data),
-	.store_bytes_num(store_bytes_num),
-	
-	.rdata(rdata),
-	.raddr(raddr),
-	.valid(exu_to_dsram_read_en),
+	.dsram_awaddr(dsram_awaddr),
+	.dsram_awvalid(dsram_awvalid),
+	.dsram_awready(dsram_awready),
 
-	.csr_nextpc(csr_nextpc),
-	.csr_nextpc_taken(csr_nextpc_taken),
-	.csr_inst(csr_inst),
-	.csr_wdata(csr_wdata)
+	.dsram_wdata(dsram_wdata),
+	.dsram_wstrb(dsram_wstrb),
+	.dsram_wvalid(dsram_wvalid),
+	.dsram_wready(dsram_wready),
+	
+	.dsram_bresp(dsram_bresp),
+	.dsram_bvalid(dsram_bvalid),
+	.dsram_bready(dsram_bready),
+
+	.dsram_araddr(dsram_araddr),
+	.dsram_arvalid(dsram_arvalid),
+	.dsram_arready(dsram_arready),
+
+	.dsram_rdata(dsram_rdata),
+	.dsram_rresp(dsram_rresp),
+	.dsram_rvalid(dsram_rvalid),
+	.dsram_rready(dsram_rready),
+
+	.csr_waddr(csr_waddr),
+	.csr_wdata(csr_wdata),
+	.csr_waddr2(csr_waddr2),
+	.csr_wdata2(csr_wdata2),
+
+	.idu_to_exu_alu_bus(idu_to_exu_alu_bus),
+	.idu_to_exu_bus(idu_to_exu_bus),
+	.idu_to_exu_csr_bus(idu_to_exu_csr_bus),
+
+	.idu_to_exu_valid(idu_to_exu_valid),
+	.exu_allowin(exu_allowin),
+	
+	.exu_pc(pc),
+	.exu_inst(inst)
 );
 
 ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(
 	.clk(clk),
-	//.rst(rst),
-	.valid(exu_to_dsram_read_en),
-	.wdata(store_data),
-	.waddr(store_address),
-	.wen(store_en),
-	.store_bytes_num(store_bytes_num),
-	.raddr(raddr),
-	.rdata(rdata)
+	.rst(rst),
+	.dsram_awaddr(dsram_awaddr),
+	.dsram_awvalid(dsram_awvalid),
+	.dsram_awready(dsram_awready),
+
+	.dsram_wdata(dsram_wdata),
+	.dsram_wstrb(dsram_wstrb),
+	.dsram_wvalid(dsram_wvalid),
+	.dsram_wready(dsram_wready),
+	
+	.dsram_bresp(dsram_bresp),
+	.dsram_bvalid(dsram_bvalid),
+	.dsram_bready(dsram_bready),
+
+	.dsram_araddr(dsram_araddr),
+	.dsram_arvalid(dsram_arvalid),
+	.dsram_arready(dsram_arready),
+
+	.dsram_rdata(dsram_rdata),
+	.dsram_rresp(dsram_rresp),
+	.dsram_rvalid(dsram_rvalid),
+	.dsram_rready(dsram_rready)
 );
 
 endmodule

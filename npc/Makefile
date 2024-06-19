@@ -7,6 +7,9 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
+# in order to '`include "ysyx_23060208_npc.h" '
+VERILATOR_CFLAGS += -I$(shell find $(abspath ./vsrc))
+
 #VERILATOR_CFLAGS += --debug
 #VERILATOR_CFLAGS += --gdbbt
 
@@ -43,7 +46,8 @@ LDFLAGS += $(LIBS)
 
 LDFLAGS += $(shell llvm-config --ldflags)
 
-$(BIN): $(VSRCS) $(CSRCS)
+#$(BIN): $(VSRCS) $(CSRCS)
+$(BIN): $(CSRCS)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
@@ -63,6 +67,7 @@ sim: sim-env
 	@echo IMG=$(IMG)
 	@echo NPC_EXEC=$(NPC_EXEC)
 	@echo LIBS=$(LIBS)
+	@echo VSRCS=$(VSRCS)
 	@echo here $(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
