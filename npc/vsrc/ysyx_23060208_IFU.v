@@ -134,8 +134,9 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-	if (rst) ifu_valid <= 0;
-	else if (state == SHAKED_AR || state == WAIT_RVALID)
+	if (rst) 
+		ifu_valid <= 0;
+	else if (next == SHAKED_AR || next == WAIT_RVALID)
 		ifu_valid <= isram_rvalid;
 	else 
 		ifu_valid <= 1'b0;
