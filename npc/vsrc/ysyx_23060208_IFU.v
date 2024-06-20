@@ -50,7 +50,7 @@ wire [DATA_WIDTH-1:0] nextpc;
 assign nextpc = exu_nextpc_taken ? exu_nextpc : ifu_pc + 4;
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
-wire ifu_valid;
+//wire ifu_valid;
 wire ifu_ready_go;
 
 // 表示 EXU 传过来的数据有效
@@ -165,10 +165,14 @@ end
 
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
 assign ifu_ready_go = (next == SHAKED_R);
-assign ifu_valid    = (next == SHAKED_R);
+//assign ifu_valid    = (next == SHAKED_R);
 
+/*
 assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
+*/
+assign ifu_to_idu_valid = ifu_ready_go;
+assign ifu_allowin = !idu_valid && exu_allowin;
 
 //================= get pc from register PC ==============================
 wire pc_reg_wen;
