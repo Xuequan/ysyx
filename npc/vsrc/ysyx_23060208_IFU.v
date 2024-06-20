@@ -136,8 +136,8 @@ end
 always @(posedge clk) begin
 	if (rst) 
 		ifu_valid <= 0;
-	else if (next == SHAKED_AR || next == WAIT_RVALID)
-		ifu_valid <= isram_rvalid;
+	else if (next == SHAKED_R)
+		ifu_valid <= 1'b1;
 	else 
 		ifu_valid <= 1'b0;
 end
@@ -165,9 +165,8 @@ end
 
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
 assign ifu_ready_go = (next == SHAKED_R);
-//assign ifu_valid    = (next == SHAKED_R);
 
-assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
+assign ifu_to_idu_valid = ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 //================= get pc from register PC ==============================
