@@ -118,9 +118,11 @@ always @(posedge clk) begin
 end
 
 wire exu_ready_go;
-reg load_ready_go;
-reg store_ready_go;
+wire load_ready_go;
+wire store_ready_go;
 
+assign load_ready_go  = (next_r == SHAKED_R);
+assign store_ready_go = (next_w == SHAKED_B);
 assign exu_ready_go = |store_inst ? store_ready_go :
 											|load_inst  ? load_ready_go :
 																		1'b1;
@@ -203,8 +205,6 @@ always @(posedge clk) begin
 	else if (next_r == SHAKED_R) 
 		rdata_r <= dsram_rdata; 
 end
-*/
-
 always @(posedge clk) begin
 	if (rst) load_ready_go <= 0;
 	else if (next_r == SHAKED_R) 
@@ -212,6 +212,7 @@ always @(posedge clk) begin
 	else 
 		load_ready_go <= 0;
 end
+*/
 
 /* ===================== write FSM =======================*/
 parameter [2:0] IDLE_W = 3'b000, WAIT_AWREADY = 3'b001, SHAKED_AW = 3'b010,
@@ -307,6 +308,7 @@ always @(posedge clk) begin
 		wvalid_r <= 1'b0;
 end
 
+/*
 always @(posedge clk) begin
 	if (rst) store_ready_go <= 0;
 	else if (next_w == SHAKED_B) 
@@ -314,6 +316,7 @@ always @(posedge clk) begin
 	else 
 		store_ready_go <= 0;
 end
+*/
 /*=========================================================*/
 wire [DATA_WIDTH-1:0] alu_result;
 wire overflow;
