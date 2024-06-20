@@ -1,4 +1,10 @@
-#include "sim.h"
+//#include "sim.h"
+#include <cstdint>
+//#include "verilated.h"
+#include "Vtop.h"
+#include "verilated_vcd_c.h"
+#include "Vtop__Dpi.h"
+#include "Vtop___024root.h"
 
 static Vtop* top;
 static VerilatedContext* contextp;
@@ -7,9 +13,7 @@ static VerilatedVcdC* tfp;
 void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
-	/*
 	tfp->dump(contextp->time());
-	*/
 }
 void sim_init() {
  	contextp = new VerilatedContext;

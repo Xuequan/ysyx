@@ -139,16 +139,6 @@ always @(posedge clk) begin
 		araddr_r <= nextpc;
 end
 
-reg ifu_ready_go_r;
-assign ifu_ready_go = ifu_ready_go_r;
-always @(posedge clk) begin
-	if (rst) ifu_ready_go_r <= 0;
-	else if (next == SHAKED_R)
-		ifu_ready_go_r <= 1'b1;
-	else 
-		ifu_ready_go_r <= 0;
-end
-
 always @(posedge clk) begin
 	if (rst) ifu_valid <= 0;
 	else if (next == SHAKED_R)
@@ -178,6 +168,7 @@ end
 
 
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
+assign ifu_ready_go = (next == SHAKED_R);
 
 //================= get pc from register PC ==============================
 wire pc_reg_wen;
