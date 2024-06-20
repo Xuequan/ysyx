@@ -183,7 +183,7 @@ assign dsram_arvalid = arvalid_r;
 always @(posedge clk) begin
 	if (rst) arvalid_r <= 0;
 	else if (next_r == IDLE_R)
-		arvalid_r <= |load_inst && exu_valid;
+		arvalid_r <= |load_inst && (exu_valid || idu_to_exu_valid);
 	else if (next_r == WAIT_ARREADY)
 		arvalid_r <= 1'b1;
 	else
@@ -277,11 +277,11 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
 end
 
 reg awvalid_r;
-assign dsram_awvalid = awvalid_r & exu_valid;
+assign dsram_awvalid = awvalid_r;
 always @(posedge clk) begin
 	if (rst) awvalid_r <= 0;
 	else if (next_w == IDLE_W)
-		awvalid_r <= regfile_mem_mux[1] & exu_valid;
+		awvalid_r <= regfile_mem_mux[1] && (exu_valid || idu_to_exu_valid);
 	else if (next_w == WAIT_AWREADY)	
 		awvalid_r <= 1'b1;
 	else 	

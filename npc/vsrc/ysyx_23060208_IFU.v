@@ -50,7 +50,7 @@ wire [DATA_WIDTH-1:0] nextpc;
 assign nextpc = exu_nextpc_taken ? exu_nextpc : ifu_pc + 4;
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
-reg ifu_valid;
+wire ifu_valid;
 wire ifu_ready_go;
 
 // 表示 EXU 传过来的数据有效
@@ -61,12 +61,6 @@ always @(posedge clk) begin
 	else if(ifu_allowin) 	 
 	 	exu_data_valid <= exu_to_ifu_valid;
 end
-
-//assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
-assign ifu_to_idu_valid = ifu_ready_go;
-assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
-
-
 
 /*============================ read FSM ========================*/
 parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
@@ -139,6 +133,7 @@ always @(posedge clk) begin
 		araddr_r <= nextpc;
 end
 
+/*
 always @(posedge clk) begin
 	if (rst) ifu_valid <= 0;
 	else if (state == SHAKED_AR || state == WAIT_RVALID)
@@ -146,6 +141,7 @@ always @(posedge clk) begin
 	else 
 		ifu_valid <= 1'b0;
 end
+*/
 /* reveive instruction from isram */
 reg [DATA_WIDTH-1:0] inst_r;
 always @(posedge clk) begin
@@ -169,6 +165,10 @@ end
 
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
 assign ifu_ready_go = (next == SHAKED_R);
+assign ifu_valid    = (next == SHAKED_R);
+
+assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
+assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 //================= get pc from register PC ==============================
 wire pc_reg_wen;
