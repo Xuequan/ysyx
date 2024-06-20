@@ -62,8 +62,8 @@ always @(posedge clk) begin
 	 	exu_data_valid <= exu_to_ifu_valid;
 end
 
-assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
-//assign ifu_allowin = !ifu_valid || (ifu_ready_go && idu_allowin);
+//assign ifu_to_idu_valid = ifu_valid && ifu_ready_go;
+assign ifu_to_idu_valid = ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 
