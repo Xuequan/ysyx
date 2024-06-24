@@ -90,6 +90,7 @@ always @(posedge clk) begin
     rvalid_r <= 0;
 end
 
+/*
 reg [DATA_WIDTH-1:0] araddr_r;
 wire [DATA_WIDTH-1:0] raddr;
 assign raddr = (araddr_r == 0) ? 32'h8000_0000 : araddr_r;
@@ -99,15 +100,15 @@ always @(posedge clk) begin
   else if (next == SHAKED_AR)
     araddr_r <= isram_araddr;
 end
-
+*/
 reg [DATA_WIDTH-1:0] rdata_r;
 assign isram_rdata = rdata_r;
 always @(posedge clk) begin
 	if (rst) 
 		rdata_r <= 0;
 	//else if (next == SHAKED_R) 
-  else if (next == SHAKED_AR || next == WAIT_RREADY)
-		rdata_r <= isram_read(raddr);
+  else if (next == SHAKED_AR)
+		rdata_r <= isram_read(isram_araddr);
 end
 
 endmodule
