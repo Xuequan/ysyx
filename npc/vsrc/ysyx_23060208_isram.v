@@ -92,7 +92,7 @@ end
 
 reg [DATA_WIDTH-1:0] araddr_r;
 wire [DATA_WIDTH-1:0] raddr;
-assign raddr = araddr_r;
+assign raddr = (araddr_r == 0) ? 32'h8000_0000 : araddr_r;
 always @(posedge clk) begin
   if (rst)
     araddr_r <= 0;
