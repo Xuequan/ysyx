@@ -103,18 +103,17 @@ end
 */
 reg [DATA_WIDTH-1:0] rdata_r;
 assign isram_rdata = rdata_r;
-
-wire [DATA_WIDTH-1:0] read_inst;
-wire [DATA_WIDTH-1:0] read_addr;
-assign read_addr = (isram_araddr == 32'b0) ? 32'h8000_0000 : isram_araddr;
-assign read_inst = isram_read(read_addr);
 always @(posedge clk) begin
 	if (rst) 
 		rdata_r <= 0;
 	//else if (next == SHAKED_R) 
-  else if (next == SHAKED_AR)
-		//rdata_r <= isram_read(isram_araddr);
-		rdata_r <= read_inst;
+  //else if (next == SHAKED_AR)
+  else if (next == SHAKED_AR || next == WAIT_RREADY)
+  /*
+  else if ( (state == SHAKED_AR && next == SHAKED_R)
+         || (state == WAIT_RREADY && next == SHAKED_R)
+	*/
+		rdata_r <= isram_read(isram_araddr);
 end
 
 endmodule
