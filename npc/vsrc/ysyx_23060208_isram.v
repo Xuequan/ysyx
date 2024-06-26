@@ -105,7 +105,9 @@ reg [DATA_WIDTH-1:0] rdata_r;
 assign isram_rdata = rdata_r;
 
 wire [DATA_WIDTH-1:0] read_inst;
-assign read_inst = isram_read(isram_araddr);
+wire [DATA_WIDTH-1:0] read_addr;
+assign read_addr = (isram_araddr == 32'b0) ? 32'h8000_0000 : isram_araddr;
+assign read_inst = isram_read(read_addr);
 always @(posedge clk) begin
 	if (rst) 
 		rdata_r <= 0;
