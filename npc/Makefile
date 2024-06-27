@@ -72,7 +72,7 @@ sim: sim-env
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
-	@echo llvm-config --cxxflags = $(shell llvm-config --cxxflags)
+	@echo llvm-config --cxxflags = $(shell llvm-confag-11 --cxxflags)
 	@echo llvm-config --ldflags = $(shell llvm-config --ldflags)
 	@echo llvm-config --libs = $(shell llvm-config --libs)
 	@echo =======================================
