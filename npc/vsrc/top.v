@@ -4,6 +4,7 @@ module top
 	input clk,
 	input rst,
 	// inst, pc in EXU
+	output 								  exu_valid,
 	output [DATA_WIDTH-1:0] inst,
 	output [DATA_WIDTH-1:0] pc
 );
@@ -190,7 +191,9 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.exu_allowin(exu_allowin),
 	
 	.exu_pc(pc),
-	.exu_inst(inst)
+	.exu_inst(inst),
+
+	.exu_valid(exu_valid)
 );
 
 ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(

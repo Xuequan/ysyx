@@ -89,7 +89,7 @@ word_t paddr_read(paddr_t addr, int len) {
 			return (word_t)(timer >> 32);
 		}
 	}
-	printf("read out of bound\n");	
+	printf("read out of bound--");	
 	out_of_bound(addr);
 	return 0;
 }
@@ -135,7 +135,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		//关于时钟，__am_time_init() 要写入内存，NPC就直接跳过了，不写了
 		return;
 	}
-	printf("write out of bound\n");	
+	printf("write out of bound--");	
   out_of_bound(addr);
 }
 

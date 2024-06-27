@@ -57,7 +57,9 @@ module ysyx_23060208_EXU
 	
 	// for debug
 	output [DATA_WIDTH-1:0] exu_pc,
-	output [DATA_WIDTH-1:0] exu_inst
+	output [DATA_WIDTH-1:0] exu_inst,
+	
+	output 									exu_valid
 );
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
@@ -97,12 +99,14 @@ assign {csr_idx,
 				csr_nextpc,
 				csr_nextpc_taken
 				} = idu_to_exu_csr_bus_r;
-reg exu_valid;
+
+reg exu_valid_r;
+assign exu_valid = exu_valid_r;
 always @(posedge clk) begin
 	if (rst) 
-		exu_valid <= 1'b0;
+		exu_valid_r <= 1'b0;
 	else if (exu_allowin)
-		exu_valid <= idu_to_exu_valid;
+		exu_valid_r <= idu_to_exu_valid;
 end
 
 always @(posedge clk) begin
@@ -118,9 +122,11 @@ always @(posedge clk) begin
 end
 
 wire exu_ready_go;
-reg load_ready_go;
-reg store_ready_go;
+wire load_ready_go;
+wire store_ready_go;
 
+assign load_ready_go  = (next_r == SHAKED_R);
+assign store_ready_go = (next_w == SHAKED_B);
 assign exu_ready_go = |store_inst ? store_ready_go :
 											|load_inst  ? load_ready_go :
 																		1'b1;
@@ -137,11 +143,15 @@ always @(posedge clk) begin
 		state_r <= next_r;
 end
 
-always @(state_r or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rready) begin
+wire read_start;
+//assign read_start = |load_inst && (exu_valid || idu_to_exu_valid);
+assign read_start = |load_inst && exu_valid;
+
+always @(state_r or read_start or dsram_arready or dsram_rvalid) begin
 	next_r = IDLE_R;
 	case (state_r)
 		IDLE_R: 
-			if (!dsram_arvalid) 
+			if (!read_start) 
 				next_r = IDLE_R;
 			else if (!dsram_arready)
 				next_r = WAIT_ARREADY;
@@ -153,9 +163,7 @@ always @(state_r or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rrea
 			else
 				next_r = WAIT_ARREADY;
 		SHAKED_AR:
-			if (!dsram_rready)
-				next_r = SHAKED_AR;
-			else if (!dsram_rvalid)
+			if (!dsram_rvalid)
 				next_r = WAIT_RVALID;
 			else 
 				next_r = SHAKED_R;
@@ -165,7 +173,7 @@ always @(state_r or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rrea
 			else 
 				next_r = WAIT_RVALID;
 		SHAKED_R:
-			if (!dsram_arvalid)
+			if (!read_start)
 				next_r = IDLE_R;
 			else if (!dsram_arready)
 				next_r = WAIT_ARREADY;
@@ -177,12 +185,12 @@ end
 
 //assign dsram_arvalid = |load_inst && exu_valid;
 reg arvalid_r;
-assign dsram_arvalid = arvalid_r;
+assign dsram_arvalid = (state_r == IDLE_R) ? read_start : arvalid_r;
 always @(posedge clk) begin
 	if (rst) arvalid_r <= 0;
-	else if (next_r == IDLE_R)
-		arvalid_r <= |load_inst && exu_valid;
-	else if (next_r == WAIT_ARREADY)
+	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
+				|| (state_r == IDLE_R && next_r == SHAKED_AR) 
+				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
 		arvalid_r <= 1'b1;
 	else
 		arvalid_r <= 0;
@@ -203,8 +211,6 @@ always @(posedge clk) begin
 	else if (next_r == SHAKED_R) 
 		rdata_r <= dsram_rdata; 
 end
-*/
-
 always @(posedge clk) begin
 	if (rst) load_ready_go <= 0;
 	else if (next_r == SHAKED_R) 
@@ -212,6 +218,7 @@ always @(posedge clk) begin
 	else 
 		load_ready_go <= 0;
 end
+*/
 
 /* ===================== write FSM =======================*/
 parameter [2:0] IDLE_W = 3'b000, WAIT_AWREADY = 3'b001, SHAKED_AW = 3'b010,
@@ -225,11 +232,14 @@ always @(posedge clk) begin
 		state_w <= next_w;
 end
 
-always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wready or dsram_bvalid or dsram_bready) begin
+wire write_start;
+assign write_start = regfile_mem_mux[1] && exu_valid;
+
+always @(state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid) begin
 	next_w = IDLE_W;
 	case (state_w)
 		IDLE_W: 
-			if (!dsram_awvalid) 
+			if (!write_start) 
 				next_w = IDLE_W;
 			else if (!dsram_awready)
 				next_w = WAIT_AWREADY;
@@ -241,9 +251,7 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
 			else
 				next_w = SHAKED_AW;
 		SHAKED_AW:
-			if (!dsram_wvalid)
-				next_w = SHAKED_AW;
-			else if (!dsram_wready)
+			if (!dsram_wready)
 				next_w = WAIT_WREADY;
 			else 
 				next_w = SHAKED_W;
@@ -253,9 +261,7 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
 			else 
 				next_w = SHAKED_W;
 		SHAKED_W:
-			if (!dsram_bready)
-				next_w = SHAKED_W;
-			else if (!dsram_bvalid)
+			if (!dsram_bvalid)
 				next_w = WAIT_BVALID;
 			else
 				next_w = SHAKED_B;
@@ -265,7 +271,7 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
 			else
 				next_w = SHAKED_B;
 		SHAKED_B:
-			if (!dsram_awvalid)
+			if (!write_start)
 				next_w = IDLE_W;
 			else if (!dsram_awready)
 				next_w = WAIT_AWREADY;
@@ -276,14 +282,14 @@ always @(state_w or dsram_awvalid or dsram_awready or dsram_wvalid or dsram_wrea
 end
 
 reg awvalid_r;
-assign dsram_awvalid = awvalid_r & exu_valid;
+assign dsram_awvalid = (state_w == IDLE_W) ? write_start : awvalid_r;
 always @(posedge clk) begin
 	if (rst) awvalid_r <= 0;
-	else if (next_w == IDLE_W)
-		awvalid_r <= regfile_mem_mux[1] & exu_valid;
-	else if (next_w == WAIT_AWREADY)	
+	else if ((state_w == IDLE_W && next_w == WAIT_AWREADY) 
+				|| (state_w == IDLE_W && next_w == SHAKED_AW) 
+				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) ) 
 		awvalid_r <= 1'b1;
-	else 	
+	else
 		awvalid_r <= 0;
 end
 
@@ -307,6 +313,7 @@ always @(posedge clk) begin
 		wvalid_r <= 1'b0;
 end
 
+/*
 always @(posedge clk) begin
 	if (rst) store_ready_go <= 0;
 	else if (next_w == SHAKED_B) 
@@ -314,6 +321,7 @@ always @(posedge clk) begin
 	else 
 		store_ready_go <= 0;
 end
+*/
 /*=========================================================*/
 wire [DATA_WIDTH-1:0] alu_result;
 wire overflow;
