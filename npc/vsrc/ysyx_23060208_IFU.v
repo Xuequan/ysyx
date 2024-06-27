@@ -13,7 +13,6 @@ module ysyx_23060208_IFU
 	/* connect with IDU */
 	output [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus,  
 	output 											 ifu_to_idu_valid,
-	//input												 idu_allowin,
 	input												 idu_valid,
 
 	/* connect with isram */
@@ -47,7 +46,7 @@ end
 /* ====================  get the nextpc ================*/
 wire [DATA_WIDTH-1:0] ifu_pc;
 wire [DATA_WIDTH-1:0] nextpc;
-assign nextpc = exu_nextpc_taken ? exu_nextpc : ifu_pc + 4;
+assign nextpc = (exu_to_ifu_valid && exu_nextpc_taken) ? exu_nextpc : ifu_pc + 4;
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
 reg  ifu_valid;

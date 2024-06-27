@@ -107,7 +107,7 @@ always @(posedge clk) begin
 	if (rst) 
 		rdata_r <= 0;
   else if (next == SHAKED_AR)
-		rdata_r <= isram_read(isram_araddr ? isram_araddr : 32'h8000_0000);
+		rdata_r <= isram_read(isram_araddr != 32'h0 ? isram_araddr : 32'h8000_0000);
 end
 
 endmodule
