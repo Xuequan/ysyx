@@ -226,6 +226,6 @@ always @(*) begin
 			dsram_bready_o = dsram_bready_i;
 			end
 	endcase
-	
 end
+
 endmodule
