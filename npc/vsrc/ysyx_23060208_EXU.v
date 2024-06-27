@@ -13,7 +13,9 @@ module ysyx_23060208_EXU
 	output [REG_WIDTH-1 :0] regfile_waddr,
 	output								  regfile_wen,
 
-	/* connect with dsram */
+	/* connect with arbiter*/
+	input	[2						:0] grant,
+	output									exu_done,
 		// 写地址通道
 	output [DATA_WIDTH-1:0] dsram_awaddr,
 	output									dsram_awvalid,
@@ -147,11 +149,11 @@ wire read_start;
 //assign read_start = |load_inst && (exu_valid || idu_to_exu_valid);
 assign read_start = |load_inst && exu_valid;
 
-always @(state_r or read_start or dsram_arready or dsram_rvalid) begin
+always @(state_r or grant or read_start or dsram_arready or dsram_rvalid) begin
 	next_r = IDLE_R;
 	case (state_r)
 		IDLE_R: 
-			if (!read_start) 
+			if (!read_start && grant[1]) 
 				next_r = IDLE_R;
 			else if (!dsram_arready)
 				next_r = WAIT_ARREADY;
@@ -173,7 +175,7 @@ always @(state_r or read_start or dsram_arready or dsram_rvalid) begin
 			else 
 				next_r = WAIT_RVALID;
 		SHAKED_R:
-			if (!read_start)
+			if (!read_start && grant[1])
 				next_r = IDLE_R;
 			else if (!dsram_arready)
 				next_r = WAIT_ARREADY;
@@ -235,11 +237,11 @@ end
 wire write_start;
 assign write_start = regfile_mem_mux[1] && exu_valid;
 
-always @(state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid) begin
+always @(state_w or grant or write_start or dsram_awready or dsram_wready or dsram_bvalid) begin
 	next_w = IDLE_W;
 	case (state_w)
 		IDLE_W: 
-			if (!write_start) 
+			if (!write_start && grant[2]) 
 				next_w = IDLE_W;
 			else if (!dsram_awready)
 				next_w = WAIT_AWREADY;
@@ -271,7 +273,7 @@ always @(state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid
 			else
 				next_w = SHAKED_B;
 		SHAKED_B:
-			if (!write_start)
+			if (!write_start && grant[2])
 				next_w = IDLE_W;
 			else if (!dsram_awready)
 				next_w = WAIT_AWREADY;
@@ -410,7 +412,7 @@ assign csr_waddr2 = csr_inst[2] ? 12'h342 : 0;
 
 
 
-
+assign exu_done = (next_w == SHAKED_B) || (next_r == SHAKED_R);
 
 /* =============== DPI-C ========================= */
 export "DPI-C" task update_regfile_no;

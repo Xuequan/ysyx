@@ -1,11 +1,11 @@
 // 本模块模拟 dsram
 module ysyx_23060208_dsram
-	#(DATA_WIDTH = 32, ADDR_WIDTH = 32) (
+	#(DATA_WIDTH = 32) (
 	input clk,
 	input rst,
 	
 	// 写地址通道
-	input [ADDR_WIDTH-1:0] dsram_awaddr,
+	input [DATA_WIDTH-1:0] dsram_awaddr,
 	input									 dsram_awvalid,
 	output								 dsram_awready,
 	
@@ -21,7 +21,7 @@ module ysyx_23060208_dsram
 	input									 dsram_bready,
 
 	// 读请求通道
-	input  [ADDR_WIDTH-1:0] dsram_araddr,
+	input  [DATA_WIDTH-1:0] dsram_araddr,
 	input										dsram_arvalid,
 	output									dsram_arready,
 

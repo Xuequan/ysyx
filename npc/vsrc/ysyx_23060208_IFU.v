@@ -15,6 +15,9 @@ module ysyx_23060208_IFU
 	output 											 ifu_to_idu_valid,
 	input												 idu_valid,
 
+	/* connect with arbiter */
+	input [2						:0] grant,
+	output									ifu_done,
 	/* connect with isram */
 	// 读请求
 	output [DATA_WIDTH-1:0] isram_araddr,
@@ -72,11 +75,11 @@ always @(posedge clk) begin
     state <= next;
 end
 
-always @(state or ifu_allowin or isram_arready or isram_rvalid) begin
+always @(state or grant or ifu_allowin or isram_arready or isram_rvalid) begin
   next = IDLE_R;
   case (state)
     IDLE_R: 
-      if (!ifu_allowin) 
+      if (!ifu_allowin && grant[0]) 
         next = IDLE_R;
       else if (!isram_arready)
         next = WAIT_ARREADY;
@@ -98,7 +101,7 @@ always @(state or ifu_allowin or isram_arready or isram_rvalid) begin
       else 
         next = WAIT_RVALID;
     SHAKED_R:
-      if (!ifu_allowin)
+      if (!ifu_allowin && grant[0])
         next = IDLE_R;
       else if (!isram_arready)
         next = WAIT_ARREADY;
@@ -158,10 +161,23 @@ always @(posedge clk) begin
 		rready_r <= 1'b0;
 end
 
+/*
+reg ifu_done_r;
+assign ifu_done = ifu_done_r;
+always @(posedge clk) begin
+	if (rst) ifu_done_r <= 0;
+	else if (next == SHAKED_R)
+		ifu_done_r <= 1'b1;
+	else
+		ifu_done_r <= 1'b0;
+end
+*/
 
 
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
 assign ifu_ready_go = (next == SHAKED_R);
+
+assign ifu_done = (next == SHAKED_R);
 
 assign ifu_to_idu_valid = ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
