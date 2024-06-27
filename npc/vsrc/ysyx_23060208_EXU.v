@@ -185,7 +185,7 @@ end
 
 //assign dsram_arvalid = |load_inst && exu_valid;
 reg arvalid_r;
-assign dsram_arvalid = arvalid_r;
+assign dsram_arvalid = (state_r == IDLE_R) ? read_start : arvalid_r;
 always @(posedge clk) begin
 	if (rst) arvalid_r <= 0;
 	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
@@ -282,7 +282,7 @@ always @(state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid
 end
 
 reg awvalid_r;
-assign dsram_awvalid = awvalid_r;
+assign dsram_awvalid = (state_w == IDLE_W) ? write_start : awvalid_r;
 always @(posedge clk) begin
 	if (rst) awvalid_r <= 0;
 	else if ((state_w == IDLE_W && next_w == WAIT_AWREADY) 
