@@ -13,7 +13,7 @@ static VerilatedVcdC* tfp;
 void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
-	tfp->dump(contextp->time());
+	//tfp->dump(contextp->time());
 }
 void sim_init() {
  	contextp = new VerilatedContext;
