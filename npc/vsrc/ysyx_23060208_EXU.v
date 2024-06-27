@@ -147,7 +147,7 @@ wire read_start;
 //assign read_start = |load_inst && (exu_valid || idu_to_exu_valid);
 assign read_start = |load_inst && exu_valid;
 
-always @(state_r or read_start or dsram_arready or dsram_rvalid or dsram_rready) begin
+always @(state_r or read_start or dsram_arready or dsram_rvalid) begin
 	next_r = IDLE_R;
 	case (state_r)
 		IDLE_R: 
@@ -163,9 +163,7 @@ always @(state_r or read_start or dsram_arready or dsram_rvalid or dsram_rready)
 			else
 				next_r = WAIT_ARREADY;
 		SHAKED_AR:
-			if (!dsram_rready)
-				next_r = SHAKED_AR;
-			else if (!dsram_rvalid)
+			if (!dsram_rvalid)
 				next_r = WAIT_RVALID;
 			else 
 				next_r = SHAKED_R;

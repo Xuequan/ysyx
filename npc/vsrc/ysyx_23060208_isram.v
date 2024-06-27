@@ -30,7 +30,7 @@ always @(posedge clk) begin
     state <= next;
 end
 
-always @(state or isram_arvalid or isram_arready or isram_rvalid or isram_rready) begin
+always @(state or isram_arvalid or isram_arready or isram_rready) begin
   next = IDLE;
   case (state)
     IDLE: 
@@ -46,9 +46,7 @@ always @(state or isram_arvalid or isram_arready or isram_rvalid or isram_rready
       else
         next = WAIT_ARVALID;
     SHAKED_AR:
-      if (!isram_rvalid)
-        next = SHAKED_AR;
-      else if (!isram_rready)
+      if (!isram_rready)
         next = WAIT_RREADY;
       else 
         next = SHAKED_R;
