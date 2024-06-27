@@ -57,7 +57,9 @@ module ysyx_23060208_EXU
 	
 	// for debug
 	output [DATA_WIDTH-1:0] exu_pc,
-	output [DATA_WIDTH-1:0] exu_inst
+	output [DATA_WIDTH-1:0] exu_inst,
+	
+	output 									exu_valid
 );
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
@@ -97,12 +99,14 @@ assign {csr_idx,
 				csr_nextpc,
 				csr_nextpc_taken
 				} = idu_to_exu_csr_bus_r;
-reg exu_valid;
+
+reg exu_valid_r;
+assign exu_valid = exu_valid_r;
 always @(posedge clk) begin
 	if (rst) 
-		exu_valid <= 1'b0;
+		exu_valid_r <= 1'b0;
 	else if (exu_allowin)
-		exu_valid <= idu_to_exu_valid;
+		exu_valid_r <= idu_to_exu_valid;
 end
 
 always @(posedge clk) begin
@@ -139,11 +143,15 @@ always @(posedge clk) begin
 		state_r <= next_r;
 end
 
-always @(state_r or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rready) begin
+wire read_start;
+//assign read_start = |load_inst && (exu_valid || idu_to_exu_valid);
+assign read_start = |load_inst && exu_valid;
+
+always @(state_r or read_start or dsram_arready or dsram_rvalid or dsram_rready) begin
 	next_r = IDLE_R;
 	case (state_r)
 		IDLE_R: 
-			if (!dsram_arvalid) 
+			if (!read_start) 
 				next_r = IDLE_R;
 			else if (!dsram_arready)
 				next_r = WAIT_ARREADY;
@@ -167,7 +175,7 @@ always @(state_r or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rrea
 			else 
 				next_r = WAIT_RVALID;
 		SHAKED_R:
-			if (!dsram_arvalid)
+			if (!read_start)
 				next_r = IDLE_R;
 			else if (!dsram_arready)
 				next_r = WAIT_ARREADY;
@@ -182,9 +190,17 @@ reg arvalid_r;
 assign dsram_arvalid = arvalid_r;
 always @(posedge clk) begin
 	if (rst) arvalid_r <= 0;
+	/*
 	else if (next_r == IDLE_R)
 		arvalid_r <= |load_inst && (exu_valid || idu_to_exu_valid);
 	else if (next_r == WAIT_ARREADY)
+		arvalid_r <= 1'b1;
+	else
+		arvalid_r <= 0;
+	*/
+	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
+				|| (state_r == IDLE_R && next_r == SHAKED_AR) 
+				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
 		arvalid_r <= 1'b1;
 	else
 		arvalid_r <= 0;
