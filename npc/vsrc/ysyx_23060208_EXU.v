@@ -237,7 +237,7 @@ end
 wire write_start;
 assign write_start = regfile_mem_mux[1] && exu_valid;
 
-always @(state_w or write_start or dsram_awready or dsram_wvalid or dsram_wready or dsram_bvalid or dsram_bready) begin
+always @(state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid) begin
 	next_w = IDLE_W;
 	case (state_w)
 		IDLE_W: 
@@ -253,9 +253,7 @@ always @(state_w or write_start or dsram_awready or dsram_wvalid or dsram_wready
 			else
 				next_w = SHAKED_AW;
 		SHAKED_AW:
-			if (!dsram_wvalid)
-				next_w = SHAKED_AW;
-			else if (!dsram_wready)
+			if (!dsram_wready)
 				next_w = WAIT_WREADY;
 			else 
 				next_w = SHAKED_W;
@@ -265,9 +263,7 @@ always @(state_w or write_start or dsram_awready or dsram_wvalid or dsram_wready
 			else 
 				next_w = SHAKED_W;
 		SHAKED_W:
-			if (!dsram_bready)
-				next_w = SHAKED_W;
-			else if (!dsram_bvalid)
+			if (!dsram_bvalid)
 				next_w = WAIT_BVALID;
 			else
 				next_w = SHAKED_B;
