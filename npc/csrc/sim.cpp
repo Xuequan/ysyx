@@ -49,6 +49,7 @@ int sim_once() {
 		printf("clk = %d, pc = %#x, instruction = %#x\n", top->clk, get_pc(), get_inst());
 		sim_one_cycle();
 	} // end-while
+	sim_one_cycle();
 	return ret; 
 }
 
@@ -102,12 +103,14 @@ void get_npc_regs() {
 	for(int i = 0; i < 16; i++){
 		npc_regs[i] = ptr[i];
 	}
+	/*
 	// 这是下周期要更新的 regfile 数据，本周期要拿来difftest_step
 	// 寄存器的更新要在下一周期
 	uint32_t no = update_reg_no();
 	if ( no != 0) {
 		npc_regs[no] = update_reg_data();
 	}
+	*/
 }
 
 void isa_reg_display() {
