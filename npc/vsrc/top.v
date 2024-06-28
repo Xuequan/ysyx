@@ -101,7 +101,7 @@ wire                  isram_rvalid_o;
 wire                  isram_rready_o;
 wire	idu_valid;
 
-wire [2						 :0] grant;
+//wire [2						 :0] grant;
 wire									 exu_done;
 wire									 ifu_done;
 
@@ -111,7 +111,7 @@ ysyx_23060208_arbiter	#(.DATA_WIDTH(DATA_WIDTH)) arbiter(
 
 	.ifu_done(ifu_done),
 	.exu_done(exu_done),
-	.grant(grant),
+	//.grant(grant),
 
 	// dsram
 	.dsram_awaddr_i(dsram_awaddr),
@@ -219,7 +219,7 @@ ysyx_23060208_IFU #(.DATA_WIDTH(DATA_WIDTH)) ifu(
 	.ifu_to_idu_valid(ifu_to_idu_valid),
 	.idu_valid(idu_valid),
 	
-	.grant(grant),
+	//.grant(grant),
 	.ifu_done(ifu_done),
 
 	.isram_araddr(isram_araddr),
@@ -268,7 +268,7 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.regfile_waddr(regfile_waddr),
 	.regfile_wen(regfile_wen),
 	
-	.grant(grant),
+	//.grant(grant),
 	.exu_done(exu_done),
 
 	.dsram_awaddr(dsram_awaddr),

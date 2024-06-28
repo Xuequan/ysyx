@@ -16,7 +16,7 @@ module ysyx_23060208_IFU
 	input												 idu_valid,
 
 	/* connect with arbiter */
-	input [2						:0] grant,
+	//input [2						:0] grant,
 	output									ifu_done,
 	/* connect with isram */
 	// 读请求
@@ -75,11 +75,11 @@ always @(posedge clk) begin
     state <= next;
 end
 
-always @(state or grant or ifu_allowin or isram_arready or isram_rvalid) begin
+always @(state or ifu_allowin or isram_arready or isram_rvalid) begin
   next = IDLE_R;
   case (state)
     IDLE_R: 
-      if (!ifu_allowin && grant[0]) 
+      if (!ifu_allowin) 
         next = IDLE_R;
       else if (!isram_arready)
         next = WAIT_ARREADY;
@@ -101,7 +101,7 @@ always @(state or grant or ifu_allowin or isram_arready or isram_rvalid) begin
       else 
         next = WAIT_RVALID;
     SHAKED_R:
-      if (!ifu_allowin && grant[0])
+      if (!ifu_allowin)
         next = IDLE_R;
       else if (!isram_arready)
         next = WAIT_ARREADY;

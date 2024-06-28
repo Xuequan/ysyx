@@ -5,7 +5,7 @@ module ysyx_23060208_arbiter
 	
 	input 								 ifu_done,
 	input									 exu_done,
-	output [2					 :0] grant,
+	//output [2					 :0] grant,
 
 	// 写地址通道:
 	      // from master
@@ -143,6 +143,7 @@ always @(isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or exu_done or if
 	endcase
 end
 
+/*
 reg [2:0] grant_r;
 assign grant = grant_r;
 always @(posedge clk) begin
@@ -156,7 +157,7 @@ always @(posedge clk) begin
 	else 
 		grant_r <= 0;
 end
-
+*/
 always @(*) begin
 	dsram_awvalid_o = 0;
 	dsram_awaddr_o = 0;
