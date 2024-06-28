@@ -129,8 +129,9 @@ bool inst_is_jal();
 bool inst_is_jalr();
 
 void exec_once() {
-  for(int i = 0; i < 2; i++) {
+  //for(int i = 0; i < 2; i++) {
 		sim_once();
+		printf("now exec_once(), pc = %#x\n", get_pc());
     if (get_clk_from_top() == 1) {
       get_assemble_code();
 
@@ -141,7 +142,7 @@ void exec_once() {
 
 			ftrace();
     }   
-  }// end for
+  //}// end for
 }
 
 
