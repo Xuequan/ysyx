@@ -46,8 +46,8 @@ int sim_once() {
 				ret = 1;
 		}
 
+		printf("clk = %d, pc = %#x, instruction = %#x\n", top->clk, get_pc(), get_inst());
 		sim_one_cycle();
-		printf("pc = %#x, instruction = %#x\n", get_pc(), get_inst());
 	} // end-while
 	return ret; 
 }
