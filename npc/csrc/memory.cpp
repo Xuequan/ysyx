@@ -75,6 +75,7 @@ word_t paddr_read(paddr_t addr, int len) {
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc()); 
 		}
 
+	printf(" read addr = %#x, return = %#x\n", addr, num);
 		return num;
 	}
 
