@@ -19,8 +19,10 @@ static void step_and_dump_wave() {
 
 // execute one cycle
 static void sim_one_cycle() {
-	top->clk ^= 1;
-	step_and_dump_wave();
+	for(int i = 0; i < 2; i++) {
+		top->clk ^= 1;
+		step_and_dump_wave();
+	}
 }
 
 // execute one inst
