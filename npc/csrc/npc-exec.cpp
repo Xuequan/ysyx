@@ -97,6 +97,7 @@ void get_assemble_code() {
 	uint32_t pc 				 = get_pc();
 	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
+	printf("pc = %#x, insturction = %#x\n", pc, instruction);
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
@@ -115,8 +116,11 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
+	printf("here6\n");
 	difftest_step();
+	printf("here7\n");
 	scan_wp_pool();
+	printf("here8\n");
 }
 
 bool inst_is_ebreak();
@@ -162,6 +166,7 @@ void execute(uint64_t n) {
 		g_nr_guest_inst ++;
 		exec_once();
 		trace_and_difftest();
+	printf("here5\n");
 		if (npc_state.state != NPC_RUNNING) 
 			return;
 	}
