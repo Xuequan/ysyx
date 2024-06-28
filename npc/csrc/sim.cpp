@@ -83,18 +83,9 @@ void sim_exit() {
 	delete contextp;
 }
 
-/*
-uint32_t get_pc_from_top(){
-	return top->pc;
-}
-uint32_t get_inst_from_top(){
-	return top->inst;
-}
-*/
 uint32_t get_clk_from_top(){
 	return top->clk;
 }
-
 
 // from arch.cpp
 extern const char *regs[];
@@ -110,14 +101,15 @@ void get_npc_regs() {
 	for(int i = 0; i < 16; i++){
 		npc_regs[i] = ptr[i];
 	}
+}
 	/*
 	// 这是下周期要更新的 regfile 数据，本周期要拿来difftest_step
+	// 对于单周期NPC，寄存器的更新要在下一周期
 	uint32_t no = update_reg_no();
 	if ( no != 0) {
 		npc_regs[no] = update_reg_data();
 	}
 	*/
-}
 
 void isa_reg_display() {
 	get_npc_regs();
@@ -125,4 +117,3 @@ void isa_reg_display() {
 		printf("%s: %#x\n", regs[i], npc_regs[i]);
   }
 }
-
