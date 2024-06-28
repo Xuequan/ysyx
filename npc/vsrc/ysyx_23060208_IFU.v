@@ -184,13 +184,13 @@ assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 //================= get pc from register PC ==============================
 wire pc_reg_wen;
-assign pc_reg_wen = (next == SHAKED_AR);
+assign pc_reg_wen = (next == SHAKED_R);
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
-	.wen(pc_reg_wen),
-	.next_pc(nextpc),
-	.pc(ifu_pc)
+	.wen(pc_reg_wen),  // wen
+	.next_pc(nextpc),  // input
+	.pc(ifu_pc)        // output
 );
 
 
