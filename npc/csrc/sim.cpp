@@ -16,11 +16,13 @@ static void step_and_dump_wave() {
 	contextp->timeInc(1);
 	tfp->dump(contextp->time());
 }
+
 // execute one cycle
 static void sim_one_cycle() {
 	top->clk ^= 1;
 	step_and_dump_wave();
 }
+
 // execute one inst
 void sim_once() {
 	while ( check_exu_ready_go() != true ) {
@@ -28,6 +30,7 @@ void sim_once() {
 	}
 	sim_one_cycle();
 }
+
 void sim_init() {
  	contextp = new VerilatedContext;
 	tfp = new VerilatedVcdC;

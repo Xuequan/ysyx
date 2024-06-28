@@ -67,6 +67,7 @@ void init_mem() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
+	printf(" read addr = %#x\n", addr);
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 
