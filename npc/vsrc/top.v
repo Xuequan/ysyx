@@ -102,7 +102,7 @@ wire                  isram_rready_o;
 wire	idu_valid;
 
 //wire [2						 :0] grant;
-wire									 exu_done;
+wire [1							 :0] exu_done;
 wire									 ifu_done;
 
 ysyx_23060208_arbiter	#(.DATA_WIDTH(DATA_WIDTH)) arbiter(

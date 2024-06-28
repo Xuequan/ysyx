@@ -4,7 +4,7 @@ module ysyx_23060208_arbiter
 	input rst,
 	
 	input 								 ifu_done,
-	input									 exu_done,
+	input [1					 :0] exu_done,
 	//output [2					 :0] grant,
 
 	// 写地址通道:
@@ -129,13 +129,13 @@ always @(isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or exu_done or if
 				next = GRANT_IFU;
 
 		GRANT_EXU_READ:
-			if (exu_done)
+			if (exu_done[0])
 				next = IDLE;
 			else
 				next = GRANT_EXU_READ;
 
 		GRANT_EXU_WRITE:
-			if (exu_done)
+			if (exu_done[1])
 				next = IDLE;
 			else
 				next = GRANT_EXU_WRITE;

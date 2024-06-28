@@ -15,7 +15,7 @@ module ysyx_23060208_EXU
 
 	/* connect with arbiter*/
 	//input	[2						:0] grant,
-	output									exu_done,
+	output [1							:0]	exu_done,
 		// 写地址通道
 	output [DATA_WIDTH-1:0] dsram_awaddr,
 	output									dsram_awvalid,
@@ -409,7 +409,8 @@ assign csr_waddr2 = csr_inst[2] ? 12'h342 : 0;
 
 
 
-assign exu_done = (next_w == SHAKED_B) || (next_r == SHAKED_R);
+assign exu_done[0] = (next_r == SHAKED_R);
+assign exu_done[1] = (next_w == SHAKED_B);
 
 /* =============== DPI-C ========================= */
 export "DPI-C" task update_regfile_no;
