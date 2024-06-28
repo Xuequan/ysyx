@@ -15,7 +15,7 @@ reg [DATA_WIDTH-1:0] pc_r;
 always @(posedge clk) begin
 	if (rst) 
 		//pc_r <= DATA_WIDTH'('h8000_0000) - DATA_WIDTH'('h4);
-		pc_r <= 32'h8000_0000 - 32'h4;
+		pc_r <= DATA_WIDTH'('h8000_0000);
 	else if(wen)
 		pc_r <= next_pc;
 end
