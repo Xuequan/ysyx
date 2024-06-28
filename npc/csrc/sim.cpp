@@ -8,7 +8,9 @@ static Vtop* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
-void step_and_dump_wave() {
+extern bool check_exu_ready_go();	
+
+static void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
 	tfp->dump(contextp->time());
@@ -56,11 +58,10 @@ static void sim_one_cycle() {
 }
 // execute one inst
 void sim_once() {
-	extern bool check_exu_ready_go();	
 	while ( check_exu_ready_go() != true ) {
 		sim_one_cycle();
 	}
-	sim_one_cycle();
+	//sim_one_cycle();
 }
 
 // from arch.cpp
