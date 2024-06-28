@@ -130,6 +130,9 @@ void exec_once() {
 	printf("now exec_once(), pc = %#x\n", get_pc());
 
 	get_assemble_code();
+
+	printf("here\n");
+
 	if (iindex == IRINGBUF_LEN) 
 		iindex = 0;
 	memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
