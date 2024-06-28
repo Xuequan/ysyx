@@ -177,7 +177,7 @@ end
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
 assign ifu_ready_go = (next == SHAKED_R);
 
-assign ifu_done = (next == SHAKED_R);
+assign ifu_done = (state == SHAKED_R);
 
 assign ifu_to_idu_valid = ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;

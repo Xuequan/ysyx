@@ -409,8 +409,8 @@ assign csr_waddr2 = csr_inst[2] ? 12'h342 : 0;
 
 
 
-assign exu_done[0] = (next_r == SHAKED_R);
-assign exu_done[1] = (next_w == SHAKED_B);
+assign exu_done[0] = (state_r == SHAKED_R);
+assign exu_done[1] = (state_w == SHAKED_B);
 
 /* =============== DPI-C ========================= */
 export "DPI-C" task update_regfile_no;
