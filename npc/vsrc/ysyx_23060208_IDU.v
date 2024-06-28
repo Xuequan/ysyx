@@ -479,25 +479,25 @@ assign csr_inst[2] = inst_ecall;
 //======================== DPI-C ================================
 export "DPI-C" task check_if_ebreak;
 task check_if_ebreak (output bit o);
-	o = inst_ebreak;
+	o = inst_ebreak && idu_valid;
 endtask
 
 export "DPI-C" task check_if_jal;
 task check_if_jal (output bit o);
-	o = inst_jal;
+	o = inst_jal & idu_valid;
 endtask
 
 export "DPI-C" task check_if_jalr;
 task check_if_jalr (output bit o);
-	o = inst_jalr;
+	o = inst_jalr & idu_valid;
 endtask
 
 export "DPI-C" task rs1_reg;
 task rs1_reg (output [4:0] o);
-	o = rs1;
+	o = rs1 & {5{idu_valid}};
 endtask
 export "DPI-C" task rd_reg;
 task rd_reg (output [4:0] o);
-	o = rd;
+	o = rd & {5{idu_valid}};
 endtask
 endmodule

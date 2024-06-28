@@ -33,6 +33,7 @@ uint64_t g_nr_guest_inst = 0;
 ** return 2 if function ret
 ** else return 0
 */
+/*
 static int identify_inst() {
 	if (inst_is_jal() ){
 		return 1;
@@ -49,18 +50,18 @@ static int identify_inst() {
 		return 0;
 	}
 }
-
+*/
 static int space = 4;
 char *vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len);
 
 #define FUNC_NAME_LEN 102
-static void ftrace() {
+static void ftrace(int ident) {
   bool success1 = false;
   bool success2 = false;
 	char func_name[FUNC_NAME_LEN];
 	int len = FUNC_NAME_LEN;
 
-  int ident = identify_inst();
+  //int ident = identify_inst();
   if (1 == ident){ // maybe a function call, should double check
     vaddr2func(nextpc(), &success1, 1, func_name, len); 
     if (success1){ // double check, if next_pc is a function, then a function call
@@ -129,21 +130,25 @@ bool inst_is_jal();
 bool inst_is_jalr();
 
 void exec_once() {
-  //for(int i = 0; i < 2; i++) {
-		printf("before exec_once(), pc = %#x\n", get_pc());
-		sim_once();
-		printf("now exec_once(), pc = %#x\n", get_pc());
-    if (get_clk_from_top() == 1) {
-      get_assemble_code();
+	printf("before exec_once(), pc = %#x\n", get_pc());
+	int sim_ret = sim_once();
+	printf("now exec_once(), pc = %#x\n", get_pc());
+	get_assemble_code();
+	if (iindex == IRINGBUF_LEN) 
+		iindex = 0;
+	memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
+	memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 
-			if (iindex == IRINGBUF_LEN) 
-				iindex = 0;
-			memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
-			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
+	if (sim_ret == 3) { 
+		printf("\nReach ebreak instruction, stop sim.\n\n");
+		npc_state.state = NPC_END;
+		npc_state.halt_pc = get_pc();
+		npc_state.halt_ret = 0;
+		return;
+	}
 
-			ftrace();
-    }   
-  //}// end for
+	if (sim_ret == 1 || sim_ret == 2) 
+		ftrace(sim_ret);
 }
 
 
@@ -154,13 +159,6 @@ void execute(uint64_t n) {
 		trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
-    if (inst_is_ebreak() ) { 
-    	printf("\nReach ebreak instruction, stop sim.\n\n");
-			npc_state.state = NPC_END;
-			npc_state.halt_pc = get_pc();
-			npc_state.halt_ret = 0;
-			return;
-		}
 	}
 }
 

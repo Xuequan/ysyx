@@ -3,13 +3,16 @@
 #include "verilated_vcd_c.h"
 #include "Vtop__Dpi.h"
 #include "Vtop___024root.h"
+#include "dpi-c.h"
 
 static Vtop* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
+/*
 extern bool check_exu_ready_go();	
 extern bool check_ifu_ready_go();
+*/
 
 static void step_and_dump_wave() {
 	top->eval();
@@ -26,11 +29,29 @@ static void sim_one_cycle() {
 }
 
 // execute one inst
-void sim_once() {
+// return 0 --- no sepcial
+// return 1 ---> function call 
+// return 2 ---> function ret
+// return 3 ---> ebreak_inst
+int sim_once() {
 	while ( check_exu_ready_go() != true ) {
+		if (inst_is_ebreak()){
+			return 3;
+		}else if (inst_is_jal()){
+			return 1;
+		}else if (inst_is_jalr()){
+			if (rs1() == 1 && rd() == 0) 
+				return 2;
+			else if(rs1() == 1 && rd() == 1)
+				return 2;
+			else if(rs1() == 6 && rd() == 0)
+				return 2;
+			else 
+				return 1;
+		}
 		sim_one_cycle();
-	}
-	sim_one_cycle();
+	} // end-while
+	return 0; 
 }
 
 void sim_init() {
