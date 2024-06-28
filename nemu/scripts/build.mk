@@ -28,7 +28,7 @@ LDFLAGS := -O2 $(LDFLAGS)
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o) $(CXXSRC:%.cc=$(OBJ_DIR)/%.o)
 
 LLVM_LIB_DIR = /usr/lib/llvm-19/lib
-LLVM_LIB = $(addprefix -L, $(LLVM_LIB))
+LLVM_LIB = $(addprefix -L, $(LLVM_LIB_DIR))
 
 # Compilation patterns
 $(OBJ_DIR)/%.o: %.c
