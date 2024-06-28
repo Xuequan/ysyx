@@ -73,6 +73,7 @@ void sim_init() {
 	}
 	top->rst = 0;
 	// 此时 top->clk = 1
+	printf("now clk = %d\n", top->clk);
 }
 
 void sim_exit() {
