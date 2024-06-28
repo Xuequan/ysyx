@@ -49,4 +49,6 @@ uint32_t update_reg_data();
 bool check_exu_ready_go();
 
 uint32_t get_pc();
+
+bool check_ifu_ready_go();
 #endif

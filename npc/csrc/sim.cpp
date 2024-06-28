@@ -9,6 +9,7 @@ static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
 extern bool check_exu_ready_go();	
+extern bool check_ifu_ready_go();
 
 static void step_and_dump_wave() {
 	top->eval();
@@ -45,7 +46,9 @@ void sim_init() {
 		step_and_dump_wave();
 	}
 	top->rst = 0;
-	sim_once();
+	while( check_ifu_ready_go() != true) {
+		sim_one_cycle();
+	}
 }
 
 void sim_exit() {

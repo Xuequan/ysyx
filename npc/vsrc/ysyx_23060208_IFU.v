@@ -208,4 +208,8 @@ task get_PC (output [DATA_WIDTH-1:0] o);
 	o = ifu_pc;
 endtask
 
+export "DPI-C" task ifu_ready_go_signal;
+task ifu_ready_go_signal (output bit o);
+	o = ifu_ready_go;
+endtask
 endmodule

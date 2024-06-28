@@ -124,3 +124,12 @@ bool check_exu_ready_go() {
 	if (a == 1) return true;
 	else				return false;
 }
+bool check_ifu_ready_go() {
+	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	ifu_ready_go_signal(&a);
+	if (a == 1) return true;
+	else				return false;
+}
