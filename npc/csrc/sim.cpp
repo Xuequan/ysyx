@@ -49,9 +49,11 @@ void sim_init() {
 		step_and_dump_wave();
 	}
 	top->rst = 0;
+	/*
 	while( check_ifu_ready_go() != true) {
 		sim_one_cycle();
 	}
+	*/
 }
 
 void sim_exit() {
