@@ -9,11 +9,6 @@ static Vtop* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
-/*
-extern bool check_exu_ready_go();	
-extern bool check_ifu_ready_go();
-*/
-
 static void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
@@ -51,7 +46,7 @@ int sim_once() {
 		}
 		sim_one_cycle();
 	} // end-while
-	sim_one_cycle();
+	//sim_one_cycle();
 	return 0; 
 }
 

@@ -55,11 +55,7 @@ module ysyx_23060208_EXU
 
 	input 									idu_to_exu_valid,
 	
-	output									exu_allowin,
-	
-	// for debug
-	output [DATA_WIDTH-1:0] exu_pc,
-	output [DATA_WIDTH-1:0] exu_inst
+	output									exu_allowin
 );
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
@@ -79,6 +75,8 @@ wire [DATA_WIDTH-1:0] store_data_raw;
 wire [1           :0] uncond_jump_inst;
 wire [DATA_WIDTH-1:0] cond_branch_target;
 wire 								 cond_branch_inst;
+wire [DATA_WIDTH-1:0] exu_pc;
+wire [DATA_WIDTH-1:0] exu_inst;
 assign {regfile_mem_mux, 
 				store_inst, 
 				load_inst, 
@@ -433,9 +431,11 @@ task get_inst_from_exu (output [DATA_WIDTH-1:0] din);
 	din    = exu_inst;
 endtask
 
+/*
 export "DPI-C" task get_pc_from_exu;
 task get_pc_from_exu (output [DATA_WIDTH-1:0] din);
 	din    = exu_pc;
 endtask
+*/
 
 endmodule
