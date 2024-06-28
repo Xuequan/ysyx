@@ -23,7 +23,7 @@ CXX := g++
 endif
 LD := $(CXX)
 INCLUDES = $(addprefix -I, $(INC_PATH))
-INCLUDES += $(addprefix -I, $(LLVM_LIB))
+INCLUDES += $(addprefix -L, $(LLVM_LIB))
 CFLAGS  := -O2 -MMD -Wall -Werror $(INCLUDES) $(CFLAGS)
 LDFLAGS := -O2 $(LDFLAGS)
 
