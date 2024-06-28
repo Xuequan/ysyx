@@ -46,8 +46,6 @@ int sim_once() {
 		}
 		sim_one_cycle();
 	} // end-while
-	
-	sim_one_cycle(); // need this, let write regfile
 	return 0; 
 }
 
@@ -101,15 +99,13 @@ void get_npc_regs() {
 	for(int i = 0; i < 16; i++){
 		npc_regs[i] = ptr[i];
 	}
-}
-	/*
 	// 这是下周期要更新的 regfile 数据，本周期要拿来difftest_step
-	// 对于单周期NPC，寄存器的更新要在下一周期
+	// 寄存器的更新要在下一周期
 	uint32_t no = update_reg_no();
 	if ( no != 0) {
 		npc_regs[no] = update_reg_data();
 	}
-	*/
+}
 
 void isa_reg_display() {
 	get_npc_regs();
