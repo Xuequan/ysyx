@@ -59,9 +59,7 @@ module ysyx_23060208_EXU
 	
 	// for debug
 	output [DATA_WIDTH-1:0] exu_pc,
-	output [DATA_WIDTH-1:0] exu_inst,
-	
-	output 									exu_valid
+	output [DATA_WIDTH-1:0] exu_inst
 );
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
@@ -102,13 +100,12 @@ assign {csr_idx,
 				csr_nextpc_taken
 				} = idu_to_exu_csr_bus_r;
 
-reg exu_valid_r;
-assign exu_valid = exu_valid_r;
+reg exu_valid;
 always @(posedge clk) begin
 	if (rst) 
-		exu_valid_r <= 1'b0;
+		exu_valid <= 1'b0;
 	else if (exu_allowin)
-		exu_valid_r <= idu_to_exu_valid;
+		exu_valid <= idu_to_exu_valid;
 end
 
 always @(posedge clk) begin
