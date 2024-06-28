@@ -21,7 +21,7 @@
 
 #define NR_WP 32
 
-uint32_t get_pc_from_top();
+uint32_t get_pc();
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
@@ -162,7 +162,7 @@ void scan_wp_pool() {
 		
 		/* check if reach memory address */
 		//if (cpu.pc - 4 == strtol(ptr->expr+1, NULL, 16) ) {
-		if (get_pc_from_top() == strtol(ptr->expr, NULL, 16) ) {
+		if (get_pc() == strtol(ptr->expr, NULL, 16) ) {
       npc_state.state = NPC_STOP;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
 			return;

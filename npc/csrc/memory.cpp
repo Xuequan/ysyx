@@ -49,10 +49,10 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
 }
 
-uint32_t get_pc_from_top();
+uint32_t get_pc();
 static void out_of_bound(paddr_t addr) {
   panic("NPC: address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
-      addr, PMEM_LEFT, PMEM_RIGHT, get_pc_from_top());
+      addr, PMEM_LEFT, PMEM_RIGHT, get_pc());
 }
 
 void init_mem() {
@@ -71,7 +71,7 @@ word_t paddr_read(paddr_t addr, int len) {
 		word_t num = pmem_read(addr, len); 
 
 		if (nextpc() != addr) { // 过滤掉读指令
-			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc_from_top()); 
+			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc()); 
 		}
 
 		return num;
@@ -104,7 +104,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
-		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc_from_top()); 
+		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc()); 
 		pmem_write(addr, len, data); 
 		return; 
 	}

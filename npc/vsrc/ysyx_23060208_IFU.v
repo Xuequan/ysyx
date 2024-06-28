@@ -183,6 +183,7 @@ assign ifu_to_idu_valid = ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 //================= get pc from register PC ==============================
+//the program counter PC holds the address of the current instruction.
 wire pc_reg_wen;
 assign pc_reg_wen = (next == SHAKED_R);
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
@@ -201,4 +202,10 @@ export "DPI-C" task get_nextPC;
 task get_nextPC (output [DATA_WIDTH-1:0] o);
 	o = nextpc;
 endtask
+
+export "DPI-C" task get_PC;
+task get_PC (output [DATA_WIDTH-1:0] o);
+	o = ifu_pc;
+endtask
+
 endmodule

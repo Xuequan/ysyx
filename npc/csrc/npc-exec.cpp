@@ -20,7 +20,7 @@
 #include <clocale>
 
 /*
-uint32_t get_pc_from_top();
+uint32_t get_pc();
 uint32_t get_inst_from_top();
 uint32_t get_clk_from_top();
 	*/
@@ -65,16 +65,16 @@ static void ftrace() {
     vaddr2func(nextpc(), &success1, 1, func_name, len); 
     if (success1){ // double check, if next_pc is a function, then a function call
       space++;
-      log_write("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", func_name, nextpc());  
+      log_write("%#x:%*s [%s@%#x]\n", get_pc(), space, "call", func_name, nextpc());  
     }
   }else if(2 == ident){ // ret
       // call vaddr2func just for function name only
-    vaddr2func(get_pc_from_top(), &success2, 0, func_name, len); 
+    vaddr2func(get_pc(), &success2, 0, func_name, len); 
     if (success2){
       space--;
-      log_write("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", func_name);
+      log_write("%#x:%*s [%s]\n", get_pc(), space, "ret ", func_name);
     }else{  // should never be here
-      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc_from_top(), get_inst_from_top());
+      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc(), get_inst_from_top());
     }     
   }
 }
@@ -98,7 +98,7 @@ static char logbuf[128];
 
 void get_assemble_code() {
 	char *p = logbuf;
-	uint32_t pc 				 = get_pc_from_top();
+	uint32_t pc 				 = get_pc();
 	uint32_t instruction = get_inst_from_top();
 	uint8_t* inst = (uint8_t *)&instruction;
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
@@ -149,13 +149,13 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-		//trace_and_difftest();
+		trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
     if (inst_is_ebreak() ) { 
     	printf("\nReach ebreak instruction, stop sim.\n\n");
 			npc_state.state = NPC_END;
-			npc_state.halt_pc = get_pc_from_top();
+			npc_state.halt_pc = get_pc();
 			npc_state.halt_ret = 0;
 			return;
 		}

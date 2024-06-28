@@ -26,7 +26,7 @@
 //#include "sim.h"
 
 using namespace std;
-uint32_t get_pc_from_top();
+uint32_t get_pc();
 word_t vaddr_read(vaddr_t, int);
 uint8_t* guest_to_host(paddr_t);
 /* below function in this file */
@@ -221,7 +221,7 @@ static void check_tokens_type(int tokens_length) {
 		
 	for(i = 0; i < tokens_length; i++) {
 		if (tokens[i].type == TK_PC) {
-			sprintf(tokens[i].str, "%#x", get_pc_from_top());
+			sprintf(tokens[i].str, "%#x", get_pc());
 		} 
 	} 
 

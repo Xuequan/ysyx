@@ -42,9 +42,11 @@ void sim_exit() {
 	delete contextp;
 }
 
+/*
 uint32_t get_pc_from_top(){
 	return top->pc;
 }
+*/
 uint32_t get_inst_from_top(){
 	return top->inst;
 }
@@ -62,7 +64,7 @@ void sim_once() {
 	while ( check_exu_ready_go() != true ) {
 		sim_one_cycle();
 	}
-	//sim_one_cycle();
+	sim_one_cycle();
 }
 
 // from arch.cpp

@@ -26,7 +26,7 @@ static bool is_skip_ref = false;
 extern uint32_t npc_regs[16];
 void isa_reg_display();
 void get_npc_regs();
-uint32_t get_pc_from_top();
+uint32_t get_pc();
 
 uint8_t* guest_to_host(paddr_t paddr);
 
@@ -119,14 +119,14 @@ void difftest_step() {
 	}
 	if (error_cnt != 0) {
     npc_state.state = NPC_ABORT;
-    npc_state.halt_pc = get_pc_from_top();
+    npc_state.halt_pc = get_pc();
 		npc_state.halt_ret = 1;
     //isa_reg_display();
 		printf("\n");
 		for( int j = 0; j < error_cnt; j++){
 			index = error[j];
 			printf("PC = '%#x' Register '%s' in NPC is '%#x', should be '%#x'\n", 
-				get_pc_from_top(), reg_name(index), npc_regs[index], ref_regs[index]);
+				get_pc(), reg_name(index), npc_regs[index], ref_regs[index]);
 		}
 		printf("\n");
 	}
