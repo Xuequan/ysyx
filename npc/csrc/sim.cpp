@@ -29,24 +29,25 @@ static void sim_one_cycle() {
 // return 2 ---> function ret
 // return 3 ---> ebreak_inst
 int sim_once() {
+	int ret = 0;
 	while ( check_exu_ready_go() != true ) {
 		if (inst_is_ebreak()){
-			return 3;
+			ret = 3;
 		}else if (inst_is_jal()){
-			return 1;
+			ret = 1;
 		}else if (inst_is_jalr()){
 			if (rs1() == 1 && rd() == 0) 
-				return 2;
+				ret = 2;
 			else if(rs1() == 1 && rd() == 1)
-				return 2;
+				ret = 2;
 			else if(rs1() == 6 && rd() == 0)
-				return 2;
+				ret = 2;
 			else 
-				return 1;
+				ret = 1;
 		}
 		sim_one_cycle();
 	} // end-while
-	return 0; 
+	return ret; 
 }
 
 void sim_init() {
