@@ -69,6 +69,7 @@ void sim_init() {
 	while ( i < 5) {
 		i++;
 		top->clk ^= 1;
+		printf("%d: clk = %d\n", i, top->clk);
 		top->rst = 1;
 		step_and_dump_wave();
 	}
