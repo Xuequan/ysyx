@@ -1,6 +1,4 @@
-//#include "sim.h"
 #include <cstdint>
-//#include "verilated.h"
 #include "Vtop.h"
 #include "verilated_vcd_c.h"
 #include "Vtop__Dpi.h"
@@ -51,9 +49,18 @@ uint32_t get_clk_from_top(){
 	return top->clk;
 }
 
-void sim_once() {
+// execute one cycle
+static void sim_one_cycle() {
 	top->clk ^= 1;
 	step_and_dump_wave();
+}
+// execute one inst
+void sim_once() {
+	extern bool check_exu_ready_go();	
+	while ( check_exu_ready_go() != true ) {
+		sim_one_cycle();
+	}
+	sim_one_cycle();
 }
 
 // from arch.cpp

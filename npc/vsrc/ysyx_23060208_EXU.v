@@ -413,6 +413,11 @@ assign exu_done[0] = (state_r == SHAKED_R);
 assign exu_done[1] = (state_w == SHAKED_B);
 
 /* =============== DPI-C ========================= */
+export "DPI-C" task exu_ready_go_signal;
+task exu_ready_go_signal (output bit o);
+	o = exu_ready_go;
+endtask
+
 export "DPI-C" task update_regfile_no;
 task update_regfile_no (output [REG_WIDTH-1:0] reg_no);
 	reg_no = regfile_wen ? regfile_waddr : 'b0;

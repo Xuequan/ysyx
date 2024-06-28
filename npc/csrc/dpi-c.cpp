@@ -105,3 +105,13 @@ uint32_t update_reg_data(){
 	update_regfile_data(&data);
 	return data.aval;
 }
+
+bool check_exu_ready_go() {
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	exu_ready_go_signal(&a);
+	if (a == 1) return true;
+	else				return false;
+}

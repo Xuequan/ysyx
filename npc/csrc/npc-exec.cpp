@@ -96,7 +96,7 @@ static void print_iringbuf(void) {
 void disassemble(char *str, int size, uint64_t pc, uint8_t* code, int nbyte);
 static char logbuf[128];
 
-void get_assemble() {
+void get_assemble_code() {
 	char *p = logbuf;
 	uint32_t pc 				 = get_pc_from_top();
 	uint32_t instruction = get_inst_from_top();
@@ -132,7 +132,7 @@ void exec_once() {
   for(int i = 0; i < 2; i++) {
 		sim_once();
     if (get_clk_from_top() == 1) {
-      get_assemble();
+      get_assemble_code();
 
 			if (iindex == IRINGBUF_LEN) 
 				iindex = 0;
