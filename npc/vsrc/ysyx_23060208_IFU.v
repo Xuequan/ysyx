@@ -47,9 +47,9 @@ always @(posedge clk) begin
 end
 */
 /* ====================  get the nextpc ================*/
-wire [DATA_WIDTH-1:0] ifu_pc;
+wire [DATA_WIDTH-1:0] pc;
 wire [DATA_WIDTH-1:0] nextpc;
-assign nextpc = (exu_to_ifu_valid && exu_nextpc_taken) ? exu_nextpc : ifu_pc + 4;
+assign nextpc = (exu_to_ifu_valid && exu_nextpc_taken) ? exu_nextpc : pc + 4;
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
 reg  ifu_valid;
@@ -191,7 +191,7 @@ ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.rst(rst),
 	.wen(pc_reg_wen),  // wen
 	.next_pc(nextpc),  // input
-	.pc(ifu_pc)        // output
+	.pc(pc)        // output
 );
 
 
@@ -205,7 +205,7 @@ endtask
 
 export "DPI-C" task get_PC;
 task get_PC (output [DATA_WIDTH-1:0] o);
-	o = ifu_pc;
+	o = pc;
 endtask
 
 export "DPI-C" task ifu_ready_go_signal;

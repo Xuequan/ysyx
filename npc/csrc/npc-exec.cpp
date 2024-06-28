@@ -130,6 +130,7 @@ bool inst_is_jalr();
 
 void exec_once() {
   //for(int i = 0; i < 2; i++) {
+		printf("before exec_once(), pc = %#x\n", get_pc());
 		sim_once();
 		printf("now exec_once(), pc = %#x\n", get_pc());
     if (get_clk_from_top() == 1) {
