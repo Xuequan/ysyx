@@ -129,9 +129,9 @@ bool inst_is_jalr();
 
 void exec_once() {
 
-	printf("before exec_once(), pc = %#x\n", get_pc());
+	printf("before exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 	int sim_ret = sim_once();
-	printf("now exec_once(), pc = %#x\n", get_pc());
+	printf("now    exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 
 	get_assemble_code();
 
