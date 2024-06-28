@@ -35,16 +35,16 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 
-# llvm-config -cxxflags: print the C++ compiler flags needed to use LLVM headers
-CXXFLAGS += $(shell llvm-config --cxxflags)
-# llvm-config --libs: print all the libraries needed to link against the specified LLVM components
-LIBS += $(shell llvm-config --libs)
+# llvm-config-14 -cxxflags: print the C++ compiler flags needed to use LLVM headers
+CXXFLAGS += $(shell llvm-config-14 --cxxflags)
+# llvm-config-14 --libs: print all the libraries needed to link against the specified LLVM components
+LIBS += $(shell llvm-config-14 --libs)
 
 LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 
-LDFLAGS += $(shell llvm-config --ldflags)
+LDFLAGS += $(shell llvm-config-14 --ldflags)
 
 #$(BIN): $(VSRCS) $(CSRCS)
 $(BIN): $(CSRCS)
@@ -72,9 +72,9 @@ sim: sim-env
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
-	@echo llvm-config --cxxflags = $(shell llvm-confag-11 --cxxflags)
-	@echo llvm-config --ldflags = $(shell llvm-config --ldflags)
-	@echo llvm-config --libs = $(shell llvm-config --libs)
+	@echo llvm-config-14 --cxxflags = $(shell llvm-confag-11 --cxxflags)
+	@echo llvm-config-14 --ldflags = $(shell llvm-config-14 --ldflags)
+	@echo llvm-config-14 --libs = $(shell llvm-config-14 --libs)
 	@echo =======================================
 	$(NPC_EXEC)
 	
@@ -105,6 +105,6 @@ print:
 	@echo CFLGAS=$(CFLAGS)
 	@echo LDFLAGS=$(LDFLAGS)
 	@echo CXXFLAGS=$(CXXFLAGS)
-	@echo 1-----$(shell llvm-config --cxxflags)
-	@echo 2-----$(shell llvm-config --libs)
+	@echo 1-----$(shell llvm-config-14 --cxxflags)
+	@echo 2-----$(shell llvm-config-14 --libs)
 	@echo "================"
