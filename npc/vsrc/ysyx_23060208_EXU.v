@@ -111,7 +111,8 @@ always @(posedge clk) begin
 		idu_to_exu_alu_bus_r <= 0;
 		idu_to_exu_bus_r     <= 0;
 		idu_to_exu_csr_bus_r <= 0;
-	end else if (exu_allowin && idu_to_exu_valid) begin
+	end 
+	else if (exu_allowin) begin
 		idu_to_exu_alu_bus_r <= idu_to_exu_alu_bus;
 		idu_to_exu_bus_r     <= idu_to_exu_bus;
 		idu_to_exu_csr_bus_r <= idu_to_exu_csr_bus;

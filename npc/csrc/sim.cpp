@@ -29,6 +29,7 @@ static void sim_one_cycle() {
 // return 2 ---> function ret
 // return 3 ---> ebreak_inst
 int sim_once() {
+		printf("begin clk = %d, pc = %#x, instruction = %#x\n", top->clk, get_pc(), get_inst());
 	int ret = 0;
 	while ( check_exu_ready_go() != true ) {
 		if (inst_is_ebreak()){
@@ -71,11 +72,7 @@ void sim_init() {
 		step_and_dump_wave();
 	}
 	top->rst = 0;
-	/*
-	while( check_ifu_ready_go() != true) {
-		sim_one_cycle();
-	}
-	*/
+	// 此时 top->clk = 1
 }
 
 void sim_exit() {
