@@ -29,7 +29,6 @@ static void sim_one_cycle() {
 // return 2 ---> function ret
 // return 3 ---> ebreak_inst
 int sim_once() {
-		printf("begin clk = %d, pc = %#x, instruction = %#x\n", top->clk, get_pc(), get_inst());
 	int ret = 0;
 	while ( check_exu_ready_go() != true ) {
 		if (inst_is_ebreak()){
@@ -46,12 +45,9 @@ int sim_once() {
 			else 
 				ret = 1;
 		}
-
-		printf("clk = %d, pc = %#x, instruction = %#x\n", top->clk, get_pc(), get_inst());
 		sim_one_cycle();
 	} // end-while
 	sim_one_cycle();
-	printf("end---clk = %d, pc = %#x, instruction = %#x\n", top->clk, get_pc(), get_inst());
 	return ret; 
 }
 
@@ -65,12 +61,10 @@ void sim_init() {
 	tfp->open("dump.vcd");
 
 	// initial rst
-	printf("0-now clk = %d\n", top->clk);
 	int i = -1;
 	while ( i < 5) {
 		i++;
 		top->clk ^= 1;
-		printf("%d: clk = %d\n", i, top->clk);
 		top->rst = 1;
 		step_and_dump_wave();
 	}

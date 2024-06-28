@@ -116,11 +116,8 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
-	printf("here6\n");
 	difftest_step();
-	printf("here7\n");
 	scan_wp_pool();
-	printf("here8\n");
 }
 
 bool inst_is_ebreak();
@@ -135,14 +132,11 @@ void exec_once() {
 
 	get_assemble_code();
 
-	printf("here\n");
 
 	if (iindex == IRINGBUF_LEN) 
 		iindex = 0;
 	memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
 	memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
-
-	printf("here2\n");
 
 	if (sim_ret == 3) { 
 		printf("\nReach ebreak instruction, stop sim.\n\n");
@@ -151,7 +145,6 @@ void exec_once() {
 		npc_state.halt_ret = 0;
 		return;
 	}
-	printf("here3\n");
 
 	if (sim_ret == 1 || sim_ret == 2) 
 		ftrace(sim_ret);
@@ -166,7 +159,6 @@ void execute(uint64_t n) {
 		g_nr_guest_inst ++;
 		exec_once();
 		trace_and_difftest();
-	printf("here5\n");
 		if (npc_state.state != NPC_RUNNING) 
 			return;
 	}
