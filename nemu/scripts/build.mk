@@ -66,8 +66,8 @@ $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo INCLUDES=$(INCLUDES)
 	@echo $(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 	@echo ======================inside scripts/build.mk===========
-	#@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
-	@$(LD) -o $@ $(LLVM_LIB) $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
+	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
+	#@$(LD) -o $@ $(LLVM_LIB) $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
 clean:
 	-rm -rf $(BUILD_DIR)
