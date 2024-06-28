@@ -149,7 +149,7 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-		trace_and_difftest();
+		//trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
     if (inst_is_ebreak() ) { 
@@ -179,7 +179,7 @@ void npc_exec(uint64_t n) {
 			printf("Program execution has ended. To restart the program, please exit and restart\n");
 			return;
 		default: 
-				npc_state.state = NPC_RUNNING;
+			npc_state.state = NPC_RUNNING;
 	}
 	
 	uint64_t timer_start = get_time();

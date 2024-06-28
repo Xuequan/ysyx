@@ -24,6 +24,7 @@ void sim_init() {
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
 
+	// initial rst
 	int i = -1;
 	while ( i < 5) {
 		i++;

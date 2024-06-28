@@ -6,7 +6,7 @@ VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
-VERILATOR_CFLAGS += -prof-cfuncs -CFLAGS -DVL_DEBUG
+# VERILATOR_CFLAGS += -prof-cfuncs -CFLAGS -DVL_DEBUG
 
 # in order to '`include "ysyx_23060208_npc.h" '
 VERILATOR_CFLAGS += -I$(shell find $(abspath ./vsrc))
