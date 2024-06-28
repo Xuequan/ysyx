@@ -138,6 +138,8 @@ void exec_once() {
 	memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
 	memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 
+	printf("here2\n");
+
 	if (sim_ret == 3) { 
 		printf("\nReach ebreak instruction, stop sim.\n\n");
 		npc_state.state = NPC_END;
@@ -145,9 +147,13 @@ void exec_once() {
 		npc_state.halt_ret = 0;
 		return;
 	}
+	printf("here3\n");
 
 	if (sim_ret == 1 || sim_ret == 2) 
 		ftrace(sim_ret);
+
+	printf("her4\n");
+	
 }
 
 
