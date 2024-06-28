@@ -200,7 +200,7 @@ ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
 task get_nextPC (output [DATA_WIDTH-1:0] o);
-	o = nextpc;
+		o = nextpc;
 endtask
 
 export "DPI-C" task get_PC;
