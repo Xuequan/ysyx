@@ -64,6 +64,7 @@ void sim_init() {
 	tfp->open("dump.vcd");
 
 	// initial rst
+	printf("0-now clk = %d\n", top->clk);
 	int i = -1;
 	while ( i < 5) {
 		i++;
@@ -73,7 +74,7 @@ void sim_init() {
 	}
 	top->rst = 0;
 	// 此时 top->clk = 1
-	printf("now clk = %d\n", top->clk);
+	printf("1- now clk = %d\n", top->clk);
 }
 
 void sim_exit() {
