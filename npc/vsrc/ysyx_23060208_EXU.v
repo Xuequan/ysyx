@@ -415,7 +415,7 @@ assign exu_done[1] = (state_w == SHAKED_B);
 /* =============== DPI-C ========================= */
 export "DPI-C" task exu_ready_go_signal;
 task exu_ready_go_signal (output bit o);
-	o = exu_ready_go;
+	o = exu_to_ifu_valid;
 endtask
 
 export "DPI-C" task update_regfile_no;
