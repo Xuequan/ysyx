@@ -21,7 +21,7 @@
 
 /*
 uint32_t get_pc();
-uint32_t get_inst_from_top();
+uint32_t get_inst();
 uint32_t get_clk_from_top();
 	*/
 #define MAX_INST_TO_PRINT 10
@@ -75,7 +75,7 @@ static void ftrace(int ident) {
       space--;
       log_write("%#x:%*s [%s]\n", get_pc(), space, "ret ", func_name);
     }else{  // should never be here
-      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc(), get_inst_from_top());
+      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc(), get_inst());
     }     
   }
 }
@@ -100,7 +100,7 @@ static char logbuf[128];
 void get_assemble_code() {
 	char *p = logbuf;
 	uint32_t pc 				 = get_pc();
-	uint32_t instruction = get_inst_from_top();
+	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
@@ -130,9 +130,11 @@ bool inst_is_jal();
 bool inst_is_jalr();
 
 void exec_once() {
+
 	printf("before exec_once(), pc = %#x\n", get_pc());
 	int sim_ret = sim_once();
 	printf("now exec_once(), pc = %#x\n", get_pc());
+
 	get_assemble_code();
 	if (iindex == IRINGBUF_LEN) 
 		iindex = 0;

@@ -428,4 +428,14 @@ task update_regfile_data (output [DATA_WIDTH-1:0] din);
 	din    = regfile_wdata;
 endtask
 
+export "DPI-C" task get_inst_from_exu;
+task get_inst_from_exu (output [DATA_WIDTH-1:0] din);
+	din    = exu_inst;
+endtask
+
+export "DPI-C" task get_pc_from_exu;
+task get_pc_from_exu (output [DATA_WIDTH-1:0] din);
+	din    = exu_pc;
+endtask
+
 endmodule

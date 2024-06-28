@@ -90,11 +90,21 @@ uint32_t nextpc(){
 }
 
 uint32_t get_pc(){
-	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
-	get_PC(&o);
+	get_pc_from_exu(&o);
+	return o.aval;
+}
+
+
+uint32_t get_inst(){
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svLogicVecVal o;
+	get_inst_from_exu(&o);
 	return o.aval;
 }
 

@@ -90,10 +90,10 @@ void sim_exit() {
 uint32_t get_pc_from_top(){
 	return top->pc;
 }
-*/
 uint32_t get_inst_from_top(){
 	return top->inst;
 }
+*/
 uint32_t get_clk_from_top(){
 	return top->clk;
 }

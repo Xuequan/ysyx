@@ -50,5 +50,7 @@ bool check_exu_ready_go();
 
 uint32_t get_pc();
 
+uint32_t get_inst();
+
 bool check_ifu_ready_go();
 #endif

@@ -203,10 +203,12 @@ task get_nextPC (output [DATA_WIDTH-1:0] o);
 		o = nextpc;
 endtask
 
+/*
 export "DPI-C" task get_PC;
 task get_PC (output [DATA_WIDTH-1:0] o);
 	o = pc;
 endtask
+*/
 
 export "DPI-C" task ifu_ready_go_signal;
 task ifu_ready_go_signal (output bit o);
