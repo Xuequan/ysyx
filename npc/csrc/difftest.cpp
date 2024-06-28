@@ -129,11 +129,9 @@ void difftest_step() {
 				get_pc(), reg_name(index), npc_regs[index], ref_regs[index]);
 		}
 		printf("\n");
-	}
 			// print REF registers
-			/*
 			for(int k = 0; k < 16; k++)
 				printf("%s: %#x\n", reg_name(k), ref_regs[k]);
-			*/
+	}
 	return;
 }
