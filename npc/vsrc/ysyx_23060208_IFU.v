@@ -190,8 +190,8 @@ ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
 	.wen(pc_reg_wen),  // wen
-	.next_pc(nextpc),  // input
-	.pc(pc)        // output
+	.next_pc(araddr_r),  // input
+	.pc(pc)              // output
 );
 
 

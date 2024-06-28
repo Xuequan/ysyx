@@ -42,7 +42,6 @@ static inline void host_write(void *addr, int len, word_t data) {
 
 static word_t pmem_read(paddr_t addr, int len) {
   word_t ret = host_read(guest_to_host(addr), len);
-	printf("read addr = %#x, return = %#x, pmem_read()\n", addr, ret);
   return ret;
 }
 
@@ -68,7 +67,6 @@ void init_mem() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
-	printf(" read addr = %#x\n", addr);
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 
@@ -76,7 +74,6 @@ word_t paddr_read(paddr_t addr, int len) {
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc()); 
 		}
 
-	printf(" read addr = %#x, return = %#x\n", addr, num);
 		return num;
 	}
 
