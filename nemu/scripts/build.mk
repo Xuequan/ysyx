@@ -11,7 +11,6 @@ WORK_DIR  = $(shell pwd)
 BUILD_DIR = $(WORK_DIR)/build
 
 INC_PATH := $(WORK_DIR)/include $(INC_PATH)
-LLVM_LIB = /usr/lib/llvm-19/lib
 OBJ_DIR  = $(BUILD_DIR)/obj-$(NAME)$(SO)
 BINARY   = $(BUILD_DIR)/$(NAME)$(SO)
 
@@ -23,11 +22,13 @@ CXX := g++
 endif
 LD := $(CXX)
 INCLUDES = $(addprefix -I, $(INC_PATH))
-INCLUDES += $(addprefix -L, $(LLVM_LIB))
 CFLAGS  := -O2 -MMD -Wall -Werror $(INCLUDES) $(CFLAGS)
 LDFLAGS := -O2 $(LDFLAGS)
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o) $(CXXSRC:%.cc=$(OBJ_DIR)/%.o)
+
+LLVM_LIB_DIR = /usr/lib/llvm-19/lib
+LLVM_LIB = $(addprefix -L, $(LLVM_LIB))
 
 # Compilation patterns
 $(OBJ_DIR)/%.o: %.c
@@ -65,7 +66,8 @@ $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo INCLUDES=$(INCLUDES)
 	@echo $(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 	@echo ======================inside scripts/build.mk===========
-	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
+	#@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
+	@$(LD) -o $@ $(OBJS) $(LLVM_LIB) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
 clean:
 	-rm -rf $(BUILD_DIR)
