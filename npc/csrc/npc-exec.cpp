@@ -19,11 +19,6 @@
 #include "dpi-c.h"
 #include <clocale>
 
-/*
-uint32_t get_pc();
-uint32_t get_inst();
-uint32_t get_clk_from_top();
-	*/
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
@@ -121,7 +116,6 @@ static void trace_and_difftest(){
 		printf("%s\n",logbuf);
 	}
 	difftest_step();
-
 	scan_wp_pool();
 }
 
