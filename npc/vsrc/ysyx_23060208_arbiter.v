@@ -5,103 +5,127 @@ module ysyx_23060208_arbiter
 	
 	input 								 ifu_done,
 	input [1					 :0] exu_done,
-	//output [2					 :0] grant,
 
+	// ===================================================
 	// 写地址通道:
 	      // from master
-	input [ADDR_WIDTH-1:0] dsram_awaddr_i,
-	input									 dsram_awvalid_i,
+	input [ADDR_WIDTH-1			:0] dsram_awaddr_i,
+	input									      dsram_awvalid_i,
 				// to slave
 	output reg [ADDR_WIDTH-1:0] dsram_awaddr_o,
 	output reg									dsram_awvalid_o,
 				// from slave
-	input								   dsram_awready_i,
+	input								   			dsram_awready_i,
 				// to master
-	output reg								 dsram_awready_o,
+	output reg								  dsram_awready_o,
 	
 	// 写数据通道
 	  // from master
-	input [DATA_WIDTH-1:0] dsram_wdata_i,
-	input [2					 :0] dsram_wstrb_i,
-	input									 dsram_wvalid_i,
+	input [DATA_WIDTH-1			:0] dsram_wdata_i,
+	input [2					 			:0] dsram_wstrb_i,
+	input									 			dsram_wvalid_i,
 		// to slave
 	output reg [DATA_WIDTH-1:0] dsram_wdata_o,
-	output reg [2					 :0] dsram_wstrb_o,
-	output reg									 dsram_wvalid_o,
+	output reg [2					  :0] dsram_wstrb_o,
+	output reg									dsram_wvalid_o,
 		// from slave
-	input								 dsram_wready_i,
+	input								 				dsram_wready_i,
 		// to master
-	output reg								 dsram_wready_o,
+	output reg								  dsram_wready_o,
 
 	// 写响应
 	  // from slave
-	input [1					 :0] dsram_bresp_i,
-	input								   dsram_bvalid_i,
+	input [1					 			:0] dsram_bresp_i,
+	input								   			dsram_bvalid_i,
 	  // to master
-	output reg [1					 :0] dsram_bresp_o,
-	output reg								 dsram_bvalid_o,
+	output reg [1					  :0] dsram_bresp_o,
+	output reg								  dsram_bvalid_o,
 		// from master
-	input									 dsram_bready_i,
+	input									      dsram_bready_i,
 		// to slave
-	output reg									 dsram_bready_o,
+	output reg									dsram_bready_o,
+	// ===================================================
 
+	// ===================================================
+	/* connect with uart, start  */
+	// EXU 发起的写，经 xbar 转给了 uart
+	// 写地址通道:
+	output reg [ADDR_WIDTH-1:0] uart_awaddr_o,
+	output reg									uart_awvalid_o,
+	input								   			uart_awready_i,
+	// 写数据通道
+	output reg [DATA_WIDTH-1:0] uart_wdata_o,
+	output reg [2					 :0]  uart_wstrb_o,
+	output reg									uart_wvalid_o,
+	input								 				uart_wready_i,
+	// 写响应
+	input [1					 :0] 			uart_bresp_i,
+	input								   			uart_bvalid_i,
+	output reg									uart_bready_o,
+	/* connect with uart, end  */
+	// ===================================================
+
+
+	// ===================================================
 	// 读请求通道
 	  // from master
-	input  [ADDR_WIDTH-1:0] dsram_araddr_i,
-	input										dsram_arvalid_i,
+	input  [ADDR_WIDTH-1		 :0] dsram_araddr_i,
+	input												 dsram_arvalid_i,
 		// to slave
 	output reg  [ADDR_WIDTH-1:0] dsram_araddr_o,
-	output reg										dsram_arvalid_o,
+	output reg									 dsram_arvalid_o,
 		// from slave
-	input									dsram_arready_i,
+	input												 dsram_arready_i,
 		// to master
-	output reg									dsram_arready_o,
+	output reg									 dsram_arready_o,
 
 	// 读响应通道
 	  // from slave
-	input [DATA_WIDTH-1:0]  dsram_rdata_i,
-	input [1					  :0]	dsram_rresp_i,
-	input 									dsram_rvalid_i,
+	input [DATA_WIDTH-1			 :0] dsram_rdata_i,
+	input [1					  		 :0] dsram_rresp_i,
+	input 											 dsram_rvalid_i,
 		// to master
-	output reg [DATA_WIDTH-1:0] dsram_rdata_o,
-	output reg [1					  :0]	dsram_rresp_o,
-	output reg 									dsram_rvalid_o,
+	output reg [DATA_WIDTH-1 :0] dsram_rdata_o,
+	output reg [1					   :0] dsram_rresp_o,
+	output reg 									 dsram_rvalid_o,
 		// from master
-	input										dsram_rready_i,
+	input										     dsram_rready_i,
 		// to slave
-	output reg										dsram_rready_o,
+	output reg									 dsram_rready_o,
+	// ===================================================
 	
+	// ===================================================
 	// isram
 	// 读请求通道
 	  // from master
-	input  [ADDR_WIDTH-1:0] isram_araddr_i,
-	input										isram_arvalid_i,
+	input  [ADDR_WIDTH-1		 :0] isram_araddr_i,
+	input										 		 isram_arvalid_i,
 		// to slave
 	output reg  [ADDR_WIDTH-1:0] isram_araddr_o,
-	output reg										isram_arvalid_o,
+	output reg									 isram_arvalid_o,
 		// from slave
-	input									isram_arready_i,
+	input												 isram_arready_i,
 		// to master
-	output reg									isram_arready_o,
+	output reg									 isram_arready_o,
 
 	// 读响应通道
 	  // from slave
-	input [DATA_WIDTH-1:0]  isram_rdata_i,
-	input [1					  :0]	isram_rresp_i,
-	input 									isram_rvalid_i,
+	input [DATA_WIDTH-1			 :0] isram_rdata_i,
+	input [1					  		 :0] isram_rresp_i,
+	input 											 isram_rvalid_i,
 		// to master
 	output reg [DATA_WIDTH-1:0] isram_rdata_o,
 	output reg [1					  :0]	isram_rresp_o,
 	output reg 									isram_rvalid_o,
 		// from master
-	input										isram_rready_i,
+	input												isram_rready_i,
 		// to slave
-	output reg										isram_rready_o
+	output reg									isram_rready_o
 );
 
-parameter [1:0] IDLE = 2'b0, GRANT_IFU = 2'b01, 
-								GRANT_EXU_READ = 2'b10, GRANT_EXU_WRITE = 2'b11;
-reg [1:0] state, next;
+parameter [2:0] IDLE = 3'b000, ISRAM = 3'b001, UART = 3'b010,
+								DSRAM_READ = 3'b011, DSRAM_WRITE = 3'b100;
+reg [2:0] state, next;
 always @(posedge clk) begin
   if (rst) 
     state <= IDLE;
@@ -109,56 +133,57 @@ always @(posedge clk) begin
     state <= next;
 end
 
-always @(isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or exu_done or ifu_done) begin
+wire [DATA_WIDTH-1:0] serial_addr;
+assign serial_addr = 32'ha000_0000 + 32'h0000_03f8;
+
+wire	is_serial;
+assign is_serial = (serial_addr == dsram_awaddr_i);
+
+always @(isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or is_serial or exu_done or ifu_done) begin
 	next = IDLE;
 	case (state) 
 		IDLE: 
 			if (isram_arvalid_i) 
-				next = GRANT_IFU;
+				next = ISRAM;
 			else if (dsram_arvalid_i)
-				next = GRANT_EXU_READ;
+				next = DSRAM_READ;
+			else if (dsram_awvalid_i && is_serial)
+				next = UART;
 			else if (dsram_awvalid_i)
-				next = GRANT_EXU_WRITE;
+				next = DSRAM_WRITE;
 			else
 			  next = IDLE;
 
-		GRANT_IFU:
+		ISRAM:
 			if (ifu_done)
 				next = IDLE;
 			else
-				next = GRANT_IFU;
+				next = ISRAM;
 
-		GRANT_EXU_READ:
+		DSRAM_READ:
 			if (exu_done[0])
 				next = IDLE;
 			else
-				next = GRANT_EXU_READ;
+				next = DSRAM_READ;
 
-		GRANT_EXU_WRITE:
+		DSRAM_WRITE:
 			if (exu_done[1])
 				next = IDLE;
 			else
-				next = GRANT_EXU_WRITE;
+				next = DSRAM_WRITE;
 
+		UART:
+			if (exu_done[1])
+				next = IDLE;
+			else
+				next = UART;
+
+		default: ;
 	endcase
 end
 
-/*
-reg [2:0] grant_r;
-assign grant = grant_r;
-always @(posedge clk) begin
-	if (rst) grant_r <= 0;
-	else if (next == GRANT_IFU) 
-		grant_r <= 3'b001;	
-	else if (next == GRANT_EXU_READ)
-		grant_r <= 3'b010;	
-	else if (next == GRANT_EXU_WRITE)
-		grant_r <= 3'b100;	
-	else 
-		grant_r <= 0;
-end
-*/
 always @(*) begin
+	/* 这里的输出信号，都是经过 xbar 转换后的信号 */
 	dsram_awvalid_o = 0;
 	dsram_awaddr_o = 0;
 	dsram_awready_o = 0;
@@ -171,6 +196,15 @@ always @(*) begin
 	dsram_bresp_o = 0;
 	dsram_bvalid_o = 0;
 	dsram_bready_o = 0;
+
+	uart_awvalid_o = 0;
+	uart_awaddr_o  = 0;
+
+	uart_wdata_o = 0;
+	uart_wstrb_o = 0;
+	uart_wvalid_o = 0;
+
+	uart_bready_o = 0;
 
 	dsram_arvalid_o = 0;
 	dsram_araddr_o = 0;
@@ -192,7 +226,7 @@ always @(*) begin
 	
   case (next)
 		IDLE: ;
-		GRANT_IFU: begin
+		ISRAM: begin
 			isram_arvalid_o = isram_arvalid_i;
 			isram_araddr_o = isram_araddr_i;
 			isram_arready_o = isram_arready_i;
@@ -202,7 +236,7 @@ always @(*) begin
 			isram_rvalid_o = isram_rvalid_i;
 			isram_rready_o = isram_rready_i;
 			end
-		GRANT_EXU_READ: begin
+		DSRAM_READ: begin
 			dsram_arvalid_o = dsram_arvalid_i;
 			dsram_araddr_o = dsram_araddr_i;
 			dsram_arready_o = dsram_arready_i;
@@ -212,7 +246,7 @@ always @(*) begin
 			dsram_rvalid_o = dsram_rvalid_i;
 			dsram_rready_o = dsram_rready_i;
 			end
-		GRANT_EXU_WRITE: begin
+		DSRAM_WRITE: begin
 			dsram_awvalid_o = dsram_awvalid_i;
 			dsram_awaddr_o = dsram_awaddr_i;
 			dsram_awready_o = dsram_awready_i;
@@ -226,6 +260,21 @@ always @(*) begin
 			dsram_bvalid_o = dsram_bvalid_i;
 			dsram_bready_o = dsram_bready_i;
 			end
+		UART: begin
+			uart_awvalid_o = dsram_awvalid_i;
+			uart_awaddr_o  = dsram_awaddr_i;
+			dsram_awready_o = uart_awready_i;
+
+			uart_wdata_o = dsram_wdata_i;
+			uart_wstrb_o = dsram_wstrb_i;
+			uart_wvalid_o = dsram_wvalid_i;
+			dsram_wready_o = uart_wready_i;
+
+			dsram_bresp_o = uart_bresp_i;
+			dsram_bvalid_o = uart_bvalid_i;
+			uart_bready_o = dsram_bready_i;
+			end
+		default:;
 	endcase
 end
 
