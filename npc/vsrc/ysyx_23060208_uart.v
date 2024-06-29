@@ -139,11 +139,9 @@ always @(posedge clk) begin
 		awaddr_r <= uart_awaddr;
 end
 
-/*
 wire [7:0] wmask;
 assign wmask[7:3] = 5'b0;
 assign wmask[2:0] = uart_wstrb;
-*/
 
 assign uart_wready = 1'b1;
 
@@ -151,90 +149,10 @@ wire [DATA_WIDTH-1:0] awaddr;
 assign awaddr = awaddr_r;
 always @(*) begin
 	if (next_w == SHAKED_W) begin	 
-		//uart_write(awaddr, uart_wdata, wmask);
-		$write(uart_wdata[7:0]);
+		$display(uart);
+		uart_write(awaddr, uart_wdata, wmask);
+		//$write(uart_wdata[7:0]);
 	end
 end
 
-/* read from dsram */
-/*
-// read FSM
-parameter [2:0] IDLE = 3'b000, WAIT_ARVA = 3'b001, SHAKED_AR = 3'b010,
-                WAIT_RREADY = 3'b011, SHAKED_R = 3'b100;
-reg [2:0] state, next;
-always @(posedge clk) begin
-  if (rst) 
-    state <= IDLE;
-  else 
-    state <= next;
-end
-
-always @(state or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rready) begin
-  next = IDLE;
-  case (state)
-    IDLE: 
-      if (!dsram_arready) 
-        next = IDLE;
-      else if (!dsram_arvalid)
-        next = WAIT_ARVA;
-      else 
-        next = SHAKED_AR;
-    WAIT_ARVA:
-      if (dsram_arvalid)
-        next = SHAKED_AR;
-      else
-        next = WAIT_ARVA;
-    SHAKED_AR:
-      if (!dsram_rvalid)
-        next = SHAKED_AR;
-      else if (!dsram_rready)
-        next = WAIT_RREADY;
-      else 
-        next = SHAKED_R;
-    WAIT_RREADY:
-      if (dsram_rready)
-        next = SHAKED_R;
-      else 
-        next = WAIT_RREADY;
-    SHAKED_R:
-      if (!dsram_arready)
-        next = IDLE;
-      else if (!dsram_arvalid)
-        next = WAIT_ARVA;
-      else 
-        next = SHAKED_AR;
-    default: ;
-  endcase 
-end
-reg arready_r;
-assign dsram_arready = arready_r;
-always @(posedge clk) begin
-	if (rst)
-		arready_r <= 0;
-	else if (next == IDLE || next == WAIT_ARVA || next == SHAKED_R)
-		arready_r <= 1'b1;
-	else
-		arready_r <= 1'b0;   // 等一个读数据通道完成后，才开始另一个读
-end
-
-reg rvalid_r;
-assign dsram_rvalid = rvalid_r;
-always @(posedge clk) begin
-	if (rst)
-		rvalid_r <= 0;
-	else if (next == SHAKED_AR || next == WAIT_RREADY)
-		rvalid_r <= 1'b1;
-	else 
-		rvalid_r <= 0;
-end
-
-reg [DATA_WIDTH-1:0] dsram_rdata_r;
-assign dsram_rdata = dsram_rdata_r;
-always @(posedge clk) begin
-	if (rst)
-		dsram_rdata_r <= 0;
-	else if (next == SHAKED_AR)
-		dsram_rdata_r <= dsram_read(dsram_araddr);
-end
-*/
 endmodule
