@@ -13,7 +13,9 @@ module ysyx_23060208_EXU
 	output [REG_WIDTH-1 :0] regfile_waddr,
 	output								  regfile_wen,
 
-	/* connect with dsram */
+	/* connect with arbiter*/
+	//input	[2						:0] grant,
+	output [1							:0]	exu_done,
 		// 写地址通道
 	output [DATA_WIDTH-1:0] dsram_awaddr,
 	output									dsram_awvalid,
@@ -47,23 +49,17 @@ module ysyx_23060208_EXU
 
 	/* connect with IDU */
 	input [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus,
-	input [`IDU_TO_EXU_BUS-1:0] idu_to_exu_bus,
+	input [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus,
 	// CSR for nextpc, from IDU
 	input [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus,
 
 	input 									idu_to_exu_valid,
 	
-	output									exu_allowin,
-	
-	// for debug
-	output [DATA_WIDTH-1:0] exu_pc,
-	output [DATA_WIDTH-1:0] exu_inst,
-	
-	output 									exu_valid
+	output									exu_allowin
 );
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
-reg [`IDU_TO_EXU_BUS-1:0] idu_to_exu_bus_r;
+reg [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus_r;
 reg [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus_r;
 
 wire [DATA_WIDTH-1:0] src1;
@@ -79,6 +75,8 @@ wire [DATA_WIDTH-1:0] store_data_raw;
 wire [1           :0] uncond_jump_inst;
 wire [DATA_WIDTH-1:0] cond_branch_target;
 wire 								 cond_branch_inst;
+wire [DATA_WIDTH-1:0] exu_pc;
+wire [DATA_WIDTH-1:0] exu_inst;
 assign {regfile_mem_mux, 
 				store_inst, 
 				load_inst, 
@@ -100,13 +98,12 @@ assign {csr_idx,
 				csr_nextpc_taken
 				} = idu_to_exu_csr_bus_r;
 
-reg exu_valid_r;
-assign exu_valid = exu_valid_r;
+reg exu_valid;
 always @(posedge clk) begin
 	if (rst) 
-		exu_valid_r <= 1'b0;
+		exu_valid <= 1'b0;
 	else if (exu_allowin)
-		exu_valid_r <= idu_to_exu_valid;
+		exu_valid <= idu_to_exu_valid;
 end
 
 always @(posedge clk) begin
@@ -114,7 +111,8 @@ always @(posedge clk) begin
 		idu_to_exu_alu_bus_r <= 0;
 		idu_to_exu_bus_r     <= 0;
 		idu_to_exu_csr_bus_r <= 0;
-	end else if (exu_allowin && idu_to_exu_valid) begin
+	end 
+	else if (exu_allowin && idu_to_exu_valid) begin
 		idu_to_exu_alu_bus_r <= idu_to_exu_alu_bus;
 		idu_to_exu_bus_r     <= idu_to_exu_bus;
 		idu_to_exu_csr_bus_r <= idu_to_exu_csr_bus;
@@ -410,9 +408,15 @@ assign csr_waddr2 = csr_inst[2] ? 12'h342 : 0;
 
 
 
-
+assign exu_done[0] = (state_r == SHAKED_R);
+assign exu_done[1] = (state_w == SHAKED_B);
 
 /* =============== DPI-C ========================= */
+export "DPI-C" task exu_ready_go_signal;
+task exu_ready_go_signal (output bit o);
+	o = exu_to_ifu_valid;
+endtask
+
 export "DPI-C" task update_regfile_no;
 task update_regfile_no (output [REG_WIDTH-1:0] reg_no);
 	reg_no = regfile_wen ? regfile_waddr : 'b0;
@@ -422,5 +426,17 @@ export "DPI-C" task update_regfile_data;
 task update_regfile_data (output [DATA_WIDTH-1:0] din);
 	din    = regfile_wdata;
 endtask
+
+export "DPI-C" task get_inst_from_exu;
+task get_inst_from_exu (output [DATA_WIDTH-1:0] din);
+	din    = exu_inst;
+endtask
+
+/*
+export "DPI-C" task get_pc_from_exu;
+task get_pc_from_exu (output [DATA_WIDTH-1:0] din);
+	din    = exu_pc;
+endtask
+*/
 
 endmodule

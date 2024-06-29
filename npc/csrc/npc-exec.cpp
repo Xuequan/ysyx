@@ -19,11 +19,6 @@
 #include "dpi-c.h"
 #include <clocale>
 
-/*
-uint32_t get_pc_from_top();
-uint32_t get_inst_from_top();
-uint32_t get_clk_from_top();
-	*/
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
@@ -33,6 +28,7 @@ uint64_t g_nr_guest_inst = 0;
 ** return 2 if function ret
 ** else return 0
 */
+/*
 static int identify_inst() {
 	if (inst_is_jal() ){
 		return 1;
@@ -49,32 +45,32 @@ static int identify_inst() {
 		return 0;
 	}
 }
-
+*/
 static int space = 4;
 char *vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len);
 
 #define FUNC_NAME_LEN 102
-static void ftrace() {
+static void ftrace(int ident) {
   bool success1 = false;
   bool success2 = false;
 	char func_name[FUNC_NAME_LEN];
 	int len = FUNC_NAME_LEN;
 
-  int ident = identify_inst();
+  //int ident = identify_inst();
   if (1 == ident){ // maybe a function call, should double check
     vaddr2func(nextpc(), &success1, 1, func_name, len); 
     if (success1){ // double check, if next_pc is a function, then a function call
       space++;
-      log_write("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", func_name, nextpc());  
+      log_write("%#x:%*s [%s@%#x]\n", get_pc(), space, "call", func_name, nextpc());  
     }
   }else if(2 == ident){ // ret
       // call vaddr2func just for function name only
-    vaddr2func(get_pc_from_top(), &success2, 0, func_name, len); 
+    vaddr2func(get_pc(), &success2, 0, func_name, len); 
     if (success2){
       space--;
-      log_write("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", func_name);
+      log_write("%#x:%*s [%s]\n", get_pc(), space, "ret ", func_name);
     }else{  // should never be here
-      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc_from_top(), get_inst_from_top());
+      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc(), get_inst());
     }     
   }
 }
@@ -96,11 +92,12 @@ static void print_iringbuf(void) {
 void disassemble(char *str, int size, uint64_t pc, uint8_t* code, int nbyte);
 static char logbuf[128];
 
-void get_assemble() {
+void get_assemble_code() {
 	char *p = logbuf;
-	uint32_t pc 				 = get_pc_from_top();
-	uint32_t instruction = get_inst_from_top();
+	uint32_t pc 				 = get_pc();
+	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
+	//printf("pc = %#x, insturction = %#x\n", pc, instruction);
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
@@ -120,7 +117,6 @@ static void trace_and_difftest(){
 		printf("%s\n",logbuf);
 	}
 	difftest_step();
-
 	scan_wp_pool();
 }
 
@@ -129,36 +125,36 @@ bool inst_is_jal();
 bool inst_is_jalr();
 
 void exec_once() {
-  for(int i = 0; i < 2; i++) {
-		sim_once();
-    if (get_clk_from_top() == 1) {
-      get_assemble();
+	//printf("before exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
+	int sim_ret = sim_once();
+	//printf("now    exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 
-			if (iindex == IRINGBUF_LEN) 
-				iindex = 0;
-			memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
-			memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
+	get_assemble_code();
 
-			ftrace();
-    }   
-  }// end for
+	if (iindex == IRINGBUF_LEN) 
+		iindex = 0;
+	memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
+	memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
+
+	if (sim_ret == 3) { 
+		printf("\nReach ebreak instruction, stop sim.\n\n");
+		npc_state.state = NPC_END;
+		npc_state.halt_pc = get_pc();
+		npc_state.halt_ret = 0;
+		return;
+	}
+
+	if (sim_ret == 1 || sim_ret == 2) 
+		ftrace(sim_ret);
 }
-
 
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-		//trace_and_difftest();
+		trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
-    if (inst_is_ebreak() ) { 
-    	printf("\nReach ebreak instruction, stop sim.\n\n");
-			npc_state.state = NPC_END;
-			npc_state.halt_pc = get_pc_from_top();
-			npc_state.halt_ret = 0;
-			return;
-		}
 	}
 }
 
@@ -179,7 +175,7 @@ void npc_exec(uint64_t n) {
 			printf("Program execution has ended. To restart the program, please exit and restart\n");
 			return;
 		default: 
-				npc_state.state = NPC_RUNNING;
+			npc_state.state = NPC_RUNNING;
 	}
 	
 	uint64_t timer_start = get_time();

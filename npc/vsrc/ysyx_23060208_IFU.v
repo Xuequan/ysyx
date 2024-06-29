@@ -15,6 +15,9 @@ module ysyx_23060208_IFU
 	output 											 ifu_to_idu_valid,
 	input												 idu_valid,
 
+	/* connect with arbiter */
+	//input [2						:0] grant,
+	output									ifu_done,
 	/* connect with isram */
 	// 读请求
 	output [DATA_WIDTH-1:0] isram_araddr,
@@ -44,9 +47,9 @@ always @(posedge clk) begin
 end
 */
 /* ====================  get the nextpc ================*/
-wire [DATA_WIDTH-1:0] ifu_pc;
+wire [DATA_WIDTH-1:0] pc;
 wire [DATA_WIDTH-1:0] nextpc;
-assign nextpc = (exu_to_ifu_valid && exu_nextpc_taken) ? exu_nextpc : ifu_pc + 4;
+assign nextpc = (exu_to_ifu_valid && exu_nextpc_taken) ? exu_nextpc : pc + 4;
 /* ======================================================== */
 // ifu_valid 表示当前 IFU 有有效的数据
 reg  ifu_valid;
@@ -158,31 +161,52 @@ always @(posedge clk) begin
 		rready_r <= 1'b0;
 end
 
+/*
+reg ifu_done_r;
+assign ifu_done = ifu_done_r;
+always @(posedge clk) begin
+	if (rst) ifu_done_r <= 0;
+	else if (next == SHAKED_R)
+		ifu_done_r <= 1'b1;
+	else
+		ifu_done_r <= 1'b0;
+end
+*/
 
 
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
 assign ifu_ready_go = (next == SHAKED_R);
 
+assign ifu_done = (state == SHAKED_R);
+
 assign ifu_to_idu_valid = ifu_ready_go;
 assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 
 //================= get pc from register PC ==============================
+//the program counter PC holds the address of the current instruction.
 wire pc_reg_wen;
-assign pc_reg_wen = (next == SHAKED_AR);
+assign pc_reg_wen = (next == SHAKED_R);
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clk(clk),
 	.rst(rst),
-	.wen(pc_reg_wen),
-	.next_pc(nextpc),
-	.pc(ifu_pc)
+	.wen(pc_reg_wen),    // wen
+	.next_pc(araddr_r),  // input
+	.pc(pc)              // output
 );
-
-
-
 
 /* ==================== DPI-C ====================== */
 export "DPI-C" task get_nextPC;
 task get_nextPC (output [DATA_WIDTH-1:0] o);
-	o = nextpc;
+		o = nextpc;
+endtask
+
+export "DPI-C" task get_PC;
+task get_PC (output [DATA_WIDTH-1:0] o);
+	o = pc;
+endtask
+
+export "DPI-C" task ifu_ready_go_signal;
+task ifu_ready_go_signal (output bit o);
+	o = ifu_ready_go;
 endtask
 endmodule

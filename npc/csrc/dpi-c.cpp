@@ -89,6 +89,24 @@ uint32_t nextpc(){
 	return o.aval;
 }
 
+uint32_t get_pc(){
+	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	assert(scope);
+	svSetScope(scope);
+	svLogicVecVal o;
+	get_PC(&o);
+	return o.aval;
+}
+
+uint32_t get_inst(){
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svLogicVecVal o;
+	get_inst_from_exu(&o);
+	return o.aval;
+}
+
 uint32_t update_reg_no(){
 	const svScope scope = svGetScopeFromName("TOP.top.exu");
 	assert(scope);
@@ -104,4 +122,23 @@ uint32_t update_reg_data(){
 	svLogicVecVal data;
 	update_regfile_data(&data);
 	return data.aval;
+}
+
+bool check_exu_ready_go() {
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	exu_ready_go_signal(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_ifu_ready_go() {
+	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	ifu_ready_go_signal(&a);
+	if (a == 1) return true;
+	else				return false;
 }

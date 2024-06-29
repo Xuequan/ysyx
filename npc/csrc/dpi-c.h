@@ -46,4 +46,11 @@ uint32_t update_reg_no();
 //extern void update_regfile_data(svLogicVecVal* din);
 uint32_t update_reg_data();
 
+bool check_exu_ready_go();
+
+uint32_t get_pc();
+
+uint32_t get_inst();
+
+bool check_ifu_ready_go();
 #endif

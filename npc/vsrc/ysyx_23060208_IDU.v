@@ -19,7 +19,7 @@ module ysyx_23060208_IDU
 
 	/* connect with EXU */
 	output [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus,
-	output [`IDU_TO_EXU_BUS-1:0] idu_to_exu_bus,
+	output [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus,
 	// CSR for nextpc
 	output [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus,
 
@@ -48,15 +48,15 @@ wire [DATA_WIDTH-1:0] idu_pc;
 wire [DATA_WIDTH-1:0] idu_inst;
 wire [DATA_WIDTH-1:0] inst;
 assign idu_to_exu_bus = 
-			 {regfile_mem_mux, 
-        store_inst, 
-        load_inst, 
-        store_data_raw,
-        uncond_jump_inst,
-        cond_branch_target,
-        cond_branch_inst,
-        idu_pc,
-				idu_inst 
+			 {regfile_mem_mux,  // 0-1
+        store_inst,       // 2-4
+        load_inst,        // 5-9
+        store_data_raw,		// 10-41
+        uncond_jump_inst, // 42-43
+        cond_branch_target, // 44-75
+        cond_branch_inst,   // 76
+        idu_pc,							// 77-108
+				idu_inst 						// 109-140
         };
 
 wire [11          :0] csr_idx;
@@ -479,25 +479,25 @@ assign csr_inst[2] = inst_ecall;
 //======================== DPI-C ================================
 export "DPI-C" task check_if_ebreak;
 task check_if_ebreak (output bit o);
-	o = inst_ebreak;
+	o = inst_ebreak && idu_valid;
 endtask
 
 export "DPI-C" task check_if_jal;
 task check_if_jal (output bit o);
-	o = inst_jal;
+	o = inst_jal & idu_valid;
 endtask
 
 export "DPI-C" task check_if_jalr;
 task check_if_jalr (output bit o);
-	o = inst_jalr;
+	o = inst_jalr & idu_valid;
 endtask
 
 export "DPI-C" task rs1_reg;
 task rs1_reg (output [4:0] o);
-	o = rs1;
+	o = rs1 & {5{idu_valid}};
 endtask
 export "DPI-C" task rd_reg;
 task rd_reg (output [4:0] o);
-	o = rd;
+	o = rd & {5{idu_valid}};
 endtask
 endmodule
