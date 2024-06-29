@@ -98,7 +98,6 @@ uint32_t get_pc(){
 	return o.aval;
 }
 
-
 uint32_t get_inst(){
 	const svScope scope = svGetScopeFromName("TOP.top.exu");
 	assert(scope);

@@ -48,15 +48,15 @@ wire [DATA_WIDTH-1:0] idu_pc;
 wire [DATA_WIDTH-1:0] idu_inst;
 wire [DATA_WIDTH-1:0] inst;
 assign idu_to_exu_bus = 
-			 {regfile_mem_mux, 
-        store_inst, 
-        load_inst, 
-        store_data_raw,
-        uncond_jump_inst,
-        cond_branch_target,
-        cond_branch_inst,
-        idu_pc,
-				idu_inst 
+			 {regfile_mem_mux,  // 0-1
+        store_inst,       // 2-4
+        load_inst,        // 5-9
+        store_data_raw,		// 10-41
+        uncond_jump_inst, // 42-43
+        cond_branch_target, // 44-75
+        cond_branch_inst,   // 76
+        idu_pc,							// 77-108
+				idu_inst 						// 109-140
         };
 
 wire [11          :0] csr_idx;

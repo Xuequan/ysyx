@@ -49,7 +49,7 @@ module ysyx_23060208_EXU
 
 	/* connect with IDU */
 	input [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus,
-	input [`IDU_TO_EXU_BUS-1:0] idu_to_exu_bus,
+	input [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus,
 	// CSR for nextpc, from IDU
 	input [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus,
 
@@ -59,7 +59,7 @@ module ysyx_23060208_EXU
 );
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
-reg [`IDU_TO_EXU_BUS-1:0] idu_to_exu_bus_r;
+reg [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus_r;
 reg [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus_r;
 
 wire [DATA_WIDTH-1:0] src1;
@@ -112,7 +112,7 @@ always @(posedge clk) begin
 		idu_to_exu_bus_r     <= 0;
 		idu_to_exu_csr_bus_r <= 0;
 	end 
-	else if (exu_allowin) begin
+	else if (exu_allowin && idu_to_exu_valid) begin
 		idu_to_exu_alu_bus_r <= idu_to_exu_alu_bus;
 		idu_to_exu_bus_r     <= idu_to_exu_bus;
 		idu_to_exu_csr_bus_r <= idu_to_exu_csr_bus;
