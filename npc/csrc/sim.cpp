@@ -71,8 +71,7 @@ void sim_init() {
 	top->rst = 0;
 	top->clk ^= 1;
 	step_and_dump_wave();
-	// 此时 top->clk = 1
-	printf("1- now clk = %d\n", top->clk);
+	// now top->clk = 1
 }
 
 void sim_exit() {
