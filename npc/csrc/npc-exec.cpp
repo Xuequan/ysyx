@@ -97,7 +97,7 @@ void get_assemble_code() {
 	uint32_t pc 				 = get_pc();
 	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
-	printf("pc = %#x, insturction = %#x\n", pc, instruction);
+	//printf("pc = %#x, insturction = %#x\n", pc, instruction);
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
@@ -125,9 +125,9 @@ bool inst_is_jal();
 bool inst_is_jalr();
 
 void exec_once() {
-	printf("before exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
+	//printf("before exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 	int sim_ret = sim_once();
-	printf("now    exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
+	//printf("now    exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 
 	get_assemble_code();
 
