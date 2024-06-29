@@ -59,6 +59,19 @@ wire  [1            :0] dsram_bresp_o;
 wire                   dsram_bvalid_o;
 wire                   dsram_bready_o;
 
+wire [DATA_WIDTH-1:0] uart_awaddr_o;
+wire                  uart_awvalid_o;
+wire                  uart_awready_i;
+
+wire [DATA_WIDTH-1:0] uart_wdata_o; 
+wire [2           :0] uart_wstrb_o;
+wire                  uart_wvalid_o;
+wire                  uart_wready_i;
+
+wire  [1            :0] uart_bresp_i;
+wire                    uart_bvalid_i;
+wire                    uart_bready_o;
+
 wire [DATA_WIDTH-1:0] dsram_araddr;
 wire                  dsram_arvalid; 
 wire                   dsram_arready;
@@ -97,7 +110,6 @@ wire                  isram_rvalid_o;
 wire                  isram_rready_o;
 wire	idu_valid;
 
-//wire [2						 :0] grant;
 wire [1							 :0] exu_done;
 wire									 ifu_done;
 
@@ -107,7 +119,6 @@ ysyx_23060208_arbiter	#(.DATA_WIDTH(DATA_WIDTH)) arbiter(
 
 	.ifu_done(ifu_done),
 	.exu_done(exu_done),
-	//.grant(grant),
 
 	// dsram
 	.dsram_awaddr_i(dsram_awaddr),
@@ -154,6 +165,20 @@ ysyx_23060208_arbiter	#(.DATA_WIDTH(DATA_WIDTH)) arbiter(
 	.dsram_rvalid_o(dsram_rvalid_o),
 	.dsram_rready_o(dsram_rready_o),
 
+	// uart
+	.uart_awaddr_o(uart_awaddr_o),
+	.uart_awvalid_o(uart_awvalid_o),
+	.uart_awready_i(uart_awready_i),
+
+	.uart_wdata_o(uart_wdata_o),
+	.uart_wstrb_o(uart_wstrb_o),
+	.uart_wvalid_o(uart_wvalid_o),
+	.uart_wready_i(uart_wready_i),
+	
+	.uart_bresp_i(uart_bresp_i),
+	.uart_bvalid_i(uart_bvalid_i),
+	.uart_bready_o(uart_bready_o),
+
 	// isram
 	.isram_araddr_o(isram_araddr_o),
 	.isram_arvalid_o(isram_arvalid_o),
@@ -172,6 +197,23 @@ ysyx_23060208_arbiter	#(.DATA_WIDTH(DATA_WIDTH)) arbiter(
 	.isram_rresp_i(isram_rresp),
 	.isram_rvalid_i(isram_rvalid),
 	.isram_rready_i(isram_rready)
+);
+
+ysyx_23060208_uart	#(.DATA_WIDTH(DATA_WIDTH)) uart(
+	.clk(clk),
+	.rst(rst),
+	.uart_awaddr(uart_awaddr_o),
+	.uart_awvalid(uart_awvalid_o),
+	.uart_awready(uart_awready_i),
+
+	.uart_wdata(uart_wdata_o),
+	.uart_wstrb(uart_wstrb_o),
+	.uart_wvalid(uart_wvalid_o),
+	.uart_wready(uart_wready_i),
+	
+	.uart_bresp(uart_bresp_i),
+	.uart_bvalid(uart_bvalid_i),
+	.uart_bready(uart_bready_o)
 );
 
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(

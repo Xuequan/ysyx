@@ -13,12 +13,6 @@ struct Context {
   //uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;
 	uintptr_t gpr[NR_REGS], mcause, mstatus, mepc;
   void *pdir;
-	
-	/*
-	uintptr_t param[NR_PARAMS];
-	uintptr_t to;
-	uintptr_t from;
-	*/
 };
 
 #ifdef __riscv_e
