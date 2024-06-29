@@ -34,11 +34,8 @@ module ysyx_23060208_uart
 	*/
 );
 
-/*
-import "DPI-C" function int dsram_read(input int dsram_araddr);
 import "DPI-C" function void dsram_write(
 	input int awaddr, input int dsram_wdata, input byte wmask);
-*/
 
 /* write to dsram */
 parameter [2:0] IDLE_W = 3'b000, WAIT_AWVALID = 3'b001, SHAKED_AW = 3'b010,
@@ -149,8 +146,8 @@ wire [DATA_WIDTH-1:0] awaddr;
 assign awaddr = awaddr_r;
 always @(*) begin
 	if (next_w == SHAKED_W) begin	 
-		$display(uart);
-		uart_write(awaddr, uart_wdata, wmask);
+		$display("uart");
+		dsram_write(awaddr, uart_wdata, wmask);
 		//$write(uart_wdata[7:0]);
 	end
 end
