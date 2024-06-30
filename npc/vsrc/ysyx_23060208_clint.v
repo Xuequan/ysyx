@@ -18,7 +18,8 @@ module ysyx_23060208_clint
 
 reg [63:0] mtime_r;
 always @(posedge clk) begin
-	if (rst) mtime_r <= 0;
+	if (rst) 
+		mtime_r <= 0;
 	else 
 		mtime_r <= mtime_r + 64'b1;
 end
