@@ -69,18 +69,19 @@ uint32_t nextpc();
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
-
 		if (nextpc() != addr) { // 过滤掉读指令
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc()); 
 		}
-
 		return num;
 	}
 
 	if (addr == (uint32_t)(RTC_ADDR) || 
 			addr == (uint32_t)(RTC_ADDR + 4) ) {
 
-		difftest_skip_ref();
+		printf("should not be here\n");
+
+		//difftest_skip_ref();
+
 		uint64_t timer = get_time();
 
 		if (addr == (uint32_t)(RTC_ADDR) ) {	
@@ -111,7 +112,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 
 	if (addr == (uint32_t)(SERIAL_PORT) ) {
 		// 若是外设，则让 ref 跳过
-		difftest_skip_ref();
+		//difftest_skip_ref();
 
 		if (len == 1) { 
 			putchar(data);

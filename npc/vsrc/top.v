@@ -72,6 +72,17 @@ wire  [1            :0] uart_bresp_i;
 wire                    uart_bvalid_i;
 wire                    uart_bready_o;
 
+
+wire [DATA_WIDTH-1:0] clint_araddr_o;
+wire                  clint_arvalid_o; 
+wire                   clint_arready_i;
+
+wire [DATA_WIDTH-1:0]  clint_rdata_i;  
+wire [1:           0]  clint_rresp_i;
+wire                  clint_rvalid_i;
+wire                  clint_rready_o;
+
+
 wire [DATA_WIDTH-1:0] dsram_araddr;
 wire                  dsram_arvalid; 
 wire                   dsram_arready;
@@ -179,6 +190,16 @@ ysyx_23060208_arbiter	#(.DATA_WIDTH(DATA_WIDTH)) arbiter(
 	.uart_bvalid_i(uart_bvalid_i),
 	.uart_bready_o(uart_bready_o),
 
+	// clint
+	.clint_araddr_o(clint_araddr_o),
+	.clint_arvalid_o(clint_arvalid_o),
+	.clint_arready_i(clint_arready_i),
+
+	.clint_rdata_i(clint_rdata_i),
+	.clint_rresp_i(clint_rresp_i),
+	.clint_rvalid_i(clint_rvalid_i),
+	.clint_rready_o(clint_rready_o),
+
 	// isram
 	.isram_araddr_o(isram_araddr_o),
 	.isram_arvalid_o(isram_arvalid_o),
@@ -214,6 +235,20 @@ ysyx_23060208_uart	#(.DATA_WIDTH(DATA_WIDTH)) uart(
 	.uart_bresp(uart_bresp_i),
 	.uart_bvalid(uart_bvalid_i),
 	.uart_bready(uart_bready_o)
+);
+
+ysyx_23060208_clint	#(.DATA_WIDTH(DATA_WIDTH)) clint(
+	.clk(clk),
+	.rst(rst),
+
+	.clint_araddr(clint_araddr_o),
+	.clint_arvalid(clint_arvalid_o),
+	.clint_arready(clint_arready_i),
+
+	.clint_rdata(clint_rdata_i),
+	.clint_rresp(clint_rresp_i),
+	.clint_rvalid(clint_rvalid_i),
+	.clint_rready(clint_rready_o)
 );
 
 ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(

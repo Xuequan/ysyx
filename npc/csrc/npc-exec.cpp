@@ -24,6 +24,7 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 uint64_t g_nr_guest_inst = 0;
 
+void difftest_skip_ref();	
 /* return 1 if function call
 ** return 2 if function ret
 ** else return 0
@@ -116,6 +117,9 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
+	if (check_clint_read() || check_uart_write() )
+		difftest_skip_ref();	
+
 	difftest_step();
 	scan_wp_pool();
 }

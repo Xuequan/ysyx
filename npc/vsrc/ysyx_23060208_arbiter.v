@@ -65,6 +65,36 @@ module ysyx_23060208_arbiter
 	/* connect with uart, end  */
 	// ===================================================
 
+	// ===================================================
+	/* connect clint */
+	// 读请求通道
+	  // from master
+	//input  [ADDR_WIDTH-1		 :0] dsram_araddr_i,
+	//input												 dsram_arvalid_i,
+		// to clint
+	output reg  [ADDR_WIDTH-1:0] clint_araddr_o,
+	output reg									 clint_arvalid_o,
+		// from clint
+	input												 clint_arready_i,
+		// to master
+	//output reg									 dsram_arready_o,
+
+	// 读响应通道
+	  // from slave
+	input [DATA_WIDTH-1			 :0] clint_rdata_i,
+	input [1					  		 :0] clint_rresp_i,
+	input 											 clint_rvalid_i,
+		// to master
+	/*
+	output reg [DATA_WIDTH-1 :0] dsram_rdata_o,
+	output reg [1					   :0] dsram_rresp_o,
+	output reg 									 dsram_rvalid_o,
+	*/
+		// from master
+	//input										     dsram_rready_i,
+		// to slave
+	output reg									 clint_rready_o,
+	// ===================================================
 
 	// ===================================================
 	// 读请求通道
@@ -124,7 +154,8 @@ module ysyx_23060208_arbiter
 );
 
 parameter [2:0] IDLE = 3'b000, ISRAM = 3'b001, UART = 3'b010,
-								DSRAM_READ = 3'b011, DSRAM_WRITE = 3'b100;
+								DSRAM_READ = 3'b011, DSRAM_WRITE = 3'b100,
+								CLINT = 3'b101;
 reg [2:0] state, next;
 always @(posedge clk) begin
   if (rst) 
@@ -134,21 +165,29 @@ always @(posedge clk) begin
 end
 
 wire [DATA_WIDTH-1:0] serial_addr;
-assign serial_addr = 32'ha000_0000 + 32'h0000_03f8;
+assign serial_addr = 32'ha000_0000 + 32'h0000_3f8;
+wire [DATA_WIDTH-1:0] clint_addr;
+// clint addr is RTC_ADDR
+assign clint_addr = 32'ha000_0000 + 32'h0000_048;
 
 wire	is_serial;
 assign is_serial = (serial_addr == dsram_awaddr_i);
+wire	is_clint;
+assign is_clint  = (clint_addr == dsram_araddr_i) 
+								|| (clint_addr + 4 == dsram_araddr_i);
 
-always @(isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or is_serial or exu_done or ifu_done) begin
+always @(is_clint or isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or is_serial or exu_done or ifu_done) begin
 	next = IDLE;
 	case (state) 
 		IDLE: 
 			if (isram_arvalid_i) 
 				next = ISRAM;
-			else if (dsram_arvalid_i)
-				next = DSRAM_READ;
 			else if (dsram_awvalid_i && is_serial)
 				next = UART;
+			else if (dsram_arvalid_i && is_clint)
+				next = CLINT;
+			else if (dsram_arvalid_i)
+				next = DSRAM_READ;
 			else if (dsram_awvalid_i)
 				next = DSRAM_WRITE;
 			else
@@ -177,6 +216,12 @@ always @(isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or is_serial or e
 				next = IDLE;
 			else
 				next = UART;
+
+		CLINT:
+			if (exu_done[0])
+				next = IDLE;
+			else
+				next = CLINT;
 
 		default: ;
 	endcase
@@ -223,6 +268,11 @@ always @(*) begin
 	isram_rresp_o = 0;
 	isram_rvalid_o = 0;
 	isram_rready_o = 0;
+	
+	clint_arvalid_o = 0;
+	clint_araddr_o = 0;
+
+	clint_rready_o = 0;
 	
   case (next)
 		IDLE: ;
@@ -273,6 +323,16 @@ always @(*) begin
 			dsram_bresp_o = uart_bresp_i;
 			dsram_bvalid_o = uart_bvalid_i;
 			uart_bready_o = dsram_bready_i;
+			end
+		CLINT: begin
+			clint_arvalid_o = dsram_arvalid_i;
+			clint_araddr_o = dsram_araddr_i;
+			dsram_arready_o = clint_arready_i;
+
+			dsram_rdata_o = clint_rdata_i;
+			dsram_rresp_o = clint_rresp_i;
+			dsram_rvalid_o = clint_rvalid_i;
+			clint_rready_o = dsram_rready_i;
 			end
 		default:;
 	endcase

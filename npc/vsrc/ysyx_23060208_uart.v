@@ -19,19 +19,6 @@ module ysyx_23060208_uart
 	output [1					 :0] uart_bresp,
 	output								 uart_bvalid,
 	input									 uart_bready
-
-	/*
-	// 读请求通道
-	input  [DATA_WIDTH-1:0] dsram_araddr,
-	input										dsram_arvalid,
-	output									dsram_arready,
-
-	// 读响应通道
-	output [DATA_WIDTH-1:0] dsram_rdata,
-	output [1					  :0]	dsram_rresp,
-	output 									dsram_rvalid,
-	input										dsram_rready
-	*/
 );
 
 import "DPI-C" function void dsram_write(
@@ -146,7 +133,7 @@ wire [DATA_WIDTH-1:0] awaddr;
 assign awaddr = awaddr_r;
 always @(*) begin
 	if (next_w == SHAKED_W) begin	 
-		$display("uart");
+		//$display("uart");
 		dsram_write(awaddr, uart_wdata, wmask);
 		//$write(uart_wdata[7:0]);
 	end
