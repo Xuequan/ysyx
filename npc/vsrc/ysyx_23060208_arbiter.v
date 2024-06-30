@@ -186,7 +186,7 @@ always @(is_clint or isram_arvalid_i or dsram_arvalid_i or dsram_awvalid_i or is
 				next = DSRAM_READ;
 			else if (dsram_awvalid_i && is_serial)
 				next = UART;
-			else if (dsram_awvalid_i && is_clint)
+			else if (dsram_arvalid_i && is_clint)
 				next = CLINT;
 			else if (dsram_awvalid_i)
 				next = DSRAM_WRITE;
