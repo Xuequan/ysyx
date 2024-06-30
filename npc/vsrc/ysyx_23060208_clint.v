@@ -104,6 +104,8 @@ assign clint_rdata = clint_rdata_r;
 always @(posedge clk) begin
 	if (rst)
 		clint_rdata_r <= 0;
+	else if (next == SHAKED_AR)
+		clint_rdata_r <= dsram_read(clint_araddr);
 	else if (next == SHAKED_AR && clint_araddr == clint_addr)
 		clint_rdata_r <= dsram_read(clint_araddr);
 		//clint_rdata_r <= mtime_r[31:0];
