@@ -24,7 +24,7 @@ always @(posedge clk) begin
 		mtime_r <= mtime_r + 64'b1;
 end
 
-//import "DPI-C" function int dsram_read(input int dsram_araddr);
+import "DPI-C" function int dsram_read(input int dsram_araddr);
 
 // read FSM
 parameter [2:0] IDLE = 3'b000, WAIT_ARVA = 3'b001, SHAKED_AR = 3'b010,
@@ -105,7 +105,7 @@ always @(posedge clk) begin
 	if (rst)
 		clint_rdata_r <= 0;
 	else if (next == SHAKED_AR) begin
-		//clint_rdata_r <= dsram_read(clint_araddr);
+		clint_rdata_r <= dsram_read(clint_araddr);
 		$display("clint");
 		clint_rdata_r <= 32'b1;
 	end
