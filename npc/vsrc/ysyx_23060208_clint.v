@@ -106,10 +106,12 @@ always @(posedge clk) begin
 		clint_rdata_r <= 0;
 	else if (next == SHAKED_AR && clint_araddr == clint_addr)
 		//clint_rdata_r <= dsram_read(clint_araddr);
-		clint_rdata_r <= mtime_r[31:0];
+		//clint_rdata_r <= mtime_r[31:0];
+		clint_rdata_r <= 32'b1;
 	else if (next == SHAKED_AR && clint_araddr == clint_addr + 4)
 		//clint_rdata_r <= dsram_read(clint_araddr);
-		clint_rdata_r <= mtime_r[63:32];
+		//clint_rdata_r <= mtime_r[63:32];
+		clint_rdata_r <= 32'b0;
 end
 
 endmodule
