@@ -104,10 +104,12 @@ assign clint_rdata = clint_rdata_r;
 always @(posedge clk) begin
 	if (rst)
 		clint_rdata_r <= 0;
+	else if (next == SHAKED_AR) begin
+		//clint_rdata_r <= dsram_read(clint_araddr);
+		$display("clint");
+		clint_rdata_r <= 32'b1;
+	end
 	/*
-	else if (next == SHAKED_AR)
-		clint_rdata_r <= dsram_read(clint_araddr);
-	*/
 	else if (next == SHAKED_AR && clint_araddr == clint_addr) begin
 		//clint_rdata_r <= dsram_read(clint_araddr);
 		//clint_rdata_r <= mtime_r[31:0];
@@ -118,6 +120,7 @@ always @(posedge clk) begin
 		//clint_rdata_r <= dsram_read(clint_araddr);
 		//clint_rdata_r <= mtime_r[63:32];
 		clint_rdata_r <= 32'b0;
+	*/
 end
 
 endmodule
