@@ -108,10 +108,12 @@ always @(posedge clk) begin
 	else if (next == SHAKED_AR)
 		clint_rdata_r <= dsram_read(clint_araddr);
 	*/
-	else if (next == SHAKED_AR && clint_araddr == clint_addr)
+	else if (next == SHAKED_AR && clint_araddr == clint_addr) begin
 		//clint_rdata_r <= dsram_read(clint_araddr);
 		//clint_rdata_r <= mtime_r[31:0];
+		$display("clint");
 		clint_rdata_r <= 32'b1;
+	end
 	else if (next == SHAKED_AR && clint_araddr == clint_addr + 4)
 		//clint_rdata_r <= dsram_read(clint_araddr);
 		//clint_rdata_r <= mtime_r[63:32];
