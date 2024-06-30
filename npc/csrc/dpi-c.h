@@ -53,4 +53,9 @@ uint32_t get_pc();
 uint32_t get_inst();
 
 bool check_ifu_ready_go();
+
+bool check_clint_read();
+
+bool check_uart_write();
+
 #endif

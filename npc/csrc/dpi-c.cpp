@@ -142,3 +142,21 @@ bool check_ifu_ready_go() {
 	if (a == 1) return true;
 	else				return false;
 }
+bool check_clint_read() {
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	rtc_addr_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_uart_write() {
+	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	uart_addr_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
