@@ -167,6 +167,7 @@ end
 wire [DATA_WIDTH-1:0] serial_addr;
 assign serial_addr = 32'ha000_0000 + 32'h0000_3f8;
 wire [DATA_WIDTH-1:0] clint_addr;
+// clint addr is RTC_ADDR
 assign clint_addr = 32'ha000_0000 + 32'h0000_048;
 
 wire	is_serial;
