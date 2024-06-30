@@ -133,7 +133,7 @@ wire [DATA_WIDTH-1:0] awaddr;
 assign awaddr = awaddr_r;
 always @(*) begin
 	if (next_w == SHAKED_W) begin	 
-		$display("uart");
+		//$display("uart");
 		dsram_write(awaddr, uart_wdata, wmask);
 		//$write(uart_wdata[7:0]);
 	end
