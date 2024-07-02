@@ -1,8 +1,8 @@
 // 本模块模拟 isram
 module ysyx_23060208_isram
 	#(DATA_WIDTH = 32) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 	input 									ifu_allowin,
 	// 读请求
 	input [DATA_WIDTH-1:0]  isram_araddr,
@@ -23,8 +23,8 @@ import "DPI-C" function int isram_read(input int raddr);
 parameter [2:0] IDLE = 3'b000, WAIT_ARVALID = 3'b001, SHAKED_AR = 3'b010,
                 WAIT_RREADY = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
-always @(posedge clk) begin
-  if (rst) 
+always @(posedge clock) begin
+  if (reset) 
     state <= IDLE;
   else 
     state <= next;
@@ -68,8 +68,8 @@ end
 
 reg arready_r;
 assign isram_arready = arready_r;
-always @(posedge clk) begin
-  if (rst)
+always @(posedge clock) begin
+  if (reset)
     arready_r <= 0;
   else if (next == IDLE || next == WAIT_ARVALID || next == SHAKED_R)
     arready_r <= 1'b1;
@@ -79,8 +79,8 @@ end
 
 reg rvalid_r;
 assign isram_rvalid = rvalid_r;
-always @(posedge clk) begin
-  if (rst)
+always @(posedge clock) begin
+  if (reset)
     rvalid_r <= 0;
   else if (next == SHAKED_AR || next == WAIT_RREADY)
     rvalid_r <= 1'b1;
@@ -92,8 +92,8 @@ end
 reg [DATA_WIDTH-1:0] araddr_r;
 wire [DATA_WIDTH-1:0] araddr;
 assign araddr = (araddr_r == 0) ? 32'h8000_0000 : araddr_r;
-always @(posedge clk) begin
-  if (rst)
+always @(posedge clock) begin
+  if (reset)
     araddr_r <= 0;
   else if (next == SHAKED_AR)
     araddr_r <= isram_araddr;
@@ -101,8 +101,8 @@ end
 */
 reg [DATA_WIDTH-1:0] rdata_r;
 assign isram_rdata = rdata_r;
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (reset) 
 		rdata_r <= 0;
   else if (next == SHAKED_AR)
 		rdata_r <= isram_read(isram_araddr != 32'h0 ? isram_araddr : 32'h8000_0000);

@@ -2,8 +2,8 @@
 // wen 始终有效
 module ysyx_23060208_PC
 	#(DATA_WIDTH = 32) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 	input 									wen,
 	input  [DATA_WIDTH-1:0] next_pc,
 
@@ -12,8 +12,8 @@ module ysyx_23060208_PC
 
 	
 reg [DATA_WIDTH-1:0] pc_r;
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (reset) 
 		pc_r <= DATA_WIDTH'('h8000_0000) - DATA_WIDTH'('h4);
 		//pc_r <= DATA_WIDTH'('h8000_0000);
 	else if(wen)

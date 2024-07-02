@@ -3,7 +3,7 @@
 
 #include "memory.h"
 #include <cstdint>
-#include "Vtop__Dpi.h"
+#include "Vysyx_23060208__Dpi.h"
 
 word_t vaddr_ifetch(vaddr_t addr, int len);
 

@@ -2,8 +2,8 @@
 `include "ysyx_23060208_npc.h"    
 module ysyx_23060208_IDU
 	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 	/* connect with IFU   */
 	input [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus,
 	input 											ifu_to_idu_valid,
@@ -80,8 +80,8 @@ assign idu_ready_go = 1'b1;
 assign idu_to_exu_valid = idu_valid && idu_ready_go;
 assign idu_allowin = !idu_valid || (idu_ready_go  && exu_allowin);
 
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (reset) 
 		idu_valid <= 1'b0;
 	else if(idu_allowin)
 		idu_valid <= ifu_to_idu_valid;
@@ -92,8 +92,8 @@ reg [DATA_WIDTH*2-1:0] ifu_to_idu_bus_r;
 assign {idu_pc, idu_inst} = ifu_to_idu_bus_r;
 assign inst = idu_inst;
 
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (reset) 
 		ifu_to_idu_bus_r <= 0;
 	else if (idu_allowin)
 		ifu_to_idu_bus_r <= ifu_to_idu_bus;
@@ -102,8 +102,8 @@ end
 //======================= FSM ==================================
 parameter [1:0] IDLE = 2'b00, WAIT_ALLOWIN = 2'b01, SENT = 2'b10;
 reg [1:0] state, next;
-always @(posedge clk) begin
-	if (rst) state <= IDLE;
+always @(posedge clock) begin
+	if (reset) state <= IDLE;
 	else     state <= next;
 end
 
@@ -312,8 +312,8 @@ assign immB = { {20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0 };
 
 
 ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
-	.clk(clk),
-	.rst(rst),
+	.clock(clock),
+	.reset(reset),
 	.wdata(regfile_wdata),
 	.waddr(regfile_waddr), 
 	.rdata1(src1_from_reg),

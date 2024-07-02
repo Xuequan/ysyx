@@ -1,8 +1,8 @@
 `include "ysyx_23060208_npc.h"    
 module ysyx_23060208_EXU
 	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 
 	/* to IFU (for gen nextPC)    */
 	output [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus,
@@ -13,33 +13,48 @@ module ysyx_23060208_EXU
 	output [REG_WIDTH-1 :0] regfile_waddr,
 	output								  regfile_wen,
 
-	/* connect with arbiter*/
-	//input	[2						:0] grant,
+	/* connect with intercom*/
 	output [1							:0]	exu_done,
+
 		// 写地址通道
+	input										dsram_awready,
 	output [DATA_WIDTH-1:0] dsram_awaddr,
 	output									dsram_awvalid,
-	input										dsram_awready,
-	//output									dsram_wen,
+	
+	/* 新增 */
+	output [3						:0] dsram_awid,
+	output [7						:0] dsram_awlen,
+	output [2						:0] dsram_awsize,
+	output [1						:0] dsram_awburst,
+
 	// 写数据通道
-	output [DATA_WIDTH-1:0] dsram_wdata, 
-	//output [2						:0] dsram_wmask,
-	output [2						:0] dsram_wstrb,
-	output 									dsram_wvalid,
-	input										dsram_wready,
+	output 										dsram_wvalid,
+	output [DATA_WIDTH*2-1:0] dsram_wdata, 
+	output [7							:0] dsram_wstrb,
+	output 										dsram_wlast,
+	input											dsram_wready,
 	// 写响应通道
-	input  [1						 :0] dsram_bresp,
 	input										 dsram_bvalid,
+	input  [1						 :0] dsram_bresp,
+	input	 [3						 :0] dsram_bid,
 	output									 dsram_bready,
+
 	// 读请求通道
-	output [DATA_WIDTH-1:0] dsram_araddr,
-	output									dsram_arvalid, 
 	input										dsram_arready,
+	output									dsram_arvalid, 
+	output [DATA_WIDTH-1:0] dsram_araddr,
+	output [3						:0] dsram_arid,
+	output [7						:0] dsram_arlen,
+	output [2						:0] dsram_arsize,
+	output [1						:0] dsram_arburst,
 	// 读响应通道
-	input [DATA_WIDTH-1:0]  dsram_rdata,  
-	input [1:						0]	dsram_rresp,
-	input										dsram_rvalid,
-	output									dsram_rready,
+	output									 dsram_rready,
+	input										 dsram_rvalid,
+	input [DATA_WIDTH*2-1:0] dsram_rdata,  
+	input [1:							0] dsram_rresp,
+	input										 dsram_rlast,
+	input [3:							0] dsram_rid,
+
 	
 	/* connect with CSR */
 	output [DATA_WIDTH-1:0] csr_wdata,
@@ -99,15 +114,15 @@ assign {csr_idx,
 				} = idu_to_exu_csr_bus_r;
 
 reg exu_valid;
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (!reset) 
 		exu_valid <= 1'b0;
 	else if (exu_allowin)
 		exu_valid <= idu_to_exu_valid;
 end
 
-always @(posedge clk) begin
-	if (rst) begin
+always @(posedge clock) begin
+	if (!reset) begin
 		idu_to_exu_alu_bus_r <= 0;
 		idu_to_exu_bus_r     <= 0;
 		idu_to_exu_csr_bus_r <= 0;
@@ -134,8 +149,8 @@ assign exu_allowin = !exu_valid || exu_ready_go;
 parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
 								WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state_r, next_r;
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (!reset) 
 		state_r <= IDLE_R;
 	else 
 		state_r <= next_r;
@@ -184,19 +199,39 @@ end
 //assign dsram_arvalid = |load_inst && exu_valid;
 reg arvalid_r;
 assign dsram_arvalid = (state_r == IDLE_R) ? read_start : arvalid_r;
-always @(posedge clk) begin
-	if (rst) arvalid_r <= 0;
+reg [3:0] arid_r;
+assign dsram_arid = arid_r;
+reg [7:0] arlen_r;
+assign dsram_arlen = arlen_r;
+reg [2:0] arsize_r;
+assign dsram_arsize = arsize_r;
+reg [1:0] arburst_r;
+assign dsram_arburst = arburst_r;
+
+always @(posedge clock) begin
+	if (!reset) arvalid_r <= 0;
 	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
 				|| (state_r == IDLE_R && next_r == SHAKED_AR) 
 				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
+		begin
 		arvalid_r <= 1'b1;
-	else
+		arid_r <= 0;
+		arlen_r <= 8'h3;
+		arsize_r <= 3'b010;
+		arburst_r <= 0;	
+		end
+	else begin
 		arvalid_r <= 0;
+		arid_r <= 0;
+		arlen_r <= 0;
+		arsize_r <= 3'b010;
+		arburst_r <= 0;	
+		end
 end
 reg rready_r;
 assign dsram_rready = rready_r;
-always @(posedge clk) begin
-	if (rst) rready_r <= 1'b0;
+always @(posedge clock) begin
+	if (!reset) rready_r <= 1'b0;
 	else if (next_r == SHAKED_AR || next_r == WAIT_RVALID)
 		rready_r <= 1'b1;
 	else
@@ -204,13 +239,13 @@ always @(posedge clk) begin
 end
 /*
 reg [DATA_WIDTH-1:0] rdata_r;
-always @(posedge clk) begin
-	if (rst) rdata_r <= 0;
+always @(posedge clock) begin
+	if (!reset) rdata_r <= 0;
 	else if (next_r == SHAKED_R) 
 		rdata_r <= dsram_rdata; 
 end
-always @(posedge clk) begin
-	if (rst) load_ready_go <= 0;
+always @(posedge clock) begin
+	if (!reset) load_ready_go <= 0;
 	else if (next_r == SHAKED_R) 
 		load_ready_go <= 1'b1;
 	else 
@@ -223,8 +258,8 @@ parameter [2:0] IDLE_W = 3'b000, WAIT_AWREADY = 3'b001, SHAKED_AW = 3'b010,
 								WAIT_WREADY = 3'b011, SHAKED_W = 3'b100, 
 								WAIT_BVALID = 3'b101, SHAKED_B = 3'b110;
 reg [2:0] state_w, next_w;
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (!reset) 
 		state_w <= IDLE_W;
 	else 
 		state_w <= next_w;
@@ -281,20 +316,40 @@ end
 
 reg awvalid_r;
 assign dsram_awvalid = (state_w == IDLE_W) ? write_start : awvalid_r;
-always @(posedge clk) begin
-	if (rst) awvalid_r <= 0;
+reg [3:0] awid_r;
+assign dsram_awid = awid_r;
+reg [7:0] awlen_r;
+assign dsram_awlen = awlen_r;
+reg [2:0] awsize_r;
+assign dsram_awsize = awsize_r;
+reg [1:0] awburst_r;
+assign dsram_awburst = awburst_r;
+
+always @(posedge clock) begin
+	if (!reset) awvalid_r <= 0;
 	else if ((state_w == IDLE_W && next_w == WAIT_AWREADY) 
 				|| (state_w == IDLE_W && next_w == SHAKED_AW) 
 				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) ) 
+		begin
 		awvalid_r <= 1'b1;
-	else
+		awid_r <= 0;
+		awlen_r <= 8'h3;
+		awsize_r <= 3'b010;
+		awburst_r <= 0;	
+		end
+	else begin
 		awvalid_r <= 0;
+		awid_r <= 0;
+		awlen_r <= 8'h3;
+		awsize_r <= 3'b010;
+		awburst_r <= 0;	
+		end
 end
 
 reg bready_r;
 assign dsram_bready = bready_r;
-always @(posedge clk) begin
-	if (rst) bready_r <= 1'b0;
+always @(posedge clock) begin
+	if (!reset) bready_r <= 1'b0;
 	else if (next_w == SHAKED_W || next_w == WAIT_BVALID)
 		bready_r <= 1'b1;
 	else
@@ -303,17 +358,27 @@ end
 
 reg wvalid_r;
 assign dsram_wvalid = wvalid_r;
-always @(posedge clk) begin
-	if (rst) wvalid_r <= 1'b0;
-	else if (next_w == SHAKED_AW || next_w == WAIT_WREADY)
+reg [4:0] wstrb_r;
+assign dsram_wstrb[7:3] = wstrb_r;
+reg wlast_r;
+assign dsram_wlast = wlast_r;
+always @(posedge clock) begin
+	if (!reset) wvalid_r <= 1'b0;
+	else if (next_w == SHAKED_AW || next_w == WAIT_WREADY) begin
 		wvalid_r <= 1'b1;
-	else
+		wstrb_r <= 5'b0;
+		wlast_r <= 1'b1;
+	end
+	else begin
 		wvalid_r <= 1'b0;
+		wstrb_r <= 5'b0;
+		wlast_r <= 1'b0;
+	end
 end
 
 /*
-always @(posedge clk) begin
-	if (rst) store_ready_go <= 0;
+always @(posedge clock) begin
+	if (!reset) store_ready_go <= 0;
 	else if (next_w == SHAKED_B) 
 		store_ready_go <= 1'b1;
 	else 
@@ -363,15 +428,14 @@ assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 assign dsram_awaddr = alu_result; 
 //assign dsram_wen = regfile_mem_mux[1];
 //assign dsram_awvalid = regfile_mem_mux[1];
-assign dsram_wdata = store_data_raw; 
-//assign dsram_wmask = ( {3{store_inst[0]}} & 3'b100 )
-assign dsram_wstrb = ( {3{store_inst[0]}} & 3'b100 )
+assign dsram_wdata[31:0] = store_data_raw; 
+assign dsram_wstrb[2:0] = ( {3{store_inst[0]}} & 3'b100 )
 											| ( {3{store_inst[1]}} & 3'b010 )
 											| ( {3{store_inst[2]}} & 3'b001 );
 /* =======load instruction ============================== */
 assign dsram_araddr = alu_result;
 wire [DATA_WIDTH-1:0] load_data;
-assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata)
+assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata[31:0])
 | ({DATA_WIDTH{load_inst[1]}} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
 | ({DATA_WIDTH{load_inst[2]}} & { 16'b0, dsram_rdata[15:0]})
 | ({DATA_WIDTH{load_inst[3]}} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})

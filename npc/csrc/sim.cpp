@@ -1,11 +1,11 @@
 #include <cstdint>
-#include "Vtop.h"
+#include "Vysyx_23060208.h"
 #include "verilated_vcd_c.h"
-#include "Vtop__Dpi.h"
-#include "Vtop___024root.h"
+#include "Vysyx_23060208__Dpi.h"
+#include "Vysyx_23060208___024root.h"
 #include "dpi-c.h"
 
-static Vtop* top;
+static Vysyx_23060208* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
@@ -18,7 +18,7 @@ static void step_and_dump_wave() {
 // execute one cycle
 static void sim_one_cycle() {
 	for(int i = 0; i < 2; i++) {
-		top->clk ^= 1;
+		top->clock ^= 1;
 		step_and_dump_wave();
 	}
 }
@@ -54,24 +54,24 @@ int sim_once() {
 void sim_init() {
  	contextp = new VerilatedContext;
 	tfp = new VerilatedVcdC;
-	top = new Vtop;
+	top = new Vysyx_23060208;
 
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
 	tfp->open("dump.vcd");
 
-	// initial rst
+	// initial reset
 	int i = -1;
 	while ( i < 5) {
 		i++;
-		top->clk ^= 1;
-		top->rst = 1;
+		top->clock ^= 1;
+		top->reset = 0;
 		step_and_dump_wave();
 	}
-	top->rst = 0;
-	top->clk ^= 1;
+	top->reset = 1;
+	top->clock ^= 1;
 	step_and_dump_wave();
-	// now top->clk = 1
+	// now top->clock = 1
 }
 
 void sim_exit() {
@@ -81,8 +81,8 @@ void sim_exit() {
 	delete contextp;
 }
 
-uint32_t get_clk_from_top(){
-	return top->clk;
+uint32_t get_clock_from_top(){
+	return top->clock;
 }
 
 // from arch.cpp
@@ -95,7 +95,7 @@ extern uint32_t npc_regs[16];
 //uint32_t update_reg_data();
 void get_npc_regs() {
 	uint32_t* ptr = NULL;
-	ptr = (top->rootp->top__DOT__idu__DOT__regfile__DOT__rf).data();
+	ptr = (top->rootp->ysyx_23060208__DOT__idu__DOT__regfile__DOT__rf).data();
 	for(int i = 0; i < 16; i++){
 		npc_regs[i] = ptr[i];
 	}

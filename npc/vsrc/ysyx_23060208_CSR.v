@@ -1,8 +1,8 @@
 // 处理CSR相关的模块
 module ysyx_23060208_CSR
 	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 
 	/* read from CSR, connect with IDU */
 	input  [11:0] 					csr_raddr,
@@ -20,8 +20,8 @@ wire mtvec_wen;
 wire [DATA_WIDTH-1:0] mtvec_rdata;
 
 ysyx_23060208_mtvec #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mtvec(
-	.clk(clk),
-	.rst(rst),
+	.clock(clock),
+	.reset(reset),
 	.wdata(csr_wdata),
 	.rdata(mtvec_rdata),
 	.wen(mtvec_wen)
@@ -32,8 +32,8 @@ wire [DATA_WIDTH-1:0] mcause_rdata;
 wire [DATA_WIDTH-1:0] mcause_wdata;
 
 ysyx_23060208_mcause #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mcause(
-	.clk(clk),
-	.rst(rst),
+	.clock(clock),
+	.reset(reset),
 	.wdata(mcause_wdata),
 	.rdata(mcause_rdata),
 	.wen(mcause_wen)
@@ -43,8 +43,8 @@ wire mepc_wen;
 wire [DATA_WIDTH-1:0] mepc_rdata;
 
 ysyx_23060208_mepc #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mepc(
-	.clk(clk),
-	.rst(rst),
+	.clock(clock),
+	.reset(reset),
 	.wdata(csr_wdata),
 	.rdata(mepc_rdata),
 	.wen(mepc_wen)
@@ -53,8 +53,8 @@ ysyx_23060208_mepc #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mepc(
 wire mstatus_wen;
 wire [DATA_WIDTH-1:0] mstatus_rdata;
 ysyx_23060208_mstatus #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) mstatus(
-	.clk(clk),
-	.rst(rst),
+	.clock(clock),
+	.reset(reset),
 	.wdata(csr_wdata),
 	.rdata(mstatus_rdata),
 	.wen(mstatus_wen)

@@ -1,24 +1,30 @@
 // "实现一个AXI-Lite接口的 CLINT 模块"
 module ysyx_23060208_clint
 	#(DATA_WIDTH = 32) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 
 	// 读请求通道
 	input  [DATA_WIDTH-1:0] clint_araddr,
 	input										clint_arvalid,
+	input	[3						:0] clint_arid,
+	input [7						:0] clint_arlen,
+	input [2						:0] clint_arsize,
+	input [1						:0] clint_arburst,
 	output									clint_arready,
 
 	// 读响应通道
-	output [DATA_WIDTH-1:0] clint_rdata,
-	output [1					  :0]	clint_rresp,
-	output 									clint_rvalid,
-	input										clint_rready
+	output 										clint_rvalid,
+	output [DATA_WIDTH*2-1:0] clint_rdata,
+	output [1					  	:0]	clint_rresp,
+	output 										clint_rlast,
+	output [3							:0]	clint_rid,
+	input											clint_rready
 );
 
 reg [63:0] mtime_r;
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (!reset) 
 		mtime_r <= 0;
 	else 
 		mtime_r <= mtime_r + 64'b1;
@@ -30,8 +36,8 @@ import "DPI-C" function int dsram_read(input int dsram_araddr);
 parameter [2:0] IDLE = 3'b000, WAIT_ARVA = 3'b001, SHAKED_AR = 3'b010,
                 WAIT_RREADY = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
-always @(posedge clk) begin
-  if (rst) 
+always @(posedge clock) begin
+  if (!reset) 
     state <= IDLE;
   else 
     state <= next;
@@ -76,8 +82,8 @@ always @(state or clint_arvalid or clint_arready or clint_rvalid or clint_rready
 end
 reg arready_r;
 assign clint_arready = arready_r;
-always @(posedge clk) begin
-	if (rst)
+always @(posedge clock) begin
+	if (!reset)
 		arready_r <= 0;
 	else if (next == IDLE || next == WAIT_ARVA || next == SHAKED_R)
 		arready_r <= 1'b1;
@@ -87,31 +93,47 @@ end
 
 reg rvalid_r;
 assign clint_rvalid = rvalid_r;
-always @(posedge clk) begin
-	if (rst)
+reg [3:0] rid_r;
+assign clint_rid = rid_r;
+reg [1:0] rresp_r;
+assign clint_rresp = rresp_r;
+reg rlast_r;
+assign clint_rlast = rlast_r;
+
+always @(posedge clock) begin
+	if (!reset)
 		rvalid_r <= 0;
-	else if (next == SHAKED_AR || next == WAIT_RREADY)
+	else if (next == SHAKED_AR || next == WAIT_RREADY) begin
 		rvalid_r <= 1'b1;
-	else 
+		rid_r <= 0;
+		rresp_r <= 0;
+		rlast_r <= 1'b1;
+	end
+	else begin 
 		rvalid_r <= 0;
+		rid_r <= 0;
+		rresp_r <= 0;
+		rlast_r <= 0;
+	end
 end
 
-wire [DATA_WIDTH-1:0] clint_addr;
-assign clint_addr = 32'ha000_0000 + 32'h0000_048;
+/*
+wire [DATA_WIDTH-1:0] clint_addr_min;
+wire [DATA_WIDTH-1:0] clint_addr_max;
+assign clint_addr_min = 32'h0200_0000;
+assign clint_addr_max = 32'h0200_ffff;
+*/
 
-reg [DATA_WIDTH-1:0] clint_rdata_r;
+reg [DATA_WIDTH*2-1:0] clint_rdata_r;
 assign clint_rdata = clint_rdata_r;
-always @(posedge clk) begin
-	if (rst)
+always @(posedge clock) begin
+	if (!reset)
 		clint_rdata_r <= 0;
-	else if (next == SHAKED_AR && clint_araddr == clint_addr) begin
+	else if (next == SHAKED_AR) begin
 		//clint_rdata_r <= dsram_read(clint_araddr);
 		$display("clint");
-		clint_rdata_r <= mtime_r[31:0];
+		clint_rdata_r <= mtime_r;
 	end
-	else if (next == SHAKED_AR && clint_araddr == clint_addr + 4)
-		//clint_rdata_r <= dsram_read(clint_araddr);
-		clint_rdata_r <= mtime_r[63:32];
 end
 
 endmodule

@@ -1,8 +1,8 @@
 // 本模块模拟 dsram
 module ysyx_23060208_dsram
 	#(DATA_WIDTH = 32) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 	
 	// 写地址通道
 	input [DATA_WIDTH-1:0] dsram_awaddr,
@@ -41,8 +41,8 @@ parameter [2:0] IDLE_W = 3'b000, WAIT_AWVALID = 3'b001, SHAKED_AW = 3'b010,
                 WAIT_WVALID = 3'b011, SHAKED_W = 3'b100, 
                 WAIT_BREADY = 3'b101, SHAKED_B = 3'b110;
 reg [2:0] state_w, next_w;
-always @(posedge clk) begin
-  if (rst) 
+always @(posedge clock) begin
+  if (reset) 
     state_w <= IDLE_W;
   else 
     state_w <= next_w;
@@ -100,8 +100,8 @@ end
 
 reg awready_r;
 assign dsram_awready = awready_r;
-always @(posedge clk) begin
-  if (rst) awready_r <= 1'b0;
+always @(posedge clock) begin
+  if (reset) awready_r <= 1'b0;
   else if (next_w == IDLE_W || next_w == WAIT_AWVALID 
 		|| next_w == SHAKED_B)
     awready_r <= 1'b1;
@@ -110,8 +110,8 @@ always @(posedge clk) begin
 end
 reg wready_r;
 assign dsram_wready = wready_r;
-always @(posedge clk) begin
-  if (rst) wready_r <= 1'b0;
+always @(posedge clock) begin
+  if (reset) wready_r <= 1'b0;
   else if (next_w == SHAKED_AW || next_w == WAIT_WVALID) 
     wready_r <= 1'b1;
   else
@@ -120,8 +120,8 @@ end
 
 reg bvalid_r;
 assign dsram_bvalid = bvalid_r;
-always @(posedge clk) begin
-  if (rst) bvalid_r <= 1'b0;
+always @(posedge clock) begin
+  if (reset) bvalid_r <= 1'b0;
   else if (next_w == SHAKED_W || next_w == WAIT_BREADY) 
     bvalid_r <= 1'b1;
   else
@@ -129,8 +129,8 @@ always @(posedge clk) begin
 end
 
 reg [DATA_WIDTH-1:0] awaddr_r;
-always @(posedge clk) begin
-	if (rst) awaddr_r <= 0;
+always @(posedge clock) begin
+	if (reset) awaddr_r <= 0;
 	else if (next_w == SHAKED_AW)
 		awaddr_r <= dsram_awaddr;
 end
@@ -154,8 +154,8 @@ end
 parameter [2:0] IDLE = 3'b000, WAIT_ARVA = 3'b001, SHAKED_AR = 3'b010,
                 WAIT_RREADY = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
-always @(posedge clk) begin
-  if (rst) 
+always @(posedge clock) begin
+  if (reset) 
     state <= IDLE;
   else 
     state <= next;
@@ -200,8 +200,8 @@ always @(state or dsram_arvalid or dsram_arready or dsram_rvalid or dsram_rready
 end
 reg arready_r;
 assign dsram_arready = arready_r;
-always @(posedge clk) begin
-	if (rst)
+always @(posedge clock) begin
+	if (reset)
 		arready_r <= 0;
 	else if (next == IDLE || next == WAIT_ARVA || next == SHAKED_R)
 		arready_r <= 1'b1;
@@ -211,8 +211,8 @@ end
 
 reg rvalid_r;
 assign dsram_rvalid = rvalid_r;
-always @(posedge clk) begin
-	if (rst)
+always @(posedge clock) begin
+	if (reset)
 		rvalid_r <= 0;
 	else if (next == SHAKED_AR || next == WAIT_RREADY)
 		rvalid_r <= 1'b1;
@@ -222,8 +222,8 @@ end
 
 reg [DATA_WIDTH-1:0] dsram_rdata_r;
 assign dsram_rdata = dsram_rdata_r;
-always @(posedge clk) begin
-	if (rst)
+always @(posedge clock) begin
+	if (reset)
 		dsram_rdata_r <= 0;
 	else if (next == SHAKED_AR)
 		dsram_rdata_r <= dsram_read(dsram_araddr);

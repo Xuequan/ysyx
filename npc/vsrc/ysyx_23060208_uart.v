@@ -1,8 +1,8 @@
 // 本模块用于“实现AXI-Lite接口的UART功能” 而新增的
 module ysyx_23060208_uart
 	#(DATA_WIDTH = 32) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 	
 	// 写地址通道
 	input [DATA_WIDTH-1:0] uart_awaddr,
@@ -29,8 +29,8 @@ parameter [2:0] IDLE_W = 3'b000, WAIT_AWVALID = 3'b001, SHAKED_AW = 3'b010,
                 WAIT_WVALID = 3'b011, SHAKED_W = 3'b100, 
                 WAIT_BREADY = 3'b101, SHAKED_B = 3'b110;
 reg [2:0] state_w, next_w;
-always @(posedge clk) begin
-  if (rst) 
+always @(posedge clock) begin
+  if (reset) 
     state_w <= IDLE_W;
   else 
     state_w <= next_w;
@@ -88,8 +88,8 @@ end
 
 reg awready_r;
 assign uart_awready = awready_r;
-always @(posedge clk) begin
-  if (rst) awready_r <= 1'b0;
+always @(posedge clock) begin
+  if (reset) awready_r <= 1'b0;
   else if (next_w == IDLE_W || next_w == WAIT_AWVALID 
 		|| next_w == SHAKED_B)
     awready_r <= 1'b1;
@@ -98,8 +98,8 @@ always @(posedge clk) begin
 end
 reg wready_r;
 assign uart_wready = wready_r;
-always @(posedge clk) begin
-  if (rst) wready_r <= 1'b0;
+always @(posedge clock) begin
+  if (reset) wready_r <= 1'b0;
   else if (next_w == SHAKED_AW || next_w == WAIT_WVALID) 
     wready_r <= 1'b1;
   else
@@ -108,8 +108,8 @@ end
 
 reg bvalid_r;
 assign uart_bvalid = bvalid_r;
-always @(posedge clk) begin
-  if (rst) bvalid_r <= 1'b0;
+always @(posedge clock) begin
+  if (reset) bvalid_r <= 1'b0;
   else if (next_w == SHAKED_W || next_w == WAIT_BREADY) 
     bvalid_r <= 1'b1;
   else
@@ -117,8 +117,8 @@ always @(posedge clk) begin
 end
 
 reg [DATA_WIDTH-1:0] awaddr_r;
-always @(posedge clk) begin
-	if (rst) awaddr_r <= 0;
+always @(posedge clock) begin
+	if (reset) awaddr_r <= 0;
 	else if (next_w == SHAKED_AW)
 		awaddr_r <= uart_awaddr;
 end
