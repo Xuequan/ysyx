@@ -3,7 +3,10 @@
 
 #include "memory.h"
 #include <cstdint>
-#include "Vysyx_23060208__Dpi.h"
+#include "VysyxSoCFull__Dpi.h"
+
+extern "C" void flash_read(int32_t addr, int32_t *data); 
+extern "C" void mrom_read(int32_t addr, int32_t *data); 
 
 word_t vaddr_ifetch(vaddr_t addr, int len);
 
@@ -19,7 +22,7 @@ extern "C" int dsram_read(int load_addr);
   // 如 'wmask = 0x3' 代表只写入最低2个字节，内存中的其它字节保持不>变
 extern "C" void dsram_write(int waddr, int wdata, char wmask);
 
-// below from ysyx_23060208_IDU
+// below from ysyxSoCFull_IDU
 //extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak();
 
@@ -35,7 +38,7 @@ uint32_t rs1();
 //extern void rd_reg(svLogicVecVal* o);
 uint32_t rd();
 
-// below from ysyx_23060208_IFU
+// below from ysyxSoCFull_IFU
 //extern void get_nectPC(svLogicVecVal* o);
 uint32_t nextpc();
 

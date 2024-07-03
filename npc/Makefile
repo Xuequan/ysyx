@@ -1,8 +1,12 @@
-TOPNAME = ysyx_23060208
-# NXDC_FILES = constr/top.nxdc
-INC_PATH ?= 
-
+TOPNAME = ysyxSoCFull
 VERILATOR = verilator
+
+PERIP_DIR = /home/chuan/ysyx-workbench/ysyxSoC/perip
+SOC_DIR = /home/chuan/ysyx-workbench/ysyxSoC/build
+NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
+
+INC_PATH ?=
+
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
@@ -10,10 +14,11 @@ VERILATOR_CFLAGS += --trace
 # VERILATOR_CFLAGS += -prof-cfuncs -CFLAGS -DVL_DEBUG
 
 # in order to '`include "ysyx_23060208_npc.h" '
-VERILATOR_CFLAGS += -I$(shell find $(abspath ./vsrc))
+VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
+#VERILATOR_CFLAGS += -I$(SOC_DIR/build)
 
-#VERILATOR_CFLAGS += --debug
-#VERILATOR_CFLAGS += --gdbbt
+VERILATOR_CFLAGS += -I$(PERIP_DIR)/uart16550/rtl
+VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -26,9 +31,11 @@ $(shell mkdir -p $(BUILD_DIR))
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 
 # project source
-VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
+VSRCS = $(shell find $(NPC_VSRC_DIR) -name "*.v")
+VSRCS += $(shell find $(PERIP_DIR) -name "*.v")
+VSRCS += $(shell find $(SOC_DIR) -name "*.v")
 # rules for NVboard
 # include $(NVBOARD_HOME)/scripts/nvboard.mk
 
@@ -48,11 +55,21 @@ LDFLAGS += $(LIBS)
 
 LDFLAGS += $(shell llvm-config-14 --ldflags)
 
-#$(BIN): $(VSRCS) $(CSRCS)
-$(BIN): $(CSRCS)
+#$(BIN): $(CSRCS)
+$(BIN): $(VSRCS) $(CSRCS)
+	@echo "==== inside verilator makefile ========"
+	@echo INC_PATH=$(INC_PATH)
+	@echo INCFLAGS=$(INCFLAGS)
+	@echo VSRCS=$(VSRCS)
+	@echo CSRCS=$(CSRCS)
+	@echo SOC_DIR=$(SOC_DIR)
+	@echo PERIP_DIR=$(PERIP_DIR)
+	@echo "==== inside verilator makefile ========"
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
-		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+		--timescale "1ns/1ns"  --no-timing  \
+		$(addprefix -CFLAGS , $(CXXFLAGS))  \
+		$(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
 
 default: sim

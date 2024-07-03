@@ -1,11 +1,11 @@
 #include <cstdint>
-#include "Vysyx_23060208.h"
+#include "VysyxSoCFull.h"
 #include "verilated_vcd_c.h"
-#include "Vysyx_23060208__Dpi.h"
-#include "Vysyx_23060208___024root.h"
+#include "VysyxSoCFull__Dpi.h"
+#include "VysyxSoCFull___024root.h"
 #include "dpi-c.h"
 
-static Vysyx_23060208* top;
+static VysyxSoCFull* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
@@ -54,7 +54,7 @@ int sim_once() {
 void sim_init() {
  	contextp = new VerilatedContext;
 	tfp = new VerilatedVcdC;
-	top = new Vysyx_23060208;
+	top = new VysyxSoCFull;
 
 	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
@@ -95,7 +95,7 @@ extern uint32_t npc_regs[16];
 //uint32_t update_reg_data();
 void get_npc_regs() {
 	uint32_t* ptr = NULL;
-	ptr = (top->rootp->ysyx_23060208__DOT__idu__DOT__regfile__DOT__rf).data();
+	ptr = (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__idu__DOT__regfile__DOT__rf).data();
 	for(int i = 0; i < 16; i++){
 		npc_regs[i] = ptr[i];
 	}
