@@ -24,7 +24,7 @@ module ysyx_23060208_clint
 
 reg [63:0] mtime_r;
 always @(posedge clock) begin
-	if (!reset) 
+	if (reset) 
 		mtime_r <= 0;
 	else 
 		mtime_r <= mtime_r + 64'b1;
@@ -37,7 +37,7 @@ parameter [2:0] IDLE = 3'b000, WAIT_ARVA = 3'b001, SHAKED_AR = 3'b010,
                 WAIT_RREADY = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
 always @(posedge clock) begin
-  if (!reset) 
+  if (reset) 
     state <= IDLE;
   else 
     state <= next;
@@ -83,7 +83,7 @@ end
 reg arready_r;
 assign clint_arready = arready_r;
 always @(posedge clock) begin
-	if (!reset)
+	if (reset)
 		arready_r <= 0;
 	else if (next == IDLE || next == WAIT_ARVA || next == SHAKED_R)
 		arready_r <= 1'b1;
@@ -101,7 +101,7 @@ reg rlast_r;
 assign clint_rlast = rlast_r;
 
 always @(posedge clock) begin
-	if (!reset)
+	if (reset)
 		rvalid_r <= 0;
 	else if (next == SHAKED_AR || next == WAIT_RREADY) begin
 		rvalid_r <= 1'b1;
@@ -127,7 +127,7 @@ assign clint_addr_max = 32'h0200_ffff;
 reg [DATA_WIDTH*2-1:0] clint_rdata_r;
 assign clint_rdata = clint_rdata_r;
 always @(posedge clock) begin
-	if (!reset)
+	if (reset)
 		clint_rdata_r <= 0;
 	else if (next == SHAKED_AR) begin
 		//clint_rdata_r <= dsram_read(clint_araddr);

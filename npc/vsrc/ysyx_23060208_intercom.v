@@ -158,7 +158,7 @@ parameter [2:0] IDLE = 3'b0, CLINT = 3'b001, EXU_READ = 3'b010,
 								EXU_WRITE = 3'b011, IFU_READ = 3'b100;
 reg [2:0] state, next;
 always @(posedge clock) begin
-  if (!reset) 
+  if (reset) 
     state <= IDLE;
   else 
     state <= next;

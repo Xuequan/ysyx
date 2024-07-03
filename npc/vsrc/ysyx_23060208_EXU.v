@@ -115,14 +115,14 @@ assign {csr_idx,
 
 reg exu_valid;
 always @(posedge clock) begin
-	if (!reset) 
+	if (reset) 
 		exu_valid <= 1'b0;
 	else if (exu_allowin)
 		exu_valid <= idu_to_exu_valid;
 end
 
 always @(posedge clock) begin
-	if (!reset) begin
+	if (reset) begin
 		idu_to_exu_alu_bus_r <= 0;
 		idu_to_exu_bus_r     <= 0;
 		idu_to_exu_csr_bus_r <= 0;
@@ -150,7 +150,7 @@ parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
 								WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state_r, next_r;
 always @(posedge clock) begin
-	if (!reset) 
+	if (reset) 
 		state_r <= IDLE_R;
 	else 
 		state_r <= next_r;
@@ -209,7 +209,7 @@ reg [1:0] arburst_r;
 assign dsram_arburst = arburst_r;
 
 always @(posedge clock) begin
-	if (!reset) arvalid_r <= 0;
+	if (reset) arvalid_r <= 0;
 	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
 				|| (state_r == IDLE_R && next_r == SHAKED_AR) 
 				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
@@ -231,7 +231,7 @@ end
 reg rready_r;
 assign dsram_rready = rready_r;
 always @(posedge clock) begin
-	if (!reset) rready_r <= 1'b0;
+	if (reset) rready_r <= 1'b0;
 	else if (next_r == SHAKED_AR || next_r == WAIT_RVALID)
 		rready_r <= 1'b1;
 	else
@@ -240,12 +240,12 @@ end
 /*
 reg [DATA_WIDTH-1:0] rdata_r;
 always @(posedge clock) begin
-	if (!reset) rdata_r <= 0;
+	if (reset) rdata_r <= 0;
 	else if (next_r == SHAKED_R) 
 		rdata_r <= dsram_rdata; 
 end
 always @(posedge clock) begin
-	if (!reset) load_ready_go <= 0;
+	if (reset) load_ready_go <= 0;
 	else if (next_r == SHAKED_R) 
 		load_ready_go <= 1'b1;
 	else 
@@ -259,7 +259,7 @@ parameter [2:0] IDLE_W = 3'b000, WAIT_AWREADY = 3'b001, SHAKED_AW = 3'b010,
 								WAIT_BVALID = 3'b101, SHAKED_B = 3'b110;
 reg [2:0] state_w, next_w;
 always @(posedge clock) begin
-	if (!reset) 
+	if (reset) 
 		state_w <= IDLE_W;
 	else 
 		state_w <= next_w;
@@ -326,7 +326,7 @@ reg [1:0] awburst_r;
 assign dsram_awburst = awburst_r;
 
 always @(posedge clock) begin
-	if (!reset) awvalid_r <= 0;
+	if (reset) awvalid_r <= 0;
 	else if ((state_w == IDLE_W && next_w == WAIT_AWREADY) 
 				|| (state_w == IDLE_W && next_w == SHAKED_AW) 
 				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) ) 
@@ -349,7 +349,7 @@ end
 reg bready_r;
 assign dsram_bready = bready_r;
 always @(posedge clock) begin
-	if (!reset) bready_r <= 1'b0;
+	if (reset) bready_r <= 1'b0;
 	else if (next_w == SHAKED_W || next_w == WAIT_BVALID)
 		bready_r <= 1'b1;
 	else
@@ -363,7 +363,7 @@ assign dsram_wstrb[7:3] = wstrb_r;
 reg wlast_r;
 assign dsram_wlast = wlast_r;
 always @(posedge clock) begin
-	if (!reset) wvalid_r <= 1'b0;
+	if (reset) wvalid_r <= 1'b0;
 	else if (next_w == SHAKED_AW || next_w == WAIT_WREADY) begin
 		wvalid_r <= 1'b1;
 		wstrb_r <= 5'b0;
@@ -378,7 +378,7 @@ end
 
 /*
 always @(posedge clock) begin
-	if (!reset) store_ready_go <= 0;
+	if (reset) store_ready_go <= 0;
 	else if (next_w == SHAKED_B) 
 		store_ready_go <= 1'b1;
 	else 

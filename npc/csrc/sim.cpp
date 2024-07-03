@@ -65,10 +65,10 @@ void sim_init() {
 	while ( i < 5) {
 		i++;
 		top->clock ^= 1;
-		top->reset = 0;
+		top->reset = 1;
 		step_and_dump_wave();
 	}
-	top->reset = 1;
+	top->reset = 0;
 	top->clock ^= 1;
 	step_and_dump_wave();
 	// now top->clock = 1

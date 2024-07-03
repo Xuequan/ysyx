@@ -47,7 +47,7 @@ assign {exu_nextpc_taken, exu_nextpc} = exu_to_ifu_bus;
 
 /*
 always @(posedge clock) begin
-	if (!reset) 
+	if (reset) 
 		exu_to_ifu_bus_r <= 0;
 	else if (ifu_allowin)
 		exu_to_ifu_bus_r <= exu_to_ifu_bus;
@@ -65,7 +65,7 @@ wire ifu_ready_go;
 // 表示 EXU 传过来的数据有效
 reg exu_data_valid;
 always @(posedge clock) begin
-	if (!reset)  
+	if (reset)  
 		exu_data_valid <= 0;
 	else if(ifu_allowin) 	 
 	 	exu_data_valid <= exu_to_ifu_valid;
@@ -76,7 +76,7 @@ parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
                 WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
 always @(posedge clock) begin
-  if (!reset) 
+  if (reset) 
     state <= IDLE_R;
   else 
     state <= next;
@@ -130,7 +130,7 @@ reg [1:0] arburst_r;
 assign isram_arburst = arburst_r;
 
 always @(posedge clock) begin
-	if (!reset) arvalid_r <= 0;
+	if (reset) arvalid_r <= 0;
 	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
 					 (state == IDLE_R && next == SHAKED_AR) ||
 					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
@@ -152,7 +152,7 @@ end
 reg [DATA_WIDTH-1:0] araddr_r;
 assign isram_araddr = araddr_r;
 always @(posedge clock) begin
-	if (!reset) 
+	if (reset) 
 		araddr_r <= 0;
 	else if ((state == IDLE_R && next == WAIT_ARREADY) ||
 					 (state == IDLE_R && next == SHAKED_AR) ||
@@ -161,7 +161,7 @@ always @(posedge clock) begin
 end
 
 always @(posedge clock) begin
-	if (!reset) 
+	if (reset) 
 		ifu_valid <= 0;
 	else if (next == SHAKED_R)
 		ifu_valid <= 1'b1;
@@ -172,7 +172,7 @@ end
 /* reveive instruction from isram */
 reg [DATA_WIDTH*2-1:0] inst_r;
 always @(posedge clock) begin
-	if (!reset)
+	if (reset)
 		inst_r <= 0;
 	else if (next == SHAKED_R) 
 		inst_r <= isram_rdata;
@@ -181,7 +181,7 @@ end
 reg rready_r;
 assign isram_rready = rready_r;
 always @(posedge clock) begin
-	if (!reset) rready_r <= 0;
+	if (reset) rready_r <= 0;
 	else if (next == SHAKED_AR || next == WAIT_RVALID)
 		rready_r <= 1'b1;
 	else
@@ -192,7 +192,7 @@ end
 reg ifu_done_r;
 assign ifu_done = ifu_done_r;
 always @(posedge clock) begin
-	if (!reset) ifu_done_r <= 0;
+	if (reset) ifu_done_r <= 0;
 	else if (next == SHAKED_R)
 		ifu_done_r <= 1'b1;
 	else
@@ -215,7 +215,7 @@ wire pc_reg_wen;
 assign pc_reg_wen = (next == SHAKED_R);
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
 	.clock(clock),
-	.reset(!reset),
+	.reset(reset),
 	.wen(pc_reg_wen),    // wen
 	.next_pc(araddr_r),  // input
 	.pc(pc)              // output
