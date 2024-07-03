@@ -133,8 +133,7 @@ always @(posedge clock) begin
 	if (!reset) arvalid_r <= 0;
 	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
 					 (state == IDLE_R && next == SHAKED_AR) ||
-					 (state == WAIT_ARREADY && next == WAIT_ARREADY) 
-					|| (state == SHAKED_AR) )
+					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
 		begin
 		arvalid_r <= 1'b1;
 		arlen_r <= 8'h3;
