@@ -131,7 +131,7 @@ uint32_t update_reg_data(){
 }
 
 bool check_exu_ready_go() {
-	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.ysyxSoCASIC.CPU.exu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
