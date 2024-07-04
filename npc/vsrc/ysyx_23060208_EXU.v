@@ -207,7 +207,12 @@ reg [1:0] arburst_r;
 assign dsram_arburst = arburst_r;
 
 always @(posedge clock) begin
-	if (reset) arvalid_r <= 0;
+	if (reset) begin
+		arvalid_r <= 0;
+		arid_r <= 0;
+		arlen_r <= 0;
+		arburst_r <= 0;	
+	end
 	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
 				|| (state_r == IDLE_R && next_r == SHAKED_AR) 
 				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
@@ -320,7 +325,12 @@ reg [1:0] awburst_r;
 assign dsram_awburst = awburst_r;
 
 always @(posedge clock) begin
-	if (reset) awvalid_r <= 0;
+	if (reset) begin
+		awvalid_r <= 0;
+		awid_r <= 0;
+		awlen_r <= 8'h0;
+		awburst_r <= 0;	
+	end
 	else if ((state_w == IDLE_W && next_w == WAIT_AWREADY) 
 				|| (state_w == IDLE_W && next_w == SHAKED_AW) 
 				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) ) 
@@ -355,10 +365,14 @@ assign dsram_wstrb[7:3] = wstrb_r;
 reg wlast_r;
 assign dsram_wlast = wlast_r;
 always @(posedge clock) begin
-	if (reset) wvalid_r <= 1'b0;
+	if (reset) begin
+		wvalid_r <= 1'b0;
+		wstrb_r <= 5'b0;
+		wlast_r <= 1'b0;
+	end
 	else if (next_w == SHAKED_AW || next_w == WAIT_WREADY) begin
 		wvalid_r <= 1'b1;
-		wstrb_r <= 5'b0;
+		wstrb_r <= 5'b0_1111;
 		wlast_r <= 1'b1;
 	end
 	else begin
