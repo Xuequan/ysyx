@@ -136,14 +136,14 @@ always @(posedge clock) begin
 					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
 		begin
 		arvalid_r <= 1'b1;
-		arlen_r <= 8'h3;
+		arlen_r <= 8'h0;
 		arid_r <= 0;
 		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 		end
 	else begin
 		arvalid_r <= 1'b0;
-		arlen_r <= 8'h3;
+		arlen_r <= 8'h0;
 		arid_r <= 0;
 		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;

@@ -214,7 +214,7 @@ always @(posedge clock) begin
 		begin
 		arvalid_r <= 1'b1;
 		arid_r <= 0;
-		arlen_r <= 8'h3;
+		arlen_r <= 8'h0;
 		arburst_r <= 0;	
 		end
 	else begin
@@ -327,13 +327,13 @@ always @(posedge clock) begin
 		begin
 		awvalid_r <= 1'b1;
 		awid_r <= 0;
-		awlen_r <= 8'h3;
+		awlen_r <= 8'h0;
 		awburst_r <= 0;	
 		end
 	else begin
 		awvalid_r <= 0;
 		awid_r <= 0;
-		awlen_r <= 8'h3;
+		awlen_r <= 8'h0;
 		awburst_r <= 0;	
 		end
 end
