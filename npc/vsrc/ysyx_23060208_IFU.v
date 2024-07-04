@@ -130,7 +130,13 @@ reg [1:0] arburst_r;
 assign isram_arburst = arburst_r;
 
 always @(posedge clock) begin
-	if (reset) arvalid_r <= 0;
+	if (reset) begin
+		arvalid_r <= 0;
+		arlen_r <= 8'h0;
+		arid_r <= 0;
+		arsize_r <= 3'b010;
+		arburst_r <= 2'b00;
+	end
 	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
 					 (state == IDLE_R && next == SHAKED_AR) ||
 					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
