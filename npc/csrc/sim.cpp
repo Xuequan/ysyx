@@ -47,7 +47,7 @@ int sim_once() {
 		}
 		sim_one_cycle();
 	} // end-while
-	//sim_one_cycle();
+	sim_one_cycle();
 	return ret; 
 }
 
