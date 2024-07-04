@@ -2,14 +2,17 @@
 
 word_t vaddr_ifetch(vaddr_t addr, int len);
 word_t vaddr_read(vaddr_t addr, int len);
+
 void vaddr_write(vaddr_t addr, int len, word_t data);
 
 extern "C" void flash_read(int32_t addr, int32_t *data) {    
   assert(0);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
-	*data = 0x00100073; // ebreak inst
+	//*data = 0x00100073; // ebreak inst
+	*data = *(int32_t *)addr;
 }
+
 /* 总是读取地址为 raddr & ~0x3u 的4字节返回  */
 extern "C" int isram_read(int raddr) {
   return vaddr_ifetch(raddr, 4);

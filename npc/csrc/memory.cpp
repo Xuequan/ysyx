@@ -78,6 +78,10 @@ void init_mem(char *test_file) {
 	assert(ret == 1);
 
 	fclose(fp);		
+	
+	int i = 0; 
+	for ( ; i < 20; i++) 
+		printf("%d: %#x\n", i, *((uint32_t *)pmem + i) );
 }
 
 uint32_t nextpc();
