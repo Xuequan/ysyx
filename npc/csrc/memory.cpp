@@ -112,6 +112,14 @@ word_t paddr_read(paddr_t addr, int len) {
 			return (word_t)(timer >> 32);
 		}
 	}
+	
+	// just for mrom
+	if (addr >= 0x20000000 && addr <= 0x20000fff) {
+		int idx = addr - 0x20000000;
+		return *((uint32_t *)pmem + idx);		
+	}
+
+
 	printf("read out of bound--");	
 	out_of_bound(addr);
 	return 0;
