@@ -55,13 +55,29 @@ static void out_of_bound(paddr_t addr) {
       addr, PMEM_LEFT, PMEM_RIGHT, get_pc());
 }
 
-void init_mem() {
-  uint32_t *p = (uint32_t *)pmem;
-  int i;
-  for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
-		p[i] = 0;
-  }
-  Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
+void init_mem(char *test_file) {
+	if (test_file == NULL) {
+		uint32_t *p = (uint32_t *)pmem;
+		int i;
+		for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
+			p[i] = 0;
+		}
+		Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
+		return;
+	}
+	FILE *fp = fopen(test_file, "rb");
+	Assert(fp, "load_test_file_to_mem : '%s' failed", test_file);
+
+	fseek(fp, 0, SEEK_END);
+	long size = ftell(fp);
+
+	Log("The test file is %s, size = %ld", test_file, size);
+
+	fseek(fp, 0, SEEK_SET);
+	int ret = fread(pmem, size, 1, fp);
+	assert(ret == 1);
+
+	fclose(fp);		
 }
 
 uint32_t nextpc();

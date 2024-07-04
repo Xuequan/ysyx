@@ -22,7 +22,7 @@
 uint8_t* guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
-void init_mem();
+void init_mem(char *);
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
@@ -133,7 +133,8 @@ void init_monitor(int argc, char *argv[]) {
   init_elf();
 
   /* Initialize memory. */
-  init_mem();
+	// for test;
+  init_mem(argv[2]);
 
   /* Initialize devices. */
   //IFDEF(CONFIG_DEVICE, init_device());
