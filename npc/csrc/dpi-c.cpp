@@ -2,7 +2,18 @@
 
 word_t vaddr_ifetch(vaddr_t addr, int len);
 word_t vaddr_read(vaddr_t addr, int len);
+
 void vaddr_write(vaddr_t addr, int len, word_t data);
+
+extern "C" void flash_read(int32_t addr, int32_t *data) {    
+  assert(0);
+}
+extern "C" void mrom_read(int32_t addr, int32_t *data) {
+	//*data = 0x00100073; // ebreak inst
+	//int32_t ret = vaddr_read(addr, 4);
+	//printf("mrom_read(): addr = %#x, return %#x\n", addr, ret);
+	*data = vaddr_read(addr, 4);
+}
 
 /* 总是读取地址为 raddr & ~0x3u 的4字节返回  */
 extern "C" int isram_read(int raddr) {
@@ -29,7 +40,7 @@ extern "C" void dsram_write(int waddr, int wdata, char wmask) {
 
 //extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak() {
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -40,7 +51,7 @@ bool inst_is_ebreak() {
 
 //extern void check_if_jal(svBit* o);
 bool inst_is_jal() {
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -51,7 +62,7 @@ bool inst_is_jal() {
 
 //extern void check_if_jalr(svBit* o);
 bool inst_is_jalr() {
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -62,7 +73,7 @@ bool inst_is_jalr() {
 
 //extern void rs1_reg(svLogicVecVal* o);
 uint32_t rs1(){
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -71,7 +82,7 @@ uint32_t rs1(){
 }
 //extern void rd_reg(svLogicVecVal* o);
 uint32_t rd(){
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -81,7 +92,7 @@ uint32_t rd(){
 
 //extern void get_nextPC(svLogicVecVal* o);
 uint32_t nextpc(){
-	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -90,7 +101,7 @@ uint32_t nextpc(){
 }
 
 uint32_t get_pc(){
-	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -99,7 +110,7 @@ uint32_t get_pc(){
 }
 
 uint32_t get_inst(){
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -108,7 +119,7 @@ uint32_t get_inst(){
 }
 
 uint32_t update_reg_no(){
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal no;
@@ -116,7 +127,7 @@ uint32_t update_reg_no(){
 	return no.aval;
 }
 uint32_t update_reg_data(){
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal data;
@@ -125,16 +136,16 @@ uint32_t update_reg_data(){
 }
 
 bool check_exu_ready_go() {
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
-	exu_ready_go_signal(&a);
+	exu_will_go_next_clock_signal(&a);
 	if (a == 1) return true;
 	else				return false;
 }
 bool check_ifu_ready_go() {
-	const svScope scope = svGetScopeFromName("TOP.top.ifu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -143,7 +154,7 @@ bool check_ifu_ready_go() {
 	else				return false;
 }
 bool check_clint_read() {
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -152,7 +163,7 @@ bool check_clint_read() {
 	else				return false;
 }
 bool check_uart_write() {
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);
 	svBit a;

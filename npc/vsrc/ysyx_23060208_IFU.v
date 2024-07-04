@@ -2,8 +2,8 @@
 `include "ysyx_23060208_npc.h"    
 module ysyx_23060208_IFU 
 	#(DATA_WIDTH = 32) (
-	input clk,
-	input rst,
+	input clock,
+	input reset,
 
 	/* connect with EXU */
 	input [`EXU_TO_IFU_BUS-1:0] exu_to_ifu_bus,
@@ -20,14 +20,21 @@ module ysyx_23060208_IFU
 	output									ifu_done,
 	/* connect with isram */
 	// 读请求
+	input										isram_arready,
 	output [DATA_WIDTH-1:0] isram_araddr,
 	output									isram_arvalid,
-	input										isram_arready,
+	output [7						:0] isram_arlen,
+	output [3						:0] isram_arid,
+	output [2						:0] isram_arsize,
+	output [1						:0] isram_arburst,
+
 	// 读响应
-	input [DATA_WIDTH-1:0]  isram_rdata,  
-	input										isram_rvalid,
-	input	[1					 :0]  isram_rresp,
-	output									isram_rready,
+	output									 isram_rready,
+	input										 isram_rvalid,
+	input	[1					   :0] isram_rresp,
+	input [DATA_WIDTH*2-1:0] isram_rdata,  
+	input										 isram_rlast,
+	input [3						 :0] isram_rid,
 
 	output									ifu_allowin
 );
@@ -39,8 +46,8 @@ wire											exu_nextpc_taken;
 assign {exu_nextpc_taken, exu_nextpc} = exu_to_ifu_bus;
 
 /*
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (reset) 
 		exu_to_ifu_bus_r <= 0;
 	else if (ifu_allowin)
 		exu_to_ifu_bus_r <= exu_to_ifu_bus;
@@ -57,8 +64,8 @@ wire ifu_ready_go;
 
 // 表示 EXU 传过来的数据有效
 reg exu_data_valid;
-always @(posedge clk) begin
-	if (rst)  
+always @(posedge clock) begin
+	if (reset)  
 		exu_data_valid <= 0;
 	else if(ifu_allowin) 	 
 	 	exu_data_valid <= exu_to_ifu_valid;
@@ -68,8 +75,8 @@ end
 parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
                 WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
 reg [2:0] state, next;
-always @(posedge clk) begin
-  if (rst) 
+always @(posedge clock) begin
+  if (reset) 
     state <= IDLE_R;
   else 
     state <= next;
@@ -113,19 +120,45 @@ end
 
 reg arvalid_r;
 assign isram_arvalid = arvalid_r;
-always @(posedge clk) begin
-	if (rst) arvalid_r <= 0;
+reg [7:0] arlen_r;
+assign isram_arlen = arlen_r;
+reg [3:0] arid_r;
+assign isram_arid = arid_r;
+reg [2:0] arsize_r;
+assign isram_arsize = arsize_r;
+reg [1:0] arburst_r;
+assign isram_arburst = arburst_r;
+
+always @(posedge clock) begin
+	if (reset) begin
+		arvalid_r <= 0;
+		arlen_r <= 8'h0;
+		arid_r <= 0;
+		arsize_r <= 3'b010;
+		arburst_r <= 2'b00;
+	end
 	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
 					 (state == IDLE_R && next == SHAKED_AR) ||
 					 (state == WAIT_ARREADY && next == WAIT_ARREADY) )
+		begin
 		arvalid_r <= 1'b1;
-	else
+		arlen_r <= 8'h0;
+		arid_r <= 0;
+		arsize_r <= 3'b010;
+		arburst_r <= 2'b00;
+		end
+	else begin
 		arvalid_r <= 1'b0;
+		arlen_r <= 8'h0;
+		arid_r <= 0;
+		arsize_r <= 3'b010;
+		arburst_r <= 2'b00;
+		end
 end
 reg [DATA_WIDTH-1:0] araddr_r;
 assign isram_araddr = araddr_r;
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (reset) 
 		araddr_r <= 0;
 	else if ((state == IDLE_R && next == WAIT_ARREADY) ||
 					 (state == IDLE_R && next == SHAKED_AR) ||
@@ -133,8 +166,8 @@ always @(posedge clk) begin
 		araddr_r <= nextpc;
 end
 
-always @(posedge clk) begin
-	if (rst) 
+always @(posedge clock) begin
+	if (reset) 
 		ifu_valid <= 0;
 	else if (next == SHAKED_R)
 		ifu_valid <= 1'b1;
@@ -143,9 +176,9 @@ always @(posedge clk) begin
 end
 
 /* reveive instruction from isram */
-reg [DATA_WIDTH-1:0] inst_r;
-always @(posedge clk) begin
-	if (rst)
+reg [DATA_WIDTH*2-1:0] inst_r;
+always @(posedge clock) begin
+	if (reset)
 		inst_r <= 0;
 	else if (next == SHAKED_R) 
 		inst_r <= isram_rdata;
@@ -153,8 +186,8 @@ end
 
 reg rready_r;
 assign isram_rready = rready_r;
-always @(posedge clk) begin
-	if (rst) rready_r <= 0;
+always @(posedge clock) begin
+	if (reset) rready_r <= 0;
 	else if (next == SHAKED_AR || next == WAIT_RVALID)
 		rready_r <= 1'b1;
 	else
@@ -164,17 +197,15 @@ end
 /*
 reg ifu_done_r;
 assign ifu_done = ifu_done_r;
-always @(posedge clk) begin
-	if (rst) ifu_done_r <= 0;
+always @(posedge clock) begin
+	if (reset) ifu_done_r <= 0;
 	else if (next == SHAKED_R)
 		ifu_done_r <= 1'b1;
 	else
 		ifu_done_r <= 1'b0;
 end
 */
-
-
-assign ifu_to_idu_bus = {isram_araddr, isram_rdata};
+assign ifu_to_idu_bus = {isram_araddr, isram_rdata[31:0]};
 assign ifu_ready_go = (next == SHAKED_R);
 
 assign ifu_done = (state == SHAKED_R);
@@ -187,8 +218,8 @@ assign ifu_allowin = !idu_valid && exu_allowin && !ifu_valid;
 wire pc_reg_wen;
 assign pc_reg_wen = (next == SHAKED_R);
 ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
-	.clk(clk),
-	.rst(rst),
+	.clock(clock),
+	.reset(reset),
 	.wen(pc_reg_wen),    // wen
 	.next_pc(araddr_r),  // input
 	.pc(pc)              // output

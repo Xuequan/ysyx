@@ -148,15 +148,17 @@ void exec_once() {
 		return;
 	}
 
+	/* 先关掉
 	if (sim_ret == 1 || sim_ret == 2) 
 		ftrace(sim_ret);
+	*/
 }
 
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-		trace_and_difftest();
+		//trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
 	}
