@@ -496,8 +496,8 @@ assign exu_done[0] = (state_r == SHAKED_R);
 assign exu_done[1] = (state_w == SHAKED_B);
 
 /* =============== DPI-C ========================= */
-export "DPI-C" task exu_ready_go_signal;
-task exu_ready_go_signal (output bit o);
+export "DPI-C" task exu_will_go_next_clock_signal;
+task exu_will_go_next_clock_signal (output bit o);
 	o = exu_to_ifu_valid;
 endtask
 
