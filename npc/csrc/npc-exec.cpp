@@ -148,8 +148,10 @@ void exec_once() {
 		return;
 	}
 
+	/* 先关掉
 	if (sim_ret == 1 || sim_ret == 2) 
 		ftrace(sim_ret);
+	*/
 }
 
 void execute(uint64_t n) {
