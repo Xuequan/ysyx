@@ -11,7 +11,7 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
 
-VERILATOR_CFLAGS += --Wall
+VERILATOR_CFLAGS += --Wall --fno-table
 
 # 若出现 active region did not converge, 下面可以辅助debug
 # VERILATOR_CFLAGS += -prof-cfuncs -CFLAGS -DVL_DEBUG
