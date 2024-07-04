@@ -47,7 +47,7 @@ int sim_once() {
 		}
 		sim_one_cycle();
 	} // end-while
-	sim_one_cycle();
+	//sim_one_cycle();
 	return ret; 
 }
 
@@ -71,7 +71,6 @@ void sim_init() {
 	top->reset = 0;
 	top->clock ^= 1;
 	step_and_dump_wave();
-	// now top->clock = 1
 }
 
 void sim_exit() {
@@ -91,22 +90,20 @@ extern const char *regs[];
 // npc regs
 extern uint32_t npc_regs[16];
 
-//uint32_t update_reg_no();
-//uint32_t update_reg_data();
+extern uint32_t update_reg_no();
+extern uint32_t update_reg_data();
 void get_npc_regs() {
 	uint32_t* ptr = NULL;
 	ptr = (top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__idu__DOT__regfile__DOT__rf).data();
 	for(int i = 0; i < 16; i++){
 		npc_regs[i] = ptr[i];
 	}
-	/*
 	// 这是下周期要更新的 regfile 数据，本周期要拿来difftest_step
 	// 寄存器的更新要在下一周期
 	uint32_t no = update_reg_no();
 	if ( no != 0) {
 		npc_regs[no] = update_reg_data();
 	}
-	*/
 }
 
 void isa_reg_display() {
