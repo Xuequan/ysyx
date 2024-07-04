@@ -203,8 +203,6 @@ reg [3:0] arid_r;
 assign dsram_arid = arid_r;
 reg [7:0] arlen_r;
 assign dsram_arlen = arlen_r;
-reg [2:0] arsize_r;
-assign dsram_arsize = arsize_r;
 reg [1:0] arburst_r;
 assign dsram_arburst = arburst_r;
 
@@ -217,14 +215,12 @@ always @(posedge clock) begin
 		arvalid_r <= 1'b1;
 		arid_r <= 0;
 		arlen_r <= 8'h3;
-		arsize_r <= 3'b010;
 		arburst_r <= 0;	
 		end
 	else begin
 		arvalid_r <= 0;
 		arid_r <= 0;
 		arlen_r <= 0;
-		arsize_r <= 3'b010;
 		arburst_r <= 0;	
 		end
 end
@@ -320,8 +316,6 @@ reg [3:0] awid_r;
 assign dsram_awid = awid_r;
 reg [7:0] awlen_r;
 assign dsram_awlen = awlen_r;
-reg [2:0] awsize_r;
-assign dsram_awsize = awsize_r;
 reg [1:0] awburst_r;
 assign dsram_awburst = awburst_r;
 
@@ -334,14 +328,12 @@ always @(posedge clock) begin
 		awvalid_r <= 1'b1;
 		awid_r <= 0;
 		awlen_r <= 8'h3;
-		awsize_r <= 3'b010;
 		awburst_r <= 0;	
 		end
 	else begin
 		awvalid_r <= 0;
 		awid_r <= 0;
 		awlen_r <= 8'h3;
-		awsize_r <= 3'b010;
 		awburst_r <= 0;	
 		end
 end
@@ -426,6 +418,15 @@ assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 /* ========== connect with dsram ======================== */
 /* =======store instruction ============================== */
 assign dsram_awaddr = alu_result; 
+// decide awsize;
+wire [31:0] uart_addr_min; 
+assign uart_addr_min = 32'h2000_0000;
+wire [31:0] uart_addr_max;
+assign uart_addr_max  = 32'h2000_0fff;
+wire write_to_uart;
+assign write_to_uart = (dsram_awaddr >= uart_addr_min) &&
+								 (dsram_awaddr <= uart_addr_max);
+assign dsram_awsize = write_to_uart ? 3'b000 : 3'b010; 
 //assign dsram_wen = regfile_mem_mux[1];
 //assign dsram_awvalid = regfile_mem_mux[1];
 assign dsram_wdata[31:0] = store_data_raw; 
@@ -434,6 +435,11 @@ assign dsram_wstrb[2:0] = ( {3{store_inst[0]}} & 3'b100 )
 											| ( {3{store_inst[2]}} & 3'b001 );
 /* =======load instruction ============================== */
 assign dsram_araddr = alu_result;
+wire read_from_uart;
+assign read_from_uart = (dsram_araddr >= uart_addr_min) &&
+								 (dsram_araddr <= uart_addr_max);
+assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
+
 wire [DATA_WIDTH-1:0] load_data;
 assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata[31:0])
 | ({DATA_WIDTH{load_inst[1]}} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
