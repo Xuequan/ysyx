@@ -11,8 +11,7 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
 	//*data = 0x00100073; // ebreak inst
 	//*data = *((int32_t *)pmem +;
-	int32_t ret = 0;
-	ret = vaddr_read(addr, 4);
+	volatile int32_t ret = vaddr_read(addr, 4);
 	//printf("mrom_read(): addr = %#x, return %#x\n", addr, ret);
 	*data = ret;
 }
