@@ -64,24 +64,26 @@ void init_mem(char *test_file) {
 		}
 		Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 		return;
+	} 
+	else {
+		FILE *fp = fopen(test_file, "rb");
+		Assert(fp, "load_test_file_to_mem : '%s' failed", test_file);
+
+		fseek(fp, 0, SEEK_END);
+		long size = ftell(fp);
+
+		Log("The test file is %s, size = %ld", test_file, size);
+
+		fseek(fp, 0, SEEK_SET);
+		int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
+		assert(ret == 1);
+
+		fclose(fp);		
+			
+		int i = 0; 			
+		for ( ; i < 20; i++) 
+				printf("%d: %#x\n", i, *((uint32_t *)pmem + i) );
 	}
-	FILE *fp = fopen(test_file, "rb");
-	Assert(fp, "load_test_file_to_mem : '%s' failed", test_file);
-
-	fseek(fp, 0, SEEK_END);
-	long size = ftell(fp);
-
-	Log("The test file is %s, size = %ld", test_file, size);
-
-	fseek(fp, 0, SEEK_SET);
-	int ret = fread(pmem, size, 1, fp);
-	assert(ret == 1);
-
-	fclose(fp);		
-	
-	int i = 0; 
-	for ( ; i < 20; i++) 
-		printf("%d: %#x\n", i, *((uint32_t *)pmem + i) );
 }
 
 uint32_t nextpc();
