@@ -71,7 +71,7 @@ TEST_FLAGS += -mcmodel=medany
 TEST_FLAGS += -static
 
 TEST_LDFLAGS += -T $(AM_HOME)/scripts/linker.ld \
-    --defsym=_pmem_start=0x20000000 --defsym=_entry_offset=0x0
+    --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
 TEST_LDFLAGS += -e _start 
 TEST_LDFLAGS += -melf64lriscv
 

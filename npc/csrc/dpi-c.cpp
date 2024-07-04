@@ -9,8 +9,9 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
   assert(0);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
-	*data = 0x00100073; // ebreak inst
-	//*data = *(int32_t *)addr;
+	//*data = 0x00100073; // ebreak inst
+	//*data = *((int32_t *)pmem +;
+	*data = vaddr_read(addr, 4);
 }
 
 /* 总是读取地址为 raddr & ~0x3u 的4字节返回  */
