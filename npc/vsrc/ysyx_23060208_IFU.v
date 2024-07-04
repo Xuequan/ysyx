@@ -199,8 +199,6 @@ always @(posedge clock) begin
 		ifu_done_r <= 1'b0;
 end
 */
-
-
 assign ifu_to_idu_bus = {isram_araddr, isram_rdata[31:0]};
 assign ifu_ready_go = (next == SHAKED_R);
 

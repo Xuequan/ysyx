@@ -115,7 +115,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	
 	// just for mrom
 	if (addr >= 0x20000000 && addr <= 0x20000fff) {
-		int idx = addr - 0x20000000;
+		int idx = (addr - 0x20000000)/4;
 		return *((uint32_t *)pmem + idx);		
 	}
 
