@@ -80,6 +80,8 @@ static long load_img() {
   Log("The image is %s, size = %ld", img_file, size);
 
   fseek(fp, 0, SEEK_SET);
+	// 将 image 读到 RESET_VECTOR (0x8000_0000) 对应的电脑的内存
+	// 处，即 pmem 处；
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
   assert(ret == 1);
 

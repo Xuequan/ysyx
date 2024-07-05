@@ -23,7 +23,7 @@
  * 因此就用下面的 memcpy....*/
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
 	if (direction == DIFFTEST_TO_REF) {
-		memcpy(mrom_guest_to_host(addr), buf, n);
+		memcpy(mrom_guest_to_host(MROM_BASE), buf, n);
 	} else {
   	assert(0);
 	}	

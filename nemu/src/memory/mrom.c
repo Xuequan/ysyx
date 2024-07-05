@@ -18,8 +18,6 @@
 #include <device/mmio.h>
 #include <isa.h>
 
-#define MROM_SIZE (0x20000fff - 0x20000000)
-#define MROM_BASE	0x20000000
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmrom = NULL;
 #else // CONFIG_PMEM_GARRAY

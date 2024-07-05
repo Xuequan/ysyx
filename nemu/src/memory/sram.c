@@ -18,8 +18,6 @@
 #include <device/mmio.h>
 #include <isa.h>
 
-#define SRAM_SIZE (0x0fffffff - 0x0f000000)
-#define SRAM_BASE	0x0f000000
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *psram = NULL;
 #else // CONFIG_PMEM_GARRAY
