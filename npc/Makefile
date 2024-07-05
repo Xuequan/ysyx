@@ -13,7 +13,7 @@ VERILATOR_CFLAGS += --trace
 
 # 最后打开这个检查全面
 # VERILATOR_CFLAGS += --Wall 
-# VERILATOR_CFLAGS += --fno-table
+#
 VERILATOR_CFLAGS += --autoflush
 
 # 若出现 active region did not converge, 下面可以辅助debug
