@@ -118,7 +118,8 @@ $(BIN): $(VSRCS) $(CSRCS)
 
 default: sim
 
-NPC_EXEC := $(BIN) $(ARGS) $(IMG) $(TEST_IMAGE).bin
+#NPC_EXEC := $(BIN) $(ARGS) $(IMG) $(TEST_IMAGE).bin
+NPC_EXEC := $(BIN) $(ARGS) $(IMG)
 
 sim-env: $(BIN)
 

@@ -1,5 +1,6 @@
 AM_SRCS := riscv/ysyxSoC/start.S \
-           riscv/ysycSoC/trm.c \
+           riscv/ysyxSoC/trm.c \
+
           # riscv/npc/ioe.c \
            riscv/npc/timer.c \
            riscv/npc/input.c \
