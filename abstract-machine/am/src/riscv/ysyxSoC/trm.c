@@ -22,6 +22,8 @@ void halt(int code) {
 	}
 }
 
+  extern char _etext;
+  extern char _data_start;
 void _trm_init() {
   int ret = main(mainargs);
   halt(ret);
