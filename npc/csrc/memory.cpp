@@ -55,7 +55,15 @@ static void out_of_bound(paddr_t addr) {
       addr, PMEM_LEFT, PMEM_RIGHT, get_pc());
 }
 
-void init_mem(char *test_file) {
+void init_mem() {
+	uint32_t *p = (uint32_t *)pmem;
+	int i;
+	for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
+		p[i] = 0;
+	}
+	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
+	return;
+	/*
 	if (test_file == NULL) {
 		uint32_t *p = (uint32_t *)pmem;
 		int i;
@@ -84,6 +92,7 @@ void init_mem(char *test_file) {
 		for ( ; i < 20; i++) 
 				printf("%d: %#x\n", i, *((uint32_t *)pmem + i) );
 	}
+	*/
 }
 
 uint32_t nextpc();
