@@ -17,7 +17,8 @@ always @(posedge clock) begin
 		//pc_r <= DATA_WIDTH'('h8000_0000) - DATA_WIDTH'('h4);
 		//pc_r <= DATA_WIDTH'('h8000_0000);
 		// mrom addr
-		pc_r <= DATA_WIDTH'('h2000_0000) - DATA_WIDTH'('h4);
+		//pc_r <= DATA_WIDTH'('h2000_0000) - DATA_WIDTH'('h4);
+		pc_r <= DATA_WIDTH'('h0f00_0000) - DATA_WIDTH'('h4);
 	else if(wen)
 		pc_r <= next_pc;
 end

@@ -11,11 +11,11 @@ AM_SRCS := riscv/ysyxSoC/start.S \
 
 CFLAGS    += -fdata-sections -ffunction-sections
 LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld \
-						 --defsym=_pmem_start=0x20000000 --defsym=_entry_offset=0x0 \
-						 --defsym=_data_start=0x0f000000   \
+						 --defsym=_pmem_start=0x0f000000 --defsym=_entry_offset=0x0 \
 						 --defsym=_stack_top=0x0fff1000
+						 #--defsym=_data_start=0x0f000000   \
 						 #--defsym=_stack_pointer=0x0f001fff
-						 #--defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
+						 #--defsym=_pmem_start=0x20000000 --defsym=_entry_offset=0x0 \
 LDFLAGS   += --gc-sections -e _start
 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
