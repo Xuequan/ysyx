@@ -71,6 +71,23 @@ word_t paddr_read(paddr_t addr, int len) {
 #endif
 		return num;
 	}
+	// mrom
+  if (likely(in_mrom(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		pmrom_read(addr, len, data); 
+		return; 
+	}
+	// sram
+  if (likely(in_sram(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		psram_read(addr, len, data); 
+		return; 
+	}
+
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
 	// 若是NEMU作为NPC的 ref，那么 CONFIG_DEVICE 也没有，那么对于I/O 就会执行到这里
 	// 进而在NPC显示里报错
@@ -86,6 +103,24 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		pmem_write(addr, len, data); 
 		return; 
 	}
+	// mrom 
+  if (likely(in_mrom(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		printf("NEMU: please check, mrom cannot write after init\n");
+		return; 
+	}
+	
+	// sram
+  if (likely(in_sram(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		psram_write(addr, len, data); 
+		return; 
+	}
+
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }

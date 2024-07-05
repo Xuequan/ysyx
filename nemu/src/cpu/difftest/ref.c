@@ -19,9 +19,11 @@
 #include <memory/paddr.h>
 #include <string.h>
 
+/* 哎不要忘了，NEMU 和 NPC 这两个“电脑”都运行在 host 上, 
+ * 因此就用下面的 memcpy....*/
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
 	if (direction == DIFFTEST_TO_REF) {
-		memcpy(guest_to_host(addr), buf, n);
+		memcpy(mrom_guest_to_host(addr), buf, n);
 	} else {
   	assert(0);
 	}	
@@ -53,7 +55,11 @@ __EXPORT void difftest_raise_intr(word_t NO) {
 
 __EXPORT void difftest_init(int port) {
   void init_mem();
+	void init_sram();
+	void init_mrom();
   init_mem();
+	init_mrom();
+	init_sram();
   /* Perform ISA dependent initialization. */
   init_isa();
 }
