@@ -24,6 +24,10 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+extern word_t pmrom_read(paddr_t addr, int len);
+extern word_t psram_read(paddr_t addr, int len);
+extern void psram_write(paddr_t addr, int len, word_t data);
+
  // 在 nemu 中运行的程序称为 "guest 程序”
  // guest_to_host() 将 paddr 转化为 nemu 模拟的计算机地址在
  // 本电脑上的地址
@@ -73,19 +77,21 @@ word_t paddr_read(paddr_t addr, int len) {
 	}
 	// mrom
   if (likely(in_mrom(addr))) { 
+		word_t num = pmrom_read(addr, len); 
 #ifdef CONFIG_MTRACE
-		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #endif
-		pmrom_read(addr, len, data); 
-		return; 
+		return num; 
 	}
 	// sram
   if (likely(in_sram(addr))) { 
+		word_t num = psram_read(addr, len); 
 #ifdef CONFIG_MTRACE
-		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #endif
-		psram_read(addr, len, data); 
-		return; 
+		return num; 
 	}
 
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));

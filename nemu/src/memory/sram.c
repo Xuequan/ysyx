@@ -41,12 +41,12 @@ uint8_t* sram_guest_to_host(paddr_t paddr) {
 paddr_t host_to_guest_sram(uint8_t *haddr) { 
 	return haddr - psram + SRAM_BASE; 
 }
-static word_t psram_read(paddr_t addr, int len) {
+word_t psram_read(paddr_t addr, int len) {
   word_t ret = host_read(sram_guest_to_host(addr), len);
   return ret;
 }
 
-static void psram_write(paddr_t addr, int len, word_t data) {
+void psram_write(paddr_t addr, int len, word_t data) {
   host_write(sram_guest_to_host(addr), len, data);
 }
 

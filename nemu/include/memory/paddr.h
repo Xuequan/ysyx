@@ -42,4 +42,8 @@ static inline bool in_sram(paddr_t addr) {
 word_t paddr_read(paddr_t addr, int len);
 void paddr_write(paddr_t addr, int len, word_t data);
 
+uint8_t* mrom_guest_to_host(paddr_t paddr);
+
+uint8_t* sram_guest_to_host(paddr_t paddr);
+paddr_t host_to_guest_sram(uint8_t *haddr);
 #endif

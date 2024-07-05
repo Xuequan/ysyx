@@ -38,7 +38,7 @@ void init_mrom() {
 uint8_t* mrom_guest_to_host(paddr_t paddr) { 
 	return pmrom + paddr - MROM_BASE; 
 }
-static word_t pmrom_read(paddr_t addr, int len) {
+word_t pmrom_read(paddr_t addr, int len) {
   word_t ret = host_read(mrom_guest_to_host(addr), len);
   return ret;
 }
