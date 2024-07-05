@@ -13,8 +13,8 @@ SECTIONS {
 	.rodata : {
     *(.rodata*)
   }
-	.data 0x0f000000:
-  {
+	. = _data_start;
+	.data : {
     *(.data)
   } : data
   edata = .;
