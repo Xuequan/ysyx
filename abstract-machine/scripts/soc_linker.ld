@@ -10,11 +10,11 @@ SECTIONS {
   } : text
   etext = .;
   _etext = .;
-	.rodata 0x0fff1fff:
-  {
+	.rodata : {
     *(.rodata*)
   }
-  .data : {
+	.data 0x0fff1fff:
+  {
     *(.data)
   } : data
   edata = .;
