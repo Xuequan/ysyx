@@ -13,7 +13,7 @@ SECTIONS {
 	.rodata : {
     *(.rodata*)
   }
-	.data 0x0fff1fff:
+	.data 0x0f000000:
   {
     *(.data)
   } : data
