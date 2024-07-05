@@ -22,7 +22,7 @@ CFLAGS += -I/$(AM_HOME)/am/src/riscv/ysyxSoC/include
 .PHONY: $(AM_HOME)/am/src/riscv/ysyxSoC/trm.c
 
 
-NPCFLAGS += -b
+# NPCFLAGS += -b
 NPCFLAGS += -l $(NPC_HOME)/build/ysyxsoc-log.txt
 NPCFLAGS += -f $(IMAGE).elf
 NPCFLAGS += -d $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
