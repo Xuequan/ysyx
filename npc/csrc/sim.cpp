@@ -53,6 +53,7 @@ int sim_once() {
 		}
 		sim_one_cycle();
 	} // end-while
+
 	if (check_access_fault_exu() ) {
 		printf("EXU 'pc' = '%#x' Access fault! Please check!\n", get_pc() );
 		return 0;
