@@ -240,4 +240,10 @@ export "DPI-C" task ifu_ready_go_signal;
 task ifu_ready_go_signal (output bit o);
 	o = ifu_ready_go;
 endtask
+
+export "DPI-C" task check_if_access_fault_ifu;
+task check_if_access_fault_ifu (output bit o);
+	o = (isram_rready && isram_rvalid) ? 
+				(isram_rresp == 2'b11) : 1'b0;
+endtask
 endmodule

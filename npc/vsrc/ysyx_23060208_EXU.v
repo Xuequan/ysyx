@@ -532,6 +532,15 @@ task uart_addr_check (output bit o);
 			(dsram_araddr == 32'ha000_03f8)
 			);
 endtask
+
+// 初步的 access fault
+export "DPI-C" task check_if_access_fault;
+task check_if_access_fault (output bit o);
+	o    = (dsram_bvalid && dsram_bready) ? 
+			(dsram_bresp == 2'b11) : 
+			(dsram_rvalid && dsram_rready) ? 
+			(dsram_rresp == 2'b11) : 1'b0;
+endtask
 /*
 export "DPI-C" task get_pc_from_exu;
 task get_pc_from_exu (output [DATA_WIDTH-1:0] din);

@@ -61,4 +61,6 @@ bool check_clint_read();
 
 bool check_uart_write();
 
+bool check_access_fault_ifu();
+bool check_access_fault_exu();
 #endif

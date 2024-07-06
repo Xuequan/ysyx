@@ -31,6 +31,12 @@ static void sim_one_cycle() {
 int sim_once() {
 	int ret = 0;
 	while ( check_exu_ready_go() != true ) {
+
+		if (check_access_fault_ifu() ) {
+			printf("IFU 'pc' = '%#x' Access fault! Please check!\n", get_pc() );
+			return 0;
+		}
+
 		if (inst_is_ebreak()){
 			ret = 3;
 		}else if (inst_is_jal()){
@@ -47,6 +53,11 @@ int sim_once() {
 		}
 		sim_one_cycle();
 	} // end-while
+	if (check_access_fault_exu() ) {
+		printf("EXU 'pc' = '%#x' Access fault! Please check!\n", get_pc() );
+		return 0;
+	}
+		
 	sim_one_cycle();
 	return ret; 
 }

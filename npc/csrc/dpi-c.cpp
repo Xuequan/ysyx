@@ -171,3 +171,21 @@ bool check_uart_write() {
 	if (a == 1) return true;
 	else				return false;
 }
+bool check_access_fault_exu() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	check_if_access_fault(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_access_fault_ifu() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	check_if_access_fault_ifu(&a);
+	if (a == 1) return true;
+	else				return false;
+}
