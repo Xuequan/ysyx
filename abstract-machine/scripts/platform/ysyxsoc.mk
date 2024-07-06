@@ -14,7 +14,8 @@ LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld \
 						 --defsym=_pmem_start=0x20000000 --defsym=_entry_offset=0x0 \
 						 --defsym=_heap_start=0x0f000000  \
 						 --defsym=_heap_end=0x0fff0ffc  \
-						 --defsym=_stack_pointer=0x0fff1000 
+						 --defsym=_stack_pointer=0x0fff1fff 
+						# --defsym=_stack_pointer=0x0fff1000 
 
 LDFLAGS   += --gc-sections -e _start
 

@@ -2,9 +2,10 @@
 #include <ysyxsoc.h>
 
 extern char _heap_start;
+extern char _heap_end;
 int main(const char *args);
 
-Area heap = RANGE(&_heap_start, PMEM_END);
+Area heap = RANGE(&_heap_start, &_heap_end);
 #ifndef MAINARGS
 #define MAINARGS ""
 #endif
@@ -22,8 +23,6 @@ void halt(int code) {
 	}
 }
 
-  extern char _etext;
-  extern char _data_start;
 void _trm_init() {
   int ret = main(mainargs);
   halt(ret);
