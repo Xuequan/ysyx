@@ -103,8 +103,10 @@ always @(id_equal or state or ifu_allowin or isram_arready or isram_rvalid) begi
     SHAKED_AR:
       if (!isram_rvalid)
         next = WAIT_RVALID;
-      else 
+      else if (id_equal) 
         next = SHAKED_R;
+			else 
+				next = SHAKED_AR;
     WAIT_RVALID:
       if (isram_rvalid && id_equal)
         next = SHAKED_R;
