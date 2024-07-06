@@ -73,6 +73,7 @@ module ysyx_23060208_EXU
 	output									exu_allowin
 );
 
+
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
 reg [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus_r;
 reg [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus_r;

@@ -74,7 +74,7 @@ void sim_init() {
 
 	// initial reset
 	int i = -1;
-	while ( i < 29) {
+	while ( i < 5) {
 		i++;
 		top->clock ^= 1;
 		top->reset = 1;
