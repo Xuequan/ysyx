@@ -160,7 +160,9 @@ wire read_start;
 //assign read_start = |load_inst && (exu_valid || idu_to_exu_valid);
 assign read_start = |load_inst && exu_valid;
 
-always @(state_r or read_start or dsram_arready or dsram_rvalid) begin
+wire rid_equal;
+assign rid_equal = (dsram_arid == dsram_rid);
+always @(rid_equal or state_r or read_start or dsram_arready or dsram_rvalid) begin
 	next_r = IDLE_R;
 	case (state_r)
 		IDLE_R: 
@@ -176,12 +178,12 @@ always @(state_r or read_start or dsram_arready or dsram_rvalid) begin
 			else
 				next_r = WAIT_ARREADY;
 		SHAKED_AR:
-			if (!dsram_rvalid)
-				next_r = WAIT_RVALID;
-			else 
+			if (dsram_rvalid && rid_equal)
 				next_r = SHAKED_R;
+			else
+				next_r = WAIT_RVALID;
 		WAIT_RVALID:
-			if (dsram_rvalid)
+			if (dsram_rvalid && rid_equal)
 				next_r = SHAKED_R;
 			else 
 				next_r = WAIT_RVALID;
@@ -218,13 +220,13 @@ always @(posedge clock) begin
 				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
 		begin
 		arvalid_r <= 1'b1;
-		arid_r <= 0;
+		arid_r <= (exu_pc[3:0] == 4'b0) ? 4'h7 : exu_pc[3:0];
 		arlen_r <= 8'h0;
 		arburst_r <= 0;	
 		end
 	else begin
 		arvalid_r <= 0;
-		arid_r <= 0;
+		arid_r <= arid_r;
 		arlen_r <= 0;
 		arburst_r <= 0;	
 		end
@@ -269,7 +271,9 @@ end
 wire write_start;
 assign write_start = regfile_mem_mux[1] && exu_valid;
 
-always @(state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid) begin
+wire wid_equal;
+assign wid_equal = (dsram_awid == dsram_bid);
+always @(wid_equal or state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid) begin
 	next_w = IDLE_W;
 	case (state_w)
 		IDLE_W: 
@@ -295,15 +299,15 @@ always @(state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid
 			else 
 				next_w = SHAKED_W;
 		SHAKED_W:
-			if (!dsram_bvalid)
-				next_w = WAIT_BVALID;
-			else
+			if (dsram_bvalid && wid_equal)
 				next_w = SHAKED_B;
+			else
+				next_w = WAIT_BVALID;
 		WAIT_BVALID:
-			if (!dsram_bvalid)
-				next_w = WAIT_BVALID;
-			else
+			if (dsram_bvalid && wid_equal)
 				next_w = SHAKED_B;
+			else
+				next_w = WAIT_BVALID;
 		SHAKED_B:
 			if (!write_start)
 				next_w = IDLE_W;
@@ -336,13 +340,13 @@ always @(posedge clock) begin
 				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) ) 
 		begin
 		awvalid_r <= 1'b1;
-		awid_r <= 0;
+		awid_r <= (exu_pc[3:0] == 4'b0) ? 4'h5 : exu_pc[3:0];
 		awlen_r <= 8'h0;
 		awburst_r <= 0;	
 		end
 	else begin
 		awvalid_r <= 0;
-		awid_r <= 0;
+		awid_r <= awid_r;
 		awlen_r <= 8'h0;
 		awburst_r <= 0;	
 		end
