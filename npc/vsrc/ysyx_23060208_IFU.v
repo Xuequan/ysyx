@@ -82,7 +82,10 @@ always @(posedge clock) begin
     state <= next;
 end
 
-always @(state or ifu_allowin or isram_arready or isram_rvalid) begin
+wire id_equal;
+assign id_equal = (isram_rid == isram_arid);
+
+always @(id_equal or state or ifu_allowin or isram_arready or isram_rvalid) begin
   next = IDLE_R;
   case (state)
     IDLE_R: 
@@ -103,7 +106,7 @@ always @(state or ifu_allowin or isram_arready or isram_rvalid) begin
       else 
         next = SHAKED_R;
     WAIT_RVALID:
-      if (isram_rvalid)
+      if (isram_rvalid && id_equal)
         next = SHAKED_R;
       else 
         next = WAIT_RVALID;
@@ -143,14 +146,14 @@ always @(posedge clock) begin
 		begin
 		arvalid_r <= 1'b1;
 		arlen_r <= 8'h0;
-		arid_r <= 0;
+		arid_r <= isram_araddr[3:0];
 		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 		end
 	else begin
 		arvalid_r <= 1'b0;
 		arlen_r <= 8'h0;
-		arid_r <= 0;
+		arid_r <= arid_r;
 		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 		end
