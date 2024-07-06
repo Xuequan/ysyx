@@ -148,7 +148,7 @@ always @(posedge clock) begin
 		begin
 		arvalid_r <= 1'b1;
 		arlen_r <= 8'h0;
-		arid_r <= pc[3:0];
+		arid_r <= (pc[3:0] == 4'b0) ? 4'h3 : pc[3:0];
 		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 		end
