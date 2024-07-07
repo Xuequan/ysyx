@@ -72,7 +72,13 @@ module ysyx_23060208_EXU
 	
 	output									exu_allowin
 );
-
+reg [3:0] tik;
+always @(posedge clock) begin
+	if (reset)
+		tik <= 0;
+	else
+		tik <= (tik == 4'b1111) ? 0 : tik + 1;
+end
 
 reg [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus_r;
 reg [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus_r;
@@ -341,7 +347,7 @@ always @(posedge clock) begin
 				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) ) 
 		begin
 		awvalid_r <= 1'b1;
-		awid_r <= (exu_pc[3:0] == 4'b0) ? 4'h5 : exu_pc[3:0];
+		awid_r <= tik;
 		awlen_r <= 8'h0;
 		awburst_r <= 0;	
 		end
