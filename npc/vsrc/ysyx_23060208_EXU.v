@@ -371,26 +371,23 @@ always @(posedge clock) begin
 		bready_r <= 1'b0;
 end
 
+assign dsram_wstrb[7:4] = 4'b0;
+
 reg wvalid_r;
 assign dsram_wvalid = wvalid_r;
-reg [4:0] wstrb_r;
-assign dsram_wstrb[7:3] = wstrb_r;
 reg wlast_r;
 assign dsram_wlast = wlast_r;
 always @(posedge clock) begin
 	if (reset) begin
 		wvalid_r <= 1'b0;
-		wstrb_r <= 5'b0;
 		wlast_r <= 1'b0;
 	end
 	else if (next_w == SHAKED_AW || next_w == WAIT_WREADY) begin
 		wvalid_r <= 1'b1;
-		wstrb_r <= 5'b0_1111;
 		wlast_r <= 1'b1;
 	end
 	else begin
 		wvalid_r <= 1'b0;
-		wstrb_r <= 5'b0;
 		wlast_r <= 1'b0;
 	end
 end
@@ -457,16 +454,19 @@ assign dsram_awsize = write_to_uart ? 3'b000 : 3'b010;
 //assign dsram_wen = regfile_mem_mux[1];
 //assign dsram_awvalid = regfile_mem_mux[1];
 assign dsram_wdata[31:0] = store_data_raw; 
-assign dsram_wstrb[2:0] = ( {3{store_inst[0]}} & 3'b100 )
-											| ( {3{store_inst[1]}} & 3'b010 )
-											| ( {3{store_inst[2]}} & 3'b001 );
+assign dsram_wstrb[3:0] = ( {4{store_inst[0]}} & 4'b1111 )
+											| ( {4{store_inst[1]}} & 4'b0011 )
+											| ( {4{store_inst[2]}} & 4'b0001 );
 /* =======load instruction ============================== */
 assign dsram_araddr = alu_result;
 wire read_from_uart;
 assign read_from_uart = (dsram_araddr >= uart_addr_min) &&
 								 (dsram_araddr <= uart_addr_max);
-assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
-
+//assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
+assign dsram_arsize = ({3{read_from_uart | load_inst[3] | load_inst[4]}} & 3'b000) 
+	| ({3{load_inst[2] | load_inst[1]}} & 3'b001)
+	| ({3{load_inst[0] 							 }} & 3'b010);
+	
 wire [DATA_WIDTH-1:0] load_data;
 assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata[31:0])
 | ({DATA_WIDTH{load_inst[1]}} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})

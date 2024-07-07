@@ -129,8 +129,7 @@ reg [7:0] arlen_r;
 assign isram_arlen = arlen_r;
 reg [3:0] arid_r;
 assign isram_arid = arid_r;
-reg [2:0] arsize_r;
-assign isram_arsize = arsize_r;
+assign isram_arsize = 3'b010;
 reg [1:0] arburst_r;
 assign isram_arburst = arburst_r;
 
@@ -139,7 +138,6 @@ always @(posedge clock) begin
 		arvalid_r <= 0;
 		arlen_r <= 8'h0;
 		arid_r <= 0;
-		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 	end
 	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
@@ -149,14 +147,12 @@ always @(posedge clock) begin
 		arvalid_r <= 1'b1;
 		arlen_r <= 8'h0;
 		arid_r <= (pc[3:0] == 4'b0) ? 4'h3 : pc[3:0];
-		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 		end
 	else begin
 		arvalid_r <= 1'b0;
 		arlen_r <= 8'h0;
 		arid_r <= arid_r;
-		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 		end
 end
