@@ -328,6 +328,7 @@ end
 
 reg awvalid_r;
 //assign dsram_awvalid = (state_w == IDLE_W) ? write_start : awvalid_r;
+assign dsram_awvalid = awvalid_r;
 reg [3:0] awid_r;
 assign dsram_awid = awid_r;
 reg [7:0] awlen_r;
