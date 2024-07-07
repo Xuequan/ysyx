@@ -529,12 +529,12 @@ task get_inst_from_exu (output [DATA_WIDTH-1:0] din);
 	din    = exu_inst;
 endtask
 
-// rtc
-export "DPI-C" task rtc_addr_check;
-task rtc_addr_check (output bit o);
+// clint
+export "DPI-C" task clint_addr_check;
+task clint_addr_check (output bit o);
 	o = |load_inst && (
-			(dsram_araddr == 32'ha000_0048)
-			|| (dsram_araddr == 32'ha000_0048 + 4)
+			(dsram_araddr >= 32'h0200_0000)
+			&& (dsram_araddr <= 32'h0200_ffff)
 			);
 endtask
 
@@ -542,7 +542,8 @@ endtask
 export "DPI-C" task uart_addr_check;
 task uart_addr_check (output bit o);
 	o = |store_inst && (
-			(dsram_araddr == 32'ha000_03f8)
+			(dsram_araddr >= 32'h1000_0000)
+			&& (dsram_araddr <= 32'h1000_0fff)
 			);
 endtask
 

@@ -158,7 +158,7 @@ bool check_clint_read() {
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
-	rtc_addr_check(&a);
+	clint_addr_check(&a);
 	if (a == 1) return true;
 	else				return false;
 }
