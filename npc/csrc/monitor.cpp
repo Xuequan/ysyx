@@ -59,10 +59,12 @@ void sdb_set_batch_mode();
 
 static char *log_file = NULL;
 static char *diff_so_file = NULL;
-static char *img_file = NULL;
+char *img_file = NULL;
 static int difftest_port = 1234;
 char *elf_file = NULL;
 
+// load_img() 将 img 文件装载到内存中某处；
+// 只是方便在初始化 DiffTest 时，将其复制给 NMEU 对应的取指起始处
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
