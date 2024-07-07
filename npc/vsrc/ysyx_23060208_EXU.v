@@ -207,7 +207,8 @@ end
 
 //assign dsram_arvalid = |load_inst && exu_valid;
 reg arvalid_r;
-assign dsram_arvalid = (state_r == IDLE_R) ? read_start : arvalid_r;
+//assign dsram_arvalid = (state_r == IDLE_R) ? read_start : arvalid_r;
+assign dsram_arvalid = arvalid_r;
 reg [3:0] arid_r;
 assign dsram_arid = arid_r;
 reg [7:0] arlen_r;
@@ -227,7 +228,7 @@ always @(posedge clock) begin
 				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
 		begin
 		arvalid_r <= 1'b1;
-		arid_r <= (exu_pc[3:0] == 4'b0) ? 4'h7 : exu_pc[3:0];
+		arid_r <= tik;
 		arlen_r <= 8'h0;
 		arburst_r <= 0;	
 		end
