@@ -41,8 +41,8 @@ void copy_data(void *dst, void *src, size_t n) {
 }
 
 void _trm_init() {
-	copy_data(_rodata_start, _rodata_load_start, (size_t)_rodata_size);		
-	copy_data(_data_start, _data_load_start, (size_t)_data_size);		
+	//copy_data(_rodata_start, _rodata_load_start, (size_t)_rodata_size);		
+	//copy_data(_data_start, _data_load_start, (size_t)_data_size);		
 	copy_data(_bss_start, _bss_load_start, (size_t)_bss_size);		
 
   int ret = main(mainargs);
