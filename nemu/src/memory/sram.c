@@ -30,7 +30,8 @@ void init_sram() {
   for (i = 0; i < (int) (SRAM_SIZE / sizeof(p[0])); i ++) {
     p[i] = rand();
   }
-  Log("SRAM area [0x0f00_0000, 0x0fff_ffff]");
+  Log("SRAM area [0x0f00_0000, 0x0f001fff]");
+  //Log("SRAM area [0x0f00_0000, 0x0fff_ffff]");
 }
 
 uint8_t* sram_guest_to_host(paddr_t paddr) { 

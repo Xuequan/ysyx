@@ -25,7 +25,7 @@
 #define MROM_SIZE (0x20000fff - 0x20000000)
 #define MROM_BASE 0x20000000
 
-#define SRAM_SIZE (0x0fffffff - 0x0f000000)
+#define SRAM_SIZE (0x0f001fff - 0x0f000000)
 #define SRAM_BASE 0x0f000000
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
 uint8_t* guest_to_host(paddr_t paddr);
