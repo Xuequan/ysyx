@@ -45,7 +45,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
 		_bss_end = .;
-  } > sram
+  } > sram AT> sram
 
 	_bss_size = SIZEOF(.bss);
 	_bss_load_start = LOADADDR(.bss);
