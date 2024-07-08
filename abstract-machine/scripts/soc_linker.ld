@@ -5,24 +5,31 @@ SECTIONS {
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   . = _pmem_start + _entry_offset;
   .text : {
+		_text_start = .;
     *(entry)
     *(.text*)
+		_text_end = .;
   } : text
   etext = .;
   _etext = .;
 	.rodata : {
+		_rodata_start = .;
     *(.rodata*)
+		_rodata_end = .;
   }
 	.data : {
+		_data_start = .;
     *(.data)
+		_data_end = .;
   } : data
   edata = .;
   _data = .;
   .bss : {
-	_bss_start = .;
+		_bss_start = .;
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+		_bss_end = .;
   }
   _heap_start = ALIGN(0x1000);
 	. = _heap_start;
