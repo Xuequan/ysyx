@@ -26,13 +26,15 @@ SECTIONS {
     *(.rodata*)
 		_rodata_end = .;
   } > mrom AT> sram
-	. = SIZEOF(.rodata) ;
+	_rodata_size = SIZEOF(.rodata);
+	_rodata_load_start = LOADADDR(.rodata);
 	.data : {
 		_data_start = .;
     *(.data)
 		_data_end = .;
   } > sram AT> sram
-	. = SIZEOF(.data) ;
+	_data_size = SIZEOF(.data);
+	_data_load_start = LOADADDR(.data);
   .bss : {
 		_bss_start = .;
     *(.bss*)
@@ -40,6 +42,8 @@ SECTIONS {
     *(.scommon)
 		_bss_end = .;
   } > sram AT> sram
+	_bss_size = SIZEOF(.bss);
+	_bss_load_start = LOADADDR(.bss);
 	. = SIZEOF(.bss) ;
   _heap_start = ALIGN(0x1000);
 	. = _heap_start;
