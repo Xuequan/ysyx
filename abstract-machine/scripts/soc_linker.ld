@@ -1,7 +1,7 @@
 MEMORY 
 	{
-	 mrom : ORIGIN = 0X20000000, LENGTH = 4K
-	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
+	 mrom(rx) : ORIGIN = 0X20000000, LENGTH = 4K
+	 sram(rw!x) : ORIGIN = 0x0f000000, LENGTH = 8K
 	}
 
 ENTRY(_start)
@@ -11,8 +11,8 @@ PHDRS {
 				data PT_LOAD ; 
 			} 
 */
-
 SECTIONS {
+	. = SIZEOF_HEADERS;
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   . = _pmem_start + _entry_offset;
   .text : {
