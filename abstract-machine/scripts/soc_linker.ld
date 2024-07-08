@@ -18,30 +18,37 @@ SECTIONS {
     *(entry)
     *(.text*)
 		_text_end = .;
-  } > mrom AT> mrom :text
+  } > mrom  :text
+
 	.rodata : {
 		_rodata_start = .;
     *(.rodata*)
 		_rodata_end = .;
   } > mrom AT> sram
+
 	_rodata_size = SIZEOF(.rodata);
 	_rodata_load_start = LOADADDR(.rodata);
+
 	.data : {
 		_data_start = .;
     *(.data)
 		_data_end = .;
-  } > sram AT> sram :data
+  } > sram :data
+
 	_data_size = SIZEOF(.data);
 	_data_load_start = LOADADDR(.data);
+
   .bss : {
 		_bss_start = .;
     *(.bss*)
     *(.sbss*)
     *(.scommon)
 		_bss_end = .;
-  } > sram AT> sram
+  } > sram
+
 	_bss_size = SIZEOF(.bss);
 	_bss_load_start = LOADADDR(.bss);
+
 	. = SIZEOF(.bss) ;
   _heap_start = ALIGN(0x1000);
 	. = _heap_start;
