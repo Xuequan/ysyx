@@ -30,7 +30,7 @@ SECTIONS {
 		_data_start = .;
     *(.data)
 		_data_end = .;
-  } > sram AT> sram
+  } > sram AT> sram :data
 	_data_size = SIZEOF(.data);
 	_data_load_start = LOADADDR(.data);
   .bss : {
