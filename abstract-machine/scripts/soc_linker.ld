@@ -10,7 +10,7 @@ PHDRS {
 				data PT_LOAD ; 
 			} 
 SECTIONS {
-	. = SIZEOF_HEADERS;
+	/* . = SIZEOF_HEADERS; */
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   . = _pmem_start + _entry_offset;
   .text : {
@@ -45,7 +45,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
 		_bss_end = .;
-  } > sram AT> sram
+  } > mrom AT> sram
 
 	_bss_size = SIZEOF(.bss);
 	_bss_load_start = LOADADDR(.bss);
