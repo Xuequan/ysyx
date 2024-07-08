@@ -37,8 +37,7 @@ extern char _bss_load_start[];
 
 void copy_data(void *dst, void *src, size_t n) {
 	if ((char *)dst != (char *)src) 
-		//memcpy(dst, src, n); 
-		*(char *)dst = *(char *)src;
+		memcpy(dst, src, n); 
 }
 
 void _trm_init() {

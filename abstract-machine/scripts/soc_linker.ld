@@ -49,7 +49,7 @@ SECTIONS {
 	_bss_size = SIZEOF(.bss);
 	_bss_load_start = LOADADDR(.bss);
 
-	. = SIZEOF(.bss) ;
+	. = SIZEOF(.bss) + SIZEOF(.rodata) + SIZEOF(.data) ;
   _heap_start = ALIGN(0x1000);
 	. = _heap_start;
 	 /*. = _heap_start + 0xff0ffc; */
