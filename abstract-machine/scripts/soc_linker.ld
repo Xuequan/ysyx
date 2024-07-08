@@ -26,11 +26,13 @@ SECTIONS {
     *(.rodata*)
 		_rodata_end = .;
   } > mrom AT> sram
+	. = SIZEOF(.rodata) ;
 	.data : {
 		_data_start = .;
     *(.data)
 		_data_end = .;
   } > sram AT> sram
+	. = SIZEOF(.data) ;
   .bss : {
 		_bss_start = .;
     *(.bss*)
@@ -38,6 +40,7 @@ SECTIONS {
     *(.scommon)
 		_bss_end = .;
   } > sram AT> sram
+	. = SIZEOF(.bss) ;
   _heap_start = ALIGN(0x1000);
 	. = _heap_start;
 	 /*. = _heap_start + 0xff0ffc; */
