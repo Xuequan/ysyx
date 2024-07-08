@@ -39,9 +39,9 @@ void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(word_t NO) = NULL;
 void (*ref_difftest_init)(int port) = NULL;
 
+
 void init_difftest(char *ref_so_file, long img_size, int port) {
 	
-  //assert(ref_so_file != NULL);
   if (ref_so_file == NULL) {
 		printf("no input ref_so_file\n");
 		return;
@@ -79,7 +79,6 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 	size_t text_size = _text_end - _text_start;
 	printf("text_size = %#lx\n", text_size);
 	*/
-
 	get_npc_regs();
 	uint32_t buf[16] = {0};
 	memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
