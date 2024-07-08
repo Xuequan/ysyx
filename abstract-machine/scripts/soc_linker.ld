@@ -24,7 +24,8 @@ SECTIONS {
 		_rodata_start = .;
     *(.rodata*)
 		_rodata_end = .;
-  } > mrom 
+  } > mrom  
+  /* } > mrom AT> sram */
 
 	_rodata_size = SIZEOF(.rodata);
 	_rodata_load_start = LOADADDR(.rodata);
