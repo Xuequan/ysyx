@@ -80,12 +80,13 @@ static long load_img() {
   long size = ftell(fp);
 
   Log("The image is %s, size = %ld", img_file, size);
-  printf("The image is %s, size = %ld", img_file, size);
 
   fseek(fp, 0, SEEK_SET);
 	// 将 image 读到 RESET_VECTOR (0x8000_0000) 对应的电脑的内存
 	// 处，即 pmem 处；
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
+	for(int i = 0; i < 10; i++)
+		printf("%d : %d\n", i, *((int32_t *)guest_to_host(RESET_VECTOR) + i));
   assert(ret == 1);
 
   fclose(fp);
