@@ -483,7 +483,9 @@ assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 :
 
 assign regfile_waddr = rd;
 	// regfile 写使能
-assign regfile_wen = regfile_mem_mux[0] && exu_valid;
+wire exu_to_regfile_valid; 
+assign exu_to_regfile_valid = exu_valid && exu_ready_go;
+assign regfile_wen = regfile_mem_mux[0] && exu_to_regfile_valid;
 
 
 
