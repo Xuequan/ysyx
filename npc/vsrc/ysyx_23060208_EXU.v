@@ -454,6 +454,7 @@ assign dsram_awsize = write_to_uart ? 3'b000 : 3'b010;
 //assign dsram_wen = regfile_mem_mux[1];
 //assign dsram_awvalid = regfile_mem_mux[1];
 assign dsram_wdata[31:0] = store_data_raw; 
+assign dsram_wdata[63:32] = store_data_raw; 
 assign dsram_wstrb[3:0] = ( {4{store_inst[0]}} & 4'b1111 )
 											| ( {4{store_inst[1]}} & 4'b0011 )
 											| ( {4{store_inst[2]}} & 4'b0001 );
@@ -467,13 +468,23 @@ assign dsram_arsize = ({3{read_from_uart | load_inst[3] | load_inst[4]}} & 3'b00
 	| ({3{load_inst[2] | load_inst[1]}} & 3'b001)
 	| ({3{load_inst[0] 							 }} & 3'b010);
 	
+
+wire [DATA_WIDTH-1:0] read_data;
+assign read_data = (dsram_araddr[3:0] == 4'h0 || dsram_araddr[3:0] == 4'h8) 
+							? dsram_rdata[31:0] : dsram_rdata[63:32];
 wire [DATA_WIDTH-1:0] load_data;
+assign load_data = ({DATA_WIDTH{load_inst[0]}} & read_data[31:0])
+| ({DATA_WIDTH{load_inst[1]}} & {{16{read_data[15]}}, read_data[15:0]})
+| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, read_data[15:0]})
+| ({DATA_WIDTH{load_inst[3]}} & {{24{read_data[7]}}, read_data[7:0]})
+| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, read_data[7:0]});
+/*
 assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata[31:0])
 | ({DATA_WIDTH{load_inst[1]}} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
 | ({DATA_WIDTH{load_inst[2]}} & { 16'b0, dsram_rdata[15:0]})
 | ({DATA_WIDTH{load_inst[3]}} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
 | ({DATA_WIDTH{load_inst[4]}} & { 24'b0, dsram_rdata[7:0]});
-
+*/
 /* ============ to regfile ============================== */
 // 若是 jal, jalr, 那么将 rd <- exu_pc + 4
 assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 : 
