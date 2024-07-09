@@ -463,10 +463,12 @@ assign dsram_araddr = alu_result;
 wire read_from_uart;
 assign read_from_uart = (dsram_araddr >= uart_addr_min) &&
 								 (dsram_araddr <= uart_addr_max);
-//assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
+assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
+/*
 assign dsram_arsize = ({3{read_from_uart | load_inst[3] | load_inst[4]}} & 3'b000) 
 	| ({3{load_inst[2] | load_inst[1]}} & 3'b001)
 	| ({3{load_inst[0] 							 }} & 3'b010);
+*/
 	
 
 wire [DATA_WIDTH-1:0] read_data;
