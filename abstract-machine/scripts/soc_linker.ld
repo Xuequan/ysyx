@@ -1,7 +1,7 @@
 MEMORY 
 	{
-	 mrom(rx) : ORIGIN = 0X20000000, LENGTH = 4K
-	 sram(rw!x) : ORIGIN = 0x0f000000, LENGTH = 8K
+	 mrom : ORIGIN = 0X20000000, LENGTH = 4K
+	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
 	}
 
 ENTRY(_start)
@@ -18,47 +18,46 @@ SECTIONS {
     *(entry)
     *(.text*)
 		_text_end = .;
-  } > mrom  :text
+  } > mrom :text
 
 	.rodata : {
-		_rodata_start = .;
     *(.rodata*)
-		_rodata_end = .;
-  } > mrom  
-  /* } > mrom AT> sram */
+  } > mrom
 
-	_rodata_size = SIZEOF(.rodata);
-	_rodata_load_start = LOADADDR(.rodata);
-
-	.data : {
+	.data ORIGIN (sram) : 
+		/*AT (ADDR (.text) + SIZEOF (.rodata) + SIZEOF (.text) ) */
+	{
 		_data_start = .;
     *(.data)
 		_data_end = .;
-  } > sram :data
+  } > sram AT> mrom :data
 
-	_data_size = SIZEOF(.data);
-	_data_load_start = LOADADDR(.data);
-
-  .bss : {
-		_bss_start = .;
+  .bss : 
+	{
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-		_bss_end = .;
-  } > mrom AT> sram
+  } > sram
 
-	_bss_size = SIZEOF(.bss);
-	_bss_load_start = LOADADDR(.bss);
-
-	. = SIZEOF(.bss) + SIZEOF(.rodata) + SIZEOF(.data) ;
   _heap_start = ALIGN(0x1000);
-	. = _heap_start;
+	_heap_start = 0x0f000000 + SIZEOF (.data) ;
 	 /*. = _heap_start + 0xff0ffc; */
+	/*
 	. = _heap_end;
+	_stack_top = ALIGN(0x1000);
+	. = _stack_end;
+	. = _stack_pointer;
+	*/
 	/*
 	_stack_top = ALIGN(0x1000);
 	. = _stack_top + 0x8000;
-	*/
 	. = _stack_pointer;
   _end = .;
+	*/
 }
+
+_data_size = SIZEOF(.data);
+_data_Load_addr = LOADADDR(.data);
+
+_bss_start = ADDR(.bss);
+_bss_end = _bss_start + SIZEOF(.bss);
