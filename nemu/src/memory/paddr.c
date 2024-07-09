@@ -80,7 +80,7 @@ word_t paddr_read(paddr_t addr, int len) {
 		word_t num = pmrom_read(addr, len); 
 #ifdef CONFIG_MTRACE
 		if (cpu.pc != addr)  // fliter instruction fetch
-			log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+			log_write("Read from mrom: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #endif
 		return num; 
 	}
@@ -89,7 +89,7 @@ word_t paddr_read(paddr_t addr, int len) {
 		word_t num = psram_read(addr, len); 
 #ifdef CONFIG_MTRACE
 		if (cpu.pc != addr)  // fliter instruction fetch
-			log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+			log_write("Read from sram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #endif
 		return num; 
 	}
@@ -112,7 +112,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 	// mrom 
   if (likely(in_mrom(addr))) { 
 #ifdef CONFIG_MTRACE
-		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+		log_write("Write to mrom: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
 #endif
 		printf("NEMU: please check, mrom cannot write after init\n");
 		return; 
@@ -121,7 +121,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 	// sram
   if (likely(in_sram(addr))) { 
 #ifdef CONFIG_MTRACE
-		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+		log_write("Write to sram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
 #endif
 		psram_write(addr, len, data); 
 		return; 
