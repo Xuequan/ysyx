@@ -444,9 +444,9 @@ assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 assign dsram_awaddr = alu_result; 
 // decide awsize;
 wire [31:0] uart_addr_min; 
-assign uart_addr_min = 32'h2000_0000;
+assign uart_addr_min = 32'h1000_0000;
 wire [31:0] uart_addr_max;
-assign uart_addr_max  = 32'h2000_0fff;
+assign uart_addr_max  = 32'h1000_0fff;
 wire write_to_uart;
 assign write_to_uart = (dsram_awaddr >= uart_addr_min) &&
 								 (dsram_awaddr <= uart_addr_max);
