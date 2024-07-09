@@ -469,11 +469,10 @@ assign dsram_arsize = ({3{read_from_uart | load_inst[3] | load_inst[4]}} & 3'b00
 	| ({3{load_inst[2] | load_inst[1]}} & 3'b001)
 	| ({3{load_inst[0] 							 }} & 3'b010);
 */
-	
-
 wire [DATA_WIDTH-1:0] read_data;
 assign read_data = (dsram_araddr[3:0] == 4'h0 || dsram_araddr[3:0] == 4'h8) 
 							? dsram_rdata[31:0] : dsram_rdata[63:32];
+
 wire [DATA_WIDTH-1:0] load_data;
 assign load_data = ({DATA_WIDTH{load_inst[0]}} & read_data[31:0])
 | ({DATA_WIDTH{load_inst[1]}} & {{16{read_data[15]}}, read_data[15:0]})
