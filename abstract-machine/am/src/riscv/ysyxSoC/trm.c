@@ -47,6 +47,5 @@ void __attribute__
 	while (dst < _data_end)
 		*dst++ = *src++;
 
-
 	_trm_init();
 }
