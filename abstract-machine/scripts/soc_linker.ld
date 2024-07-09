@@ -26,6 +26,7 @@ SECTIONS {
 		. = ALIGN(0x4);
 		_rodata_start = . ;
     *(.rodata*)
+		*(.srodata.mainargs)
 		. = ALIGN(0x4);
 		_rodata_end   = . ;
   } > mrom
@@ -46,27 +47,6 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
   } > sram
-
-	/*
-	.heap ORIGIN (sram) + SIZEOF (.data) (NOLOAD) :
-	{
-		. = ALIGN(4);
-		_heap_start = .;
-		. = . + LENGTH (sram) + SIZEOF (.data) - 0x8000 ;
-		. = ALIGN(0x4);
-		_heap_end = .;
-	} > sram	
-
-	.stack ORIGIN (sram) + LENGTH (sram) - 0x8000 (NOLOAD) :
-	{
-		. = ALIGN(0x4);
-		_stack_end = .;
-		. = . + 0x8000; 
-		// KEEP(*(.stack_buffer)) 
-		_stack_pointer = .;
-		. = ALIGN(0x4);
-	} > sram
-	*/
 }
 
 _data_size = SIZEOF(.data);
