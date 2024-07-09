@@ -21,7 +21,9 @@ SECTIONS {
   } > mrom :text
 
 	.rodata : {
+		_rodata_start = . ;
     *(.rodata*)
+		_rodata_end   = . ;
   } > mrom
 
 	.data ORIGIN (sram) : 
