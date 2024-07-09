@@ -48,4 +48,3 @@ word_t psram_read(paddr_t addr, int len) {
 void psram_write(paddr_t addr, int len, word_t data) {
   host_write(sram_guest_to_host(addr), len, data);
 }
-
