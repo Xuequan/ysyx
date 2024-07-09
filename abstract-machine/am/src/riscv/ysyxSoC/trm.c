@@ -34,8 +34,7 @@ extern char _data_end[];
 extern char _bss_start[];
 extern char _bss_end[];
 
-void __attribute__ 
-((section (".first_init"))) _data_init() {
+void __attribute__  ((section (".first_init"))) _data_init() {
 	char *dst;
 	/* Zero bss */
 	for (dst = _bss_start; dst < _bss_end; dst++)
