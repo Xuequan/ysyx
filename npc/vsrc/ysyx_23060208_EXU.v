@@ -450,7 +450,11 @@ assign uart_addr_max  = 32'h1000_0fff;
 wire write_to_uart;
 assign write_to_uart = (dsram_awaddr >= uart_addr_min) &&
 								 (dsram_awaddr <= uart_addr_max);
-assign dsram_awsize = write_to_uart ? 3'b000 : 3'b010; 
+//assign dsram_awsize = write_to_uart ? 3'b000 : 3'b010; 
+assign dsram_awsize = ({3{write_to_uart | store_inst[2]}} & 3'b000) 
+	| ({3{store_inst[1]}} & 3'b001)
+	| ({3{store_inst[0]}} & 3'b010);
+
 //assign dsram_wen = regfile_mem_mux[1];
 //assign dsram_awvalid = regfile_mem_mux[1];
 assign dsram_wdata[31:0] = store_data_raw; 
