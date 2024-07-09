@@ -41,7 +41,7 @@ static inline bool in_mrom(paddr_t addr) {
 }
 
 static inline bool in_sram(paddr_t addr) {
-  return addr - 0x0f000000 < 0xffffff;
+  return addr - 0x0f000000 < 0x1fff;
 }
 
 word_t paddr_read(paddr_t addr, int len);

@@ -28,9 +28,10 @@ void init_mrom() {
   uint32_t *p = (uint32_t *)pmrom;
   int i;
   for (i = 0; i < (int) (MROM_SIZE / sizeof(p[0])); i ++) {
-    p[i] = rand();
+    //p[i] = rand();
+    p[i] = 0;
   }
-  Log("MROM area [0x20000000, 0x20000fff]");
+  Log("MROM area [0x2000_0000, 0x2000_0fff]");
 }
 
 uint8_t* mrom_guest_to_host(paddr_t paddr) { 
