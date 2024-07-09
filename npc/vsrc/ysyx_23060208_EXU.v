@@ -463,29 +463,29 @@ assign dsram_araddr = alu_result;
 wire read_from_uart;
 assign read_from_uart = (dsram_araddr >= uart_addr_min) &&
 								 (dsram_araddr <= uart_addr_max);
-assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
-/*
+//assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
 assign dsram_arsize = ({3{read_from_uart | load_inst[3] | load_inst[4]}} & 3'b000) 
 	| ({3{load_inst[2] | load_inst[1]}} & 3'b001)
 	| ({3{load_inst[0] 							 }} & 3'b010);
-*/
+
+
+wire [DATA_WIDTH-1:0] load_data;
+/*
 wire [DATA_WIDTH-1:0] read_data;
 assign read_data = (dsram_araddr[3:0] == 4'h0 || dsram_araddr[3:0] == 4'h8) 
 							? dsram_rdata[31:0] : dsram_rdata[63:32];
 
-wire [DATA_WIDTH-1:0] load_data;
 assign load_data = ({DATA_WIDTH{load_inst[0]}} & read_data[31:0])
 | ({DATA_WIDTH{load_inst[1]}} & {{16{read_data[15]}}, read_data[15:0]})
 | ({DATA_WIDTH{load_inst[2]}} & { 16'b0, read_data[15:0]})
 | ({DATA_WIDTH{load_inst[3]}} & {{24{read_data[7]}}, read_data[7:0]})
 | ({DATA_WIDTH{load_inst[4]}} & { 24'b0, read_data[7:0]});
-/*
+*/
 assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata[31:0])
 | ({DATA_WIDTH{load_inst[1]}} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
 | ({DATA_WIDTH{load_inst[2]}} & { 16'b0, dsram_rdata[15:0]})
 | ({DATA_WIDTH{load_inst[3]}} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
 | ({DATA_WIDTH{load_inst[4]}} & { 24'b0, dsram_rdata[7:0]});
-*/
 /* ============ to regfile ============================== */
 // 若是 jal, jalr, 那么将 rd <- exu_pc + 4
 assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 : 
