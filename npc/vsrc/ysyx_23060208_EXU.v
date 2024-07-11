@@ -110,6 +110,14 @@ assign {regfile_mem_mux,
 				exu_inst
 				} = idu_to_exu_bus_r;
 
+wire inst_lw  = load_inst[0];
+wire inst_lh  = load_inst[1];
+wire inst_lhu = load_inst[2];
+wire inst_lb  = load_inst[3];
+wire inst_lbu = load_inst[4];
+
+// 由于要8字节对齐，因此有时候需要第2次读
+wire need_second_rd;
 wire [11					:0] csr_idx;
 wire [2						:0] csr_inst;
 wire [DATA_WIDTH-1:0] csr_nextpc; 
@@ -145,7 +153,8 @@ wire exu_ready_go;
 wire load_ready_go;
 wire store_ready_go;
 
-assign load_ready_go  = (next_r == SHAKED_R);
+assign load_ready_go  = need_second_rd ? (next_r == SHAKED_R2)
+                                : (next_r == SHAKED_R);
 assign store_ready_go = (next_w == SHAKED_B);
 assign exu_ready_go = |store_inst ? store_ready_go :
 											|load_inst  ? load_ready_go :
@@ -153,9 +162,13 @@ assign exu_ready_go = |store_inst ? store_ready_go :
 
 assign exu_allowin = !exu_valid || exu_ready_go;
 /*============================ read FSM ========================*/
-parameter [2:0] IDLE_R = 3'b000, WAIT_ARREADY = 3'b001, SHAKED_AR = 3'b010,
-								WAIT_RVALID = 3'b011, SHAKED_R = 3'b100;
-reg [2:0] state_r, next_r;
+parameter [3:0] IDLE_R = 4'h0, 
+								WAIT_ARREADY = 4'h1, SHAKED_AR = 4'h2,
+								WAIT_RVALID = 4'h3, SHAKED_R = 4'h4,
+								WAIT_ARREADY2 = 4'h5, SHAKED_AR2 = 4'h6,
+								WAIT_RVALID2 = 4'h7, SHAKED_R2 = 4'h8,
+								IDLE_R2 = 4'h9;
+reg [3:0] state_r, next_r;
 always @(posedge clock) begin
 	if (reset) 
 		state_r <= IDLE_R;
@@ -164,12 +177,12 @@ always @(posedge clock) begin
 end
 
 wire read_start;
-//assign read_start = |load_inst && (exu_valid || idu_to_exu_valid);
 assign read_start = |load_inst && exu_valid;
 
 wire rid_equal;
 assign rid_equal = (dsram_arid == dsram_rid);
-always @(rid_equal or state_r or read_start or dsram_arready or dsram_rvalid) begin
+
+always @(*) begin
 	next_r = IDLE_R;
 	case (state_r)
 		IDLE_R: 
@@ -195,26 +208,52 @@ always @(rid_equal or state_r or read_start or dsram_arready or dsram_rvalid) be
 			else 
 				next_r = WAIT_RVALID;
 		SHAKED_R:
-			if (!read_start)
+			if (need_second_rd)
+				next_r = IDLE_R2;
+			else
 				next_r = IDLE_R;
-			else if (!dsram_arready)
-				next_r = WAIT_ARREADY;
+
+// second read
+		IDLE_R2:
+			if (!dsram_arready)
+				next_r = WAIT_ARREADY2;
 			else 
-				next_r = SHAKED_AR;
+				next_r = SHAKED_AR2;
+			
+		WAIT_ARREADY2:
+			if (dsram_arready)
+				next_r = SHAKED_AR2;
+			else
+				next_r = WAIT_ARREADY2;
+
+		SHAKED_AR2:
+			if (dsram_rvalid && rid_equal)
+				next_r = SHAKED_R2;
+			else
+				next_r = WAIT_RVALID2;
+
+		WAIT_RVALID2:
+			if (dsram_rvalid && rid_equal)
+				next_r = SHAKED_R2;
+			else 
+				next_r = WAIT_RVALID2;
+
+		SHAKED_R2:
+				next_r = IDLE_R;
+
 		default: ;
 	endcase	
 end
 
-//assign dsram_arvalid = |load_inst && exu_valid;
-reg arvalid_r;
-//assign dsram_arvalid = (state_r == IDLE_R) ? read_start : arvalid_r;
-assign dsram_arvalid = arvalid_r;
+reg 			arvalid_r;
 reg [3:0] arid_r;
-assign dsram_arid = arid_r;
 reg [7:0] arlen_r;
-assign dsram_arlen = arlen_r;
 reg [1:0] arburst_r;
+
+assign dsram_arvalid = arvalid_r;
 assign dsram_arburst = arburst_r;
+assign dsram_arlen = arlen_r;
+assign dsram_arid = arid_r;
 
 always @(posedge clock) begin
 	if (reset) begin
@@ -225,7 +264,14 @@ always @(posedge clock) begin
 	end
 	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
 				|| (state_r == IDLE_R && next_r == SHAKED_AR) 
-				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) ) 
+				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) 
+				|| (next_r == IDLE_R2)
+				|| (next_r == WAIT_ARREADY2) )
+				/*
+				|| (state_r == IDLE_R2 && next_r == SHAKED_AR2) 
+				|| (state_r == WAIT_ARREADY2 && next_r == WAIT_ARREADY2)  
+				|| (state_r == IDLE_R2 && next_r == WAIT_ARREADY2) ) 
+				*/
 		begin
 		arvalid_r <= 1'b1;
 		arid_r <= tik;
@@ -239,30 +285,26 @@ always @(posedge clock) begin
 		arburst_r <= 0;	
 		end
 end
+
 reg rready_r;
 assign dsram_rready = rready_r;
 always @(posedge clock) begin
 	if (reset) rready_r <= 1'b0;
-	else if (next_r == SHAKED_AR || next_r == WAIT_RVALID)
+	else if (next_r == SHAKED_AR 
+				|| next_r == WAIT_RVALID
+			  || next_r == SHAKED_AR2 
+				|| next_r == WAIT_RVALID2)
 		rready_r <= 1'b1;
 	else
 		rready_r <= 1'b0;
 end
-/*
-reg [DATA_WIDTH-1:0] rdata_r;
+
+reg [DATA_WIDTH*2-1:0] first_rdata;
 always @(posedge clock) begin
-	if (reset) rdata_r <= 0;
-	else if (next_r == SHAKED_R) 
-		rdata_r <= dsram_rdata; 
+	if (reset) first_rdata <= 0;
+	else if (state_r == SHAKED_R) 
+		first_rdata <= dsram_rdata; 
 end
-always @(posedge clock) begin
-	if (reset) load_ready_go <= 0;
-	else if (next_r == SHAKED_R) 
-		load_ready_go <= 1'b1;
-	else 
-		load_ready_go <= 0;
-end
-*/
 
 /* ===================== write FSM =======================*/
 parameter [2:0] IDLE_W = 3'b000, WAIT_AWREADY = 3'b001, SHAKED_AW = 3'b010,
@@ -391,15 +433,6 @@ always @(posedge clock) begin
 	end
 end
 
-/*
-always @(posedge clock) begin
-	if (reset) store_ready_go <= 0;
-	else if (next_w == SHAKED_B) 
-		store_ready_go <= 1'b1;
-	else 
-		store_ready_go <= 0;
-end
-*/
 /*=========================================================*/
 wire [DATA_WIDTH-1:0] alu_result;
 wire overflow;
@@ -472,45 +505,80 @@ assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010;
 
 wire [31:0] araddr_raw;
 assign araddr_raw = alu_result;
-assign dsram_araddr = {araddr_raw[31:2], 2'b00};
-/*
-assign dsram_arsize = ({3{read_from_uart | load_inst[3] | load_inst[4]}} & 3'b000) 
-	| ({3{load_inst[2] | load_inst[1]}} & 3'b001)
-	| ({3{load_inst[0] 							 }} & 3'b010);
-*/
-wire inst_lw  = load_inst[0];
-wire inst_lh  = load_inst[1];
-wire inst_lhu = load_inst[2];
-wire inst_lb  = load_inst[3];
-wire inst_lbu = load_inst[4];
-wire [1:0] sel = araddr_raw[1:0];
+wire [31:0] align_low_araddr;
+wire [31:0] align_high_araddr;
+assign align_low_araddr = {araddr_raw[31:3], 3'b000};
+assign align_high_araddr = align_low_araddr + 32'h8;
+
+reg second;
+always @(posedge clock) 
+	if (reset) second <= 0;
+	else if (next_r == IDLE_R2)
+		second <= 1'b1;
+	else if (state_r == SHAKED_R2)
+		second <= 1'b0;
+
+assign dsram_araddr = second ?  
+					 align_high_araddr : align_low_araddr;
+
+wire [2:0] sel = araddr_raw[2:0];
+
+assign need_second_rd = (inst_lw && sel == 3'h5) 
+							|| (inst_lw && sel == 3'h6) 
+							|| (inst_lw && sel == 3'h7) 
+							|| ((inst_lh | inst_lhu) && sel == 3'h7);  
 
 wire [DATA_WIDTH-1:0] load_data;
 
+
 assign load_data = 
-	({32{sel == 2'd0 && inst_lw }} & dsram_rdata[31:0])
-| ({32{sel == 2'd0 && inst_lh }} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
-| ({32{sel == 2'd0 && inst_lhu}} & { 16'd0, dsram_rdata[15:0]})
-| ({32{sel == 2'd0 && inst_lb }} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
-| ({32{sel == 2'd0 && inst_lbu}} & { 24'd0, dsram_rdata[7:0]})
+	({32{sel == 3'd0 && inst_lw }} & 												 first_rdata[31:0])
+| ({32{sel == 3'd0 && inst_lh }} & {{16{first_rdata[15]}}, first_rdata[15:0]})
+| ({32{sel == 3'd0 && inst_lhu}} & { 16'd0, 							 first_rdata[15:0]})
+| ({32{sel == 3'd0 && inst_lb }} & {{24{first_rdata[7]}},  first_rdata[7:0]})
+| ({32{sel == 3'd0 && inst_lbu}} & { 24'd0, 							 first_rdata[7:0]})
 
-|	({32{sel == 2'd1 && inst_lw }} & dsram_rdata[39:8])
-| ({32{sel == 2'd1 && inst_lh }} & {{16{dsram_rdata[23]}}, dsram_rdata[23:8]})
-| ({32{sel == 2'd1 && inst_lhu}} & { 16'd0, dsram_rdata[23:8]})
-| ({32{sel == 2'd1 && inst_lb }} & {{24{dsram_rdata[15]}}, dsram_rdata[15:8]})
-| ({32{sel == 2'd1 && inst_lbu}} & { 24'd0, dsram_rdata[15:8]})
+|	({32{sel == 3'd1 && inst_lw }} & first_rdata[39:8])
+| ({32{sel == 3'd1 && inst_lh }} & {{16{first_rdata[23]}}, first_rdata[23:8]})
+| ({32{sel == 3'd1 && inst_lhu}} & { 16'd0, 							 first_rdata[23:8]})
+| ({32{sel == 3'd1 && inst_lb }} & {{24{first_rdata[15]}}, first_rdata[15:8]})
+| ({32{sel == 3'd1 && inst_lbu}} & { 24'd0, 							 first_rdata[15:8]})
 
-|	({32{sel == 2'd2 && inst_lw }} & dsram_rdata[47:16])
-| ({32{sel == 2'd2 && inst_lh }} & {{16{dsram_rdata[31]}}, dsram_rdata[31:16]})
-| ({32{sel == 2'd2 && inst_lhu}} & { 16'd0, dsram_rdata[31:16]})
-| ({32{sel == 2'd2 && inst_lb }} & {{24{dsram_rdata[23]}}, dsram_rdata[23:16]})
-| ({32{sel == 2'd2 && inst_lbu}} & { 24'd0, dsram_rdata[23:16]})
+|	({32{sel == 3'd2 && inst_lw }} & first_rdata[47:16])
+| ({32{sel == 3'd2 && inst_lh }} & {{16{first_rdata[31]}}, first_rdata[31:16]})
+| ({32{sel == 3'd2 && inst_lhu}} & { 16'd0, 							 first_rdata[31:16]})
+| ({32{sel == 3'd2 && inst_lb }} & {{24{first_rdata[23]}}, first_rdata[23:16]})
+| ({32{sel == 3'd2 && inst_lbu}} & { 24'd0, 							 first_rdata[23:16]})
 
-|	({32{sel == 2'd3 && inst_lw }} & dsram_rdata[55:24])
-| ({32{sel == 2'd3 && inst_lh }} & {{16{dsram_rdata[39]}}, dsram_rdata[39:24]})
-| ({32{sel == 2'd3 && inst_lhu}} & { 16'd0, dsram_rdata[39:24]})
-| ({32{sel == 2'd3 && inst_lb }} & {{24{dsram_rdata[31]}}, dsram_rdata[31:24]})
-| ({32{sel == 2'd3 && inst_lbu}} & { 24'd0, dsram_rdata[31:24]});
+|	({32{sel == 3'd3 && inst_lw }} & first_rdata[55:24])
+| ({32{sel == 3'd3 && inst_lh }} & {{16{first_rdata[39]}}, first_rdata[39:24]})
+| ({32{sel == 3'd3 && inst_lhu}} & { 16'd0, 							 first_rdata[39:24]})
+| ({32{sel == 3'd3 && inst_lb }} & {{24{first_rdata[31]}}, first_rdata[31:24]})
+| ({32{sel == 3'd3 && inst_lbu}} & { 24'd0, 							 first_rdata[31:24]})
+
+|	({32{sel == 3'd4 && inst_lw }} & 												 first_rdata[63:32])
+| ({32{sel == 3'd4 && inst_lh }} & {{16{first_rdata[47]}}, first_rdata[47:32]})
+| ({32{sel == 3'd4 && inst_lhu}} & { 16'd0, 							 first_rdata[47:32]})
+| ({32{sel == 3'd4 && inst_lb }} & {{24{first_rdata[39]}}, first_rdata[39:32]})
+| ({32{sel == 3'd4 && inst_lbu}} & { 24'd0, 							 first_rdata[39:32]})
+
+|	({32{sel == 3'd5 && inst_lw }} & {dsram_rdata[7:0]		 , first_rdata[63:40]})
+| ({32{sel == 3'd5 && inst_lh }} & {{16{first_rdata[55]}}, first_rdata[55:40]})
+| ({32{sel == 3'd5 && inst_lhu}} & { 16'd0, 							 first_rdata[55:40]})
+| ({32{sel == 3'd5 && inst_lb }} & {{24{first_rdata[47]}}, first_rdata[47:40]})
+| ({32{sel == 3'd5 && inst_lbu}} & { 24'd0, 							 first_rdata[47:40]})
+
+|	({32{sel == 3'd6 && inst_lw }} & {dsram_rdata[15:0]		 , first_rdata[63:48]})
+| ({32{sel == 3'd6 && inst_lh }} & {{16{first_rdata[63]}}, first_rdata[63:48]})
+| ({32{sel == 3'd6 && inst_lhu}} & { 16'd0, 							 first_rdata[63:48]})
+| ({32{sel == 3'd6 && inst_lb }} & {{24{first_rdata[47]}}, first_rdata[55:48]})
+| ({32{sel == 3'd6 && inst_lbu}} & { 24'd0, 							 first_rdata[55:48]})
+
+|	({32{sel == 3'd7 && inst_lw }} & {dsram_rdata[23:0]		 , first_rdata[63:56]})
+| ({32{sel == 3'd7 && inst_lh }} & {{16{dsram_rdata[7]}}, dsram_rdata[7:0], first_rdata[63:56]})
+| ({32{sel == 3'd7 && inst_lhu}} & {16'b0, 							dsram_rdata[7:0], first_rdata[63:56]})
+| ({32{sel == 3'd7 && inst_lb }} & {{24{first_rdata[63]}}, first_rdata[63:56]})
+| ({32{sel == 3'd7 && inst_lbu}} & { 24'd0, 							 first_rdata[63:56]});
 
 
 /* ============ to regfile ============================== */
@@ -546,7 +614,8 @@ assign csr_waddr2 = csr_inst[2] ? 12'h342 : 0;
 
 
 
-assign exu_done[0] = (state_r == SHAKED_R);
+assign exu_done[0] = (state_r == SHAKED_R2)
+									|| (state_r == SHAKED_R);
 assign exu_done[1] = (state_w == SHAKED_B);
 
 /* =============== DPI-C ========================= */
