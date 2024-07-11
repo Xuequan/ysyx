@@ -1,6 +1,9 @@
 #include <am.h>
 #include <ysyxsoc.h>
 
+#define UART_BASE 0x10000000L
+#define UART_TX 0
+
 extern char _heap_start;
 extern char _heap_end;
 int main(const char *args);
@@ -12,8 +15,7 @@ Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[] = MAINARGS;
 
 void putch(char ch) {
-	outb(UART_BASE, '$');
-	outb(UART_BASE, ch);
+	*(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
 void halt(int code) {
