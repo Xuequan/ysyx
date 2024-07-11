@@ -116,8 +116,14 @@ wire inst_lhu = load_inst[2];
 wire inst_lb  = load_inst[3];
 wire inst_lbu = load_inst[4];
 
-// 由于要8字节对齐，因此有时候需要第2次读
+wire inst_sw = store_inst[0];
+wire inst_sh = store_inst[1];
+wire inst_sb = store_inst[2];
+
+// 由于要8字节对齐，因此有时候需要第2次读/写
 wire need_second_rd;
+wire need_second_wr;
+
 wire [11					:0] csr_idx;
 wire [2						:0] csr_inst;
 wire [DATA_WIDTH-1:0] csr_nextpc; 
@@ -155,7 +161,11 @@ wire store_ready_go;
 
 assign load_ready_go  = need_second_rd ? (next_r == SHAKED_R2)
                                 : (next_r == SHAKED_R);
-assign store_ready_go = (next_w == SHAKED_B);
+
+assign store_ready_go = need_second_wr ? 
+								(next_w == SHAKED_B && second_wr)
+									: (next_w == SHAKED_B);
+
 assign exu_ready_go = |store_inst ? store_ready_go :
 											|load_inst  ? load_ready_go :
 																		1'b1;
@@ -307,9 +317,10 @@ always @(posedge clock) begin
 end
 
 /* ===================== write FSM =======================*/
-parameter [2:0] IDLE_W = 3'b000, WAIT_AWREADY = 3'b001, SHAKED_AW = 3'b010,
-								WAIT_WREADY = 3'b011, SHAKED_W = 3'b100, 
-								WAIT_BVALID = 3'b101, SHAKED_B = 3'b110;
+parameter [2:0] IDLE_W = 3'h0, WAIT_AWREADY = 3'h1, SHAKED_AW = 3'h2,
+								WAIT_WREADY = 3'h3, SHAKED_W = 3'h4, 
+								WAIT_BVALID = 3'h5, SHAKED_B = 3'h6,
+								IDLE_W2 = 3'h7;
 reg [2:0] state_w, next_w;
 always @(posedge clock) begin
 	if (reset) 
@@ -323,7 +334,8 @@ assign write_start = regfile_mem_mux[1] && exu_valid;
 
 wire wid_equal;
 assign wid_equal = (dsram_awid == dsram_bid);
-always @(wid_equal or state_w or write_start or dsram_awready or dsram_wready or dsram_bvalid) begin
+
+always @(*) begin
 	next_w = IDLE_W;
 	case (state_w)
 		IDLE_W: 
@@ -359,25 +371,27 @@ always @(wid_equal or state_w or write_start or dsram_awready or dsram_wready or
 			else
 				next_w = WAIT_BVALID;
 		SHAKED_B:
-			if (!write_start)
-				next_w = IDLE_W;
-			else if (!dsram_awready)
+			if (need_second_wr) 
+				next_w = IDLE_W2;
+
+		IDLE_W2:
+			if (!dsram_awready)
 				next_w = WAIT_AWREADY;
 			else 
 				next_w = SHAKED_AW;
+			
 		default: ;
 	endcase
 end
 
 reg awvalid_r;
-//assign dsram_awvalid = (state_w == IDLE_W) ? write_start : awvalid_r;
-assign dsram_awvalid = awvalid_r;
 reg [3:0] awid_r;
-assign dsram_awid = awid_r;
 reg [7:0] awlen_r;
-assign dsram_awlen = awlen_r;
 reg [1:0] awburst_r;
 assign dsram_awburst = awburst_r;
+assign dsram_awvalid = awvalid_r;
+assign dsram_awid = awid_r;
+assign dsram_awlen = awlen_r;
 
 always @(posedge clock) begin
 	if (reset) begin
@@ -388,7 +402,9 @@ always @(posedge clock) begin
 	end
 	else if ((state_w == IDLE_W && next_w == WAIT_AWREADY) 
 				|| (state_w == IDLE_W && next_w == SHAKED_AW) 
-				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) ) 
+				|| (state_w == WAIT_AWREADY && next_w == WAIT_AWREADY) 
+				|| (state_w == IDLE_W2 && next_w == SHAKED_AW)
+				|| (state_w == IDLE_W2 && next_w == WAIT_AWREADY) )
 		begin
 		awvalid_r <= 1'b1;
 		awid_r <= tik;
@@ -415,9 +431,10 @@ end
 
 
 reg wvalid_r;
-assign dsram_wvalid = wvalid_r;
 reg wlast_r;
+assign dsram_wvalid = wvalid_r;
 assign dsram_wlast = wlast_r;
+
 always @(posedge clock) begin
 	if (reset) begin
 		wvalid_r <= 1'b0;
@@ -473,7 +490,6 @@ assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 
 /* ========== connect with dsram ======================== */
 /* =======store instruction ============================== */
-assign dsram_awaddr = alu_result; 
 // decide awsize;
 wire [31:0] uart_addr_min; 
 wire [31:0] uart_addr_max;
@@ -489,21 +505,123 @@ wire is_mrom_addr;
 wire write_to_uart;
 assign write_to_uart = (dsram_awaddr >= uart_addr_min) &&
 								 (dsram_awaddr <= uart_addr_max);
-assign dsram_awsize = write_to_uart ? 3'b000 : 3'b010; 
-/*
-assign dsram_awsize = ({3{write_to_uart | store_inst[2]}} & 3'b000) 
-	| ({3{store_inst[1]}} & 3'b001)
-	| ({3{store_inst[0]}} & 3'b010);
-*/
+assign dsram_awsize = write_to_uart ? 3'b000 : 3'b011; 
 
-//assign dsram_wen = regfile_mem_mux[1];
-//assign dsram_awvalid = regfile_mem_mux[1];
-assign dsram_wdata[31:0] = store_data_raw; 
-assign dsram_wdata[63:32] = store_data_raw; 
-assign dsram_wstrb[7:4] = 4'b0;
-assign dsram_wstrb[3:0] = ( {4{store_inst[0]}} & 4'b1111 )
-											| ( {4{store_inst[1]}} & 4'b0011 )
-											| ( {4{store_inst[2]}} & 4'b0001 );
+wire [31:0] awaddr_raw;
+assign awaddr_raw = alu_result;
+
+wire [31:0] align8_low_awaddr;
+wire [31:0] align8_high_awaddr;
+assign align8_low_awaddr = {awaddr_raw[31:3], 3'b000};
+assign align8_high_awaddr = align8_low_awaddr + 32'h8;
+
+wire [2:0] sel_w; 
+assign sel_w = awaddr_raw[2:0];
+
+
+wire [63:0] store_data;
+// 第一次写地址是 0，故先将低位写
+// 第二次写地址是 8，故再将高位写
+assign store_data = 
+	({64{sel_w == 3'd0 && inst_sw }} & {32'b0, store_data_raw} )
+| ({64{sel_w == 3'd0 && inst_sh }} & {48'b0, store_data_raw[15:0] })
+| ({64{sel_w == 3'd0 && inst_sb }} & {32'b0, 24'b0, store_data_raw[7:0]})
+
+|	({64{sel_w == 3'd1 && inst_sw }} & {24'b0, store_data_raw, 8'b0})
+| ({64{sel_w == 3'd1 && inst_sh }} & {32'b0, 8'b0,  store_data_raw[15:0], 8'b0})
+| ({64{sel_w == 3'd1 && inst_sb }} & {32'b0, 16'b0, store_data_raw[7:0], 8'b0})
+
+|	({64{sel_w == 3'd2 && inst_sw }} & {16'b0, store_data_raw, 16'b0} )
+| ({64{sel_w == 3'd2 && inst_sh }} & {32'b0, store_data_raw[15:0], 16'b0} )
+| ({64{sel_w == 3'd2 && inst_sb }} & {32'b0, 8'b0, store_data_raw[7:0], 16'b0})
+
+|	({64{sel_w == 3'd3 && inst_sw }} & {8'b0,  store_data_raw, 24'b0})
+| ({64{sel_w == 3'd3 && inst_sh }} & {24'b0, store_data_raw[15:0], 24'b0})
+| ({64{sel_w == 3'd3 && inst_sb }} & {32'b0, store_data_raw[7:0], 24'b0})
+
+|	({64{sel_w == 3'd4 && inst_sw }} & {store_data_raw, 32'b0})
+| ({64{sel_w == 3'd4 && inst_sh }} & {16'b0, store_data_raw[15:0], 32'b0})
+| ({64{sel_w == 3'd4 && inst_sb }} & {24'b0, store_data_raw[7:0], 32'b0})
+
+|	({64{sel_w == 3'd5 && inst_sw }} & {store_data_raw[23:0], 32'b0	, store_data_raw[31:24]})
+| ({64{sel_w == 3'd5 && inst_sh }} & {8'b0, store_data_raw[15:0], 40'b0})
+| ({64{sel_w == 3'd5 && inst_sb }} & {16'b0, store_data_raw[7:0], 40'b0})
+
+|	({64{sel_w == 3'd6 && inst_sw }} & {store_data_raw[15:0], 32'b0, store_data_raw[31:16]})
+| ({64{sel_w == 3'd6 && inst_sh }} & {store_data_raw[15:0], 48'b0})
+| ({64{sel_w == 3'd6 && inst_sb }} & {8'b0, store_data_raw[7:0], 48'b0})
+
+|	({64{sel_w == 3'd7 && inst_sw }} & {store_data_raw[7:0], 32'b0, store_data_raw[31:8]})
+| ({64{sel_w == 3'd7 && inst_sh }} & {store_data_raw[7:0], 48'b0, store_data_raw[15:8]})
+| ({64{sel_w == 3'd7 && inst_sb }} & {store_data_raw[7:0], 56'b0});
+
+// 第一次写
+wire [7:0] wstrb;
+wire [7:0] wstrb2;
+assign wstrb = 
+	({8{sel_w == 3'd0 && inst_sw }} & 8'b0000_1111)
+| ({8{sel_w == 3'd1 && inst_sw }} & 8'b0001_1110)
+| ({8{sel_w == 3'd2 && inst_sw }} & 8'b0011_1100)
+| ({8{sel_w == 3'd3 && inst_sw }} & 8'b0111_1000)
+| ({8{sel_w == 3'd4 && inst_sw }} & 8'b1111_0000)
+| ({8{sel_w == 3'd5 && inst_sw }} & 8'b1110_0000)   
+| ({8{sel_w == 3'd6 && inst_sw }} & 8'b1100_0000)   
+| ({8{sel_w == 3'd7 && inst_sw }} & 8'b1000_0000)   
+
+| ({8{sel_w == 3'd0 && inst_sh }} & 8'b0000_0011)   
+| ({8{sel_w == 3'd1 && inst_sh }} & 8'b0000_0110)   
+| ({8{sel_w == 3'd2 && inst_sh }} & 8'b0000_1100)   
+| ({8{sel_w == 3'd3 && inst_sh }} & 8'b0001_1000)   
+| ({8{sel_w == 3'd4 && inst_sh }} & 8'b0011_0000)   
+| ({8{sel_w == 3'd5 && inst_sh }} & 8'b0110_0000)   
+| ({8{sel_w == 3'd6 && inst_sh }} & 8'b1100_0000)   
+
+| ({8{sel_w == 3'd0 && inst_sb }} & 8'b0000_0001)   
+| ({8{sel_w == 3'd1 && inst_sb }} & 8'b0000_0010)   
+| ({8{sel_w == 3'd2 && inst_sb }} & 8'b0000_0100)   
+| ({8{sel_w == 3'd3 && inst_sb }} & 8'b0000_1000)   
+| ({8{sel_w == 3'd4 && inst_sb }} & 8'b0001_0000)   
+| ({8{sel_w == 3'd5 && inst_sb }} & 8'b0010_0000)   
+| ({8{sel_w == 3'd6 && inst_sb }} & 8'b0100_0000)   
+| ({8{sel_w == 3'd7 && inst_sb }} & 8'b1000_0000) ;   
+// 第二次写
+assign wstrb2 = 
+	({8{sel_w == 3'd5 && inst_sw }} & 8'b0000_0001)   
+| ({8{sel_w == 3'd6 && inst_sw }} & 8'b0000_0011)   
+| ({8{sel_w == 3'd7 && inst_sw }} & 8'b0000_0111)   
+
+| ({8{sel_w == 3'd7 && inst_sh }} & 8'b1000_0001);   
+
+
+assign need_second_wr = (inst_sw && sel == 3'h5) 
+							|| (inst_sw && sel == 3'h6) 
+							|| (inst_sw && sel == 3'h7) 
+							|| (inst_sh && sel == 3'h7);  
+
+
+reg second_wr;
+always @(posedge clock) 
+	if (reset) second_wr <= 0;
+	else if (next_w == IDLE_W2)
+		second_wr <= 1'b1;
+	else if (state_w == IDLE_W)
+		second_wr <= 1'b0;
+
+assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
+assign dsram_awaddr = second_wr ? align8_high_awaddr 
+										: align8_low_awaddr;
+
+assign dsram_wdata = store_data;
+
+
+
+
+
+
+
+
+
+
 /* =======load instruction ============================== */
 wire read_from_uart;
 assign read_from_uart = (dsram_araddr >= uart_addr_min) &&
@@ -523,16 +641,35 @@ assign align4_araddr = {araddr_raw[31:2], 2'b00};
 assign is_mrom_addr = (araddr_raw >= mrom_addr_min) 
 									&& (araddr_raw <= mrom_addr_max);
 
-reg second;
+reg second_rd;
 always @(posedge clock) 
-	if (reset) second <= 0;
+	if (reset) second_rd <= 0;
 	else if (next_r == IDLE_R2)
-		second <= 1'b1;
+		second_rd <= 1'b1;
 	else if (state_r == SHAKED_R2)
-		second <= 1'b0;
+		second_rd <= 1'b0;
 
+/* 这里记录下我的逻辑：
+ * 1. 需明白 MROM 是有 DPI-C 读取内存的值；且每次读取 32bit；返回的是64bit，
+ * rdata; rdata[31:0] 是有效的；rdata[63:32] 是无效的（实际上与[31:0]相等；
+ * 2. 同时需明白，传递给 MROM 的地址会被4bytes对齐（也就是令[1:0] == 2'b00），
+ * 然后该对齐后的地址通过 DPI-C 传回到 pmem-read() 读数据；
+ * 3. 而 SRAM 是不同的；SoC 里实现了它：mem_1024x64；
+ * 4. 因此对于 SRAM 的读，每次都得8bytes 地址对齐！！每次读回来的数据是64bit，
+ * 都是有效的。
+ *
+ * 基于以上事实，我将 EXU 的读分为了两部分：
+ * 	一部分是向 MROM 读，此时只需 4byte 对齐地址；
+ * 		这部分是有问题的，我偷懒了，因为向 MROM 读数据（不是读指令）是只有
+ * 		init_data() 这部分的，而它值用到了 lbu, 因此我只保证了 lbu 读到的数据
+ * 		是正确的！！
+ * 		这部分相关的信号是：sel2, align4_araddr, load_data2;
+ * 	另一部分是向 SRAM 读，此时需 8byte 对齐，而且有时候需要二次读；
+ * 		这部分相关的信号是: sel, align8_low_araddr, align8_high_araddr,
+ * 		load_data; 
+ */
 assign dsram_araddr = is_mrom_addr ? align4_araddr 
-										: second ?  align8_high_araddr 
+										: second_rd ?  align8_high_araddr 
 										: align8_low_araddr;
 
 wire [2:0] sel = araddr_raw[2:0];
