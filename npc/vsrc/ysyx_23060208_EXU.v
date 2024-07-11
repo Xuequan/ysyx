@@ -476,9 +476,16 @@ assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 assign dsram_awaddr = alu_result; 
 // decide awsize;
 wire [31:0] uart_addr_min; 
-assign uart_addr_min = 32'h1000_0000;
 wire [31:0] uart_addr_max;
+assign uart_addr_min = 32'h1000_0000;
 assign uart_addr_max  = 32'h1000_0fff;
+
+wire [31:0] mrom_addr_min; 
+wire [31:0] mrom_addr_max;
+assign mrom_addr_min = 32'h2000_0000;
+assign mrom_addr_max = 32'h2000_0fff;
+wire is_mrom_addr;
+
 wire write_to_uart;
 assign write_to_uart = (dsram_awaddr >= uart_addr_min) &&
 								 (dsram_awaddr <= uart_addr_max);
@@ -505,10 +512,16 @@ assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010;
 
 wire [31:0] araddr_raw;
 assign araddr_raw = alu_result;
-wire [31:0] align_low_araddr;
-wire [31:0] align_high_araddr;
-assign align_low_araddr = {araddr_raw[31:3], 3'b000};
-assign align_high_araddr = align_low_araddr + 32'h8;
+wire [31:0] align8_low_araddr;
+wire [31:0] align8_high_araddr;
+wire [31:0] align4_araddr;
+assign align8_low_araddr = {araddr_raw[31:3], 3'b000};
+assign align8_high_araddr = align8_low_araddr + 32'h8;
+
+assign align4_araddr = {araddr_raw[31:2], 2'b00};
+
+assign is_mrom_addr = (araddr_raw >= mrom_addr_min) 
+									&& (araddr_raw <= mrom_addr_max);
 
 reg second;
 always @(posedge clock) 
@@ -518,10 +531,12 @@ always @(posedge clock)
 	else if (state_r == SHAKED_R2)
 		second <= 1'b0;
 
-assign dsram_araddr = second ?  
-					 align_high_araddr : align_low_araddr;
+assign dsram_araddr = is_mrom_addr ? align4_araddr 
+										: second ?  align8_high_araddr 
+										: align8_low_araddr;
 
 wire [2:0] sel = araddr_raw[2:0];
+wire [1:0] sel2 = araddr_raw[1:0];
 
 assign need_second_rd = (inst_lw && sel == 3'h5) 
 							|| (inst_lw && sel == 3'h6) 
@@ -529,7 +544,39 @@ assign need_second_rd = (inst_lw && sel == 3'h5)
 							|| ((inst_lh | inst_lhu) && sel == 3'h7);  
 
 wire [DATA_WIDTH-1:0] load_data;
+wire [DATA_WIDTH-1:0] load_data2;
 
+assign load_data2 = 
+	({32{sel2 == 2'd0 && inst_lw }} & 												 dsram_rdata[31:0])
+| ({32{sel2 == 2'd0 && inst_lh }} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
+| ({32{sel2 == 2'd0 && inst_lhu}} & { 16'd0, 							 dsram_rdata[15:0]})
+| ({32{sel2 == 2'd0 && inst_lb }} & {{24{dsram_rdata[7]}},  dsram_rdata[7:0]})
+| ({32{sel2 == 2'd0 && inst_lbu}} & { 24'd0, 							 dsram_rdata[7:0]})
+
+|	({32{sel2 == 2'd1 && inst_lw }} & 												 dsram_rdata[39:8])
+| ({32{sel2 == 2'd1 && inst_lh }} & {{16{dsram_rdata[23]}}, dsram_rdata[23:8]})
+| ({32{sel2 == 2'd1 && inst_lhu}} & { 16'd0, 							 dsram_rdata[23:8]})
+| ({32{sel2 == 2'd1 && inst_lb }} & {{24{dsram_rdata[15]}}, dsram_rdata[15:8]})
+| ({32{sel2 == 2'd1 && inst_lbu}} & { 24'd0, 							 dsram_rdata[15:8]})
+
+|	({32{sel2 == 2'd2 && inst_lw }} & 												 dsram_rdata[47:16])
+| ({32{sel2 == 2'd2 && inst_lh }} & {{16{dsram_rdata[31]}}, dsram_rdata[31:16]})
+| ({32{sel2 == 2'd2 && inst_lhu}} & { 16'd0, 							 dsram_rdata[31:16]})
+| ({32{sel2 == 2'd2 && inst_lb }} & {{24{dsram_rdata[23]}}, dsram_rdata[23:16]})
+| ({32{sel2 == 2'd2 && inst_lbu}} & { 24'd0, 							 dsram_rdata[23:16]})
+
+|	({32{sel2 == 2'd3 && inst_lw }} & 												 dsram_rdata[55:24])
+| ({32{sel2 == 2'd3 && inst_lh }} & {{16{dsram_rdata[39]}}, dsram_rdata[39:24]})
+| ({32{sel2 == 2'd3 && inst_lhu}} & { 16'd0, 							 dsram_rdata[39:24]})
+| ({32{sel2 == 2'd3 && inst_lb }} & {{24{dsram_rdata[31]}}, dsram_rdata[31:24]})
+| ({32{sel2 == 2'd3 && inst_lbu}} & { 24'd0, 							 dsram_rdata[31:24]});
+/*
+	({DATA_WIDTH{ inst_lw }} & dsram_rdata)
+| ({DATA_WIDTH{ inst_lh }} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
+| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, dsram_rdata[15:0]})
+| ({DATA_WIDTH{load_inst[3]}} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
+| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, dsram_rdata[7:0]});
+*/
 
 assign load_data = 
 	({32{sel == 3'd0 && inst_lw }} & 												 first_rdata[31:0])
@@ -584,6 +631,7 @@ assign load_data =
 /* ============ to regfile ============================== */
 // 若是 jal, jalr, 那么将 rd <- exu_pc + 4
 assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 : 
+											 |load_inst && is_mrom_addr    ? load_data2 :
 											 |load_inst     ? load_data :
 											 (csr_inst[0] || csr_inst[1]) ? src2 : // csrrw, csrrs
 																				alu_result;
