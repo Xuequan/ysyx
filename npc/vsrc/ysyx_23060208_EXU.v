@@ -465,33 +465,54 @@ assign dsram_wstrb[3:0] = ( {4{store_inst[0]}} & 4'b1111 )
 											| ( {4{store_inst[1]}} & 4'b0011 )
 											| ( {4{store_inst[2]}} & 4'b0001 );
 /* =======load instruction ============================== */
-assign dsram_araddr = alu_result;
 wire read_from_uart;
 assign read_from_uart = (dsram_araddr >= uart_addr_min) &&
 								 (dsram_araddr <= uart_addr_max);
-//assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
+assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
+
+wire [31:0] araddr_raw;
+assign araddr_raw = alu_result;
+assign dsram_araddr = {araddr_raw[31:2], 2'b00};
+/*
 assign dsram_arsize = ({3{read_from_uart | load_inst[3] | load_inst[4]}} & 3'b000) 
 	| ({3{load_inst[2] | load_inst[1]}} & 3'b001)
 	| ({3{load_inst[0] 							 }} & 3'b010);
-
+*/
+wire inst_lw  = load_inst[0];
+wire inst_lh  = load_inst[1];
+wire inst_lhu = load_inst[2];
+wire inst_lb  = load_inst[3];
+wire inst_lbu = load_inst[4];
+wire [1:0] sel = araddr_raw[1:0];
 
 wire [DATA_WIDTH-1:0] load_data;
-/*
-wire [DATA_WIDTH-1:0] read_data;
-assign read_data = (dsram_araddr[3:0] == 4'h0 || dsram_araddr[3:0] == 4'h8) 
-							? dsram_rdata[31:0] : dsram_rdata[63:32];
 
-assign load_data = ({DATA_WIDTH{load_inst[0]}} & read_data[31:0])
-| ({DATA_WIDTH{load_inst[1]}} & {{16{read_data[15]}}, read_data[15:0]})
-| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, read_data[15:0]})
-| ({DATA_WIDTH{load_inst[3]}} & {{24{read_data[7]}}, read_data[7:0]})
-| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, read_data[7:0]});
-*/
-assign load_data = ({DATA_WIDTH{load_inst[0]}} & dsram_rdata[31:0])
-| ({DATA_WIDTH{load_inst[1]}} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
-| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, dsram_rdata[15:0]})
-| ({DATA_WIDTH{load_inst[3]}} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
-| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, dsram_rdata[7:0]});
+assign load_data = 
+	({32{sel == 2'd0 && inst_lw }} & dsram_rdata[31:0])
+| ({32{sel == 2'd0 && inst_lh }} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
+| ({32{sel == 2'd0 && inst_lhu}} & { 16'd0, dsram_rdata[15:0]})
+| ({32{sel == 2'd0 && inst_lb }} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
+| ({32{sel == 2'd0 && inst_lbu}} & { 24'd0, dsram_rdata[7:0]})
+
+|	({32{sel == 2'd1 && inst_lw }} & dsram_rdata[39:8])
+| ({32{sel == 2'd1 && inst_lh }} & {{16{dsram_rdata[23]}}, dsram_rdata[23:8]})
+| ({32{sel == 2'd1 && inst_lhu}} & { 16'd0, dsram_rdata[23:8]})
+| ({32{sel == 2'd1 && inst_lb }} & {{24{dsram_rdata[15]}}, dsram_rdata[15:8]})
+| ({32{sel == 2'd1 && inst_lbu}} & { 24'd0, dsram_rdata[15:8]})
+
+|	({32{sel == 2'd2 && inst_lw }} & dsram_rdata[47:16])
+| ({32{sel == 2'd2 && inst_lh }} & {{16{dsram_rdata[31]}}, dsram_rdata[31:16]})
+| ({32{sel == 2'd2 && inst_lhu}} & { 16'd0, dsram_rdata[31:16]})
+| ({32{sel == 2'd2 && inst_lb }} & {{24{dsram_rdata[23]}}, dsram_rdata[23:16]})
+| ({32{sel == 2'd2 && inst_lbu}} & { 24'd0, dsram_rdata[23:16]})
+
+|	({32{sel == 2'd3 && inst_lw }} & dsram_rdata[55:24])
+| ({32{sel == 2'd3 && inst_lh }} & {{16{dsram_rdata[39]}}, dsram_rdata[39:24]})
+| ({32{sel == 2'd3 && inst_lhu}} & { 16'd0, dsram_rdata[39:24]})
+| ({32{sel == 2'd3 && inst_lb }} & {{24{dsram_rdata[31]}}, dsram_rdata[31:24]})
+| ({32{sel == 2'd3 && inst_lbu}} & { 24'd0, dsram_rdata[31:24]});
+
+
 /* ============ to regfile ============================== */
 // 若是 jal, jalr, 那么将 rd <- exu_pc + 4
 assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 : 
