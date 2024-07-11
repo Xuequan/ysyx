@@ -159,12 +159,13 @@ wire exu_ready_go;
 wire load_ready_go;
 wire store_ready_go;
 
-assign load_ready_go  = need_second_rd ? (next_r == SHAKED_R2)
-                                : (next_r == SHAKED_R);
+assign load_ready_go  = need_second_rd ? 
+												(next_r == SHAKED_R && second_rd)
+                      : (next_r == SHAKED_R);
 
 assign store_ready_go = need_second_wr ? 
 								(next_w == SHAKED_B && second_wr)
-									: (next_w == SHAKED_B);
+							: (next_w == SHAKED_B);
 
 assign exu_ready_go = |store_inst ? store_ready_go :
 											|load_inst  ? load_ready_go :
@@ -172,13 +173,15 @@ assign exu_ready_go = |store_inst ? store_ready_go :
 
 assign exu_allowin = !exu_valid || exu_ready_go;
 /*============================ read FSM ========================*/
-parameter [3:0] IDLE_R = 4'h0, 
-								WAIT_ARREADY = 4'h1, SHAKED_AR = 4'h2,
-								WAIT_RVALID = 4'h3, SHAKED_R = 4'h4,
+parameter [2:0] IDLE_R = 3'h0, 
+								WAIT_ARREADY = 3'h1, SHAKED_AR = 3'h2,
+								WAIT_RVALID = 3'h3, SHAKED_R = 3'h4,
+								IDLE_R2 = 3'h5;
+					/*
 								WAIT_ARREADY2 = 4'h5, SHAKED_AR2 = 4'h6,
 								WAIT_RVALID2 = 4'h7, SHAKED_R2 = 4'h8,
-								IDLE_R2 = 4'h9;
-reg [3:0] state_r, next_r;
+					*/
+reg [2:0] state_r, next_r;
 always @(posedge clock) begin
 	if (reset) 
 		state_r <= IDLE_R;
@@ -226,10 +229,10 @@ always @(*) begin
 // second read
 		IDLE_R2:
 			if (!dsram_arready)
-				next_r = WAIT_ARREADY2;
+				next_r = WAIT_ARREADY;
 			else 
-				next_r = SHAKED_AR2;
-			
+				next_r = SHAKED_AR;
+		/*	
 		WAIT_ARREADY2:
 			if (dsram_arready)
 				next_r = SHAKED_AR2;
@@ -250,6 +253,7 @@ always @(*) begin
 
 		SHAKED_R2:
 				next_r = IDLE_R;
+		*/
 
 		default: ;
 	endcase	
@@ -275,12 +279,11 @@ always @(posedge clock) begin
 	else if ((state_r == IDLE_R && next_r == WAIT_ARREADY) 
 				|| (state_r == IDLE_R && next_r == SHAKED_AR) 
 				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) 
+				|| (state_r == IDLE_R2 && next_r == SHAKED_AR) 
+				|| (state_r == IDLE_R2 && next_r == WAIT_ARREADY)) 
+			/*
 				|| (next_r == IDLE_R2)
 				|| (next_r == WAIT_ARREADY2) )
-				/*
-				|| (state_r == IDLE_R2 && next_r == SHAKED_AR2) 
-				|| (state_r == WAIT_ARREADY2 && next_r == WAIT_ARREADY2)  
-				|| (state_r == IDLE_R2 && next_r == WAIT_ARREADY2) ) 
 				*/
 		begin
 		arvalid_r <= 1'b1;
@@ -301,9 +304,7 @@ assign dsram_rready = rready_r;
 always @(posedge clock) begin
 	if (reset) rready_r <= 1'b0;
 	else if (next_r == SHAKED_AR 
-				|| next_r == WAIT_RVALID
-			  || next_r == SHAKED_AR2 
-				|| next_r == WAIT_RVALID2)
+				|| next_r == WAIT_RVALID)
 		rready_r <= 1'b1;
 	else
 		rready_r <= 1'b0;
@@ -646,7 +647,7 @@ always @(posedge clock)
 	if (reset) second_rd <= 0;
 	else if (next_r == IDLE_R2)
 		second_rd <= 1'b1;
-	else if (state_r == SHAKED_R2)
+	else if (state_r == IDLE_R)
 		second_rd <= 1'b0;
 
 /* 这里记录下我的逻辑：
@@ -778,9 +779,6 @@ assign regfile_wen = regfile_mem_mux[0] && exu_to_regfile_valid;
 
 
 
-
-
-
 /* ============= to CSR ================================= */
 // csrrw: rd <- csr, csr <- crc1;
 // csrrs: rd <- csr, csr <- src1 | csr (这个结果经ALU);
@@ -796,8 +794,7 @@ assign csr_waddr2 = csr_inst[2] ? 12'h342 : 0;
 
 
 
-assign exu_done[0] = (state_r == SHAKED_R2)
-									|| (state_r == SHAKED_R);
+assign exu_done[0] = (state_r == SHAKED_R);
 assign exu_done[1] = (state_w == SHAKED_B);
 
 /* =============== DPI-C ========================= */
