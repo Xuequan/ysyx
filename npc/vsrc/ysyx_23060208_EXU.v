@@ -177,10 +177,7 @@ parameter [2:0] IDLE_R = 3'h0,
 								WAIT_ARREADY = 3'h1, SHAKED_AR = 3'h2,
 								WAIT_RVALID = 3'h3, SHAKED_R = 3'h4,
 								IDLE_R2 = 3'h5;
-					/*
-								WAIT_ARREADY2 = 4'h5, SHAKED_AR2 = 4'h6,
-								WAIT_RVALID2 = 4'h7, SHAKED_R2 = 4'h8,
-					*/
+
 reg [2:0] state_r, next_r;
 always @(posedge clock) begin
 	if (reset) 
@@ -232,28 +229,6 @@ always @(*) begin
 				next_r = WAIT_ARREADY;
 			else 
 				next_r = SHAKED_AR;
-		/*	
-		WAIT_ARREADY2:
-			if (dsram_arready)
-				next_r = SHAKED_AR2;
-			else
-				next_r = WAIT_ARREADY2;
-
-		SHAKED_AR2:
-			if (dsram_rvalid && rid_equal)
-				next_r = SHAKED_R2;
-			else
-				next_r = WAIT_RVALID2;
-
-		WAIT_RVALID2:
-			if (dsram_rvalid && rid_equal)
-				next_r = SHAKED_R2;
-			else 
-				next_r = WAIT_RVALID2;
-
-		SHAKED_R2:
-				next_r = IDLE_R;
-		*/
 
 		default: ;
 	endcase	
@@ -281,10 +256,6 @@ always @(posedge clock) begin
 				|| (state_r == WAIT_ARREADY && next_r == WAIT_ARREADY) 
 				|| (state_r == IDLE_R2 && next_r == SHAKED_AR) 
 				|| (state_r == IDLE_R2 && next_r == WAIT_ARREADY)) 
-			/*
-				|| (next_r == IDLE_R2)
-				|| (next_r == WAIT_ARREADY2) )
-				*/
 		begin
 		arvalid_r <= 1'b1;
 		arid_r <= tik;
@@ -491,7 +462,6 @@ assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 
 /* ========== connect with dsram ======================== */
 /* =======store instruction ============================== */
-// decide awsize;
 wire [31:0] uart_addr_min; 
 wire [31:0] uart_addr_max;
 assign uart_addr_min = 32'h1000_0000;
@@ -508,6 +478,10 @@ assign write_to_uart = (dsram_awaddr >= uart_addr_min) &&
 								 (dsram_awaddr <= uart_addr_max);
 assign dsram_awsize = write_to_uart ? 3'b000 : 3'b011; 
 
+/* 记录下写数据逻辑。
+ * 首先先明确的是：写数据是64bit, 是靠 wstrb 信号控制的；
+ * 其次写数据也需要64bit对齐；因此对于某些写地址需要写2次。
+ */
 wire [31:0] awaddr_raw;
 assign awaddr_raw = alu_result;
 
@@ -613,15 +587,6 @@ assign dsram_awaddr = second_wr ? align8_high_awaddr
 										: align8_low_awaddr;
 
 assign dsram_wdata = store_data;
-
-
-
-
-
-
-
-
-
 
 /* =======load instruction ============================== */
 wire read_from_uart;
