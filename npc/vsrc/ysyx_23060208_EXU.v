@@ -302,7 +302,7 @@ end
 reg [DATA_WIDTH*2-1:0] first_rdata;
 always @(posedge clock) begin
 	if (reset) first_rdata <= 0;
-	else if (next_r == SHAKED_R) 
+	else if (dsram_rvalid && dsram_rready) 
 		first_rdata <= dsram_rdata; 
 end
 
