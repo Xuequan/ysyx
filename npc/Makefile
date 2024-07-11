@@ -51,9 +51,12 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 
 # llvm-config-14 -cxxflags: print the C++ compiler flags needed to use LLVM headers
-CXXFLAGS += $(shell llvm-config-14 --cxxflags)
+#
+#CXXFLAGS += $(shell llvm-config-14 --cxxflags)
+
 # llvm-config-14 --libs: print all the libraries needed to link against the specified LLVM components
-LIBS += $(shell llvm-config-14 --libs)
+#
+#LIBS += $(shell llvm-config-14 --libs)
 
 LDFLAGS += -lasan
 LDFLAGS += -lreadline
