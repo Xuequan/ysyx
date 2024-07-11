@@ -309,11 +309,11 @@ always @(posedge clock) begin
 		rready_r <= 1'b0;
 end
 
-reg [DATA_WIDTH*2-1:0] first_rdata;
+reg [DATA_WIDTH*2-1:0] first_rdata_r;
 always @(posedge clock) begin
-	if (reset) first_rdata <= 0;
-	else if (dsram_rvalid && dsram_rready) 
-		first_rdata <= dsram_rdata; 
+	if (reset) first_rdata_r <= 0;
+	else if (dsram_rvalid && dsram_rready && need_second_rd) 
+		first_rdata_r <= dsram_rdata; 
 end
 
 /* ===================== write FSM =======================*/
@@ -707,13 +707,10 @@ assign load_data2 =
 | ({32{sel2 == 2'd3 && inst_lhu}} & { 16'd0, 							 dsram_rdata[39:24]})
 | ({32{sel2 == 2'd3 && inst_lb }} & {{24{dsram_rdata[31]}}, dsram_rdata[31:24]})
 | ({32{sel2 == 2'd3 && inst_lbu}} & { 24'd0, 							 dsram_rdata[31:24]});
-/*
-	({DATA_WIDTH{ inst_lw }} & dsram_rdata)
-| ({DATA_WIDTH{ inst_lh }} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
-| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, dsram_rdata[15:0]})
-| ({DATA_WIDTH{load_inst[3]}} & {{24{dsram_rdata[7]}}, dsram_rdata[7:0]})
-| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, dsram_rdata[7:0]});
-*/
+
+
+wire [63:0] first_rdata;
+assign first_rdata = need_second_rd ? first_rdata_r : dsram_rdata;
 
 assign load_data = 
 	({32{sel == 3'd0 && inst_lw }} & 												 first_rdata[31:0])
