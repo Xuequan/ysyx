@@ -302,7 +302,7 @@ end
 reg [DATA_WIDTH*2-1:0] first_rdata;
 always @(posedge clock) begin
 	if (reset) first_rdata <= 0;
-	else if (state_r == SHAKED_R) 
+	else if (next_r == SHAKED_R) 
 		first_rdata <= dsram_rdata; 
 end
 
@@ -538,19 +538,19 @@ assign load_data =
 | ({32{sel == 3'd0 && inst_lb }} & {{24{first_rdata[7]}},  first_rdata[7:0]})
 | ({32{sel == 3'd0 && inst_lbu}} & { 24'd0, 							 first_rdata[7:0]})
 
-|	({32{sel == 3'd1 && inst_lw }} & first_rdata[39:8])
+|	({32{sel == 3'd1 && inst_lw }} & 												 first_rdata[39:8])
 | ({32{sel == 3'd1 && inst_lh }} & {{16{first_rdata[23]}}, first_rdata[23:8]})
 | ({32{sel == 3'd1 && inst_lhu}} & { 16'd0, 							 first_rdata[23:8]})
 | ({32{sel == 3'd1 && inst_lb }} & {{24{first_rdata[15]}}, first_rdata[15:8]})
 | ({32{sel == 3'd1 && inst_lbu}} & { 24'd0, 							 first_rdata[15:8]})
 
-|	({32{sel == 3'd2 && inst_lw }} & first_rdata[47:16])
+|	({32{sel == 3'd2 && inst_lw }} & 												 first_rdata[47:16])
 | ({32{sel == 3'd2 && inst_lh }} & {{16{first_rdata[31]}}, first_rdata[31:16]})
 | ({32{sel == 3'd2 && inst_lhu}} & { 16'd0, 							 first_rdata[31:16]})
 | ({32{sel == 3'd2 && inst_lb }} & {{24{first_rdata[23]}}, first_rdata[23:16]})
 | ({32{sel == 3'd2 && inst_lbu}} & { 24'd0, 							 first_rdata[23:16]})
 
-|	({32{sel == 3'd3 && inst_lw }} & first_rdata[55:24])
+|	({32{sel == 3'd3 && inst_lw }} & 												 first_rdata[55:24])
 | ({32{sel == 3'd3 && inst_lh }} & {{16{first_rdata[39]}}, first_rdata[39:24]})
 | ({32{sel == 3'd3 && inst_lhu}} & { 16'd0, 							 first_rdata[39:24]})
 | ({32{sel == 3'd3 && inst_lb }} & {{24{first_rdata[31]}}, first_rdata[31:24]})
