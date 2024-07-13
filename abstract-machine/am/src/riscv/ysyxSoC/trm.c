@@ -33,12 +33,14 @@ void putch(char ch) {
 	char lsr = *(volatile char *)(UART_BASE + UART_LS);
 	int empty = lsr & 0b01100000;
 	while (!empty) {
-		lsr = *(volatile char *)(UART_BASE + UART_LS);
-  	empty = lsr & 0b01100000;
+
 		if ( i == 100) 
 			i = 0;
 		else
 			i++;
+
+		lsr = *(volatile char *)(UART_BASE + UART_LS);
+  	empty = lsr & 0b01100000;
 	}
 
 	*(volatile char *)(UART_BASE + UART_TX) = ch;
