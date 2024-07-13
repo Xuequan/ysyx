@@ -32,6 +32,7 @@ void init_uart() {
 }
 
 void putch(char ch) {
+	/*
 	int i = 0;
 	char lsr = *(volatile char *)(UART_BASE + UART_LS);
 	int lsr6 = lsr & 0b01000000;  
@@ -45,7 +46,7 @@ void putch(char ch) {
 		lsr = *(volatile char *)(UART_BASE + UART_LS);
   	lsr6 = lsr & 0b01000000;
 	}
-
+	*/
 	*(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
