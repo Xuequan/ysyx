@@ -473,17 +473,18 @@ assign mrom_addr_min = 32'h2000_0000;
 assign mrom_addr_max = 32'h2000_0fff;
 wire is_mrom_addr;
 
+wire [31:0] awaddr_raw;
+assign awaddr_raw = alu_result;
+
 wire write_to_uart;
-assign write_to_uart = (dsram_awaddr >= uart_addr_min) &&
-								 (dsram_awaddr <= uart_addr_max);
+assign write_to_uart = (awaddr_raw >= uart_addr_min) &&
+								 (awaddr_raw <= uart_addr_max);
 assign dsram_awsize = write_to_uart ? 3'b000 : 3'b011; 
 
 /* 记录下写数据逻辑。
  * 首先先明确的是：写数据是64bit, 是靠 wstrb 信号控制的；
  * 其次写数据也需要64bit对齐；因此对于某些写地址需要写2次。
  */
-wire [31:0] awaddr_raw;
-assign awaddr_raw = alu_result;
 
 wire [31:0] align8_low_awaddr;
 wire [31:0] align8_high_awaddr;
@@ -530,8 +531,9 @@ assign store_data =
 | ({64{sel_w == 3'd7 && inst_sh }} & {store_data_raw[7:0], 48'b0, store_data_raw[15:8]})
 | ({64{sel_w == 3'd7 && inst_sb }} & {store_data_raw[7:0], 56'b0});
 
-// 第一次写
+// 第一次写的 wstrb
 wire [7:0] wstrb;
+// 第二次写的 wstrb
 wire [7:0] wstrb2;
 assign wstrb = 
 	({8{sel_w == 3'd0 && inst_sw }} & 8'b0000_1111)
@@ -582,20 +584,23 @@ always @(posedge clock)
 	else if (state_w == IDLE_W)
 		second_wr <= 1'b0;
 
+//wire write_to_uart;
 assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
-assign dsram_awaddr = second_wr ? align8_high_awaddr 
+assign dsram_awaddr = write_to_uart ? awaddr_raw 
+										: second_wr ? align8_high_awaddr 
 										: align8_low_awaddr;
 
 assign dsram_wdata = store_data;
 
 /* =======load instruction ============================== */
-wire read_from_uart;
-assign read_from_uart = (dsram_araddr >= uart_addr_min) &&
-								 (dsram_araddr <= uart_addr_max);
-assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
-
 wire [31:0] araddr_raw;
 assign araddr_raw = alu_result;
+
+wire read_from_uart;
+assign read_from_uart = (araddr_raw >= uart_addr_min) &&
+								 (araddr_raw <= uart_addr_max);
+assign dsram_arsize = read_from_uart ? 3'b000 : 3'b010; 
+
 wire [31:0] align8_low_araddr;
 wire [31:0] align8_high_araddr;
 wire [31:0] align4_araddr;
@@ -647,6 +652,7 @@ assign need_second_rd = (inst_lw && sel == 3'h5)
 							|| ((inst_lh | inst_lhu) && sel == 3'h7);  
 
 wire [DATA_WIDTH-1:0] load_data;
+// 仅针对从 mrom 中读取的数据
 wire [DATA_WIDTH-1:0] load_data2;
 
 assign load_data2 = 
