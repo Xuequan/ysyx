@@ -20,7 +20,7 @@ static const char mainargs[] = MAINARGS;
 
 void init_uart() {
 	uint8_t lc = *(volatile uint8_t *)(UART_BASE + UART_LC); 
-	lc &= 0b11111111; 
+	lc |= 0x80; 
 	// set lcr[7] 1
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc; 
 	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x60;
