@@ -50,7 +50,6 @@ void putch(char ch) {
 			i = 0;
 		else
 			i++;
-
 		/*
 		lsr = *(volatile uint8_t *)(UART_BASE + UART_LS);
   	lsr6 = lsr & 0b01000000;
