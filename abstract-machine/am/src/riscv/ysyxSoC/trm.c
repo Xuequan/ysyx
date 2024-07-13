@@ -43,7 +43,7 @@ void putch(char ch) {
 	//uint8_t lsr = *(volatile uint8_t *)(UART_BASE + UART_LS);
 	// 查看 lsr[6] 
 	//uint8_t lsr6 = lsr & 0b01000000;  
-	uint8_t lsr6 = *(uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
+	uint8_t lsr6 = *(volatile uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	int i = 0;
 	while (lsr6 == 0) {
 		if ( i == 100) 
@@ -54,7 +54,7 @@ void putch(char ch) {
 		lsr = *(volatile uint8_t *)(UART_BASE + UART_LS);
   	lsr6 = lsr & 0b01000000;
 		*/
-		lsr6 = *(uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
+		lsr6 = *(volatile uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	}
 	//if (lsr6 != 0) 
 		*(volatile char *)(UART_BASE + UART_TX) = ch;
