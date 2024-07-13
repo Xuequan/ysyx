@@ -27,8 +27,10 @@ void init_uart() {
 	*(volatile uint8_t *)(UART_BASE + UART_DL1) = 0x60;
 	*(volatile uint8_t *)(UART_BASE + UART_DL2) = 0x00;
 
+	/*
 	lc = *(volatile uint8_t *)(UART_BASE + UART_LC); 
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc & 0b01111111; // set lcr[7] 0
+	*/
 
 }
 
