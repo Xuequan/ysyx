@@ -36,6 +36,8 @@ void putch(char ch) {
   	empty = lsr & 0b01100000;
 		if (empty)
 			*(volatile char *)(UART_BASE + UART_TX) = ch;
+
+		*(volatile char *)(UART_BASE + UART_TX) = 0;
 	}
 		//*(volatile char *)(UART_BASE + UART_TX) = ch;
 }
