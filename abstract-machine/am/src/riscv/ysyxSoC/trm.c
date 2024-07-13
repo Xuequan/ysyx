@@ -29,22 +29,19 @@ void init_uart() {
 }
 
 void putch(char ch) {
+	int i = 0;
 	char lsr = *(volatile char *)(UART_BASE + UART_LS);
 	int empty = lsr & 0b01100000;
 	while (!empty) {
-		*(volatile char *)(UART_BASE + UART_LS) = lsr & 0b11111111;
-		/*
 		lsr = *(volatile char *)(UART_BASE + UART_LS);
   	empty = lsr & 0b01100000;
-		if (empty)
-			*(volatile char *)(UART_BASE + UART_TX) = ch;
+		if ( i == 100) 
+			i = 0;
 		else
-			*(volatile char *)(UART_BASE + UART_TX) = 0;
-		*/
-		lsr = *(volatile char *)(UART_BASE + UART_LS);
-  	empty = lsr & 0b01100000;
+			i++;
 	}
-		*(volatile char *)(UART_BASE + UART_TX) = ch;
+
+	*(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
 void halt(int code) {
