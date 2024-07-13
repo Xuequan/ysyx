@@ -24,14 +24,12 @@ void init_uart() {
 	lc &= 0b11111111; 
 	// set lcr[7] 1
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc; 
-	*(volatile uint8_t *)(UART_BASE + UART_DL1) = 0x60;
-	*(volatile uint8_t *)(UART_BASE + UART_DL2) = 0x00;
+	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x60;
+	*(volatile uint8_t *)(UART_BASE + UART_DL2) = (uint8_t)0x00;
 
-	/*
+	// set lcr[7] 0
 	lc = *(volatile uint8_t *)(UART_BASE + UART_LC); 
-	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc & 0b01111111; // set lcr[7] 0
-	*/
-
+	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc & 0b01111111;
 }
 
 void putch(char ch) {
