@@ -128,7 +128,11 @@ word_t paddr_read(paddr_t addr, int len) {
 		// 因为实际上load_img() 是将其读到 pmem 处存着的
 		return *((uint32_t *)pmem + idx);		
 	}
-
+	// for uart
+	if (addr >= 0x10000000 && addr <= 0x10000fff) {
+		printf("read from uart '%#x'\n", addr);
+		return 0;
+	}
 
 	printf("read out of bound--");	
 	out_of_bound(addr);

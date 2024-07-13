@@ -799,12 +799,13 @@ task clint_addr_check (output bit o);
 endtask
 
 // serial 
-export "DPI-C" task uart_addr_check;
-task uart_addr_check (output bit o);
-	o = |store_inst && (
-			(dsram_araddr >= 32'h1000_0000)
-			&& (dsram_araddr <= 32'h1000_0fff)
-			);
+export "DPI-C" task uart_write_check;
+task uart_write_check (output bit o);
+	o = |store_inst && write_to_uart; 
+endtask
+export "DPI-C" task uart_read_check;
+task uart_read_check (output bit o);
+	o = |load_inst && read_from_uart; 
 endtask
 
 // 初步的 access fault

@@ -167,7 +167,16 @@ bool check_uart_write() {
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
-	uart_addr_check(&a);
+	uart_write_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_uart_read() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	uart_read_check(&a);
 	if (a == 1) return true;
 	else				return false;
 }
