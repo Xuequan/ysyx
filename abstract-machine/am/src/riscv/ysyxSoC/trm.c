@@ -20,19 +20,22 @@ static const char mainargs[] = MAINARGS;
 
 // init uart 
 void init_uart() {
-	*(volatile char *)(UART_BASE + UART_LC) = 0b10000000; // set lcr[7] 1
+	char lc = *(volatile char *)(UART_BASE + UART_LC); 
+	lc &= 0b11111111; 																				// set lcr[7] 1
+	*(volatile char *)(UART_BASE + UART_LC) = lc; 
 	*(volatile char *)(UART_BASE + UART_DL1) = 0x60;
 	*(volatile char *)(UART_BASE + UART_DL2) = 0x00;
 
-	*(volatile char *)(UART_BASE + UART_LC) = 0; // set lcr[7] 0
+	lc = *(volatile char *)(UART_BASE + UART_LC); 
+	*(volatile char *)(UART_BASE + UART_LC) = lc & 0b01111111; // set lcr[7] 0
 
 }
 
 void putch(char ch) {
 	int i = 0;
 	char lsr = *(volatile char *)(UART_BASE + UART_LS);
-	int e = lsr & 0b01000000;  
-	while (!e) {
+	int lsr6 = lsr & 0b01000000;  
+	while (!lsr6) {
 
 		if ( i == 100) 
 			i = 0;
@@ -40,7 +43,7 @@ void putch(char ch) {
 			i++;
 
 		lsr = *(volatile char *)(UART_BASE + UART_LS);
-  	e = lsr & 0b01000000;
+  	lsr6 = lsr & 0b01000000;
 	}
 
 	*(volatile char *)(UART_BASE + UART_TX) = ch;
