@@ -36,12 +36,14 @@ void init_uart() {
 	lc = *(volatile uint8_t *)(UART_BASE + UART_LC); 
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc & 0b01111111;
 	*/
-	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(volatile uint8_t *)(UART_BASE + UART_LC) & 0x7f; 
+	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(uint8_t *)(UART_BASE + UART_LC) & 0x7f; 
 }
 
 void putch(char ch) {
-	uint8_t lsr = *(volatile uint8_t *)(UART_BASE + UART_LS);
-	uint8_t lsr6 = lsr & 0b01000000;  
+	//uint8_t lsr = *(volatile uint8_t *)(UART_BASE + UART_LS);
+	// 查看 lsr[6] 
+	//uint8_t lsr6 = lsr & 0b01000000;  
+	uint8_t lsr6 = *(uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	int i = 0;
 	while (lsr6 == 0) {
 		if ( i == 100) 
@@ -49,10 +51,13 @@ void putch(char ch) {
 		else
 			i++;
 
+		/*
 		lsr = *(volatile uint8_t *)(UART_BASE + UART_LS);
   	lsr6 = lsr & 0b01000000;
+		*/
+		lsr6 = *(uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	}
-	if (lsr6 != 0) 
+	//if (lsr6 != 0) 
 		*(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
