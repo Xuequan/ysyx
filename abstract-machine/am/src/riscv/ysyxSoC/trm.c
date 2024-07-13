@@ -31,8 +31,8 @@ void init_uart() {
 void putch(char ch) {
 	int i = 0;
 	char lsr = *(volatile char *)(UART_BASE + UART_LS);
-	int has_ch = lsr & 0x1;  
-	while (has_ch) {
+	int e = lsr & 0b01000000;  
+	while (!e) {
 
 		if ( i == 100) 
 			i = 0;
@@ -40,7 +40,7 @@ void putch(char ch) {
 			i++;
 
 		lsr = *(volatile char *)(UART_BASE + UART_LS);
-  	has_ch = lsr & 0x1;
+  	e = lsr & 0b01000000;
 	}
 
 	*(volatile char *)(UART_BASE + UART_TX) = ch;
