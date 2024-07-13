@@ -171,7 +171,7 @@ assign clint_addr_max = 32'h0200_ffff;
 
 wire	 is_clint;
 assign is_clint  = (clint_addr_min <= from_dsram_araddr) 
-								|| (clint_addr_max >= from_dsram_araddr);
+								&& (clint_addr_max >= from_dsram_araddr);
 
 always @(is_clint or from_dsram_awvalid or from_dsram_arvalid or from_isram_arvalid or exu_done or ifu_done) begin
 	next = IDLE;

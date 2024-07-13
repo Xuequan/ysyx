@@ -22,7 +22,7 @@
 uint8_t* guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
-void init_mem(char *);
+void init_mem();
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
@@ -63,11 +63,15 @@ static char *img_file = NULL;
 static int difftest_port = 1234;
 char *elf_file = NULL;
 
+// load_img() 将 img 文件装载到内存中某处；
+// 只是方便在初始化 DiffTest 时，将其复制给 NMEU 对应的取指起始处
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
     return 4096; // built-in image size
   }
+
+	printf("image file : %s\n", img_file);
 
   FILE *fp = fopen(img_file, "rb");
   Assert(fp, "load_img(): Can not open '%s'", img_file);
@@ -78,7 +82,13 @@ static long load_img() {
   Log("The image is %s, size = %ld", img_file, size);
 
   fseek(fp, 0, SEEK_SET);
+	// 将 image 读到 RESET_VECTOR (0x8000_0000) 对应的电脑的内存
+	// 处，即 pmem 处；
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
+	/*
+	for(int i = 0; i < size; i++)
+		printf("%d : %#x\n", i, *((int32_t *)guest_to_host(RESET_VECTOR) + i));
+	*/
   assert(ret == 1);
 
   fclose(fp);
@@ -134,7 +144,7 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize memory. */
 	// for test;
-  init_mem(argv[2]);
+  init_mem();
 
   /* Initialize devices. */
   //IFDEF(CONFIG_DEVICE, init_device());

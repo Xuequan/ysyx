@@ -21,6 +21,9 @@
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
+#define MROM_BASE 0x20000000
+extern char *img_file;
+
 static bool is_skip_ref = false;
 
 extern uint32_t npc_regs[16];
@@ -36,9 +39,9 @@ void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(word_t NO) = NULL;
 void (*ref_difftest_init)(int port) = NULL;
 
+
 void init_difftest(char *ref_so_file, long img_size, int port) {
 	
-  //assert(ref_so_file != NULL);
   if (ref_so_file == NULL) {
 		printf("no input ref_so_file\n");
 		return;
@@ -70,7 +73,12 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-
+  //ref_difftest_memcpy(RESET_VECTOR, (void *)img_file, img_size, DIFFTEST_TO_REF);
+  /*
+  extern const char _text_start[], _text_end[];
+	size_t text_size = _text_end - _text_start;
+	printf("text_size = %#lx\n", text_size);
+	*/
 	get_npc_regs();
 	uint32_t buf[16] = {0};
 	memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	

@@ -22,6 +22,11 @@
 #define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 
+#define MROM_SIZE (0x20000fff - 0x20000000)
+#define MROM_BASE 0x20000000
+
+#define SRAM_SIZE (0x0f001fff - 0x0f000000)
+#define SRAM_BASE 0x0f000000
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
 uint8_t* guest_to_host(paddr_t paddr);
 /* convert the host virtual address in NEMU to guest physical address in the guest program */
@@ -31,7 +36,19 @@ static inline bool in_pmem(paddr_t addr) {
   return addr - CONFIG_MBASE < CONFIG_MSIZE;
 }
 
+static inline bool in_mrom(paddr_t addr) {
+  return addr - 0x20000000 < 0xfff;
+}
+
+static inline bool in_sram(paddr_t addr) {
+  return addr - 0x0f000000 < 0x1fff;
+}
+
 word_t paddr_read(paddr_t addr, int len);
 void paddr_write(paddr_t addr, int len, word_t data);
 
+uint8_t* mrom_guest_to_host(paddr_t paddr);
+
+uint8_t* sram_guest_to_host(paddr_t paddr);
+paddr_t host_to_guest_sram(uint8_t *haddr);
 #endif

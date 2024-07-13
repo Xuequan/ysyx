@@ -55,7 +55,15 @@ static void out_of_bound(paddr_t addr) {
       addr, PMEM_LEFT, PMEM_RIGHT, get_pc());
 }
 
-void init_mem(char *test_file) {
+void init_mem() {
+	uint32_t *p = (uint32_t *)pmem;
+	int i;
+	for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
+		p[i] = 0;
+	}
+	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
+	return;
+	/*
 	if (test_file == NULL) {
 		uint32_t *p = (uint32_t *)pmem;
 		int i;
@@ -84,6 +92,7 @@ void init_mem(char *test_file) {
 		for ( ; i < 20; i++) 
 				printf("%d: %#x\n", i, *((uint32_t *)pmem + i) );
 	}
+	*/
 }
 
 uint32_t nextpc();
@@ -116,9 +125,14 @@ word_t paddr_read(paddr_t addr, int len) {
 	// just for mrom
 	if (addr >= 0x20000000 && addr <= 0x20000fff) {
 		int idx = (addr - 0x20000000)/4;
+		// 因为实际上load_img() 是将其读到 pmem 处存着的
 		return *((uint32_t *)pmem + idx);		
 	}
-
+	// for uart
+	if (addr >= 0x10000000 && addr <= 0x10000fff) {
+		printf("read from uart '%#x'\n", addr);
+		return 0;
+	}
 
 	printf("read out of bound--");	
 	out_of_bound(addr);

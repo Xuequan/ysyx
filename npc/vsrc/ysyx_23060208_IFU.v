@@ -82,7 +82,10 @@ always @(posedge clock) begin
     state <= next;
 end
 
-always @(state or ifu_allowin or isram_arready or isram_rvalid) begin
+wire id_equal;
+assign id_equal = (isram_rid == isram_arid);
+
+always @(id_equal or state or ifu_allowin or isram_arready or isram_rvalid) begin
   next = IDLE_R;
   case (state)
     IDLE_R: 
@@ -100,10 +103,12 @@ always @(state or ifu_allowin or isram_arready or isram_rvalid) begin
     SHAKED_AR:
       if (!isram_rvalid)
         next = WAIT_RVALID;
-      else 
+      else if (id_equal) 
         next = SHAKED_R;
+			else 
+				next = SHAKED_AR;
     WAIT_RVALID:
-      if (isram_rvalid)
+      if (isram_rvalid && id_equal)
         next = SHAKED_R;
       else 
         next = WAIT_RVALID;
@@ -124,8 +129,7 @@ reg [7:0] arlen_r;
 assign isram_arlen = arlen_r;
 reg [3:0] arid_r;
 assign isram_arid = arid_r;
-reg [2:0] arsize_r;
-assign isram_arsize = arsize_r;
+assign isram_arsize = 3'b010;
 reg [1:0] arburst_r;
 assign isram_arburst = arburst_r;
 
@@ -134,7 +138,6 @@ always @(posedge clock) begin
 		arvalid_r <= 0;
 		arlen_r <= 8'h0;
 		arid_r <= 0;
-		arsize_r <= 3'b010;
 		arburst_r <= 2'b00;
 	end
 	else if ((state == IDLE_R && next == WAIT_ARREADY) || 
@@ -143,15 +146,13 @@ always @(posedge clock) begin
 		begin
 		arvalid_r <= 1'b1;
 		arlen_r <= 8'h0;
-		arid_r <= 0;
-		arsize_r <= 3'b010;
+		arid_r <= (pc[3:0] == 4'b0) ? 4'h3 : pc[3:0];
 		arburst_r <= 2'b00;
 		end
 	else begin
 		arvalid_r <= 1'b0;
 		arlen_r <= 8'h0;
-		arid_r <= 0;
-		arsize_r <= 3'b010;
+		arid_r <= arid_r;
 		arburst_r <= 2'b00;
 		end
 end
@@ -239,5 +240,11 @@ endtask
 export "DPI-C" task ifu_ready_go_signal;
 task ifu_ready_go_signal (output bit o);
 	o = ifu_ready_go;
+endtask
+
+export "DPI-C" task check_if_access_fault_ifu;
+task check_if_access_fault_ifu (output bit o);
+	o = (isram_rready && isram_rvalid) ? 
+				(isram_rresp == 2'b11) : 1'b0;
 endtask
 endmodule

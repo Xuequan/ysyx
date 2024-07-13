@@ -24,6 +24,10 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+extern word_t pmrom_read(paddr_t addr, int len);
+extern word_t psram_read(paddr_t addr, int len);
+extern void psram_write(paddr_t addr, int len, word_t data);
+
  // 在 nemu 中运行的程序称为 "guest 程序”
  // guest_to_host() 将 paddr 转化为 nemu 模拟的计算机地址在
  // 本电脑上的地址
@@ -63,6 +67,16 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
+	// mrom
+  if (likely(in_mrom(addr))) { 
+		word_t num = pmrom_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from mrom: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+	// mem
   if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 #ifdef CONFIG_MTRACE
@@ -71,6 +85,16 @@ word_t paddr_read(paddr_t addr, int len) {
 #endif
 		return num;
 	}
+	// sram
+  if (likely(in_sram(addr))) { 
+		word_t num = psram_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from sram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
 	// 若是NEMU作为NPC的 ref，那么 CONFIG_DEVICE 也没有，那么对于I/O 就会执行到这里
 	// 进而在NPC显示里报错
@@ -86,6 +110,24 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		pmem_write(addr, len, data); 
 		return; 
 	}
+	// mrom 
+  if (likely(in_mrom(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to mrom: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		printf("NEMU: please check, mrom cannot write after init\n");
+		return; 
+	}
+	
+	// sram
+  if (likely(in_sram(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to sram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		psram_write(addr, len, data); 
+		return; 
+	}
+
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }

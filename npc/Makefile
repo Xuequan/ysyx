@@ -13,7 +13,7 @@ VERILATOR_CFLAGS += --trace
 
 # 最后打开这个检查全面
 # VERILATOR_CFLAGS += --Wall 
-VERILATOR_CFLAGS += --fno-table
+#
 VERILATOR_CFLAGS += --autoflush
 
 # 若出现 active region did not converge, 下面可以辅助debug
@@ -51,8 +51,11 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 
 # llvm-config-14 -cxxflags: print the C++ compiler flags needed to use LLVM headers
+#
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
+
 # llvm-config-14 --libs: print all the libraries needed to link against the specified LLVM components
+#
 LIBS += $(shell llvm-config-14 --libs)
 
 LDFLAGS += -lasan
@@ -118,7 +121,8 @@ $(BIN): $(VSRCS) $(CSRCS)
 
 default: sim
 
-NPC_EXEC := $(BIN) $(ARGS) $(IMG) $(TEST_IMAGE).bin
+#NPC_EXEC := $(BIN) $(ARGS) $(IMG) $(TEST_IMAGE).bin
+NPC_EXEC := $(BIN) $(ARGS) $(IMG)
 
 sim-env: $(BIN)
 
@@ -135,7 +139,7 @@ sim: sim-env image
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
-	@echo llvm-config-14 --cxxflags = $(shell llvm-confag-11 --cxxflags)
+	@echo llvm-config-14 --cxxflags = $(shell llvm-config-14 --cxxflags)
 	@echo llvm-config-14 --ldflags = $(shell llvm-config-14 --ldflags)
 	@echo llvm-config-14 --libs = $(shell llvm-config-14 --libs)
 	@echo =======================================

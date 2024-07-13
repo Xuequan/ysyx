@@ -11,8 +11,8 @@ extern "C" void flash_read(int32_t addr, int32_t *data) {
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
 	//*data = 0x00100073; // ebreak inst
 	//int32_t ret = vaddr_read(addr, 4);
-	//printf("mrom_read(): addr = %#x, return %#x\n", addr, ret);
 	*data = vaddr_read(addr, 4);
+	//printf("mrom_read(): addr = %#x, return %#x\n", addr, *data);
 }
 
 /* 总是读取地址为 raddr & ~0x3u 的4字节返回  */
@@ -158,7 +158,7 @@ bool check_clint_read() {
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
-	rtc_addr_check(&a);
+	clint_addr_check(&a);
 	if (a == 1) return true;
 	else				return false;
 }
@@ -167,7 +167,34 @@ bool check_uart_write() {
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
-	uart_addr_check(&a);
+	uart_write_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_uart_read() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	uart_read_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_access_fault_exu() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	check_if_access_fault(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_access_fault_ifu() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	check_if_access_fault_ifu(&a);
 	if (a == 1) return true;
 	else				return false;
 }

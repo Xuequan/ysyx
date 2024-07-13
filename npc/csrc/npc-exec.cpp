@@ -117,7 +117,7 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
-	if (check_clint_read() || check_uart_write() )
+	if (check_clint_read() || check_uart_write() || check_uart_read() )
 		difftest_skip_ref();	
 
 	difftest_step();
@@ -158,7 +158,7 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-		//trace_and_difftest();
+		trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
 	}
