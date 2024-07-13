@@ -41,6 +41,8 @@ void putch(char ch) {
 			*(volatile char *)(UART_BASE + UART_TX) = 0;
 	}
 	*/
+		char lsr = *(volatile char *)(UART_BASE + UART_LS);
+		*(volatile char *)(UART_BASE + UART_LS) = lsr & 0b10011111;
 		*(volatile char *)(UART_BASE + UART_TX) = ch;
 }
 
