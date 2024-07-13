@@ -19,16 +19,24 @@ Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[] = MAINARGS;
 
 void init_uart() {
+	/*
 	uint8_t lc = *(volatile uint8_t *)(UART_BASE + UART_LC); 
 	lc |= 0x80; 
 	// set lcr[7] 1
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc; 
 	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x60;
 	*(volatile uint8_t *)(UART_BASE + UART_DL2) = (uint8_t)0x00;
+	*/
+	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(volatile uint8_t *)(UART_BASE + UART_LC) | 0x80; 
+	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x60;
+	*(volatile uint8_t *)(UART_BASE + UART_DL2) = (uint8_t)0x00;
 
 	// set lcr[7] 0
+	/*
 	lc = *(volatile uint8_t *)(UART_BASE + UART_LC); 
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc & 0b01111111;
+	*/
+	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(volatile uint8_t *)(UART_BASE + UART_LC) & 0x7f; 
 }
 
 void putch(char ch) {
@@ -36,7 +44,6 @@ void putch(char ch) {
 	uint8_t lsr6 = lsr & 0b01000000;  
 	int i = 0;
 	while (lsr6 == 0) {
-
 		if ( i == 100) 
 			i = 0;
 		else
