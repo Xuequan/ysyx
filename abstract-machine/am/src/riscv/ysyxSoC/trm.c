@@ -18,13 +18,12 @@ Area heap = RANGE(&_heap_start, &_heap_end);
 #endif
 static const char mainargs[] = MAINARGS;
 
-// init uart 
 void init_uart() {
 	uint8_t lc = *(volatile uint8_t *)(UART_BASE + UART_LC); 
 	lc &= 0b11111111; 
 	// set lcr[7] 1
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = lc; 
-	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x60;
+	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x0c;
 	*(volatile uint8_t *)(UART_BASE + UART_DL2) = (uint8_t)0x00;
 
 	// set lcr[7] 0
