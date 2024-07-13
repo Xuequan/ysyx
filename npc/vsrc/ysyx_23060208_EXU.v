@@ -639,7 +639,8 @@ always @(posedge clock)
  * 		这部分相关的信号是: sel, align8_low_araddr, align8_high_araddr,
  * 		load_data; 
  */
-assign dsram_araddr = is_mrom_addr ? align4_araddr 
+assign dsram_araddr = read_from_uart ? araddr_raw 
+										: is_mrom_addr ? align4_araddr 
 										: second_rd ?  align8_high_araddr 
 										: align8_low_araddr;
 
