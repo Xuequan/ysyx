@@ -34,6 +34,7 @@ void putch(char ch) {
 	uint8_t lsr6 = *(volatile uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	int i = 0;
 	while (lsr6 == 0) {
+	  // wait
 		if ( i == 100) 
 			i = 0;
 		else

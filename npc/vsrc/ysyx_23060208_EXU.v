@@ -494,7 +494,6 @@ assign align8_high_awaddr = align8_low_awaddr + 32'h8;
 wire [2:0] sel_w; 
 assign sel_w = awaddr_raw[2:0];
 
-
 wire [63:0] store_data;
 // 第一次写地址是 0，故先将低位写
 // 第二次写地址是 8，故再将高位写
@@ -584,7 +583,6 @@ always @(posedge clock)
 	else if (state_w == IDLE_W)
 		second_wr <= 1'b0;
 
-//wire write_to_uart;
 assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
 										: second_wr ? align8_high_awaddr 
@@ -817,11 +815,4 @@ task check_if_access_fault (output bit o);
 			(dsram_rvalid && dsram_rready) ? 
 			(dsram_rresp == 2'b11) : 1'b0;
 endtask
-/*
-export "DPI-C" task get_pc_from_exu;
-task get_pc_from_exu (output [DATA_WIDTH-1:0] din);
-	din    = exu_pc;
-endtask
-*/
-
 endmodule
