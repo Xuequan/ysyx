@@ -473,6 +473,17 @@ assign mrom_addr_min = 32'h2000_0000;
 assign mrom_addr_max = 32'h2000_0fff;
 wire is_mrom_addr;
 
+assign is_mrom_addr = (araddr_raw >= mrom_addr_min) 
+									&& (araddr_raw <= mrom_addr_max);
+
+wire [31:0] flash_addr_min; 
+wire [31:0] flash_addr_max;
+assign flash_addr_min = 32'h3000_0000;
+assign flash_addr_max = 32'h3fff_ffff;
+wire is_flash_addr;
+assign is_flash_addr = (araddr_raw >= flash_addr_min) 
+									&& (araddr_raw <= flash_addr_max);
+
 wire [31:0] awaddr_raw;
 assign awaddr_raw = alu_result;
 
@@ -493,7 +504,6 @@ assign align8_high_awaddr = align8_low_awaddr + 32'h8;
 
 wire [2:0] sel_w; 
 assign sel_w = awaddr_raw[2:0];
-
 
 wire [63:0] store_data;
 // 第一次写地址是 0，故先将低位写
@@ -584,7 +594,6 @@ always @(posedge clock)
 	else if (state_w == IDLE_W)
 		second_wr <= 1'b0;
 
-//wire write_to_uart;
 assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
 										: second_wr ? align8_high_awaddr 
@@ -609,8 +618,9 @@ assign align8_high_araddr = align8_low_araddr + 32'h8;
 
 assign align4_araddr = {araddr_raw[31:2], 2'b00};
 
-assign is_mrom_addr = (araddr_raw >= mrom_addr_min) 
-									&& (araddr_raw <= mrom_addr_max);
+wire [31:0] read_from_flash_araddr;
+assign read_from_flash_araddr = align4_araddr;
+
 
 reg second_rd;
 always @(posedge clock) 
@@ -640,6 +650,7 @@ always @(posedge clock)
  * 		load_data; 
  */
 assign dsram_araddr = read_from_uart ? araddr_raw 
+										: is_flash_addr ? read_from_flash_araddr 
 										: is_mrom_addr ? align4_araddr 
 										: second_rd ?  align8_high_araddr 
 										: align8_low_araddr;

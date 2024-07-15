@@ -25,6 +25,9 @@
 #define MROM_SIZE (0x20000fff - 0x20000000)
 #define MROM_BASE 0x20000000
 
+#define FLASH_SIZE (0x30000fff - 0x30000000)
+#define FLASH_BASE 0x30000000
+
 #define SRAM_SIZE (0x0f001fff - 0x0f000000)
 #define SRAM_BASE 0x0f000000
 /* convert the guest physical address in the guest program to host virtual address in NEMU */
@@ -36,6 +39,9 @@ static inline bool in_pmem(paddr_t addr) {
   return addr - CONFIG_MBASE < CONFIG_MSIZE;
 }
 
+static inline bool in_flash(paddr_t addr) {
+  return addr - FLASH_BASE < FLASH_SIZE;
+}
 static inline bool in_mrom(paddr_t addr) {
   return addr - 0x20000000 < 0xfff;
 }
@@ -48,6 +54,8 @@ word_t paddr_read(paddr_t addr, int len);
 void paddr_write(paddr_t addr, int len, word_t data);
 
 uint8_t* mrom_guest_to_host(paddr_t paddr);
+
+uint8_t* flash_guest_to_host(paddr_t paddr);
 
 uint8_t* sram_guest_to_host(paddr_t paddr);
 paddr_t host_to_guest_sram(uint8_t *haddr);
