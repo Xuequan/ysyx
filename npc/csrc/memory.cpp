@@ -107,7 +107,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	// read from flash
 	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
 		word_t num = pflash_read(addr, len); 
-		printf("here in flash read, address = %#x, pc = %#x\n", addr, get_pc());
+		//printf("here in flash read, address = %#x, pc = %#x\n", addr, get_pc());
 		return num;		
 	}
 	// just for mrom
