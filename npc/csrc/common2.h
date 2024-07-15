@@ -47,15 +47,23 @@ typedef word_t vaddr_t;
 #define CONFIG_MSIZE 0x8000000
 #define CONFIG_PC_RESET_OFFSET 0x0
 
+#define FLASH_BASE 0x30000000
+//#define FLASH_SIZE (0x3fffffff - 0x30000000)
+#define FLASH_SIZE (0x30000fff - 0x30000000)
+
 #define PMEM_LEFT  ((paddr_t)CONFIG_MBASE)
 #define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)
 #define RESET_VECTOR (PMEM_LEFT + CONFIG_PC_RESET_OFFSET)
 
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
-/* convert the guest physical address in the guest program to host virtual address in NEMU */
+
+static uint8_t pflash[FLASH_SIZE] PG_ALIGN = {};
 
 static inline bool in_pmem(paddr_t addr) {
   return addr - CONFIG_MBASE < CONFIG_MSIZE;
+}
+static inline bool in_pflash(paddr_t addr) {
+  return addr - FLASH_BASE < FLASH_SIZE;
 }
 
 #define DEVICE_BASE 0xa0000000

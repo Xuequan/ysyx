@@ -6,7 +6,7 @@ word_t vaddr_read(vaddr_t addr, int len);
 void vaddr_write(vaddr_t addr, int len, word_t data);
 
 extern "C" void flash_read(int32_t addr, int32_t *data) {    
-  assert(0);
+	*data = vaddr_read(addr, 4);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
 	//*data = 0x00100073; // ebreak inst

@@ -64,44 +64,6 @@ LDFLAGS += $(LIBS)
 
 LDFLAGS += $(shell llvm-config-14 --ldflags)
 
-
-# ==================== try start ========================
-TEST_CC = riscv64-linux-gnu-gcc
-TEST_LD = riscv64-linux-gnu-ld
-TEST_OBJDUMP = riscv64-linux-gnu-objdump
-TEST_OBJCOPY = riscv64-linux-gnu-objcopy
-
-TEST_FLAGS += -O2 -MMD -Wall -Werror
-TEST_FLAGS += -mstrict-align -fdata-sections -ffunction-sections
-TEST_FLAGS += -fno-builtin -Wno-main -fno-pic 
-# TEST_FLAGS += -march=rv32im_zicsr -mabi=ilp32e
-		#	\ -march=rv32e -mabi=ilp32e 
-TEST_FLAGS += -mcmodel=medany 
-TEST_FLAGS += -static
-
-# TEST_LDFLAGS += -T $(AM_HOME)/scripts/linker.ld  --defsym=_pmem_start=0x80000000 --defsym=_entry_offset=0x0
-# TEST_LDFLAGS += -e _start 
-TEST_LDFLAGS += -melf64lriscv
-
-TEST_IMAGE_REL = build/riscv32e-npc-test
-TEST_IMAGE = $(abspath $(TEST_IMAGE_REL))
-TEST_FILE = ./tests/char-test.c
-TEST_FILE_O = ./tests/test.o
-
-# get .o file
-$(TEST_FILE_O): $(TEST_FILE)
-	@$(TEST_CC) -std=gnu11 $(TEST_FLAGS) -c -o $@ $<
-
-# get .elf file
-$(TEST_IMAGE).elf: $(TEST_FILE_O)
-	@$(TEST_LD) $(TEST_LDFLAGS) -o $(TEST_IMAGE).elf  $<
-
-# 最后得到 $(TEST_IMAGE).bin
-image: $(TEST_IMAGE).elf
-	@$(TEST_OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(TEST_IMAGE).elf $(TEST_IMAGE).bin
- 
-# ==================== try end ========================
-
 #$(BIN): $(CSRCS)
 $(BIN): $(VSRCS) $(CSRCS) 
 	@echo "==== inside verilator makefile ========"
@@ -122,16 +84,15 @@ $(BIN): $(VSRCS) $(CSRCS)
 default: sim
 
 #NPC_EXEC := $(BIN) $(ARGS) $(IMG) $(TEST_IMAGE).bin
-NPC_EXEC := $(BIN) $(ARGS) $(IMG)
+NPC_EXEC := $(BIN) $(ARGS)
 
 sim-env: $(BIN)
 
-sim: sim-env image
+sim: sim-env
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	@echo ========inside npc/makefile ==========
 	@echo ARGS=$(ARGS)
-	@echo IMG=$(IMG)
 	@echo NPC_EXEC=$(NPC_EXEC)
 	@echo LIBS=$(LIBS)
 	@echo VSRCS=$(VSRCS)
@@ -148,8 +109,6 @@ sim: sim-env image
 include ../Makefile
 
 gdb: $(BIN)
-	#gdb -s $^ --args $(IMG) $^
-	#gdb -s $(NPC_EXEC)
 	gdb -s $^ --args $(ARGS)
 
 wave:

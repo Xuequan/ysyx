@@ -28,6 +28,7 @@ void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
+void init_flash();
 
 void init_rand() {
 	srand(time(0) );
@@ -85,10 +86,6 @@ static long load_img() {
 	// 将 image 读到 RESET_VECTOR (0x8000_0000) 对应的电脑的内存
 	// 处，即 pmem 处；
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
-	/*
-	for(int i = 0; i < size; i++)
-		printf("%d : %#x\n", i, *((int32_t *)guest_to_host(RESET_VECTOR) + i));
-	*/
   assert(ret == 1);
 
   fclose(fp);
@@ -148,6 +145,9 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize devices. */
   //IFDEF(CONFIG_DEVICE, init_device());
+
+	/* init flash */
+	init_flash();
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();

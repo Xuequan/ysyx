@@ -24,6 +24,7 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+extern word_t pflash_read(paddr_t addr, int len);
 extern word_t pmrom_read(paddr_t addr, int len);
 extern word_t psram_read(paddr_t addr, int len);
 extern void psram_write(paddr_t addr, int len, word_t data);
@@ -73,6 +74,15 @@ word_t paddr_read(paddr_t addr, int len) {
 #ifdef CONFIG_MTRACE
 		if (cpu.pc != addr)  // fliter instruction fetch
 			log_write("Read from mrom: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+	// flash
+  if (likely(in_flash(addr))) { 
+		word_t num = pflash_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from flash: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #endif
 		return num; 
 	}

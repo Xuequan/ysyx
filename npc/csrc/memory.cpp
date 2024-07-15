@@ -18,6 +18,9 @@
 #include <ctime>
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
+uint8_t* flash_guest_to_host(paddr_t paddr) { 
+	return pflash + paddr - FLASH_BASE; 
+}
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 void difftest_skip_ref();
@@ -44,6 +47,10 @@ static word_t pmem_read(paddr_t addr, int len) {
   word_t ret = host_read(guest_to_host(addr), len);
   return ret;
 }
+static word_t pflash_read(paddr_t addr, int len) {
+  word_t ret = host_read(flash_guest_to_host(addr), len);
+  return ret;
+}
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
@@ -63,36 +70,16 @@ void init_mem() {
 	}
 	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 	return;
-	/*
-	if (test_file == NULL) {
-		uint32_t *p = (uint32_t *)pmem;
-		int i;
-		for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
-			p[i] = 0;
-		}
-		Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
-		return;
-	} 
-	else {
-		FILE *fp = fopen(test_file, "rb");
-		Assert(fp, "load_test_file_to_mem : '%s' failed", test_file);
+}
 
-		fseek(fp, 0, SEEK_END);
-		long size = ftell(fp);
-
-		Log("The test file is %s, size = %ld", test_file, size);
-
-		fseek(fp, 0, SEEK_SET);
-		int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
-		assert(ret == 1);
-
-		fclose(fp);		
-			
-		int i = 0; 			
-		for ( ; i < 20; i++) 
-				printf("%d: %#x\n", i, *((uint32_t *)pmem + i) );
+void init_flash() {
+	uint32_t *p = (uint32_t *)pflash;
+	int i;
+	for (i = 0; i < (int) (FLASH_SIZE / sizeof(p[0])); i ++) {
+		p[i] = i;
 	}
-	*/
+	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", FLASH_BASE, FLASH_BASE + FLASH_SIZE);
+	return;
 }
 
 uint32_t nextpc();
@@ -122,6 +109,11 @@ word_t paddr_read(paddr_t addr, int len) {
 		}
 	}
 	
+	// read from flash
+	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
+		word_t num = pflash_read(addr, len); 
+		return num;		
+	}
 	// just for mrom
 	if (addr >= 0x20000000 && addr <= 0x20000fff) {
 		int idx = (addr - 0x20000000)/4;
