@@ -27,7 +27,7 @@ VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
-BIN = $(BUILD_DIR)/$(TOPNAME)
+TOP_BIN = $(BUILD_DIR)/$(TOPNAME)
 
 VCD_FILE = dump.vcd
 
@@ -58,49 +58,40 @@ LDFLAGS += $(LIBS)
 
 LDFLAGS += $(shell llvm-config-14 --ldflags)
 
-$(BIN): $(VSRCS) $(CSRCS) 
+$(TOP_BIN): $(VSRCS) $(CSRCS) 
 	@echo "==== inside verilator makefile ========"
 	@echo INC_PATH=$(INC_PATH)
 	@echo INCFLAGS=$(INCFLAGS)
 	@echo VSRCS=$(VSRCS)
 	@echo CSRCS=$(CSRCS)
-	@echo SOC_DIR=$(SOC_DIR)
-	@echo PERIP_DIR=$(PERIP_DIR)
 	@echo "==== inside verilator makefile ========"
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		--timescale "1ns/1ns"  --no-timing  \
 		$(addprefix -CFLAGS , $(CXXFLAGS))  \
 		$(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(TOP_BIN)) 
 
 default: sim
 
-NPC_EXEC := $(BIN) $(ARGS)
+NPC_EXEC := $(TOP_BIN) $(ARGS) $(IMG)
 
-sim-env: $(BIN)
-
-sim: sim-env
+sim: $(TOP_BIN) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	@echo ========inside npc/makefile ==========
 	@echo ARGS=$(ARGS)
 	@echo NPC_EXEC=$(NPC_EXEC)
-	@echo LIBS=$(LIBS)
-	@echo VSRCS=$(VSRCS)
 	@echo here $(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) 
-	@echo llvm-config-14 --cxxflags = $(shell llvm-config-14 --cxxflags)
-	@echo llvm-config-14 --ldflags = $(shell llvm-config-14 --ldflags)
-	@echo llvm-config-14 --libs = $(shell llvm-config-14 --libs)
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(TOP_BIN)) 
 	@echo =======================================
 	$(NPC_EXEC)
 	
 include ../Makefile
 
-gdb: $(BIN)
+gdb: $(TOP_BIN)
 	gdb -s $^ --args $(ARGS)
 
 wave:
