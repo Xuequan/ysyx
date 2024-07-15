@@ -85,6 +85,7 @@ void init_flash() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
+	printf("read address = %#x\n", addr);
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 		if (nextpc() != addr) { // 过滤掉读指令
@@ -112,7 +113,6 @@ word_t paddr_read(paddr_t addr, int len) {
 	}
 	// just for mrom
 	if (addr >= 0x20000000 && addr <= 0x20000fff) {
-		//printf("here in mrom read\n");
 		int idx = (addr - 0x20000000)/4;
 		// 因为实际上load_img() 是将其读到 pmem 处存着的
 		return *((uint32_t *)pmem + idx);		
