@@ -73,12 +73,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  //ref_difftest_memcpy(RESET_VECTOR, (void *)img_file, img_size, DIFFTEST_TO_REF);
-  /*
-  extern const char _text_start[], _text_end[];
-	size_t text_size = _text_end - _text_start;
-	printf("text_size = %#lx\n", text_size);
-	*/
+
 	get_npc_regs();
 	uint32_t buf[16] = {0};
 	memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
@@ -129,13 +124,14 @@ void difftest_step() {
     npc_state.state = NPC_ABORT;
     npc_state.halt_pc = get_pc();
 		npc_state.halt_ret = 1;
-    //isa_reg_display();
+
 		printf("\n");
 		for( int j = 0; j < error_cnt; j++){
 			index = error[j];
 			printf("PC = '%#x', Register '%s' in NPC is '%#x', should be '%#x'\n", 
 				get_pc(), reg_name(index), npc_regs[index], ref_regs[index]);
 		}
+
 		printf("\n");
 			// print REF registers
 			printf("ref registers: \n");

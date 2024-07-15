@@ -95,13 +95,8 @@ word_t paddr_read(paddr_t addr, int len) {
 
 	if (addr == (uint32_t)(RTC_ADDR) || 
 			addr == (uint32_t)(RTC_ADDR + 4) ) {
-
 		printf("should not be here\n");
-
-		//difftest_skip_ref();
-
 		uint64_t timer = get_time();
-
 		if (addr == (uint32_t)(RTC_ADDR) ) {	
 			return (word_t)timer;
 		}else{
