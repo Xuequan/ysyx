@@ -112,10 +112,12 @@ word_t paddr_read(paddr_t addr, int len) {
 	// read from flash
 	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
 		word_t num = pflash_read(addr, len); 
+		printf("here in flash read\n");
 		return num;		
 	}
 	// just for mrom
 	if (addr >= 0x20000000 && addr <= 0x20000fff) {
+		printf("here in mrom read\n");
 		int idx = (addr - 0x20000000)/4;
 		// 因为实际上load_img() 是将其读到 pmem 处存着的
 		return *((uint32_t *)pmem + idx);		

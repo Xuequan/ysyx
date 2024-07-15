@@ -21,7 +21,6 @@ VERILATOR_CFLAGS += --autoflush
 
 # in order to '`include "ysyx_23060208_npc.h" '
 VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
-#VERILATOR_CFLAGS += -I$(SOC_DIR/build)
 
 VERILATOR_CFLAGS += -I$(PERIP_DIR)/uart16550/rtl
 VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
@@ -50,12 +49,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 
-# llvm-config-14 -cxxflags: print the C++ compiler flags needed to use LLVM headers
-#
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
-
-# llvm-config-14 --libs: print all the libraries needed to link against the specified LLVM components
-#
 LIBS += $(shell llvm-config-14 --libs)
 
 LDFLAGS += -lasan
@@ -64,7 +58,6 @@ LDFLAGS += $(LIBS)
 
 LDFLAGS += $(shell llvm-config-14 --ldflags)
 
-#$(BIN): $(CSRCS)
 $(BIN): $(VSRCS) $(CSRCS) 
 	@echo "==== inside verilator makefile ========"
 	@echo INC_PATH=$(INC_PATH)
@@ -83,7 +76,6 @@ $(BIN): $(VSRCS) $(CSRCS)
 
 default: sim
 
-#NPC_EXEC := $(BIN) $(ARGS) $(IMG) $(TEST_IMAGE).bin
 NPC_EXEC := $(BIN) $(ARGS)
 
 sim-env: $(BIN)
