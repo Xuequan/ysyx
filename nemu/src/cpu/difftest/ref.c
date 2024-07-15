@@ -58,6 +58,7 @@ __EXPORT void difftest_init(int port) {
   void init_mem();
 	void init_sram();
 	void init_mrom();
+	void init_flash();
   init_mem();
 	init_mrom();
 	init_sram();
