@@ -85,7 +85,6 @@ void init_flash() {
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {
-	printf("read address = %#x\n", addr);
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
 		if (nextpc() != addr) { // 过滤掉读指令
@@ -108,7 +107,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	// read from flash
 	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
 		word_t num = pflash_read(addr, len); 
-		printf("here in flash read\n");
+		printf("here in flash read, address = %#x, pc = %#x\n", addr, get_pc());
 		return num;		
 	}
 	// just for mrom
