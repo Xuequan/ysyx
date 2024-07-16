@@ -488,6 +488,9 @@ wire [31:0] spi_master_addr_min;
 wire [31:0] spi_master_addr_max;
 assign spi_master_addr_min = 32'h1000_1000;
 assign spi_master_addr_max  = 32'h1000_1fff;
+wire is_spi_master_addr; 
+assign is_spi_master_addr = (alu_result >= spi_master_addr_min) 
+									&& (alu_result <= spi_master_addr_min);
 
 wire [31:0] awaddr_raw;
 assign awaddr_raw = alu_result;
@@ -495,7 +498,9 @@ assign awaddr_raw = alu_result;
 wire write_to_uart;
 assign write_to_uart = (awaddr_raw >= uart_addr_min) &&
 								 (awaddr_raw <= uart_addr_max);
-assign dsram_awsize = write_to_uart ? 3'b000 : 3'b011; 
+assign dsram_awsize = write_to_uart ? 3'b000 
+										: is_spi_master_addr ? 3'b010 
+										: 3'b011; 
 
 /* 记录下写数据逻辑。
  * 首先先明确的是：写数据是64bit, 是靠 wstrb 信号控制的；
@@ -599,12 +604,14 @@ always @(posedge clock)
 	else if (state_w == IDLE_W)
 		second_wr <= 1'b0;
 
+//wire is_spi_master_addr; 
 assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
+										: is_spi_master_addr ? awaddr_raw
 										: second_wr ? align8_high_awaddr 
 										: align8_low_awaddr;
 
-assign dsram_wdata = store_data;
+assign dsram_wdata = is_spi_master_addr ? {32'b0, store_data_raw} : store_data;
 
 /* =======load instruction ============================== */
 wire [31:0] araddr_raw;
@@ -655,6 +662,7 @@ always @(posedge clock)
  * 		load_data; 
  */
 assign dsram_araddr = read_from_uart ? araddr_raw 
+										: is_spi_master_addr ? araddr_raw
 										: is_flash_addr ? read_from_flash_araddr 
 										: is_mrom_addr ? align4_araddr 
 										: second_rd ?  align8_high_araddr 
