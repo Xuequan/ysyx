@@ -499,7 +499,7 @@ wire write_to_uart;
 assign write_to_uart = (awaddr_raw >= uart_addr_min) &&
 								 (awaddr_raw <= uart_addr_max);
 assign dsram_awsize = write_to_uart ? 3'b000 
-										: is_spi_master_addr ? 3'b010 
+										: is_spi_master_addr ? 3'b001
 										: 3'b011; 
 
 /* 记录下写数据逻辑。
@@ -605,6 +605,10 @@ always @(posedge clock)
 		second_wr <= 1'b0;
 
 //wire is_spi_master_addr; 
+/*
+wire [7:0] spi_master_wstrb;
+assign spi_master_wstrb = 
+*/
 assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
 										: is_spi_master_addr ? awaddr_raw
