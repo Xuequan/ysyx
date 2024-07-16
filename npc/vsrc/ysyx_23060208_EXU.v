@@ -484,6 +484,11 @@ wire is_flash_addr;
 assign is_flash_addr = (araddr_raw >= flash_addr_min) 
 									&& (araddr_raw <= flash_addr_max);
 
+wire [31:0] spi_master_addr_min; 
+wire [31:0] spi_master_addr_max;
+assign spi_master_addr_min = 32'h1000_1000;
+assign spi_master_addr_max  = 32'h1000_1fff;
+
 wire [31:0] awaddr_raw;
 assign awaddr_raw = alu_result;
 
