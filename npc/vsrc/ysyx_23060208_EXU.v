@@ -499,7 +499,7 @@ wire write_to_uart;
 assign write_to_uart = (awaddr_raw >= uart_addr_min) &&
 								 (awaddr_raw <= uart_addr_max);
 assign dsram_awsize = write_to_uart ? 3'b000 
-										: is_spi_master_addr ? 3'b000
+										: is_spi_master_addr ? 3'b001
 										: 3'b011; 
 
 /* 记录下写数据逻辑。
