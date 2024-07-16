@@ -490,7 +490,7 @@ assign spi_master_addr_min = 32'h1000_1000;
 assign spi_master_addr_max  = 32'h1000_1fff;
 wire is_spi_master_addr; 
 assign is_spi_master_addr = (alu_result >= spi_master_addr_min) 
-									&& (alu_result <= spi_master_addr_min);
+									&& (alu_result <= spi_master_addr_max);
 
 wire [31:0] awaddr_raw;
 assign awaddr_raw = alu_result;
