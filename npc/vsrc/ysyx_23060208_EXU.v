@@ -605,11 +605,14 @@ always @(posedge clock)
 		second_wr <= 1'b0;
 
 //wire is_spi_master_addr; 
-/*
 wire [7:0] spi_master_wstrb;
-assign spi_master_wstrb = 
-*/
-assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
+assign spi_master_wstrb = ({8{inst_sw}} & 8'b00001111) 
+				| ({8{inst_sh}} & 8'b0000_0011)
+				| ({8{inst_sb}} & 8'b0000_0001);
+
+assign dsram_wstrb  = is_spi_master_addr ? spi_master_wstrb
+						: second_wr ? wstrb2 : wstrb;
+
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
 										: is_spi_master_addr ? awaddr_raw
 										: second_wr ? align8_high_awaddr 
