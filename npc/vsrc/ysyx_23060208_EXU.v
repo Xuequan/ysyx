@@ -498,8 +498,9 @@ assign awaddr_raw = alu_result;
 wire write_to_uart;
 assign write_to_uart = (awaddr_raw >= uart_addr_min) &&
 								 (awaddr_raw <= uart_addr_max);
+
 assign dsram_awsize = write_to_uart ? 3'b000 
-										: is_spi_master_addr ? 3'b001
+										: is_spi_master_addr ? 3'b010
 										: 3'b011; 
 
 /* 记录下写数据逻辑。
@@ -840,6 +841,15 @@ task uart_read_check (output bit o);
 	o = |load_inst && read_from_uart; 
 endtask
 
+// spi master
+export "DPI-C" task spi_master_write_check;
+task spi_master_write_check (output bit o);
+	o = |store_inst && is_spi_master_addr; 
+endtask
+export "DPI-C" task spi_master_read_check;
+task spi_master_read_check (output bit o);
+	o = |load_inst && is_spi_master_addr; 
+endtask
 // 初步的 access fault
 export "DPI-C" task check_if_access_fault;
 task check_if_access_fault (output bit o);

@@ -180,6 +180,25 @@ bool check_uart_read() {
 	if (a == 1) return true;
 	else				return false;
 }
+
+bool check_spi_master_write() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	spi_master_write_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+bool check_spi_master_read() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	spi_master_read_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
 bool check_access_fault_exu() {
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
