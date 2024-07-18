@@ -19,7 +19,8 @@
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 uint8_t* flash_guest_to_host(paddr_t paddr) { 
-	return pflash + paddr - FLASH_BASE; 
+	//return pflash + paddr - FLASH_BASE; 
+	return pflash + paddr; 
 }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
