@@ -100,6 +100,7 @@ static void trace_and_difftest(){
 		difftest_skip_ref();	
 
 	difftest_step();
+	// breakpoint 
 	scan_wp_pool();
 }
 
@@ -108,9 +109,7 @@ bool inst_is_jal();
 bool inst_is_jalr();
 
 void exec_once() {
-	//printf("before exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 	int sim_ret = sim_once();
-	//printf("now    exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 
 	get_assemble_code();
 
@@ -127,10 +126,8 @@ void exec_once() {
 		return;
 	}
 
-	/* 先关掉
 	if (sim_ret == 1 || sim_ret == 2) 
 		ftrace(sim_ret);
-	*/
 }
 
 void execute(uint64_t n) {

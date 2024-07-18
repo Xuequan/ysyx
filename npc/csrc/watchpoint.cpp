@@ -160,8 +160,7 @@ void scan_wp_pool() {
 			return;
     }
 		
-		/* check if reach memory address */
-		//if (cpu.pc - 4 == strtol(ptr->expr+1, NULL, 16) ) {
+		/* check if reach pre-defined PC */
 		if (get_pc() == strtol(ptr->expr, NULL, 16) ) {
       npc_state.state = NPC_STOP;
       printf("Watchpoint %d at %s\n", ptr->NO, ptr->expr);
