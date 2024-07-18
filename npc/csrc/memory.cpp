@@ -19,8 +19,8 @@
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 uint8_t* flash_guest_to_host(paddr_t paddr) { 
-	//return pflash + paddr - FLASH_BASE; 
-	return pflash + paddr; 
+	return pflash + paddr - FLASH_BASE; 
+	//return pflash + paddr; 
 }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
@@ -108,7 +108,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	// read from flash
 	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
 		word_t num = pflash_read(addr, len); 
-		//printf("here in flash read, address = %#x, pc = %#x\n", addr, get_pc());
+		printf("here in flash read, address = %#x, pc = %#x\n", addr, get_pc());
 		return num;		
 	}
 	// just for mrom
