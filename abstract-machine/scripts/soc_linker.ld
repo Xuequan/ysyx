@@ -1,6 +1,6 @@
 MEMORY 
 	{
-	 mrom : ORIGIN = 0X20000000, LENGTH = 4K
+	 mrom : ORIGIN = 0X20000000, LENGTH = 8K
 	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
 	}
 
