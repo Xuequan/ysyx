@@ -608,8 +608,8 @@ always @(posedge clock)
 //wire is_spi_master_addr; 
 wire [7:0] spi_master_wstrb;
 assign spi_master_wstrb = ({8{inst_sw}} & 8'b1111_1111) 
-				| ({8{inst_sh}} & 8'b1111_0011)
-				| ({8{inst_sb}} & 8'b1111_0001);
+				| ({8{inst_sh}} & 8'b0011_0011)
+				| ({8{inst_sb}} & 8'b0001_0001);
 
 assign dsram_wstrb  = is_spi_master_addr ? spi_master_wstrb
 						: second_wr ? wstrb2 : wstrb;
