@@ -25,28 +25,6 @@ static bool g_print_step = false;
 uint64_t g_nr_guest_inst = 0;
 
 void difftest_skip_ref();	
-/* return 1 if function call
-** return 2 if function ret
-** else return 0
-*/
-/*
-static int identify_inst() {
-	if (inst_is_jal() ){
-		return 1;
-	} else if (inst_is_jalr()){
-		if (rs1() == 1 && rd() == 0)  // ret
-			return 2;
-		else if (rs1() == 1 && rd() == 1)
-			return 2;
-		else if (rs1() == 6 && rd() == 0)
-			return 2;
-		else 
-			return 1;
-	} else{
-		return 0;
-	}
-}
-*/
 static int space = 4;
 char *vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len);
 
@@ -117,10 +95,12 @@ static void trace_and_difftest(){
 	if (g_print_step){
 		printf("%s\n",logbuf);
 	}
-	if (check_clint_read() || check_uart_write() || check_uart_read() )
+	if (check_clint_read() || check_uart_write() || check_uart_read() 
+		|| check_spi_master_read() || check_spi_master_write() )
 		difftest_skip_ref();	
 
 	difftest_step();
+	// breakpoint 
 	scan_wp_pool();
 }
 
@@ -129,9 +109,7 @@ bool inst_is_jal();
 bool inst_is_jalr();
 
 void exec_once() {
-	//printf("before exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 	int sim_ret = sim_once();
-	//printf("now    exec_once(), pc = %#x, inst = %#x\n", get_pc(), get_inst());
 
 	get_assemble_code();
 
@@ -148,10 +126,8 @@ void exec_once() {
 		return;
 	}
 
-	/* 先关掉
 	if (sim_ret == 1 || sim_ret == 2) 
 		ftrace(sim_ret);
-	*/
 }
 
 void execute(uint64_t n) {

@@ -20,6 +20,7 @@
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 uint8_t* flash_guest_to_host(paddr_t paddr) { 
 	return pflash + paddr - FLASH_BASE; 
+	//return pflash + paddr; 
 }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
@@ -76,7 +77,14 @@ void init_flash() {
 	uint32_t *p = (uint32_t *)pflash;
 	int i;
 	for (i = 0; i < (int) (FLASH_SIZE / sizeof(p[0])); i ++) {
-		p[i] = i;
+		if ( i == 0) 
+			p[i] = 0x12345678;
+		else if ( i == 1)
+			p[i] = 0x11112222;
+		else if (i == 2)
+			p[i] = 0xff00f0ff;
+		else 
+			p[i] = i;
 	}
 	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", FLASH_BASE, FLASH_BASE + FLASH_SIZE);
 	return;
@@ -107,7 +115,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	// read from flash
 	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
 		word_t num = pflash_read(addr, len); 
-		//printf("here in flash read, address = %#x, pc = %#x\n", addr, get_pc());
+		printf("here in flash read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
 		return num;		
 	}
 	// just for mrom

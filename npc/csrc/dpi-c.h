@@ -62,6 +62,9 @@ bool check_clint_read();
 bool check_uart_write();
 bool check_uart_read();
 
+bool check_spi_master_write();
+bool check_spi_master_read();
+
 bool check_access_fault_ifu();
 bool check_access_fault_exu();
 

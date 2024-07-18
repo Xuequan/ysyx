@@ -484,13 +484,24 @@ wire is_flash_addr;
 assign is_flash_addr = (araddr_raw >= flash_addr_min) 
 									&& (araddr_raw <= flash_addr_max);
 
+wire [31:0] spi_master_addr_min; 
+wire [31:0] spi_master_addr_max;
+assign spi_master_addr_min = 32'h1000_1000;
+assign spi_master_addr_max  = 32'h1000_1fff;
+wire is_spi_master_addr; 
+assign is_spi_master_addr = (alu_result >= spi_master_addr_min) 
+									&& (alu_result <= spi_master_addr_max);
+
 wire [31:0] awaddr_raw;
 assign awaddr_raw = alu_result;
 
 wire write_to_uart;
 assign write_to_uart = (awaddr_raw >= uart_addr_min) &&
 								 (awaddr_raw <= uart_addr_max);
-assign dsram_awsize = write_to_uart ? 3'b000 : 3'b011; 
+
+assign dsram_awsize = write_to_uart ? 3'b000 
+										: is_spi_master_addr ? 3'b010
+										: 3'b011; 
 
 /* 记录下写数据逻辑。
  * 首先先明确的是：写数据是64bit, 是靠 wstrb 信号控制的；
@@ -594,12 +605,21 @@ always @(posedge clock)
 	else if (state_w == IDLE_W)
 		second_wr <= 1'b0;
 
-assign dsram_wstrb  = second_wr ? wstrb2 : wstrb;
+//wire is_spi_master_addr; 
+wire [7:0] spi_master_wstrb;
+assign spi_master_wstrb = ({8{inst_sw}} & 8'b1111_1111) 
+				| ({8{inst_sh}} & 8'b0011_0011)
+				| ({8{inst_sb}} & 8'b0001_0001);
+
+assign dsram_wstrb  = is_spi_master_addr ? spi_master_wstrb
+						: second_wr ? wstrb2 : wstrb;
+
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
+										: is_spi_master_addr ? awaddr_raw
 										: second_wr ? align8_high_awaddr 
 										: align8_low_awaddr;
 
-assign dsram_wdata = store_data;
+assign dsram_wdata = is_spi_master_addr ? {2{store_data_raw}} : store_data;
 
 /* =======load instruction ============================== */
 wire [31:0] araddr_raw;
@@ -650,6 +670,7 @@ always @(posedge clock)
  * 		load_data; 
  */
 assign dsram_araddr = read_from_uart ? araddr_raw 
+										: is_spi_master_addr ? araddr_raw
 										: is_flash_addr ? read_from_flash_araddr 
 										: is_mrom_addr ? align4_araddr 
 										: second_rd ?  align8_high_araddr 
@@ -820,6 +841,15 @@ task uart_read_check (output bit o);
 	o = |load_inst && read_from_uart; 
 endtask
 
+// spi master
+export "DPI-C" task spi_master_write_check;
+task spi_master_write_check (output bit o);
+	o = |store_inst && is_spi_master_addr; 
+endtask
+export "DPI-C" task spi_master_read_check;
+task spi_master_read_check (output bit o);
+	o = |load_inst && is_spi_master_addr; 
+endtask
 // 初步的 access fault
 export "DPI-C" task check_if_access_fault;
 task check_if_access_fault (output bit o);

@@ -87,8 +87,10 @@ static long load_img() {
 	// 处，即 pmem 处；
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
   assert(ret == 1);
+	/*
 	for(int i = 0; i < size/4; i++)
 		printf("%d: %#x\n", i, *(uint32_t *)(guest_to_host(RESET_VECTOR) + i));
+	*/
 
   fclose(fp);
 	return size;
