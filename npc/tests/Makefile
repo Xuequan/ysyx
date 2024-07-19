@@ -1,5 +1,6 @@
-CFLAGS += -O2 -MMD -Wall -Werror \
+T_CFLAGS += -O2 -MMD -Wall -Werror \
 		-fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector \
+		-fno-unwind-tables \
 		-Wno-main -fvisibility=hidden \
 		-fdata-sections -ffunction-sections \
 		-march=rv32e -mabi=ilp32e
@@ -17,7 +18,7 @@ OBJDUMP = riscv64-linux-gnu-objdump
 OBJCOPY  = riscv64-linux-gnu-objcopy
 
 $(TEMP) : $(SRC)
-	@$(CC) -std=gnu11 $(CFLAGS) -c -o $@ $<
+	@$(CC) -std=gnu11 $(T_CFLAGS) -c -o $@ $<
 
 $(T_OBJ) : $(TEMP)
 	@$(OBJDUMP) -d $< > $(ASM)

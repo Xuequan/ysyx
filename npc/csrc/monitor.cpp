@@ -12,7 +12,6 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
 #include <elf.h>
 #include <getopt.h>
 #include <time.h>
