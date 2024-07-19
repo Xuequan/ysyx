@@ -174,7 +174,9 @@ void init_monitor(int argc, char *argv[]) {
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
+	/* load test program to flash */
 	long test_size = load_test();
+
   /* Initialize differential testing. */
  	init_difftest(diff_so_file, img_size, test_size, difftest_port);
 
