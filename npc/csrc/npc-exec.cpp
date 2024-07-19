@@ -84,7 +84,7 @@ void get_assemble_code() {
 	memset(p, ' ', 1);
 	p += 1;
 	disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, 4);
-	//printf("%#08x:%s %s\n",pc, logbuf, p);
+	printf("%#08x:%s %s\n",pc, logbuf, p);
 }
 
 void scan_wp_pool();
