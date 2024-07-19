@@ -94,11 +94,6 @@ void difftest_step();
 
 static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
-	/*
-	if (g_print_step){
-		printf("%s\n",logbuf);
-	}
-	*/
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
 		|| check_spi_master_read() || check_spi_master_write() )
 		difftest_skip_ref();	

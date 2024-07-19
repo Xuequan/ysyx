@@ -3,5 +3,6 @@
 __attribute__((__aligned__(4))) void char_test() {
 	*(volatile char *)(UART_BASE + UART_TX) = 'A';
 	*(volatile char *)(UART_BASE + UART_TX) = '\n';
-	while(1);
+	asm volatile("ebreak");
+	//while(1);
 }
