@@ -76,7 +76,6 @@ void get_assemble_code() {
 	uint32_t pc 				 = get_pc();
 	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
-	//printf("pc = %#x, insturction = %#x\n", pc, instruction);
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
@@ -84,7 +83,10 @@ void get_assemble_code() {
 	memset(p, ' ', 1);
 	p += 1;
 	disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, 4);
-	//printf("%#08x:%s %s\n",pc, logbuf, p);
+	/* printf each executed instruction in NPC */
+	if (g_print_step){
+		printf("%s\n",logbuf);
+	}
 }
 
 void scan_wp_pool();
@@ -92,9 +94,6 @@ void difftest_step();
 
 static void trace_and_difftest(){
 	log_write("%s\n", logbuf);
-	if (g_print_step){
-		printf("%s\n",logbuf);
-	}
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
 		|| check_spi_master_read() || check_spi_master_write() )
 		difftest_skip_ref();	

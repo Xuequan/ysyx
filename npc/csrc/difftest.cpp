@@ -32,6 +32,7 @@ void get_npc_regs();
 uint32_t get_pc();
 
 uint8_t* guest_to_host(paddr_t paddr);
+uint8_t* flash_guest_to_host(paddr_t paddr);
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -40,7 +41,7 @@ void (*ref_difftest_raise_intr)(word_t NO) = NULL;
 void (*ref_difftest_init)(int port) = NULL;
 
 
-void init_difftest(char *ref_so_file, long img_size, int port) {
+void init_difftest(char *ref_so_file, long img_size, long test_size, int port) {
 	
   if (ref_so_file == NULL) {
 		printf("no input ref_so_file\n");
@@ -73,7 +74,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-
+	// copy NPC flash data to NEMU flash
+  ref_difftest_memcpy(FLASH_BASE, flash_guest_to_host(FLASH_BASE), test_size, DIFFTEST_TO_REF);
 	get_npc_regs();
 	uint32_t buf[16] = {0};
 	memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	

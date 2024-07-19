@@ -12,7 +12,6 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
 #include <elf.h>
 #include <getopt.h>
 #include <time.h>
@@ -20,10 +19,11 @@
 #include <cstdlib>
 
 uint8_t* guest_to_host(paddr_t);
+uint8_t* flash_guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
-void init_difftest(char *ref_so_file, long img_size, int port);
+void init_difftest(char *ref_so_file, long img_size, long test_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
@@ -64,6 +64,24 @@ static char *img_file = NULL;
 static int difftest_port = 1234;
 char *elf_file = NULL;
 
+// load npc/tests/char-test.bin to flash space
+static long load_test() {
+	char *test_file = "/home/chuan/ysyx-workbench/npc/tests/char-test.bin";
+	FILE *fp = fopen(test_file, "rb");
+	Assert(fp, "load_test(): Can not open '%s'", test_file);
+
+	fseek(fp, 0, SEEK_END);
+	long size = ftell(fp);
+
+	Log("The test file is %s, size = %ld", test_file, size);
+	
+	fseek(fp, 0, SEEK_SET);
+	int ret = fread(flash_guest_to_host(FLASH_BASE), size, 1, fp);
+	assert(ret == 1);
+
+	fclose(fp);
+	return size;	
+}
 // load_img() 将 img 文件装载到内存中某处；
 // 只是方便在初始化 DiffTest 时，将其复制给 NMEU 对应的取指起始处
 static long load_img() {
@@ -156,8 +174,11 @@ void init_monitor(int argc, char *argv[]) {
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
+	/* load test program to flash */
+	long test_size = load_test();
+
   /* Initialize differential testing. */
- 	init_difftest(diff_so_file, img_size, difftest_port);
+ 	init_difftest(diff_so_file, img_size, test_size, difftest_port);
 
   /* Initialize the simple debugger. */
   init_sdb();

@@ -1,7 +1,8 @@
 #define UART_BASE 0x10000000L
 #define UART_TX 0
-void _start() {
+__attribute__((__aligned__(4))) void char_test() {
 	*(volatile char *)(UART_BASE + UART_TX) = 'A';
 	*(volatile char *)(UART_BASE + UART_TX) = '\n';
-	while(1);
+	asm volatile("ebreak");
+	//while(1);
 }

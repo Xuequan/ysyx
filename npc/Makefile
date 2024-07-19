@@ -10,6 +10,8 @@ INC_PATH ?=
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
+	
+VERILATOR_CFLAGS += -fno-table  \
 
 # 最后打开这个检查全面
 # VERILATOR_CFLAGS += --Wall 
@@ -49,6 +51,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 
+
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
 LIBS += $(shell llvm-config-14 --libs)
 
@@ -64,6 +67,8 @@ $(TOP_BIN): $(VSRCS) $(CSRCS)
 	@echo INCFLAGS=$(INCFLAGS)
 	@echo VSRCS=$(VSRCS)
 	@echo CSRCS=$(CSRCS)
+	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo LDFLASGS=$(LDFLAGS)
 	@echo "==== inside verilator makefile ========"
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
