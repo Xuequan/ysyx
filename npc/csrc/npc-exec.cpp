@@ -134,7 +134,7 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-		trace_and_difftest();
+		//trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
 	}
