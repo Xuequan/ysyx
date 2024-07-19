@@ -23,14 +23,12 @@ uint8_t* flash_guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
 void init_mem();
-void init_difftest(char *ref_so_file, long img_size, int port);
+void init_difftest(char *ref_so_file, long img_size, long test_size, int port);
 void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
 void init_flash();
-
-long test_size = 0;
 
 void init_rand() {
 	srand(time(0) );
@@ -176,9 +174,9 @@ void init_monitor(int argc, char *argv[]) {
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
 
-	test_size = load_test();
+	long test_size = load_test();
   /* Initialize differential testing. */
- 	init_difftest(diff_so_file, img_size, difftest_port);
+ 	init_difftest(diff_so_file, img_size, test_size, difftest_port);
 
   /* Initialize the simple debugger. */
   init_sdb();

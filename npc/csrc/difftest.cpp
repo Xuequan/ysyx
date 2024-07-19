@@ -32,6 +32,7 @@ void get_npc_regs();
 uint32_t get_pc();
 
 uint8_t* guest_to_host(paddr_t paddr);
+uint8_t* flash_guest_to_host(paddr_t paddr);
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -40,8 +41,7 @@ void (*ref_difftest_raise_intr)(word_t NO) = NULL;
 void (*ref_difftest_init)(int port) = NULL;
 
 
-long test_size;
-void init_difftest(char *ref_so_file, long img_size, int port) {
+void init_difftest(char *ref_so_file, long img_size, long test_size, int port) {
 	
   if (ref_so_file == NULL) {
 		printf("no input ref_so_file\n");
