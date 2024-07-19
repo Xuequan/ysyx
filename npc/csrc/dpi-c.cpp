@@ -214,9 +214,6 @@ bool check_access_fault_ifu() {
 	svSetScope(scope);
 	svBit a;
 	check_if_access_fault_ifu(&a);
-	/*
 	if (a == 1) return true;
 	else				return false;
-	*/
-	return false;
 }
