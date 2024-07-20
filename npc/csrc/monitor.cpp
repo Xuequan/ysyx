@@ -175,8 +175,8 @@ void init_monitor(int argc, char *argv[]) {
   long img_size = load_img();
 
 	/* load test program to flash */
-	//long test_size = load_test();
-	long test_size = 0;
+	long test_size = load_test();
+	//long test_size = 0;
 
   /* Initialize differential testing. */
  	init_difftest(diff_so_file, img_size, test_size, difftest_port);
