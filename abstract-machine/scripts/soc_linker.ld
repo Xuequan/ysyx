@@ -32,10 +32,9 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > mrom AT> mrom 
+  } > flash 
 
 	.data ORIGIN (sram) : 
-		/*AT (ADDR (.text) + SIZEOF (.rodata) + SIZEOF (.text) ) */
 	{
 		. = ALIGN(0x8);
 		_data_start = .;
