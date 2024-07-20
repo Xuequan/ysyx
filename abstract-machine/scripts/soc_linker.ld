@@ -25,7 +25,7 @@ SECTIONS {
 		_text_end = .;
   } > flash AT> flash
 
-	.rodata ORIGIN (mrom) : {
+	.rodata : {
 		. = ALIGN(0x8);
 		_rodata_start = . ;
     *(.rodata*)
