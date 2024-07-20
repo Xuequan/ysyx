@@ -10,12 +10,13 @@ PHDRS {
 				/*text PT_LOAD ; */
 				data PT_LOAD ; 
 			} 
-flash_start = ORIGIN(flash);
+flash_s = ORIGIN(flash);
+mrom_s = ORIGIN(mrom);
 SECTIONS {
 	/* . = SIZEOF_HEADERS; */
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   . = _pmem_start + _entry_offset;
-  .text flash_start : AT(flash_start) {
+  .text flash_s : AT(flash_s) {
 		. = ALIGN(0x8);
 		_text_start = .;
     *(entry)
@@ -24,7 +25,7 @@ SECTIONS {
 		_text_end = .;
   } > flash 
 
-	.rodata : {
+	.rodata mrom_s : AT(mrom_s) {
 		. = ALIGN(0x8);
 		_rodata_start = . ;
     *(.rodata*)
