@@ -99,8 +99,6 @@ static void trace_and_difftest(){
 		difftest_skip_ref();	
 
 	difftest_step();
-	// breakpoint 
-	scan_wp_pool();
 }
 
 bool inst_is_ebreak();
@@ -134,6 +132,8 @@ void execute(uint64_t n) {
 		g_nr_guest_inst ++;
 		exec_once();
 		trace_and_difftest();
+		// breakpoint 
+		scan_wp_pool();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
 	}

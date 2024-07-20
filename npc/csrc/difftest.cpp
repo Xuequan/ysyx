@@ -75,7 +75,7 @@ void init_difftest(char *ref_so_file, long img_size, long test_size, int port) {
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
 	// copy NPC flash data to NEMU flash
-  ref_difftest_memcpy(FLASH_BASE, flash_guest_to_host(FLASH_BASE), test_size, DIFFTEST_TO_REF);
+ // ref_difftest_memcpy(FLASH_BASE, flash_guest_to_host(FLASH_BASE), test_size, DIFFTEST_TO_REF);
 	get_npc_regs();
 	uint32_t buf[16] = {0};
 	memcpy(buf, npc_regs, 16 * sizeof(npc_regs[0]));	
