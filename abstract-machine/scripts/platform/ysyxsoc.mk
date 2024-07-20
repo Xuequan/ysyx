@@ -17,6 +17,7 @@ LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld \
 						# --defsym=_stack_pointer=0x0fff1000 
 
 LDFLAGS   += --gc-sections -e _start
+LDFLAGS   += --nmagic
 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I/$(AM_HOME)/am/src/riscv/ysyxSoC/include
