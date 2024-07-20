@@ -1,6 +1,6 @@
 MEMORY 
 	{
-	 mrom : ORIGIN = 0X20000000, LENGTH = 4K
+	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
 	 flash : ORIGIN = 0x30000000, LENGTH = 256M
 	}
@@ -10,29 +10,28 @@ PHDRS {
 				/*text PT_LOAD ; */
 				data PT_LOAD ; 
 			} 
-flash_s = ORIGIN(flash);
-mrom_s = ORIGIN(mrom);
+
 SECTIONS {
 	/* . = SIZEOF_HEADERS; */
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   . = _pmem_start + _entry_offset;
-  .text flash_s : AT(flash_s) {
+  .text : {
 		. = ALIGN(0x8);
 		_text_start = .;
     *(entry)
     *(.text*)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash 
+  } > flash AT> flash
 
-	.rodata mrom_s : AT(mrom_s) {
+	.rodata ORIGIN (mrom) : {
 		. = ALIGN(0x8);
 		_rodata_start = . ;
     *(.rodata*)
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > mrom
+  } > mrom AT> mrom 
 
 	.data ORIGIN (sram) : 
 		/*AT (ADDR (.text) + SIZEOF (.rodata) + SIZEOF (.text) ) */
