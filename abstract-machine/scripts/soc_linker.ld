@@ -25,7 +25,7 @@ SECTIONS {
 		_text_end = .;
   } > flash AT> flash :text
 
-	.rodata : {
+	.rodata (NOLOAD): {
 		. = ALIGN(0x8);
 		_rodata_start = . ;
     *(.rodata*)
@@ -41,7 +41,7 @@ SECTIONS {
     *(.data*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > sram AT> mrom 
+  } > sram AT> mrom :data
 
   .bss : 
 	{
