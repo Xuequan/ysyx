@@ -23,7 +23,7 @@ SECTIONS {
     *(.text*)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash AT> flash
+  } > flash AT> flash :text
 
 	.rodata : {
 		. = ALIGN(0x8);
@@ -34,7 +34,7 @@ SECTIONS {
 		_rodata_end   = . ;
   } > mrom AT> mrom 
 
-	.data ORIGIN (sram) : 
+	.data  : 
 	{
 		. = ALIGN(0x8);
 		_data_start = .;
