@@ -21,7 +21,7 @@ SECTIONS {
     *(.text*)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash :text
+  } > flash AT> flash :text
 
 	.rodata : {
 		. = ALIGN(0x8);
