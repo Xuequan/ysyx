@@ -39,5 +39,6 @@ uint8_t* flash_guest_to_host(paddr_t paddr) {
 }
 word_t pflash_read(paddr_t addr, int len) {
   word_t ret = host_read(flash_guest_to_host(addr), len);
+	printf("NEMU flash_read: addr = %#x, return val = %#x\n", addr, ret);
   return ret;
 }
