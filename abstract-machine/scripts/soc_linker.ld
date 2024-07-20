@@ -41,7 +41,7 @@ SECTIONS {
     *(.data*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > sram AT> mrom :data
+  } > sram AT> mrom 
 
   .bss : 
 	{
