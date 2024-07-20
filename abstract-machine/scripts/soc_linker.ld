@@ -7,7 +7,7 @@ MEMORY
 
 ENTRY(_start)
 PHDRS { 
-				text PT_LOAD ; 
+			/*	text PT_LOAD ; */
 				data PT_LOAD ; 
 			} 
 SECTIONS {
@@ -21,7 +21,7 @@ SECTIONS {
     *(.text*)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash AT> flash :text
+  } > flash AT> flash
 
 	.rodata : {
 		. = ALIGN(0x8);
