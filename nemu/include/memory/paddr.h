@@ -25,7 +25,7 @@
 #define MROM_SIZE (0x20000fff - 0x20000000)
 #define MROM_BASE 0x20000000
 
-#define FLASH_SIZE (0x30000fff - 0x30000000)
+#define FLASH_SIZE (0x3fffffff - 0x30000000)
 #define FLASH_BASE 0x30000000
 
 #define SRAM_SIZE (0x0f001fff - 0x0f000000)

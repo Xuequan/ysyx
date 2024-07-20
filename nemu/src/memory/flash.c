@@ -29,7 +29,7 @@ void init_flash() {
   int i;
   for (i = 0; i < (int) (FLASH_SIZE / sizeof(p[0])); i ++) {
     //p[i] = rand();
-    p[i] = i;
+    p[i] = 0;
   }
   Log("flash area [0x3000_0000, 0x3000_0fff]");
 }

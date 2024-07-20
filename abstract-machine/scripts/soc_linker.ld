@@ -2,6 +2,7 @@ MEMORY
 	{
 	 mrom : ORIGIN = 0X20000000, LENGTH = 4K
 	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
+	 flash : ORIGIN = 0x30000000, LENGTH = 256M
 	}
 
 ENTRY(_start)
@@ -20,7 +21,7 @@ SECTIONS {
     *(.text*)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > mrom :text
+  } > flash :text
 
 	.rodata : {
 		. = ALIGN(0x8);

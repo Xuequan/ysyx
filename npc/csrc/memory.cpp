@@ -77,17 +77,7 @@ void init_flash() {
 	uint32_t *p = (uint32_t *)pflash;
 	int i;
 	for (i = 0; i < (int) (FLASH_SIZE / sizeof(p[0])); i ++) {
-			p[i] = i;
-		/*
-		if ( i == 0) 
-			p[i] = 0x12345678;
-		else if ( i == 1)
-			p[i] = 0x11112222;
-		else if (i == 2)
-			p[i] = 0xff00f0ff;
-		else 
-			p[i] = i;
-		*/
+			p[i] = 0;
 	}
 	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", FLASH_BASE, FLASH_BASE + FLASH_SIZE);
 	return;
