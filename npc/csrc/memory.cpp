@@ -77,7 +77,7 @@ void init_flash() {
 	uint32_t *p = (uint32_t *)pflash;
 	int i;
 	for (i = 0; i < (int) (FLASH_SIZE / sizeof(p[0])); i ++) {
-			p[i] = 0;
+			p[i] = i;
 		/*
 		if ( i == 0) 
 			p[i] = 0x12345678;
