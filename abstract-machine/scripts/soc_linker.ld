@@ -25,6 +25,15 @@ SECTIONS {
 		_text_end = .;
   } > flash AT> flash :text
 
+	.rodata : {
+		. = ALIGN(0x8);
+		_rodata_start = . ;
+    *(.rodata*)
+		*(.srodata.mainargs)
+		. = ALIGN(0x8);
+		_rodata_end   = . ;
+  } > flash 
+	/*
 	.rodata (NOLOAD): {
 		. = ALIGN(0x8);
 		_rodata_start = . ;
@@ -33,6 +42,7 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
   } > mrom AT> mrom 
+	*/
 
 	.data  : 
 	{
