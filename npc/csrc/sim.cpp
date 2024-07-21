@@ -12,7 +12,7 @@ static VerilatedVcdC* tfp;
 static void step_and_dump_wave() {
 	top->eval();
 	contextp->timeInc(1);
-	tfp->dump(contextp->time());
+	//tfp->dump(contextp->time());
 }
 
 // execute one cycle
