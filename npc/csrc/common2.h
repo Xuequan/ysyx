@@ -50,6 +50,8 @@ typedef word_t vaddr_t;
 #define FLASH_BASE 0x30000000
 #define FLASH_SIZE (0x3000ffff - 0x30000000)
 //#define FLASH_SIZE (0x30000fff - 0x30000000)
+#define PSRAM_BASE 0x80000000
+#define PSRAM_SIZE (0x9fffffff - 0x80000000)
 
 #define PMEM_LEFT  ((paddr_t)CONFIG_MBASE)
 #define PMEM_RIGHT ((paddr_t)CONFIG_MBASE + CONFIG_MSIZE - 1)

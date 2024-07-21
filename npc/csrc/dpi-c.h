@@ -5,6 +5,9 @@
 #include <cstdint>
 #include "VysyxSoCFull__Dpi.h"
 
+extern "C" void psram_read(int32_t addr, int32_t *data); 
+extern "C" void psram_write(int32_t addr, int32_t data); 
+
 extern "C" void flash_read(int32_t addr, int32_t *data); 
 extern "C" void mrom_read(int32_t addr, int32_t *data); 
 

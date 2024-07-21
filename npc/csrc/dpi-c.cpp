@@ -5,6 +5,14 @@ word_t vaddr_read(vaddr_t addr, int len);
 
 void vaddr_write(vaddr_t addr, int len, word_t data);
 
+extern "C" void psram_read(int32_t addr, int32_t *data) {    
+	*data = vaddr_read(addr + 0x80000000, 4);
+}
+
+extern "C" void psram_write(int32_t addr, int32_t data) {    
+	*data = vaddr_write(addr + 0x80000000, 4, data);
+}
+
 extern "C" void flash_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x30000000, 4);
 }
