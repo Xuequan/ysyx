@@ -495,8 +495,8 @@ assign is_spi_master_addr = (alu_result >= spi_master_addr_min)
 
 wire [31:0] psram_addr_min; 
 wire [31:0] psram_addr_max;
-assign psram_addr_min = 32'h3000_0000;
-assign psram_addr_max  = 32'h3fff_ffff;
+assign psram_addr_min = 32'h8000_0000;
+assign psram_addr_max  = 32'h9fff_ffff;
 wire is_psram_addr; 
 assign is_psram_addr = (alu_result >= psram_addr_min) 
 									&& (alu_result <= psram_addr_max);
