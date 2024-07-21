@@ -630,7 +630,9 @@ assign dsram_awaddr = write_to_uart ? awaddr_raw
 										: second_wr ? align8_high_awaddr 
 										: align8_low_awaddr;
 
-assign dsram_wdata = is_spi_master_addr ? {2{store_data_raw}} : store_data;
+assign dsram_wdata = is_spi_master_addr ? {2{store_data_raw}} 
+									 : is_psram_addr ? {2{store_data_raw}} 
+									 : store_data;
 
 /* =======load instruction ============================== */
 wire [31:0] araddr_raw;
