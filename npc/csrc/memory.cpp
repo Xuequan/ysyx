@@ -67,14 +67,7 @@ void init_mem() {
 	uint32_t *p = (uint32_t *)pmem;
 	int i;
 	for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
-		if ( i == 0)
-			p[i] = 0x11223344;
-		else if(i == 1)
-			p[i] = 0x55667788;
-		else if(i == 2)
-			p[i] = 0x99aabbcc;
-		else
-			p[i] = i+1;
+		p[i] = 0;
 	}
 	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 	return;
