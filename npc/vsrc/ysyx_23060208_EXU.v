@@ -680,9 +680,10 @@ always @(posedge clock)
  * 		这部分相关的信号是: sel, align8_low_araddr, align8_high_araddr,
  * 		load_data; 
  */
-assign dsram_araddr = read_from_uart ? araddr_raw 
-										: is_spi_master_addr ? araddr_raw
-										: is_psram_addr ? araddr_raw
+//assign align4_araddr = {araddr_raw[31:2], 2'b00};
+assign dsram_araddr = read_from_uart ? align4_araddr 
+										: is_spi_master_addr ? align4_araddr
+										: is_psram_addr ? align4_araddr
 										: is_flash_addr ? read_from_flash_araddr 
 										: is_mrom_addr ? align4_araddr 
 										: second_rd ?  align8_high_araddr 
@@ -779,6 +780,36 @@ assign load_data =
 | ({32{sel == 3'd7 && inst_lbu}} & { 24'd0, 							 first_rdata[63:56]});
 
 
+/*
+// 仅针对对 psram 读取的数据
+wire [31:0] load_data3;
+//wire [2:0] sel = araddr_raw[2:0];
+//wire [1:0] sel2 = araddr_raw[1:0];
+assign load_data3 = 
+	({32{sel2 == 2'd0 && inst_lw }} & 												 dsram_rdata[31:0])
+| ({32{sel2 == 2'd0 && inst_lh }} & {{16{dsram_rdata[15]}}, dsram_rdata[15:0]})
+| ({32{sel2 == 2'd0 && inst_lhu}} & { 16'd0, 							 dsram_rdata[15:0]})
+| ({32{sel2 == 2'd0 && inst_lb }} & {{24{dsram_rdata[7]}},  dsram_rdata[7:0]})
+| ({32{sel2 == 2'd0 && inst_lbu}} & { 24'd0, 							 dsram_rdata[7:0]})
+
+|	({32{sel2 == 2'd1 && inst_lw }} & 												 dsram_rdata[39:8])
+| ({32{sel2 == 2'd1 && inst_lh }} & {{16{dsram_rdata[23]}}, dsram_rdata[23:8]})
+| ({32{sel2 == 2'd1 && inst_lhu}} & { 16'd0, 							 dsram_rdata[23:8]})
+| ({32{sel2 == 2'd1 && inst_lb }} & {{24{dsram_rdata[15]}}, dsram_rdata[15:8]})
+| ({32{sel2 == 2'd1 && inst_lbu}} & { 24'd0, 							 dsram_rdata[15:8]})
+
+|	({32{sel2 == 2'd2 && inst_lw }} & 												 dsram_rdata[47:16])
+| ({32{sel2 == 2'd2 && inst_lh }} & {{16{dsram_rdata[31]}}, dsram_rdata[31:16]})
+| ({32{sel2 == 2'd2 && inst_lhu}} & { 16'd0, 							 dsram_rdata[31:16]})
+| ({32{sel2 == 2'd2 && inst_lb }} & {{24{dsram_rdata[23]}}, dsram_rdata[23:16]})
+| ({32{sel2 == 2'd2 && inst_lbu}} & { 24'd0, 							 dsram_rdata[23:16]})
+
+|	({32{sel2 == 2'd3 && inst_lw }} & 												 dsram_rdata[55:24])
+| ({32{sel2 == 2'd3 && inst_lh }} & {{16{dsram_rdata[39]}}, dsram_rdata[39:24]})
+| ({32{sel2 == 2'd3 && inst_lhu}} & { 16'd0, 							 dsram_rdata[39:24]})
+| ({32{sel2 == 2'd3 && inst_lb }} & {{24{dsram_rdata[31]}}, dsram_rdata[31:24]})
+| ({32{sel2 == 2'd3 && inst_lbu}} & { 24'd0, 							 dsram_rdata[31:24]});
+*/
 /* ============ to regfile ============================== */
 // 若是 jal, jalr, 那么将 rd <- exu_pc + 4
 assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 : 
