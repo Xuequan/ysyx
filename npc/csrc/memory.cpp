@@ -88,6 +88,7 @@ uint32_t nextpc();
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
+		printf("NPC: read at address = %#x, get data = %#x, pc = %#x\n", addr,num, get_pc());
 		if (nextpc() != addr) { // 过滤掉读指令
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc()); 
 		}
@@ -138,6 +139,8 @@ word_t vaddr_read(vaddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
+		printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
+
 		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc()); 
 		pmem_write(addr, len, data); 
 		return; 
