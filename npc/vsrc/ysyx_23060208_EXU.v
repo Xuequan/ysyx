@@ -684,7 +684,7 @@ assign psram_need_second_wr =
 	|| (inst_sh && sel_w == 3'h7);  
 
 wire [31:0] psram_awaddr = 
-		({32{(sel_w <= 3'b011 && !second_wr)}} & {awaddr_raw[31:3], 3'b0})
+		({32{(sel_w <= 3'b011 && !second_wr)}} & {awaddr_raw[31:3], 3'b000})
 	| ({32{(sel_w <= 3'b011 &&  second_wr)}} & {awaddr_raw[31:3], 3'b100})
 	| ({32{(sel_w >= 3'b100 && !second_wr)}} & {awaddr_raw[31:3], 3'b100})  // 1st
 	| ({32{(sel_w >= 3'b100 && 	second_wr)}} & {awaddr_raw[31:4], 4'b1000});//2st
