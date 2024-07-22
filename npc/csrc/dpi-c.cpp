@@ -9,9 +9,17 @@ extern "C" void psram_read(int32_t addr, int32_t *data) {
 	*data = vaddr_read(addr + 0x80000000, 4);
 }
 
-extern "C" void psram_write(int addr, int data) {    
+extern "C" void psram_write(int addr, int data, char mask) {    
 	uint32_t adr = (uint32_t)addr;
-	vaddr_write(adr + 0x80000000, 4, data);
+	int len = 0;
+	if ((uint8_t)mask == 0xff) len = 4;
+	else if ((uint8_t)mask == 0b1111) len = 2;
+	else if ((uint8_t)mask == 0b11) len = 1;
+	else {
+		printf("psram_write(): wrong, mask is '%#x'\n", mask);
+		return;
+	}
+	vaddr_write(adr + 0x80000000, len, data);
 }
 
 extern "C" void flash_read(int32_t addr, int32_t *data) {    
