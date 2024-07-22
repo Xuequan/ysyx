@@ -626,7 +626,7 @@ assign spi_master_wstrb = ({8{inst_sw}} & 8'b1111_1111)
 
 assign dsram_wstrb  = is_spi_master_addr ? spi_master_wstrb
 						: (is_psram_addr && !second_wr) ? {2{psram_first_wstrb}}
-						: (is_psram_addr && second_wr) ? {2{psram_second_wstrb}}
+						: (is_psram_addr &&  second_wr) ? {2{psram_second_wstrb}}
 						: second_wr ? wstrb2 : wstrb;
 
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
