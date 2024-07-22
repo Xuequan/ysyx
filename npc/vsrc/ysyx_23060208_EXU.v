@@ -629,15 +629,19 @@ assign axi_wstrb  = second_w ? {2{second_strb}}
 
 
 /* axi_wdata */
-/* data 需要移位，规律是第一次传送，左移位 addr[1:0] bytes;
- * 第二次传送，右移位 4 - addr[1:0] bytes */ 
-wire [5:0] shift;
-wire [5:0] tmp;
-assign tmp = {3'b0, addr_sel};
-assign shift = second_w ? (6'd32 - tmp << 3) : (tmp << 3);
-
-assign axi_wdata = second_w ? {2{store_data_raw >> shift}} :
-									{2{store_data_raw << shift}};
+wire [4:0] first_shift;
+wire [4:0] second_shift;
+assign first_shift = 
+	({5{sel1 | sel5}} & 5'd8 )
+| ({5{sel2 | sel6}} & 5'd16)
+|	({5{sel3 | sel7}} & 5'd24);
+assign second_shift = 
+	({5{sel1 | sel5}} & 5'd24 )
+| ({5{sel2 | sel6}} & 5'd16)
+|	({5{sel3 | sel7}} & 5'd8);
+ 
+assign axi_wdata = second_w ? {2{store_data_raw >> second_shift}} :
+									{2{store_data_raw << first_shift}};
 
 /* =========================================================================
 /* ======= load = ==========================================================
