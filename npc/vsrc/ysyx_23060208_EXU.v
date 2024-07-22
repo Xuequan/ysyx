@@ -241,7 +241,7 @@ end
 
 always @(posedge clock) 
 	if (reset) second_r <= 0;
-	else if (state_r == IDLE_R2)
+	else if (next_r == IDLE_R2)
 		second_r <= 1'b1;
 	else if (state_r == IDLE_R)
 		second_r <= 1'b0;
@@ -373,7 +373,7 @@ end
 
 always @(posedge clock) 
 	if (reset) second_w <= 0;
-	else if (state_w == IDLE_W2)
+	else if (next_w == IDLE_W2)
 		second_w <= 1'b1;
 	else if (state_w == IDLE_W)
 		second_w <= 1'b0;
@@ -629,7 +629,13 @@ assign axi_wstrb  = second_w ? {2{second_strb}}
 
 
 /* axi_wdata */
-assign axi_wdata = {2{store_data_raw}};
+wire [5:0] shift;
+wire [5:0] tmp;
+assign tmp = {3'b0, addr_sel};
+assign shift = second_w ? (6'd32 - tmp << 3) : (tmp << 3);
+
+assign axi_wdata = second_w ? {2{store_data_raw >> shift}} :
+									{2{store_data_raw << shift}};
 
 /* =========================================================================
 /* ======= load = ==========================================================
