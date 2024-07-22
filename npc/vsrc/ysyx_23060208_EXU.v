@@ -123,6 +123,7 @@ wire inst_sb = store_inst[2];
 // 由于要8字节对齐，因此有时候需要第2次读/写
 wire need_second_rd;
 wire need_second_wr;
+wire psram_need_second_wr;
 
 wire [11					:0] csr_idx;
 wire [2						:0] csr_inst;
@@ -163,7 +164,7 @@ assign load_ready_go  = need_second_rd ?
 												(next_r == SHAKED_R && second_rd)
                       : (next_r == SHAKED_R);
 
-assign store_ready_go = need_second_wr ? 
+assign store_ready_go = need_second_wr | psram_need_second_wr ? 
 								(next_w == SHAKED_B && second_wr)
 							: (next_w == SHAKED_B);
 
@@ -343,7 +344,7 @@ always @(*) begin
 			else
 				next_w = WAIT_BVALID;
 		SHAKED_B:
-			if (need_second_wr) 
+			if (need_second_wr && psram_need_second_wr) 
 				next_w = IDLE_W2;
 
 		IDLE_W2:
@@ -622,19 +623,72 @@ assign spi_master_wstrb = ({8{inst_sw}} & 8'b1111_1111)
 				| ({8{inst_sb}} & 8'b0001_0001);
 
 assign dsram_wstrb  = is_spi_master_addr ? spi_master_wstrb
-						//: is_psram_addr ? spi_master_wstrb
+						: (is_psram_addr && !second_wr) ? {2{psram_first_wstrb}}
+						: (is_psram_addr && second_wr) ? {2{psram_second_wstrb}}
 						: second_wr ? wstrb2 : wstrb;
 
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
 										: is_spi_master_addr ? awaddr_raw
-										//: is_psram_addr ? awaddr_raw
+										: is_psram_addr ? psram_awaddr
 										: second_wr ? align8_high_awaddr 
 										: align8_low_awaddr;
 
 assign dsram_wdata = is_spi_master_addr ? {2{store_data_raw}} 
-									 //: is_psram_addr ? {2{store_data_raw}} 
+									 : is_psram_addr ? {2{store_data_raw}}
 									 : store_data;
 
+/* ======== psram store signal start========================= */
+wire [3:0] psram_first_wstrb;
+assign psram_first_wstrb = 
+	({4{sel_w == 3'd0 && inst_sw }} & 4'b1111)
+| ({4{sel_w == 3'd1 && inst_sw }} & 4'b1110)
+| ({4{sel_w == 3'd2 && inst_sw }} & 4'b1100)
+| ({4{sel_w == 3'd3 && inst_sw }} & 4'b1000)
+| ({4{sel_w == 3'd4 && inst_sw }} & 4'b1111)
+| ({4{sel_w == 3'd5 && inst_sw }} & 4'b1110)   
+| ({4{sel_w == 3'd6 && inst_sw }} & 4'b1100)   
+| ({4{sel_w == 3'd7 && inst_sw }} & 4'b1000)   
+
+| ({4{sel_w == 3'd0 && inst_sh }} & 4'b0011)   
+| ({4{sel_w == 3'd1 && inst_sh }} & 4'b0110)   
+| ({4{sel_w == 3'd2 && inst_sh }} & 4'b1100)   
+| ({4{sel_w == 3'd3 && inst_sh }} & 4'b1000)   
+| ({4{sel_w == 3'd4 && inst_sh }} & 4'b0011)   
+| ({4{sel_w == 3'd5 && inst_sh }} & 4'b0110)   
+| ({4{sel_w == 3'd6 && inst_sh }} & 4'b1100)   
+| ({4{sel_w == 3'd7 && inst_sh }} & 4'b1000)   
+
+| ({4{sel_w == 3'd0 && inst_sb }} & 4'b0001)   
+| ({4{sel_w == 3'd1 && inst_sb }} & 4'b0010)   
+| ({4{sel_w == 3'd2 && inst_sb }} & 4'b0100)   
+| ({4{sel_w == 3'd3 && inst_sb }} & 4'b1000)   
+| ({4{sel_w == 3'd4 && inst_sb }} & 4'b0001)   
+| ({4{sel_w == 3'd5 && inst_sb }} & 4'b0010)   
+| ({4{sel_w == 3'd6 && inst_sb }} & 4'b0100)   
+| ({4{sel_w == 3'd7 && inst_sb }} & 4'b1000);   
+wire [3:0] psram_second_wstrb;
+assign psram_second_wstrb = 
+	({4{sel_w == 3'd1 && inst_sw }} & 4'b0001)
+| ({4{sel_w == 3'd2 && inst_sw }} & 4'b0011)
+| ({4{sel_w == 3'd3 && inst_sw }} & 4'b0111)
+| ({4{sel_w == 3'd5 && inst_sw }} & 4'b0001)   
+| ({4{sel_w == 3'd6 && inst_sw }} & 4'b0011)   
+| ({4{sel_w == 3'd7 && inst_sw }} & 4'b0111)   
+
+| ({4{sel_w == 3'd3 && inst_sh }} & 4'b0001)   
+| ({4{sel_w == 3'd7 && inst_sh }} & 4'b0001);
+
+assign psram_need_second_wr = 
+		 (inst_sw && sel_w != 3'h0 && sel_w != 3'h4) 
+	|| (inst_sh && sel_w == 3'h3)
+	|| (inst_sh && sel_w == 3'h7);  
+
+wire [31:0] psram_awaddr = ({32{(sel_w <= 3'b011)}} & {awaddr_raw[31:3], 3'b0})
+	| ({32{(sel_w >= 3'b100 && !psram_need_second_wr)}} & {awaddr_raw[31:3], 3'b100})  // 1st
+	| ({32{(sel_w >= 3'b100 && psram_need_second_wr)}} & {awaddr_raw[31:4], 4'b1000});//2st
+
+
+/* ======== psram store signal end========================= */
 /* =======load instruction ============================== */
 wire [31:0] araddr_raw;
 assign araddr_raw = alu_result;
