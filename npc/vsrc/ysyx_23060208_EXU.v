@@ -629,6 +629,8 @@ assign axi_wstrb  = second_w ? {2{second_strb}}
 
 
 /* axi_wdata */
+/* data 需要移位，规律是第一次传送，左移位 addr[1:0] bytes;
+ * 第二次传送，右移位 4 - addr[1:0] bytes */ 
 wire [5:0] shift;
 wire [5:0] tmp;
 assign tmp = {3'b0, addr_sel};
