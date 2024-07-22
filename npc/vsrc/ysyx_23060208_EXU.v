@@ -625,8 +625,8 @@ assign axi_awaddr = (addr_raw == 32'h8000_0002) ? addr_raw
 
 
 /* axi_wstrb */
-assign axi_wstrb  = second_w ? {2{second_strb}} 
-									: {2{first_strb}};
+assign axi_wstrb  = second_w ? {4'b0, second_strb} 
+									: {4'b0, first_strb};
 
 
 /* axi_wdata */
