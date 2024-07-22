@@ -319,24 +319,6 @@ ysyx_23060208_intercom	#(.DATA_WIDTH(DATA_WIDTH)) intercom(
 	.io_slave_rid()
 );
 
-/*
-ysyx_23060208_uart	#(.DATA_WIDTH(DATA_WIDTH)) uart(
-	.clock(clock),
-	.reset(reset),
-	.uart_awaddr(uart_awaddr_o),
-	.uart_awvalid(uart_awvalid_o),
-	.uart_awready(uart_awready_i),
-
-	.uart_wdata(uart_wdata_o),
-	.uart_wstrb(uart_wstrb_o),
-	.uart_wvalid(uart_wvalid_o),
-	.uart_wready(uart_wready_i),
-	
-	.uart_bresp(uart_bresp_i),
-	.uart_bvalid(uart_bvalid_i),
-	.uart_bready(uart_bready_o)
-);
-*/
 ysyx_23060208_clint	#(.DATA_WIDTH(DATA_WIDTH)) clint(
 	.clock(clock),
 	.reset(reset),
@@ -357,22 +339,6 @@ ysyx_23060208_clint	#(.DATA_WIDTH(DATA_WIDTH)) clint(
 	.clint_rready(clint_rready)
 );
 
-/*
-ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
-	.clock(clock),
-	.reset(reset),
-	.ifu_allowin(ifu_allowin),
-
-	.isram_araddr(isram_araddr_o),
-	.isram_arvalid(isram_arvalid_o),
-	.isram_arready(isram_arready),
-
-	.isram_rdata(isram_rdata),
-	.isram_rresp(isram_rresp),
-	.isram_rvalid(isram_rvalid),
-	.isram_rready(isram_rready_o)
-);
-*/
 ysyx_23060208_CSR	#(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) csr(
 	.clock(clock),
 	.reset(reset),
@@ -475,7 +441,6 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.axi_bvalid(dsram_bvalid),
 	.axi_bresp(dsram_bresp),
 	.axi_bid(dsram_bid),
-
 
 	.axi_arready(dsram_arready),
 	.axi_arvalid(dsram_arvalid),
