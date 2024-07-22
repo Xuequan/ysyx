@@ -125,6 +125,7 @@ wire need_second_rd;
 wire need_second_wr;
 wire need_second_wr_others;
 wire psram_need_second_wr;
+reg second_wr;
 
 wire [11					:0] csr_idx;
 wire [2						:0] csr_inst;
@@ -345,7 +346,7 @@ always @(*) begin
 			else
 				next_w = WAIT_BVALID;
 		SHAKED_B:
-			if (need_second_wr) 
+			if (need_second_wr && !second_wr) 
 				next_w = IDLE_W2;
 
 		IDLE_W2:
@@ -357,6 +358,13 @@ always @(*) begin
 		default: ;
 	endcase
 end
+
+always @(posedge clock) 
+	if (reset) second_wr <= 0;
+	else if (state_w == IDLE_W2)
+		second_wr <= 1'b1;
+	else if (state_w == IDLE_W)
+		second_wr <= 1'b0;
 
 reg awvalid_r;
 reg [3:0] awid_r;
@@ -610,13 +618,6 @@ assign need_second_wr_others = (inst_sw && sel == 3'h5)
 
 assign need_second_wr = is_psram_addr ? psram_need_second_wr : need_second_wr_others; 
 
-reg second_wr;
-always @(posedge clock) 
-	if (reset) second_wr <= 0;
-	else if (next_w == IDLE_W2)
-		second_wr <= 1'b1;
-	else if (state_w == IDLE_W)
-		second_wr <= 1'b0;
 
 //assign sel_w = awaddr_raw[2:0];
 wire [7:0] spi_master_wstrb;
