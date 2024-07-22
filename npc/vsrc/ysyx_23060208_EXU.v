@@ -123,6 +123,7 @@ wire inst_sb = store_inst[2];
 // 由于要8字节对齐，因此有时候需要第2次读/写
 wire need_second_rd;
 wire need_second_wr;
+wire need_second_wr_others;
 wire psram_need_second_wr;
 
 wire [11					:0] csr_idx;
@@ -164,7 +165,7 @@ assign load_ready_go  = need_second_rd ?
 												(next_r == SHAKED_R && second_rd)
                       : (next_r == SHAKED_R);
 
-assign store_ready_go = need_second_wr | psram_need_second_wr ? 
+assign store_ready_go = need_second_wr ? 
 								(next_w == SHAKED_B && second_wr)
 							: (next_w == SHAKED_B);
 
@@ -344,7 +345,7 @@ always @(*) begin
 			else
 				next_w = WAIT_BVALID;
 		SHAKED_B:
-			if (need_second_wr && psram_need_second_wr) 
+			if (need_second_wr) 
 				next_w = IDLE_W2;
 
 		IDLE_W2:
@@ -602,11 +603,12 @@ assign wstrb2 =
 | ({8{sel_w == 3'd7 && inst_sh }} & 8'b1000_0001);   
 
 
-assign need_second_wr = (inst_sw && sel == 3'h5) 
+assign need_second_wr_others = (inst_sw && sel == 3'h5) 
 							|| (inst_sw && sel == 3'h6) 
 							|| (inst_sw && sel == 3'h7) 
 							|| (inst_sh && sel == 3'h7);  
 
+assign need_second_wr = is_psram_addr ? psram_need_second_wr : need_second_wr_others; 
 
 reg second_wr;
 always @(posedge clock) 
@@ -678,10 +680,9 @@ assign psram_second_wstrb =
 | ({4{sel_w == 3'd3 && inst_sh }} & 4'b0001)   
 | ({4{sel_w == 3'd7 && inst_sh }} & 4'b0001);
 
-assign psram_need_second_wr = 
-		 (inst_sw && sel_w != 3'h0 && sel_w != 3'h4) 
+assign psram_need_second_wr = (inst_sw && sel_w != 3'h0 && sel_w != 3'h4) 
 	|| (inst_sh && sel_w == 3'h3)
-	|| (inst_sh && sel_w == 3'h7);  
+	|| (inst_sh && sel_w == 3'h7); 
 
 wire [31:0] psram_awaddr = 
 		({32{(sel_w <= 3'b011 && !second_wr)}} & {awaddr_raw[31:3], 3'b000})
