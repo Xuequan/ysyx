@@ -615,23 +615,24 @@ always @(posedge clock)
 	else if (state_w == IDLE_W)
 		second_wr <= 1'b0;
 
+//assign sel_w = awaddr_raw[2:0];
 wire [7:0] spi_master_wstrb;
 assign spi_master_wstrb = ({8{inst_sw}} & 8'b1111_1111) 
 				| ({8{inst_sh}} & 8'b0011_0011)
 				| ({8{inst_sb}} & 8'b0001_0001);
 
 assign dsram_wstrb  = is_spi_master_addr ? spi_master_wstrb
-						: is_psram_addr ? spi_master_wstrb
+						//: is_psram_addr ? spi_master_wstrb
 						: second_wr ? wstrb2 : wstrb;
 
 assign dsram_awaddr = write_to_uart ? awaddr_raw 
 										: is_spi_master_addr ? awaddr_raw
-										: is_psram_addr ? awaddr_raw
+										//: is_psram_addr ? awaddr_raw
 										: second_wr ? align8_high_awaddr 
 										: align8_low_awaddr;
 
 assign dsram_wdata = is_spi_master_addr ? {2{store_data_raw}} 
-									 : is_psram_addr ? {2{store_data_raw}} 
+									 //: is_psram_addr ? {2{store_data_raw}} 
 									 : store_data;
 
 /* =======load instruction ============================== */
