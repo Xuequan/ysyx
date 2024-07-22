@@ -617,7 +617,7 @@ assign second_strb =
  * =========================================================================
  */
 /* axi_awsize */
-assign axi_awsize = is_uart_addr ? 3'b000 : 3'b011; 
+assign axi_awsize = is_uart_addr ? 3'b000 : 3'b010; 
 
 /* axi_awaddr */
 assign axi_awaddr = align_addr;
