@@ -121,9 +121,12 @@ wire inst_sh = store_inst[1];
 wire inst_sb = store_inst[2];
 
 // 有时候需要第2次读/写
-wire need_second_rw;
+wire need_second_r;
+wire need_second_w;
 // make the second write
-reg second_wr;
+reg second_w;
+// mark the second read
+reg second_r;
 
 wire [11					:0] csr_idx;
 wire [2						:0] csr_inst;
@@ -160,12 +163,12 @@ wire exu_ready_go;
 wire load_ready_go;
 wire store_ready_go;
 
-assign load_ready_go  = need_second_rw ? 
-												(next_r == SHAKED_R && second_rd)
+assign load_ready_go  = need_second_r ? 
+												(next_r == SHAKED_R && second_r)
                       : (next_r == SHAKED_R);
 
-assign store_ready_go = need_second_rw ? 
-								(next_w == SHAKED_B && second_wr)
+assign store_ready_go = need_second_w ? 
+								(next_w == SHAKED_B && second_w)
 							: (next_w == SHAKED_B);
 
 assign exu_ready_go = |store_inst ? store_ready_go :
@@ -174,8 +177,6 @@ assign exu_ready_go = |store_inst ? store_ready_go :
 
 assign exu_allowin = !exu_valid || exu_ready_go;
 /*============================ read FSM ========================*/
-// mark the second read
-reg second_rd;
 
 parameter [2:0] IDLE_R = 3'h0, 
 								WAIT_ARREADY = 3'h1, SHAKED_AR = 3'h2,
@@ -222,7 +223,7 @@ always @(*) begin
 			else 
 				next_r = WAIT_RVALID;
 		SHAKED_R:
-			if (need_second_rw && !second_rd)
+			if (need_second_r && !second_r)
 				next_r = IDLE_R2;
 			else
 				next_r = IDLE_R;
@@ -239,11 +240,11 @@ always @(*) begin
 end
 
 always @(posedge clock) 
-	if (reset) second_rd <= 0;
+	if (reset) second_r <= 0;
 	else if (state_r == IDLE_R2)
-		second_rd <= 1'b1;
+		second_r <= 1'b1;
 	else if (state_r == IDLE_R)
-		second_rd <= 1'b0;
+		second_r <= 1'b0;
 
 
 reg 			arvalid_r;
@@ -296,7 +297,7 @@ end
 reg [DATA_WIDTH-1:0] first_rdata_r;
 always @(posedge clock) begin
 	if (reset) first_rdata_r <= 0;
-	else if (axi_rvalid && axi_rready && need_second_rw) 
+	else if (axi_rvalid && axi_rready && need_second_r) 
 		first_rdata_r <= axi_rdata[31:0]; 
 	else if (state_r == IDLE_R)
 		first_rdata_r <= 0;
@@ -357,7 +358,7 @@ always @(*) begin
 			else
 				next_w = WAIT_BVALID;
 		SHAKED_B:
-			if (need_second_rw && !second_wr) 
+			if (need_second_w && !second_w) 
 				next_w = IDLE_W2;
 
 		IDLE_W2:
@@ -371,11 +372,11 @@ always @(*) begin
 end
 
 always @(posedge clock) 
-	if (reset) second_wr <= 0;
+	if (reset) second_w <= 0;
 	else if (state_w == IDLE_W2)
-		second_wr <= 1'b1;
+		second_w <= 1'b1;
 	else if (state_w == IDLE_W)
-		second_wr <= 1'b0;
+		second_w <= 1'b0;
 
 reg awvalid_r;
 reg [3:0] awid_r;
@@ -548,13 +549,16 @@ wire sel5 = addr_sel == 3'd5;
 wire sel6 = addr_sel == 3'd6;
 wire sel7 = addr_sel == 3'd7;
 
-assign need_second_rw = ((inst_sw || inst_lw) && addr_sel != 3'h0 && addr_sel != 3'h4) 
-						 || ((inst_sh || inst_lh || inst_lhu) && (addr_sel == 3'h3 || addr_sel == 3'h7));
+assign need_second_r = (inst_lw && addr_sel != 3'h0 && addr_sel != 3'h4) 
+						 || ((inst_lh | inst_lhu) && (addr_sel == 3'h3 || addr_sel == 3'h7));
+
+assign need_second_w = (inst_sw && addr_sel != 3'h0 && addr_sel != 3'h4) 
+						 || (inst_sh && (addr_sel == 3'h3 || addr_sel == 3'h7));
 
 /* second read or write */
 wire second;
-assign second = (|load_inst && second_rd) 
-							| (|store_inst && second_wr);
+assign second = (|load_inst && second_r) 
+							| (|store_inst && second_w);
 
 
 wire [31:0] align_addr;
@@ -620,7 +624,7 @@ assign axi_awaddr = align_addr;
 
 
 /* axi_wstrb */
-assign axi_wstrb  = second_wr ? {2{second_strb}} 
+assign axi_wstrb  = second_w ? {2{second_strb}} 
 									: {2{first_strb}};
 
 
@@ -641,7 +645,7 @@ assign axi_arsize = is_uart_addr ? 3'b000 : 3'b010;
 wire [DATA_WIDTH-1:0] load_data;
 
 wire [31:0] first_rdata;
-assign first_rdata = need_second_rw ? first_rdata_r : axi_rdata[31:0];
+assign first_rdata = need_second_r ? first_rdata_r : axi_rdata[31:0];
 
 wire [7:0] byte0 = ({8{first_strb[0]}} & first_rdata[7:0])
 								| ({8{second_strb[0]}} & axi_rdata[7:0]);
@@ -722,9 +726,12 @@ assign csr_waddr2 = csr_inst[2] ? 12'h342 : 0;
 
 
 /* =============connect with internect ============== */
-assign exu_done[0] = (next_r == IDLE_R);
-assign exu_done[1] = (next_w == IDLE_W);
+// exu read done
+assign exu_done[0] = !need_second_r ? (state_r == SHAKED_R)
+				: (state_r == SHAKED_R && second_r);
 
+assign exu_done[1] = !need_second_w ? (state_w == SHAKED_B) 
+				: (state_w == SHAKED_B && second_w);
 
 
 /* =============== DPI-C ========================= */
