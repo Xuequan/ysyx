@@ -620,7 +620,7 @@ assign second_strb =
 assign axi_awsize = is_uart_addr ? 3'b000 : 3'b010; 
 
 /* axi_awaddr */
-assign axi_awaddr = align_addr;
+assign axi_awaddr = (addr_raw == 32'h80000002) ? addr_raw : align_addr;
 
 
 /* axi_wstrb */
