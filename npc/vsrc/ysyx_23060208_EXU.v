@@ -491,6 +491,14 @@ wire is_uart_addr;
 assign is_uart_addr = (addr_raw >= uart_addr_min) &&
 								 (addr_raw <= uart_addr_max);
 
+/* ======= sram ============================== */
+wire [31:0] sram_addr_min; 
+wire [31:0] sram_addr_max;
+assign sram_addr_min = 32'h0f00_0000;
+assign sram_addr_max  = 32'h0f00_2000;
+wire is_sram_addr;
+assign is_sram_addr = (addr_raw >= sram_addr_min) &&
+								 (addr_raw <= sram_addr_max);
 /* ======= mrom ============================== */
 wire [31:0] mrom_addr_min; 
 wire [31:0] mrom_addr_max;
@@ -577,7 +585,13 @@ always @(addr_raw) begin
 		2'b00: rw_byte_addr = {addr_raw[31:4], 4'b0000};
 		2'b01: rw_byte_addr = {addr_raw[31:4], 4'b0100};
 		2'b10: rw_byte_addr = {addr_raw[31:4], 4'b1000};
-		2'b11: rw_byte_addr = {addr_raw[31:4], 4'b1000};
+		2'b11:
+			begin 
+			if (is_sram_addr)
+				rw_byte_addr = {addr_raw[31:4], 4'b1000};
+			else
+				rw_byte_addr = {addr_raw[31:4], 4'b1100};
+			end
 		default:;
 	endcase
 end
