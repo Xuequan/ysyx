@@ -563,11 +563,29 @@ assign second = (|load_inst && second_r)
 //------------------------------------
 // get addr
 // ------------------------------------
+wire rw_word = inst_sw | inst_lw; 
+wire rw_half = inst_sh | inst_lh | inst_lhu;
+wire rw_byte = inst_sb | inst_lb | inst_lbu;
+
 wire [31:0] align4_addr;
 assign align4_addr = {addr_raw[31:2], 2'd0};
 
+reg [31:0] rw_byte_addr;
+always @(addr_raw) begin
+	rw_byte_addr = align4_addr;
+	case (addr_raw[3:2])
+		2'b00: rw_byte_addr = {addr_raw[31:4], 4'b0000};
+		2'b01: rw_byte_addr = {addr_raw[31:4], 4'b0100};
+		2'b10: rw_byte_addr = {addr_raw[31:4], 4'b1000};
+		2'b11: rw_byte_addr = {addr_raw[31:4], 4'b1000};
+		default:;
+	endcase
+end
+
 wire [31:0] first_addr;
-assign first_addr = align4_addr;
+assign first_addr = (rw_word | rw_half) ? align4_addr
+									: rw_byte_addr;
+
 
 reg [31:0] second_addr;
 always @(addr_raw)  begin
@@ -584,9 +602,6 @@ end
 //------------------------------------
 // get strb
 // ------------------------------------
-wire rw_word = inst_sw | inst_lw; 
-wire rw_half = inst_sh | inst_lh | inst_lhu;
-wire rw_byte = inst_sb | inst_lb | inst_lbu;
 
 wire [7:0] first_strb;
 assign first_strb = 
