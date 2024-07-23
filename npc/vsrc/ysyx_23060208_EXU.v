@@ -560,96 +560,119 @@ wire second;
 assign second = (|load_inst && second_r) 
 							| (|store_inst && second_w);
 
+//------------------------------------
+// get addr
+// ------------------------------------
+wire [31:0] align4_addr;
+assign align4_addr = {addr_raw[31:2], 2'd0};
 
-wire [31:0] align_addr;
-assign align_addr = 
-		({32{(addr_sel <= 3'b011 && !second)}} & {addr_raw[31:3], 3'b000})
-	| ({32{(addr_sel <= 3'b011 &&  second)}} & {addr_raw[31:3], 3'b100})
-	| ({32{(addr_sel >= 3'b100 && !second)}} & {addr_raw[31:3], 3'b100})  // 1st
-	| ({32{(addr_sel >= 3'b100 &&  second)}} & {addr_raw[31:4], 4'b1000});//2st
+wire [31:0] first_addr;
+assign first_addr = align4_addr;
 
+reg [31:0] second_addr;
+always @(addr_raw)  begin
+	second_addr = align4_addr;
+	case (addr_raw[3:0])
+		4'b0001, 4'b0010, 4'b0011: second_addr = {addr_raw[31:3], 3'b100};
+		4'b0101, 4'b0110, 4'b0111: second_addr = {addr_raw[31:4], 4'b1000};
+		4'b1001, 4'b1010, 4'b1011: second_addr = {addr_raw[31:4], 4'b1100};
+		4'b1101, 4'b1110, 4'b1111: second_addr = {addr_raw[31:5], 5'b10000};
+		default:;
+	endcase
+end
+
+//------------------------------------
+// get strb
+// ------------------------------------
 wire rw_word = inst_sw | inst_lw; 
 wire rw_half = inst_sh | inst_lh | inst_lhu;
 wire rw_byte = inst_sb | inst_lb | inst_lbu;
 
-wire [3:0] first_strb;
+wire [7:0] first_strb;
 assign first_strb = 
-	({4{sel0 && rw_word }} & 4'b1111)
-| ({4{sel1 && rw_word }} & 4'b1110)
-| ({4{sel2 && rw_word }} & 4'b1100)
-| ({4{sel3 && rw_word }} & 4'b1000)
-| ({4{sel4 && rw_word }} & 4'b1111)
-| ({4{sel5 && rw_word }} & 4'b1110)   
-| ({4{sel6 && rw_word }} & 4'b1100)   
-| ({4{sel7 && rw_word }} & 4'b1000)   
+	({8{sel0 && rw_word }} & 8'b0000_1111)
+| ({8{sel1 && rw_word }} & 8'b0000_1110)
+| ({8{sel2 && rw_word }} & 8'b0000_1100)
+| ({8{sel3 && rw_word }} & 8'b0000_1000)
+| ({8{sel4 && rw_word }} & 8'b1111_0000)
+| ({8{sel5 && rw_word }} & 8'b1110_0000)   
+| ({8{sel6 && rw_word }} & 8'b1100_0000)   
+| ({8{sel7 && rw_word }} & 8'b1000_0000)   
 
-| ({4{sel0 && rw_half }} & 4'b0011)   
-| ({4{sel1 && rw_half }} & 4'b0110)   
-| ({4{sel2 && rw_half }} & 4'b1100)   
-| ({4{sel3 && rw_half }} & 4'b1000)   
-| ({4{sel4 && rw_half }} & 4'b0011)   
-| ({4{sel5 && rw_half }} & 4'b0110)   
-| ({4{sel6 && rw_half }} & 4'b1100)   
-| ({4{sel7 && rw_half }} & 4'b1000)   
+| ({8{sel0 && rw_half }} & 8'b0000_0011)   
+| ({8{sel1 && rw_half }} & 8'b0000_0110)   
+| ({8{sel2 && rw_half }} & 8'b0000_1100)   
+| ({8{sel3 && rw_half }} & 8'b0000_1000)   
+| ({8{sel4 && rw_half }} & 8'b0011_0000)   
+| ({8{sel5 && rw_half }} & 8'b0110_0000)   
+| ({8{sel6 && rw_half }} & 8'b1100_0000)   
+| ({8{sel7 && rw_half }} & 8'b1000_0000)   
 
-| ({4{sel0 && rw_byte }} & 4'b0001)   
-| ({4{sel1 && rw_byte }} & 4'b0010)   
-| ({4{sel2 && rw_byte }} & 4'b0100)   
-| ({4{sel3 && rw_byte }} & 4'b1000)   
-| ({4{sel4 && rw_byte }} & 4'b0001)   
-| ({4{sel5 && rw_byte }} & 4'b0010)   
-| ({4{sel6 && rw_byte }} & 4'b0100)   
-| ({4{sel7 && rw_byte }} & 4'b1000);   
+| ({8{sel0 && rw_byte }} & 8'b0000_0001)   
+| ({8{sel1 && rw_byte }} & 8'b0000_0010)   
+| ({8{sel2 && rw_byte }} & 8'b0000_0100)   
+| ({8{sel3 && rw_byte }} & 8'b0000_1000)   
+| ({8{sel4 && rw_byte }} & 8'b0001_0000)   
+| ({8{sel5 && rw_byte }} & 8'b0010_0000)   
+| ({8{sel6 && rw_byte }} & 8'b0100_0000)   
+| ({8{sel7 && rw_byte }} & 8'b1000_0000);   
 
-wire [3:0] second_strb;
-assign second_strb = 
-	({4{sel1 && rw_word }} & 4'b0001)
-| ({4{sel2 && rw_word }} & 4'b0011)
-| ({4{sel3 && rw_word }} & 4'b0111)
-| ({4{sel5 && rw_word }} & 4'b0001)   
-| ({4{sel6 && rw_word }} & 4'b0011)   
-| ({4{sel7 && rw_word }} & 4'b0111)   
+wire [7:0] second_strb_t;
+assign second_strb_t = 
+	({8{sel1 && rw_word }} & 8'b0001_0000)
+| ({8{sel2 && rw_word }} & 8'b0011_0000)
+| ({8{sel3 && rw_word }} & 8'b0111_0000)
+| ({8{sel5 && rw_word }} & 8'b0000_0001)   
+| ({8{sel6 && rw_word }} & 8'b0000_0011)   
+| ({8{sel7 && rw_word }} & 8'b0000_0111)   
 
-| ({4{sel3 && rw_half }} & 4'b0001)   
-| ({4{sel7 && rw_half }} & 4'b0001);
+| ({8{sel3 && rw_half }} & 8'b0001_0000)   
+| ({8{sel7 && rw_half }} & 8'b0000_0001);
+
+/* 为方便后面的 load data */
+wire [7:0] second_strb = (need_second_w || need_second_r) ? second_strb_t : 8'b0;
+//------------------------------------
+// get wdata 
+// ------------------------------------
+reg [63:0] cal_wdata;
+
+	always @(store_data_raw or addr_sel) begin
+		cal_wdata = {32'b0, store_data_raw};
+		case (addr_sel)
+			3'b000: cal_wdata = {32'b0, store_data_raw};
+			3'b001: cal_wdata = {24'b0, store_data_raw, 8'b0};
+			3'b010: cal_wdata = {16'b0, store_data_raw, 16'b0};
+			3'b011: cal_wdata = {8'b0, store_data_raw, 24'b0};
+			3'b100: cal_wdata = {store_data_raw, 32'b0};
+			3'b101: cal_wdata = {store_data_raw[23:0], 32'b0, store_data_raw[31:24]};
+			3'b110: cal_wdata = {store_data_raw[15:0], 32'b0, store_data_raw[31:16]};
+			3'b111: cal_wdata = {store_data_raw[7:0], 32'b0, store_data_raw[31:8]};
+			default:;
+		endcase
+	end
+			
 /* =========================================================================
 /* ======= store  ==========================================================
  * =========================================================================
  */
 /* axi_awsize */
-assign axi_awsize = is_uart_addr ? 3'b000 : 3'b010; 
+assign axi_awsize = is_uart_addr ? 3'b000 : 3'b011; 
 
 /* axi_awaddr */
-assign axi_awaddr = (addr_raw == 32'h8000_0002) ? addr_raw 
-									: (addr_raw == 32'h8000_0001) ? addr_raw : align_addr;
-
+assign axi_awaddr  = second_w ? second_addr : first_addr;
 
 /* axi_wstrb */
-assign axi_wstrb  = second_w ? {4'b0, second_strb} 
-									: {4'b0, first_strb};
-
+assign axi_wstrb  = second_w ? second_strb : first_strb;
 
 /* axi_wdata */
-wire [4:0] first_shift;
-wire [4:0] second_shift;
-assign first_shift = 
-	({5{sel1 | sel5}} & 5'd8 )
-| ({5{sel2 | sel6}} & 5'd16)
-|	({5{sel3 | sel7}} & 5'd24);
-assign second_shift = 
-	({5{sel1 | sel5}} & 5'd24 )
-| ({5{sel2 | sel6}} & 5'd16)
-|	({5{sel3 | sel7}} & 5'd8);
- 
-assign axi_wdata = second_w ? {2{store_data_raw >> second_shift}} :
-									{2{store_data_raw << first_shift}};
+assign axi_wdata = cal_wdata;
 
 /* =========================================================================
 /* ======= load = ==========================================================
  * =========================================================================
  */
 /* axi_araddr */
-assign axi_araddr = align_addr;
+assign axi_araddr  = second_r ? second_addr : first_addr;
 
 /* axi_arsize */
 assign axi_arsize = is_uart_addr ? 3'b000 : 3'b010; 
@@ -660,19 +683,19 @@ wire [DATA_WIDTH-1:0] load_data;
 wire [31:0] first_rdata;
 assign first_rdata = need_second_r ? first_rdata_r : axi_rdata[31:0];
 
-wire [7:0] byte0 = ({8{first_strb[0]}} & first_rdata[7:0])
-								| ({8{second_strb[0]}} & axi_rdata[7:0]);
+wire [7:0] byte0 = ({8{first_strb[0] | first_strb[4]}} & first_rdata[7:0])
+								| ({8{second_strb[0] | second_strb[4]}} & axi_rdata[7:0]);
    
-wire [7:0] byte1 = ({8{first_strb[1]}} & first_rdata[15:8])
-								| ({8{second_strb[1]}} & axi_rdata[15:8]);
+wire [7:0] byte1 = ({8{first_strb[1] | first_strb[5]}} & first_rdata[15:8])
+								| ({8{second_strb[1] | second_strb[5]}} & axi_rdata[15:8]);
 
-wire [7:0] byte2 = ({8{first_strb[2]}} & first_rdata[23:16])
-								| ({8{second_strb[2]}} & axi_rdata[23:16]);
+wire [7:0] byte2 = ({8{first_strb[2] | first_strb[6]}} & first_rdata[23:16])
+								| ({8{second_strb[2] | second_strb[6]}} & axi_rdata[23:16]);
 
-wire [7:0] byte3 = ({8{first_strb[3]}} & first_rdata[31:24])
-								| ({8{second_strb[3]}} & axi_rdata[31:24]);
+wire [7:0] byte3 = ({8{first_strb[3] | first_strb[7]}} & first_rdata[31:24])
+								| ({8{second_strb[3] | second_strb[7]}} & axi_rdata[31:24]);
 
-/* prepare data for lw  */
+/* prepare data for load  */
 wire [31:0] lw_data = 
 	({32{sel0 | sel4}} & {byte3, byte2, byte1, byte0})
 |	({32{sel1 | sel5}} & {byte0, byte3, byte2, byte1})
