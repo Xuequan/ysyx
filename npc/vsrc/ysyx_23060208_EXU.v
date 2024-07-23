@@ -294,11 +294,11 @@ always @(posedge clock) begin
 		rready_r <= 1'b0;
 end
 
-reg [DATA_WIDTH-1:0] first_rdata_r;
+reg [DATA_WIDTH*2-1:0] first_rdata_r;
 always @(posedge clock) begin
 	if (reset) first_rdata_r <= 0;
 	else if (axi_rvalid && axi_rready && need_second_r) 
-		first_rdata_r <= axi_rdata[31:0]; 
+		first_rdata_r <= axi_rdata; 
 	else if (state_r == IDLE_R)
 		first_rdata_r <= 0;
 end
@@ -680,20 +680,31 @@ assign axi_arsize = is_uart_addr ? 3'b000 : 3'b010;
 /* load_data 是最后写入到寄存器中的数据 */
 wire [DATA_WIDTH-1:0] load_data;
 
-wire [31:0] first_rdata;
-assign first_rdata = need_second_r ? first_rdata_r : axi_rdata[31:0];
+wire [63:0] first_rdata;
+assign first_rdata = need_second_r ? first_rdata_r : axi_rdata;
 
-wire [7:0] byte0 = ({8{first_strb[0] | first_strb[4]}} & first_rdata[7:0])
-								| ({8{second_strb[0] | second_strb[4]}} & axi_rdata[7:0]);
+wire [7:0] byte0 = ({8{first_strb[0]}} & first_rdata[7:0]) 
+								| ({8{first_strb[4]}} & first_rdata[39:32])
+								| ({8{second_strb[0]}} & axi_rdata[7:0])
+								| ({8{second_strb[4]}} & axi_rdata[39:32]);
    
-wire [7:0] byte1 = ({8{first_strb[1] | first_strb[5]}} & first_rdata[15:8])
-								| ({8{second_strb[1] | second_strb[5]}} & axi_rdata[15:8]);
+wire [7:0] byte1 = ({8{first_strb[1]}} & first_rdata[15:8]) 
+								| ({8{first_strb[5]}} & first_rdata[47:40])
+								| ({8{second_strb[1]}} & axi_rdata[15:8])
+								| ({8{second_strb[5]}} & axi_rdata[47:40]);
 
-wire [7:0] byte2 = ({8{first_strb[2] | first_strb[6]}} & first_rdata[23:16])
-								| ({8{second_strb[2] | second_strb[6]}} & axi_rdata[23:16]);
 
-wire [7:0] byte3 = ({8{first_strb[3] | first_strb[7]}} & first_rdata[31:24])
-								| ({8{second_strb[3] | second_strb[7]}} & axi_rdata[31:24]);
+wire [7:0] byte2 = ({8{first_strb[2]}} & first_rdata[23:16]) 
+								| ({8{first_strb[6]}} & first_rdata[55:48])
+								| ({8{second_strb[2]}} & axi_rdata[23:16])
+								| ({8{second_strb[6]}} & axi_rdata[55:48]);
+
+
+wire [7:0] byte3 = ({8{first_strb[3]}} & first_rdata[31:24]) 
+								| ({8{first_strb[7]}} & first_rdata[63:56])
+								| ({8{second_strb[3]}} & axi_rdata[31:24])
+								| ({8{second_strb[7]}} & axi_rdata[63:56]);
+
 
 /* prepare data for load  */
 wire [31:0] lw_data = 
