@@ -656,7 +656,7 @@ reg [63:0] cal_wdata;
  * =========================================================================
  */
 /* axi_awsize */
-assign axi_awsize = is_uart_addr ? 3'b000 : 3'b011; 
+assign axi_awsize = is_uart_addr ? 3'b000 : 3'b010; 
 
 /* axi_awaddr */
 assign axi_awaddr  = second_w ? second_addr : first_addr;
