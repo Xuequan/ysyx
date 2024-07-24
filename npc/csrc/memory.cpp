@@ -139,7 +139,7 @@ word_t vaddr_read(vaddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
-		printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
+		//printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
 
 		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc()); 
 		pmem_write(addr, len, data); 
