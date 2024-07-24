@@ -18,6 +18,7 @@
 #include <difftest-def.h>
 #include <memory/paddr.h>
 #include <string.h>
+uint32_t pmem_read(paddr_t, int);
 
 /* 哎不要忘了，NEMU 和 NPC 这两个“电脑”都运行在 host 上, 
  * 因此就用下面的 memcpy....*/
@@ -30,6 +31,8 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 	} else {
   	assert(0);
 	}	
+	for (int i = 0; i < 3; i++)
+		printf("%#x, %#x\n", RESET_VECTOR + i*4, pmem_read((RESET_VECTOR + i*4), 4)); 
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
