@@ -596,10 +596,11 @@ always @(addr_raw) begin
 	endcase
 end
 
+/*
 wire [31:0] first_addr;
 assign first_addr = (rw_word | rw_half) ? align4_addr
 									: rw_byte_addr;
-
+*/
 
 reg [31:0] second_addr;
 always @(addr_raw)  begin
