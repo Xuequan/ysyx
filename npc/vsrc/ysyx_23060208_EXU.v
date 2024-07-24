@@ -558,7 +558,7 @@ wire sel6 = addr_sel == 3'd6;
 wire sel7 = addr_sel == 3'd7;
 
 assign need_second_r = (inst_lw && addr_sel != 3'h0 && addr_sel != 3'h4) 
-						 || ((inst_lh | inst_lhu) && (addr_sel == 3'h3 || addr_sel == 3'h7));
+						 || ( (inst_lh | inst_lhu) && (addr_sel == 3'h3 || addr_sel == 3'h7) );
 
 assign need_second_w = (inst_sw && addr_sel != 3'h0 && addr_sel != 3'h4) 
 						 || (inst_sh && (addr_sel == 3'h3 || addr_sel == 3'h7));
