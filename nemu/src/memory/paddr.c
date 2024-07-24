@@ -89,7 +89,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	// mem
   if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
-		printf("NEMU: read address = %#x, get data = %#x, pc = %#x\n\n", addr, num, cpu.pc); 
+		printf("NEMU: read address = %#x, get data = %#x, len = %d, pc = %#x\n\n", addr, num, len, cpu.pc); 
 		log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #ifdef CONFIG_MTRACE
 		if (cpu.pc != addr)  // fliter instruction fetch
@@ -116,7 +116,7 @@ word_t paddr_read(paddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
-		printf("NEMU: write address = %#x, write data = %#x, pc = %#x\n\n", addr, data, cpu.pc); 
+		printf("NEMU: write address = %#x, write data = %#x, len = %d, pc = %#x\n\n", addr, data, len, cpu.pc); 
 #ifdef CONFIG_MTRACE
 		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
 #endif

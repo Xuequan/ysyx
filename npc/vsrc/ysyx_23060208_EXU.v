@@ -688,7 +688,7 @@ reg [63:0] cal_wdata;
 assign axi_awsize = is_uart_addr ? 3'b000 : 3'b010; 
 
 /* axi_awaddr */
-assign axi_awaddr  = second_w ? second_addr : first_addr;
+assign axi_awaddr  = second_w ? second_addr : addr_raw;
 
 /* axi_wstrb */
 assign axi_wstrb  = second_w ? second_strb : first_strb;
@@ -701,7 +701,7 @@ assign axi_wdata = cal_wdata;
  * =========================================================================
  */
 /* axi_araddr */
-assign axi_araddr  = second_r ? second_addr : first_addr;
+assign axi_araddr  = second_r ? second_addr : addr_raw;
 
 /* axi_arsize */
 assign axi_arsize = is_uart_addr ? 3'b000 : 3'b010; 
