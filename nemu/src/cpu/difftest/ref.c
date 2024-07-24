@@ -23,9 +23,8 @@
  * 因此就用下面的 memcpy....*/
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
 	if (direction == DIFFTEST_TO_REF) {
-		// 将 buf 中数据复制到 mrom 
-		if (addr == RESET_VECTOR)  // 这里是有点问题的，后期要改
-			memcpy(mrom_guest_to_host(MROM_BASE), buf, n);
+		if (addr == RESET_VECTOR) 
+			memcpy(guest_to_host(RESET_VECTOR), buf, n);
 		else if (addr == FLASH_BASE)
 			memcpy(flash_guest_to_host(FLASH_BASE), buf, n);
 	} else {

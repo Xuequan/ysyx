@@ -28,7 +28,7 @@ extern "C" void psram_write(int addr, int data, char mask) {
 		printf("psram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
-	printf("NPC: write at address = %#x, write data = %#x, write len = %d, pc = %#x\n", adr + 0x80000000, data, len, get_pc());
+	printf("NPC: write address = %#x, write data = %#x, len = %d, pc = %#x\n", adr + 0x80000000, data, len, get_pc());
 	vaddr_write(adr + 0x80000000, len, data);
 }
 
