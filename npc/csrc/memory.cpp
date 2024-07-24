@@ -77,17 +77,7 @@ void init_flash() {
 	uint32_t *p = (uint32_t *)pflash;
 	int i;
 	for (i = 0; i < (int) (FLASH_SIZE / sizeof(p[0])); i ++) {
-			p[i] = i;
-		/*
-		if ( i == 0) 
-			p[i] = 0x12345678;
-		else if ( i == 1)
-			p[i] = 0x11112222;
-		else if (i == 2)
-			p[i] = 0xff00f0ff;
-		else 
-			p[i] = i;
-		*/
+			p[i] = 0;
 	}
 	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", FLASH_BASE, FLASH_BASE + FLASH_SIZE);
 	return;
@@ -98,6 +88,7 @@ uint32_t nextpc();
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
+		printf("NPC: read at address = %#x, get data = %#x, len = %d, pc = %#x\n", addr,num, len, get_pc());
 		if (nextpc() != addr) { // 过滤掉读指令
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc()); 
 		}
@@ -118,7 +109,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	// read from flash
 	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
 		word_t num = pflash_read(addr, len); 
-		printf("NPC flash read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
+		//printf("NPC flash read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
 		return num;		
 	}
 	// just for mrom
@@ -148,15 +139,14 @@ word_t vaddr_read(vaddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
+		//printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
+
 		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc()); 
 		pmem_write(addr, len, data); 
 		return; 
 	}
 
 	if (addr == (uint32_t)(SERIAL_PORT) ) {
-		// 若是外设，则让 ref 跳过
-		//difftest_skip_ref();
-
 		if (len == 1) { 
 			putchar(data);
 			return;

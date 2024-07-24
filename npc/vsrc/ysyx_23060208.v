@@ -319,24 +319,6 @@ ysyx_23060208_intercom	#(.DATA_WIDTH(DATA_WIDTH)) intercom(
 	.io_slave_rid()
 );
 
-/*
-ysyx_23060208_uart	#(.DATA_WIDTH(DATA_WIDTH)) uart(
-	.clock(clock),
-	.reset(reset),
-	.uart_awaddr(uart_awaddr_o),
-	.uart_awvalid(uart_awvalid_o),
-	.uart_awready(uart_awready_i),
-
-	.uart_wdata(uart_wdata_o),
-	.uart_wstrb(uart_wstrb_o),
-	.uart_wvalid(uart_wvalid_o),
-	.uart_wready(uart_wready_i),
-	
-	.uart_bresp(uart_bresp_i),
-	.uart_bvalid(uart_bvalid_i),
-	.uart_bready(uart_bready_o)
-);
-*/
 ysyx_23060208_clint	#(.DATA_WIDTH(DATA_WIDTH)) clint(
 	.clock(clock),
 	.reset(reset),
@@ -357,22 +339,6 @@ ysyx_23060208_clint	#(.DATA_WIDTH(DATA_WIDTH)) clint(
 	.clint_rready(clint_rready)
 );
 
-/*
-ysyx_23060208_isram	#(.DATA_WIDTH(DATA_WIDTH)) isram(
-	.clock(clock),
-	.reset(reset),
-	.ifu_allowin(ifu_allowin),
-
-	.isram_araddr(isram_araddr_o),
-	.isram_arvalid(isram_arvalid_o),
-	.isram_arready(isram_arready),
-
-	.isram_rdata(isram_rdata),
-	.isram_rresp(isram_rresp),
-	.isram_rvalid(isram_rvalid),
-	.isram_rready(isram_rready_o)
-);
-*/
 ysyx_23060208_CSR	#(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) csr(
 	.clock(clock),
 	.reset(reset),
@@ -456,41 +422,40 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	
 	.exu_done(exu_done),
 
-	.dsram_awready(dsram_awready),
-	.dsram_awaddr(dsram_awaddr),
-	.dsram_awvalid(dsram_awvalid),
+	.axi_awready(dsram_awready),
+	.axi_awaddr(dsram_awaddr),
+	.axi_awvalid(dsram_awvalid),
 
-	.dsram_awid(dsram_awid),
-	.dsram_awlen(dsram_awlen),
-	.dsram_awsize(dsram_awsize),
-	.dsram_awburst(dsram_awburst),
+	.axi_awid(dsram_awid),
+	.axi_awlen(dsram_awlen),
+	.axi_awsize(dsram_awsize),
+	.axi_awburst(dsram_awburst),
 
-	.dsram_wvalid(dsram_wvalid),
-	.dsram_wdata(dsram_wdata),
-	.dsram_wstrb(dsram_wstrb),
-	.dsram_wlast(dsram_wlast),
-	.dsram_wready(dsram_wready),
+	.axi_wvalid(dsram_wvalid),
+	.axi_wdata(dsram_wdata),
+	.axi_wstrb(dsram_wstrb),
+	.axi_wlast(dsram_wlast),
+	.axi_wready(dsram_wready),
 	
-	.dsram_bready(dsram_bready),
-	.dsram_bvalid(dsram_bvalid),
-	.dsram_bresp(dsram_bresp),
-	.dsram_bid(dsram_bid),
+	.axi_bready(dsram_bready),
+	.axi_bvalid(dsram_bvalid),
+	.axi_bresp(dsram_bresp),
+	.axi_bid(dsram_bid),
 
+	.axi_arready(dsram_arready),
+	.axi_arvalid(dsram_arvalid),
+	.axi_araddr(dsram_araddr),
+	.axi_arid(dsram_arid),
+	.axi_arlen(dsram_arlen),
+	.axi_arsize(dsram_arsize),
+	.axi_arburst(dsram_arburst),
 
-	.dsram_arready(dsram_arready),
-	.dsram_arvalid(dsram_arvalid),
-	.dsram_araddr(dsram_araddr),
-	.dsram_arid(dsram_arid),
-	.dsram_arlen(dsram_arlen),
-	.dsram_arsize(dsram_arsize),
-	.dsram_arburst(dsram_arburst),
-
-	.dsram_rready(dsram_rready),
-	.dsram_rvalid(dsram_rvalid),
-	.dsram_rresp(dsram_rresp),
-	.dsram_rdata(dsram_rdata),
-	.dsram_rlast(dsram_rlast),
-	.dsram_rid(dsram_rid),
+	.axi_rready(dsram_rready),
+	.axi_rvalid(dsram_rvalid),
+	.axi_rresp(dsram_rresp),
+	.axi_rdata(dsram_rdata),
+	.axi_rlast(dsram_rlast),
+	.axi_rid(dsram_rid),
 
 
 	.csr_waddr(csr_waddr),
@@ -505,33 +470,5 @@ ysyx_23060208_EXU #(.DATA_WIDTH(DATA_WIDTH), .REG_WIDTH(REG_WIDTH)) exu(
 	.idu_to_exu_valid(idu_to_exu_valid),
 	.exu_allowin(exu_allowin)
 );
-
-/*
-ysyx_23060208_dsram	#(.DATA_WIDTH(DATA_WIDTH)) dsram(
-	.clock(clock),
-	.reset(reset),
-	.dsram_awaddr(dsram_awaddr_o),
-	.dsram_awvalid(dsram_awvalid_o),
-	.dsram_awready(dsram_awready),
-
-	.dsram_wdata(dsram_wdata_o),
-	.dsram_wstrb(dsram_wstrb_o),
-	.dsram_wvalid(dsram_wvalid_o),
-	.dsram_wready(dsram_wready),
-	
-	.dsram_bresp(dsram_bresp),
-	.dsram_bvalid(dsram_bvalid),
-	.dsram_bready(dsram_bready_o),
-
-	.dsram_araddr(dsram_araddr_o),
-	.dsram_arvalid(dsram_arvalid_o),
-	.dsram_arready(dsram_arready),
-
-	.dsram_rdata(dsram_rdata),
-	.dsram_rresp(dsram_rresp),
-	.dsram_rvalid(dsram_rvalid),
-	.dsram_rready(dsram_rready_o)
-);
-*/
 
 endmodule

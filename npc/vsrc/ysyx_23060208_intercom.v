@@ -326,24 +326,6 @@ always @(*) begin
 			to_dsram_bid = io_master_bid;
 			end
 			
-		/*
-		DSRAM_READ: begin
-			to_dsram_arready = io_master_arready;
-			io_master_arvalid = from_dsram_arvalid;
-			io_master_araddr = from_dsram_araddr;
-			io_master_arid = from_dsram_arid;
-			io_master_arlen = from_dsram_arlen;
-			io_master_arsize = from_dsram_arsize;
-			io_master_arburst = from_dsram_arburst;
-
-			io_master_rready = from_dsram_rready;
-			to_dsram_rvalid = io_master_rvalid;
-			to_dsram_rresp = io_master_rresp;
-			to_dsram_rdata = io_master_rdata;
-			to_dsram_rlast = io_master_rlast;
-			to_dsram_rid = io_master_rid;
-			end
-		*/
 		CLINT: begin
 			to_dsram_arready = from_clint_arready;
 

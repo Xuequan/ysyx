@@ -1,41 +1,42 @@
 #include "dpi-c.h"
 
+uint32_t get_pc(){
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
+	assert(scope);
+	svSetScope(scope);
+	svLogicVecVal o;
+	get_PC(&o);
+	return o.aval;
+}
+
 word_t vaddr_ifetch(vaddr_t addr, int len);
 word_t vaddr_read(vaddr_t addr, int len);
 
 void vaddr_write(vaddr_t addr, int len, word_t data);
 
+extern "C" void psram_read(int32_t addr, int32_t *data) {    
+	*data = vaddr_read(addr + 0x80000000, 4);
+}
+
+extern "C" void psram_write(int addr, int data, char mask) {    
+	uint32_t adr = (uint32_t)addr;
+	int len = 0;
+	if ((uint8_t)mask == 0xff) len = 4;
+	else if ((uint8_t)mask == 0b1111) len = 2;
+	else if ((uint8_t)mask == 0b11) len = 1;
+	else {
+		printf("psram_write(): wrong, mask is '%#x'\n", mask);
+		return;
+	}
+	printf("NPC: write address = %#x, write data = %#x, len = %d, pc = %#x\n", adr + 0x80000000, data, len, get_pc());
+	vaddr_write(adr + 0x80000000, len, data);
+}
+
 extern "C" void flash_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x30000000, 4);
 }
 extern "C" void mrom_read(int32_t addr, int32_t *data) {
-	//*data = 0x00100073; // ebreak inst
-	//int32_t ret = vaddr_read(addr, 4);
 	*data = vaddr_read(addr, 4);
-	//printf("mrom_read(): addr = %#x, return %#x\n", addr, *data);
-}
-
-/* 总是读取地址为 raddr & ~0x3u 的4字节返回  */
-extern "C" int isram_read(int raddr) {
-  return vaddr_ifetch(raddr, 4);
-}
-
-extern "C" int dsram_read(int raddr) {
-  return vaddr_read(raddr, 4);
-}
-
-extern "C" void dsram_write(int waddr, int wdata, char wmask) {
-	uint32_t addr = (uint32_t)waddr;
-	if ((uint8_t)wmask == 1 )
-  	return vaddr_write(addr, 1, wdata);
-	else if ((uint8_t)wmask == 2) 
-  	return vaddr_write(addr, 2, wdata);
-	else if ((uint8_t)wmask == 4) 
-  	return vaddr_write(addr, 4, wdata);
-	else {
-		printf("Error, wmask = %#x error\n", (uint8_t)wmask);
-		return;
-	}
 }
 
 //extern void check_if_ebreak(svBit* o);
@@ -100,14 +101,6 @@ uint32_t nextpc(){
 	return o.aval;
 }
 
-uint32_t get_pc(){
-	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
-	assert(scope);
-	svSetScope(scope);
-	svLogicVecVal o;
-	get_PC(&o);
-	return o.aval;
-}
 
 uint32_t get_inst(){
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
