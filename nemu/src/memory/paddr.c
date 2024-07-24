@@ -61,13 +61,10 @@ void init_mem() {
   uint32_t *p = (uint32_t *)pmem;
   int i;
   for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
-  	p[i] = rand();
+  	p[i] = 0;
   }
 #endif
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
-	for(int i = 0; i < 3; i++) {
-		printf("%d, %#x\n", i, p[i]);
-	}
 }
 
 word_t paddr_read(paddr_t addr, int len) {
