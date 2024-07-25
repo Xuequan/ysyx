@@ -50,6 +50,8 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data*)
+		*(.sdata.speed)
+		*(.sdata.heap)
 		. = ALIGN(0x8);
 		_data_end = .;
   } > psram AT> flash
