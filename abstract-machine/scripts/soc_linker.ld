@@ -52,9 +52,12 @@ SECTIONS {
 	{
 		. = ALIGN(0x8);
 		. = ORIGIN(psram) + SIZEOF(.data);
+		/*
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+		*/
+		KEEP (*(SORT(.bss*)))
 		. = ALIGN(0x8);
   } > psram
 
