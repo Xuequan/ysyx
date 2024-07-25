@@ -49,9 +49,12 @@ SECTIONS {
 
   .bss :  
 	{
+		. = ALIGN(0x8);
+		. = ORIGIN(psram) + SIZEOF(.data);
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+		. = ALIGN(0x8);
   } 
 
 }
@@ -63,7 +66,7 @@ _bss_start = ADDR(.bss);
 _bss_end = _bss_start + SIZEOF(.bss);
 
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (psram) + SIZEOF (.data) ;
+_heap_start = ORIGIN (psram) + SIZEOF (.data) + SIZEOF (.bss);
 _heap_end = ORIGIN (psram) + LENGTH (psram) - 0x8000 ;
 
 _stack_point = ALIGN(0x8) ;
