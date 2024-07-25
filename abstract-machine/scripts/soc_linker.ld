@@ -44,6 +44,16 @@ SECTIONS {
 		. = ALIGN(0x8);
   } > flash AT> flash 
 
+  .data : 
+	{
+		. = ALIGN(0x8);
+		_data_start = .;
+    *(.data*)
+		*(.sdata.*)
+		. = ALIGN(0x8);
+		_data_end = .;
+  } > psram AT> flash
+	/*
   .data (NOLOAD) :  
 	{
 		. = ALIGN(0x8);
@@ -53,6 +63,7 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_data_end = .;
   } > psram AT> flash
+	*/
 }
 
 _data_size = SIZEOF(.data);
