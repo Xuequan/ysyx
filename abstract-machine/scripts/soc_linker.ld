@@ -1,7 +1,7 @@
 MEMORY 
 	{
-	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
+	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 flash : ORIGIN = 0x30000000, LENGTH = 256M
 	 psram : ORIGIN = 0x80000000, LENGTH = 4M
 	}
@@ -13,6 +13,7 @@ PHDRS {
 			} 
 
 SECTIONS {
+
 	/* . = SIZEOF_HEADERS; */
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   . = _pmem_start + _entry_offset;
@@ -34,6 +35,13 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
   } > flash 
+
+  .bss : 
+	{
+    *(.bss*)
+    *(.sbss*)
+    *(.scommon)
+  } > flash
 	/*
 	.rodata (NOLOAD): {
 		. = ALIGN(0x8);
@@ -51,14 +59,8 @@ SECTIONS {
     *(.data*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > psram AT> flash :data
+  } > psram AT> psram :data
 
-  .bss : 
-	{
-    *(.bss*)
-    *(.sbss*)
-    *(.scommon)
-  } > sram
 }
 
 _data_size = SIZEOF(.data);
