@@ -52,7 +52,7 @@ SECTIONS {
 		_rodata_end   = . ;
   } > mrom AT> mrom 
 	*/
-	.data  : 
+	.data (NOLOAD)  : 
 	{
 		. = ALIGN(0x8);
 		_data_start = .;
