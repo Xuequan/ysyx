@@ -34,15 +34,6 @@ SECTIONS {
 		_rodata_end   = . ;
   } > flash 
 
-  .data :  
-	{
-		. = ALIGN(0x8);
-		_data_start = .;
-    *(.data*)
-		. = ALIGN(0x8);
-		_data_end = .;
-  } > psram AT> flash
-
   .bss :  
 	{
 		. = ALIGN(0x8);
@@ -52,8 +43,16 @@ SECTIONS {
     *(.scommon)
 		/* KEEP (*(SORT(.bss*))) */
 		. = ALIGN(0x8);
-  } 
+  } > flash AT> flash 
 
+  .data :  
+	{
+		. = ALIGN(0x8);
+		_data_start = .;
+    *(.data*)
+		. = ALIGN(0x8);
+		_data_end = .;
+  } > psram AT> flash
 }
 
 _data_size = SIZEOF(.data);
