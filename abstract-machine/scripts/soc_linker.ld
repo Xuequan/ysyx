@@ -27,7 +27,8 @@ SECTIONS {
 		_text_end = .;
   } > flash :text
 
-	.rodata : {
+	.rodata : AT (ORIGIN(flash) + SIZEOF(.text)) 
+	{
 		. = ALIGN(0x8);
 		_rodata_start = . ;
     *(.rodata*)
@@ -55,7 +56,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
 		. = ALIGN(0x8);
-  } > psram 
+  } 
 
 }
 
