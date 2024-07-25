@@ -56,7 +56,7 @@ SECTIONS {
     *(.sbss*)
     *(.scommon)
 		. = ALIGN(0x8);
-  } 
+  } > psram
 
 }
 
