@@ -37,7 +37,6 @@ SECTIONS {
   .bss :  
 	{
 		. = ALIGN(0x8);
-		/* . = ORIGIN(psram) + SIZEOF(.data); */
     *(.bss*)
     *(.sbss*)
     *(.scommon)
@@ -45,16 +44,15 @@ SECTIONS {
 		. = ALIGN(0x8);
   } > flash AT> flash 
 
-  .data :  
+  .data : AT (ORIGIN(psram))  
 	{
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data*)
-		*(.sdata.seed)
-		*(.sdata.heap)
+		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > psram AT> flash
+  } > psram 
 }
 
 _data_size = SIZEOF(.data);
@@ -64,7 +62,7 @@ _bss_start = ADDR(.bss);
 _bss_end = _bss_start + SIZEOF(.bss);
 
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (psram) + SIZEOF (.data) + SIZEOF (.bss);
+_heap_start = ORIGIN (psram) + SIZEOF (.data);
 _heap_end = ORIGIN (psram) + LENGTH (psram) - 0x8000 ;
 
 _stack_point = ALIGN(0x8) ;
