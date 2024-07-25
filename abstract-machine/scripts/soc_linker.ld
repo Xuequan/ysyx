@@ -44,6 +44,7 @@ SECTIONS {
 		. = ALIGN(0x8);
   } > flash AT> flash 
 
+	/* 加上 NOLOAD 之后，生成的 ELF, .bin 文件都会没有该部分内容了。 */
   .data (NOLOAD) :  
 	{
 		. = ALIGN(0x8);
