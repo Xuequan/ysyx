@@ -36,12 +36,6 @@ SECTIONS {
 		_rodata_end   = . ;
   } > flash 
 
-  .bss :  
-	{
-    *(.bss*)
-    *(.sbss*)
-    *(.scommon)
-  } 
   /*} > sram AT> flash */
 
 	.data : AT (ORIGIN(psram))  
@@ -52,6 +46,13 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_data_end = .;
   }
+
+  .bss :  
+	{
+    *(.bss*)
+    *(.sbss*)
+    *(.scommon)
+  } 
 
 }
 
