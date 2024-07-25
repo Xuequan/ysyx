@@ -13,11 +13,8 @@ PHDRS {
 			} 
 
 SECTIONS {
-
-	/* . = SIZEOF_HEADERS; */
-  /* _pmem_start and _entry_offset are defined in LDFLAGS */
-  . = _pmem_start + _entry_offset;
-  .text : 
+  /* . = _pmem_start + _entry_offset; */
+  .text : AT(ORIGIN(flash))
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
@@ -37,29 +34,25 @@ SECTIONS {
 		_rodata_end   = . ;
   } > flash 
 
-  /*} > sram AT> flash */
-
-	.data : AT (ORIGIN(psram))  
+  .data :  
 	{
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  }
+  } > psram AT> flash
 
   .bss :  
 	{
 		. = ALIGN(0x8);
-		. = ORIGIN(psram) + SIZEOF(.data);
-		/*
+		/* . = ORIGIN(psram) + SIZEOF(.data); */
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-		*/
-		KEEP (*(SORT(.bss*)))
+		/* KEEP (*(SORT(.bss*))) */
 		. = ALIGN(0x8);
-  } > psram
+  } 
 
 }
 
