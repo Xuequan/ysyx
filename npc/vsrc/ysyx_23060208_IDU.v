@@ -241,7 +241,7 @@ wire valid_inst = inst_addi | inst_slti | inst_sltiu | inst_andi | inst_ori | in
 	| inst_csrrs; 
  
 always @(*) begin
-	if (!valid_inst && idu_valid) begin
+	if (!valid_inst && idu_valid && !reset) begin
 		$fwrite(32'h8000_0002, "Assertion, IDU invalid instruction. pc = '%h', inst = '%h', idu_valid = '%d'\n", idu_pc, idu_inst, idu_valid);
 		$fatal;
 	end
