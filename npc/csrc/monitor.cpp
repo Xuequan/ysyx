@@ -107,10 +107,9 @@ static long load_img() {
 	// 处，即 pflash 处；
   int ret = fread(flash_guest_to_host(FLASH_BASE), size, 1, fp);
   assert(ret == 1);
-	/*
+
 	for(int i = 0; i < size/4; i++)
 		printf("%d: %#x\n", i, *(uint32_t *)(guest_to_host(RESET_VECTOR) + i));
-	*/
 
   fclose(fp);
 	return size;
