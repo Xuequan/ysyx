@@ -72,7 +72,6 @@ extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
 
-/*
 void __attribute__  ((section (".copy_to_sram"))) _data_init() {
 	char *dst;
 	char *src; 
@@ -94,7 +93,7 @@ void __attribute__  ((section (".copy_to_sram"))) _data_init() {
 
 	_trm_init();
 }
-*/
+
 /*
 extern char _bss_start[];
 extern char _bss_end[];

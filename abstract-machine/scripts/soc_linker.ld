@@ -44,14 +44,6 @@ SECTIONS {
 		*(.data.*)
 		*(.sdata)
 		*(.sdata.*)
-		/*
-    *(.data*)
-    *(.data)
-		*(.data.lut)
-		*(.data.*)
-		*(.sdata)
-		*(.sdata.*)
-		*/
 		. = ALIGN(0x8);
 		_data_end = .;
   } > psram AT> flash : data
