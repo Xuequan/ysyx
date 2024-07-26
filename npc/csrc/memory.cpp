@@ -83,6 +83,12 @@ void init_flash() {
 	return;
 }
 
+void print_flash() {
+	uint32_t *p = (uint32_t *)pflash;
+	for(int i = 0; i < (int)(FLASH_SIZE / sizeof(p[0])); i ++){
+		printf("%d : %#x\n", i, p[i]);
+	}
+}
 uint32_t nextpc();
 
 word_t paddr_read(paddr_t addr, int len) {

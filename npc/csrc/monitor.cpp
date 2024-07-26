@@ -82,8 +82,8 @@ static long load_test() {
 	fclose(fp);
 	return size;	
 }
-// load_img() 将 img 文件装载到内存中某处；
-// 只是方便在初始化 DiffTest 时，将其复制给 NMEU 对应的取指起始处
+
+// load img to flash
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
