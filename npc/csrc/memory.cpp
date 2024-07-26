@@ -85,6 +85,7 @@ void init_flash() {
 
 void print_flash() {
 	uint32_t *p = (uint32_t *)pflash;
+	printf("data in flash :\n");
 	for(int i = 0; i < 10; i ++){
 		printf("%d : %#x\n", i, p[i]);
 	}
