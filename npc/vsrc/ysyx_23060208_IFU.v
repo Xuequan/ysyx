@@ -203,11 +203,11 @@ always @(posedge clock) begin
 	else
 		ifu_done_r <= 1'b0;
 end
+*/
 assign ifu_to_idu_bus = {isram_araddr, 
 			(isram_araddr[2:0] == 3'b100 ? isram_rdata[63:32] : isram_rdata[31:0])};
-*/
-assign ifu_to_idu_bus = {isram_araddr, (isram_araddr[2] ? inst_r[63:32] : inst_r[31:0]) };
-assign ifu_ready_go = (state == SHAKED_R);
+//assign ifu_to_idu_bus = {isram_araddr, (isram_araddr[2] ? inst_r[63:32] : inst_r[31:0]) };
+assign ifu_ready_go = (next == SHAKED_R);
 
 assign ifu_done = (state == SHAKED_R);
 
