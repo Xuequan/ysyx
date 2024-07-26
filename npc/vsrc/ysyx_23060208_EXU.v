@@ -482,6 +482,14 @@ assign exu_nextpc_taken = (branch_taken || csr_nextpc_taken) && exu_valid;
 assign exu_to_ifu_bus = {exu_nextpc_taken, exu_nextpc};
 assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 
+/* =======clint ============================== */
+wire [31:0] clint_addr_min; 
+wire [31:0] clint_addr_max;
+assign clint_addr_min = 32'h0200_0000;
+assign clint_addr_max  = 32'h0200_ffff;
+wire is_clint_addr;
+assign is_clint_addr = (addr_raw >= clint_addr_min) &&
+								 (addr_raw <= clint_addr_max);
 /* =======uart ============================== */
 wire [31:0] uart_addr_min; 
 wire [31:0] uart_addr_max;
@@ -856,10 +864,7 @@ endtask
 // clint
 export "DPI-C" task clint_addr_check;
 task clint_addr_check (output bit o);
-	o = |load_inst && (
-			(axi_araddr >= 32'h0200_0000)
-			&& (axi_araddr <= 32'h0200_ffff)
-			);
+	o = |load_inst && is_clint_addr;
 endtask
 
 // serial 
