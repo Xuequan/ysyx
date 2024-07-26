@@ -11,7 +11,7 @@ SECTIONS {
   . = _pmem_start + _entry_offset; 
   .text : AT (ORIGIN(flash)) 
 	{
-		/*. = ALIGN(0x8);*/
+		. = ALIGN(0x8);
 		_text_start = .;
     *(entry)
     *(.text*)
@@ -30,7 +30,7 @@ SECTIONS {
 		_rodata_end   = . ;
   } > flash
 
-  .data :   
+  .data : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata))
 	{
 		. = ORIGIN(psram);
 		. = ALIGN(0x8);
@@ -42,7 +42,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > psram AT> flash 
+  } > psram 
 
   .bss (NOLOAD) :  
 	{
