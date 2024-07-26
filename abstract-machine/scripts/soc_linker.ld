@@ -40,6 +40,7 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data)
+		*(.data.*)
 		/*
     *(.data*)
     *(.data)
