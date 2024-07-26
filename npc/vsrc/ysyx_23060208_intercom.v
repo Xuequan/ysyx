@@ -181,6 +181,10 @@ always @(is_clint or from_dsram_awvalid or from_dsram_arvalid or from_isram_arva
 				next = IFU_READ;
 			else if (from_dsram_arvalid && is_clint)
 				next = CLINT;
+			else if (from_dsram_awvalid && is_clint) begin
+				$fwrite(32'h8000002, "in intercom module, clint write");
+				$fatal;
+			end
 			else if (from_dsram_arvalid) 
 				next = EXU_READ;
 			else if (from_dsram_awvalid) 
