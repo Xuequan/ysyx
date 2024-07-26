@@ -26,6 +26,7 @@ static void *lut[128] = {
 static void fail(void *buf) { panic("access nonexist register"); }
 
 bool ioe_init() {
+	printf("here in ioe_init\n");
   for (int i = 0; i < LENGTH(lut); i++)
     if (!lut[i]) { 
 			printf("%d = , LENGTH(lut) = %d\n", i, LENGTH(lut));
