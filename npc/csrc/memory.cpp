@@ -73,6 +73,13 @@ void init_mem() {
 	return;
 }
 
+void print_mem() {
+	uint32_t *p = (uint32_t *)pmem;
+	printf("data in psram(pmem) :\n");
+	for(int i = 0; i < 10; i ++){
+		printf("%d : %#x\n", i, p[i]);
+	}
+}
 void init_flash() {
 	uint32_t *p = (uint32_t *)pflash;
 	int i;

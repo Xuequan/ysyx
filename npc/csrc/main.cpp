@@ -7,6 +7,7 @@ void sim_init();
 void sim_exit();
 
 void print_flash();
+void print_mem();
 
 int main(int argc, char *argv[]) {
 
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
 	
 	/* for test only */
 	print_flash();
+	print_mem();
 
 	sdb_mainloop(); 
 
