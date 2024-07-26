@@ -30,8 +30,9 @@ SECTIONS {
 		_rodata_end   = . ;
   } > flash AT> flash
 
-  .data :  
+  .data :   
 	{
+		. = ORIGIN(psram);
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data)
