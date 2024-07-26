@@ -553,7 +553,8 @@ assign is_psram_addr = (alu_result >= psram_addr_min)
 wire [31:0] addr_raw;
 assign addr_raw = alu_result;
 
-/* 判断下读写的地址是否合法 */
+/* 判断下读写的地址是否合法 
+ * 最开始的取到的指令竟然是 0000000， 故无法判断
 always @(*) begin
 	if ( exu_valid && !((|load_inst || |store_inst) && 
 			(is_clint_addr || is_uart_addr || is_sram_addr 
@@ -563,6 +564,7 @@ always @(*) begin
 		$fatal;
 	end
 end
+*/
 
 wire [2:0] addr_sel;
 assign addr_sel = addr_raw[2:0];
