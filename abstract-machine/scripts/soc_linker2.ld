@@ -1,4 +1,5 @@
 /* 这个对应"完整测试 PSRAM的访问" 
+ * 将 mem-test 完全加载到 SRAM
  * 将 只读数据段一起加载到 SRAM
  */
 MEMORY 
@@ -26,7 +27,7 @@ SECTIONS {
 		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash AT> flash :text
+  } > sram AT> flash :text
 
 	.rodata : 
 	{
@@ -36,7 +37,7 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > flash AT> flash
+  } > sram AT> flash
 
   .data :  
 	{
@@ -57,7 +58,7 @@ SECTIONS {
 		*/
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > psram AT> flash : data
+  } > sram AT> flash : data
 
   .bss (NOLOAD) :  
 	{
@@ -81,8 +82,8 @@ _bss_start = ADDR(.bss);
 _bss_end = _bss_start + SIZEOF(.bss);
 
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x8000 ;
+_heap_start = ORIGIN (sram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
+_heap_end = ORIGIN (sram) + LENGTH(sram) - 0x800;
 
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;

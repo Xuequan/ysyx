@@ -287,11 +287,8 @@ reg rready_r;
 assign axi_rready = rready_r;
 always @(posedge clock) begin
 	if (reset) rready_r <= 1'b0;
-	/*
 	else if (next_r == SHAKED_AR 
 				|| next_r == WAIT_RVALID)
-	*/
-	else if (next_r == SHAKED_R) 
 		rready_r <= 1'b1;
 	else
 		rready_r <= 1'b0;
