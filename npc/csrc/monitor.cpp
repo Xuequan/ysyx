@@ -108,9 +108,10 @@ static long load_img() {
   int ret = fread(flash_guest_to_host(FLASH_BASE), size, 1, fp);
   assert(ret == 1);
 
+	/*
 	for(int i = 0; i < size/4; i++)
 		printf("%d: %#x\n", i, *(uint32_t *)(flash_guest_to_host(FLASH_BASE) + i));
-
+	*/
   fclose(fp);
 	return size;
 }

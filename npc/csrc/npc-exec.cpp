@@ -105,8 +105,10 @@ bool inst_is_ebreak();
 bool inst_is_jal();
 bool inst_is_jalr();
 
+/*
 void print_flash();
 void print_mem();
+*/
 
 void exec_once() {
 	int sim_ret = sim_once();
@@ -120,8 +122,8 @@ void exec_once() {
 
 	if (sim_ret == 3) { 
 		printf("after reach ebreak, to see if flash, mem change\n");
-		print_flash();
-		print_mem();
+		//print_flash();
+		//print_mem();
 		printf("\nReach ebreak instruction, stop sim.\n\n");
 		npc_state.state = NPC_END;
 		npc_state.halt_pc = get_pc();
