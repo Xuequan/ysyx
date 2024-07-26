@@ -16,7 +16,7 @@ SECTIONS {
   . = _pmem_start + _entry_offset; 
   .text :
 	{
-		. = ALIGN(0x8);
+		/*. = ALIGN(0x8); */
 		_text_start = .;
     *(entry)
     *(.text*)
