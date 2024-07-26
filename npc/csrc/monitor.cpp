@@ -109,7 +109,7 @@ static long load_img() {
   assert(ret == 1);
 
 	for(int i = 0; i < size/4; i++)
-		printf("%d: %#x\n", i, *(uint32_t *)(guest_to_host(RESET_VECTOR) + i));
+		printf("%d: %#x\n", i, *(uint32_t *)(flash_guest_to_host(FLASH_BASE) + i));
 
   fclose(fp);
 	return size;
