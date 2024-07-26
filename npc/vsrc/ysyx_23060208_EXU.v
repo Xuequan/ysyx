@@ -553,6 +553,17 @@ assign is_psram_addr = (alu_result >= psram_addr_min)
 wire [31:0] addr_raw;
 assign addr_raw = alu_result;
 
+/* 判断下读写的地址是否合法 */
+always @(*) begin
+	if ( !(exu_valid && (|load_inst || |store_inst) && 
+			(is_clint_addr || is_uart_addr || is_sram_addr 
+				|| is_mrom_addr || is_flash_addr
+				|| is_spi_master_addr || is_psram_addr) ) ) begin
+		$fwrite(32'h8000_0002, "Assertion,EXU module, write or load addr '%h' is not valid\n", addr_raw);
+		$fatal;
+	end
+end
+
 wire [2:0] addr_sel;
 assign addr_sel = addr_raw[2:0];
 

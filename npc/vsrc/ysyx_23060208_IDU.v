@@ -230,6 +230,22 @@ wire inst_csrrw;   // rd <-csr;  csr <- src1
 			// 利用 alu 来计算csr <- src1 | csr
 wire inst_csrrs;   // rd <- csr; csr <- src1 | csr
 
+wire valid_inst = inst_addi | inst_slti | inst_sltiu | inst_andi | inst_ori | inst_xori
+	| inst_slli | inst_srli | inst_srai | inst_lui | inst_auipc 
+	| inst_add  | inst_slt  | inst_sltu | inst_and | inst_or 
+	| inst_xor  | inst_sll  | inst_srl  | inst_sub | inst_sra
+	| inst_jal  | inst_jalr | inst_beq  | inst_bne | inst_blt
+	| inst_bltu | inst_bge  | inst_bgeu | inst_lw	 | inst_lb
+	| inst_lh   | inst_lbu  | inst_lhu  | inst_sw  | inst_sb
+	| inst_sh   | inst_ecall | inst_ebreak | inst_mret | inst_csrrw
+	| inst_csrrs; 
+ 
+always @(*) begin
+	if (!(valid_inst && idu_valid) ) begin
+		$fwrite(32'h8000_0002, "Assertion, IDU invalid instruction. pc = '%h', inst = '%h'\n", idu_pc, idu_inst);
+		$fatal;
+	end
+end
 // integer register-immediate instructions
 assign inst_addi   = (opcode == 7'b001_0011) && (funct3 == 3'b0);
 assign inst_slti   = (opcode == 7'b001_0011) && (funct3 == 3'b010);

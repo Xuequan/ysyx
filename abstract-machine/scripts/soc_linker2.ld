@@ -48,14 +48,6 @@ SECTIONS {
 		*(.data.*)
 		*(.sdata)
 		*(.sdata.*)
-		/*
-    *(.data*)
-    *(.data)
-		*(.data.lut)
-		*(.data.*)
-		*(.sdata)
-		*(.sdata.*)
-		*/
 		. = ALIGN(0x8);
 		_data_end = .;
   } > sram AT> flash : data
@@ -66,7 +58,6 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-		/* KEEP (*(SORT(.bss*))) */
 		. = ALIGN(0x8);
   } 
 }
