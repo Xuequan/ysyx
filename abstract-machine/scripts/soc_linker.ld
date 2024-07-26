@@ -9,7 +9,7 @@ MEMORY
 ENTRY(_start)
 SECTIONS {
   . = _pmem_start + _entry_offset; 
-  .text :
+  .text : AT (ORIGIN(flash)) 
 	{
 		/*. = ALIGN(0x8);*/
 		_text_start = .;
@@ -18,9 +18,9 @@ SECTIONS {
 		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash AT> flash
+  }  
 
-	.rodata : 
+	.rodata : AT (ORIGIN(flash) + SIZEOF(.text))  
 	{
 		. = ALIGN(0x8);
 		_rodata_start = . ;
@@ -28,7 +28,7 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > flash AT> flash
+  } > flash
 
   .data :   
 	{
