@@ -7,11 +7,6 @@ MEMORY
 	}
 
 ENTRY(_start)
-PHDRS { 
-				text PT_LOAD ; 
-				data PT_LOAD ; 
-			} 
-
 SECTIONS {
   . = _pmem_start + _entry_offset; 
   .text :
@@ -23,7 +18,7 @@ SECTIONS {
 		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash AT> flash :text
+  } > flash AT> flash
 
 	.rodata : 
 	{
@@ -46,7 +41,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > psram AT> flash : data
+  } > psram AT> flash 
 
   .bss (NOLOAD) :  
 	{
@@ -54,7 +49,6 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-		/* KEEP (*(SORT(.bss*))) */
 		. = ALIGN(0x8);
   } 
 }
