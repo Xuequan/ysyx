@@ -9,7 +9,8 @@ AM_SRCS := riscv/ysyxSoC/start.S \
            platform/dummy/mpe.c
 
 CFLAGS    += -fdata-sections -ffunction-sections
-LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld  \
+#LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld  
+LDFLAGS   += -T $(AM_HOME)/scripts/linker.ld  \
 						--print-map > map.txt  \
 						--defsym=_pmem_start=0x30000000 --defsym=_entry_offset=0x0  
 						#--defsym=_stack_pointer=0x0f001fff  \
