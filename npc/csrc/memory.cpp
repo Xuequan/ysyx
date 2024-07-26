@@ -85,7 +85,7 @@ void init_flash() {
 
 void print_flash() {
 	uint32_t *p = (uint32_t *)pflash;
-	for(int i = 0; i < (int)(FLASH_SIZE / sizeof(p[0])); i ++){
+	for(int i = 0; i < 10; i ++){
 		printf("%d : %#x\n", i, p[i]);
 	}
 }
