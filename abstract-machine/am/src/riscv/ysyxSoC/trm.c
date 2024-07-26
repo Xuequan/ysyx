@@ -61,19 +61,52 @@ void _trm_init() {
 }
 
 extern char _data_start[];
-extern char _data_Load_addr[];
 extern char _data_end[];
-extern char _bss_start[];
-extern char _bss_end[];
+extern char _data_load_addr[];
+
+extern char _text_load_addr[];
+extern char _text_start[];
+extern char _text_end[];
+
+extern char _rodata_load_addr[];
+extern char _rodata_start[];
+extern char _rodata_end[];
 
 /*
+void __attribute__  ((section (".copy_to_sram"))) _data_init() {
+	char *dst;
+	char *src; 
+	// copy '.data' section to sram  
+	src = _data_load_addr;
+	dst = _data_start;
+	while (dst < _data_end)
+		*dst++ = *src++;
+	// copy '.text' section to sram
+	src = _text_load_addr;
+	dst = _text_start;
+	while (dst < _text_end)
+		*dst++ = *src++;
+	// copy '.rodata' section to sram
+	src = _rodata_load_addr;
+	dst = _rodata_start;
+	while (dst < _rodata_end)
+		*dst++ = *src++;
+
+	_trm_init();
+}
+*/
+/*
+extern char _bss_start[];
+extern char _bss_end[];
+ * copy .data to sram
+ *
 void __attribute__  ((section (".first_init"))) _data_init() {
 	char *dst;
 	// Zero bss
 	for (dst = _bss_start; dst < _bss_end; dst++)
 		*dst = 0;
 
-	char *src = _data_Load_addr;
+	char *src = _data_load_addr;
 	dst = _data_start;
 	// copy '.data' srction to sram  
 	while (dst < _data_end)

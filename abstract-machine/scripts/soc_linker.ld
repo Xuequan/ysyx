@@ -13,18 +13,19 @@ PHDRS {
 			} 
 
 SECTIONS {
-  /* . = _pmem_start + _entry_offset; */
-  .text : AT(ORIGIN(flash))
+  . = _pmem_start + _entry_offset; 
+  .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
     *(entry)
     *(.text*)
+		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash :text
+  } > flash AT> flash :text
 
-	.rodata : AT (ORIGIN(flash) + SIZEOF(.text)) 
+	.rodata : 
 	{
 		. = ALIGN(0x8);
 		_rodata_start = . ;
@@ -32,7 +33,17 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > flash 
+  } > flash AT> flash
+
+  .data :  
+	{
+		. = ALIGN(0x8);
+		_data_start = .;
+    *(.data*)
+		*(.sdata.*)
+		. = ALIGN(0x8);
+		_data_end = .;
+  } > psram AT> flash : data
 
   .bss (NOLOAD) :  
 	{
@@ -42,29 +53,22 @@ SECTIONS {
     *(.scommon)
 		/* KEEP (*(SORT(.bss*))) */
 		. = ALIGN(0x8);
-  } > flash AT> flash 
-
-	/* 加上 NOLOAD 之后，生成的 ELF, .bin 文件都会没有该部分内容了。 */
-  .data (NOLOAD) :  
-	{
-		. = ALIGN(0x8);
-		_data_start = .;
-    *(.data*)
-		*(.sdata.*)
-		. = ALIGN(0x8);
-		_data_end = .;
-  } > psram AT> flash
+  } 
 }
 
 _data_size = SIZEOF(.data);
-_data_Load_addr = LOADADDR(.data);
+_data_load_addr = LOADADDR(.data);
+
+_text_load_addr = LOADADDR(.text);
+
+_rodata_load_addr = LOADADDR(.rodata);
 
 _bss_start = ADDR(.bss);
 _bss_end = _bss_start + SIZEOF(.bss);
 
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (psram) + SIZEOF (.data);
-_heap_end = ORIGIN (psram) + LENGTH (psram) - 0x8000 ;
+_heap_start = ORIGIN (sram) + SIZEOF (.data) + SIZEOF(.rodata) + SIZEOF(.text);
+_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x8000 ;
 
 _stack_point = ALIGN(0x8) ;
-_stack_pointer = ORIGIN (psram) + LENGTH (psram) ;
+_stack_pointer = ORIGIN (sram) + LENGTH (sram) ;

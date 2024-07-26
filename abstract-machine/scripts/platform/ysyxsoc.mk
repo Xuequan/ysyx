@@ -1,6 +1,6 @@
 AM_SRCS := riscv/ysyxSoC/start.S \
-           riscv/ysyxSoC/trm.c \
-           riscv/ysyxSoC/ioe.c \
+           riscv/ysyxSoC/trm.c 
+           #riscv/ysyxSoC/ioe.c \
            riscv/ysyxSoC/timer.c \
            riscv/ysyxSoC/input.c \
            riscv/ysyxSoC/cte.c \
@@ -10,14 +10,15 @@ AM_SRCS := riscv/ysyxSoC/start.S \
 
 CFLAGS    += -fdata-sections -ffunction-sections
 LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld  \
-						--print-map > map.txt
-						#--defsym=_pmem_start=0x30000000 --defsym=_entry_offset=0x0  
+						--print-map > map.txt  \
+						--defsym=_pmem_start=0x30000000 --defsym=_entry_offset=0x0  
 						#--defsym=_stack_pointer=0x0f001fff  \
 						 --defsym=_heap_end=0x0eff9fff  
 						 #--defsym=_heap_start=0x0f000000  \
 						# --defsym=_stack_pointer=0x0fff1000 
 
 LDFLAGS   += --gc-sections -e _start
+LDFLAGS   += --nmagic --pic-executable
 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I/$(AM_HOME)/am/src/riscv/ysyxSoC/include
