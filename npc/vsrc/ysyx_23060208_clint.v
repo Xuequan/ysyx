@@ -89,15 +89,15 @@ always @(posedge clock) begin
 		arready_r <= 1'b0;   // 等一个读数据通道完成后，才开始另一个读
 end
 
-reg [3:0] arid_r;
+reg [3:0] rid_r;
 always @(posedge clock) begin
 	if (reset) 
-		arid_r <= 4'b0;
+		rid_r <= 4'b0;
 	else if (next == SHAKED_AR)
-		arid_r <= clint_arid;
+		rid_r <= clint_arid;
 end
 
-assign clint_rid = arid_r;
+assign clint_rid = rid_r;
 
 reg rvalid_r;
 assign clint_rvalid = rvalid_r;
