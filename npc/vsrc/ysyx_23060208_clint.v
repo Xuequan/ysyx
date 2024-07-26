@@ -115,13 +115,6 @@ always @(posedge clock) begin
 	end
 end
 
-/*
-wire [DATA_WIDTH-1:0] clint_addr_min;
-wire [DATA_WIDTH-1:0] clint_addr_max;
-assign clint_addr_min = 32'h0200_0000;
-assign clint_addr_max = 32'h0200_ffff;
-*/
-
 reg [DATA_WIDTH*2-1:0] clint_rdata_r;
 assign clint_rdata = clint_rdata_r;
 always @(posedge clock) begin
