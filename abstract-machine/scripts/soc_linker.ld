@@ -41,6 +41,7 @@ SECTIONS {
 		_data_start = .;
     *(.data*)
     *(.data)
+		*(.data.lut)
 		*(.data.*)
 		*(.sdata)
 		*(.sdata.*)
