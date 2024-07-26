@@ -1,3 +1,6 @@
+/* 这个对应"完整测试 PSRAM的访问" 
+ * 将 只读数据段一起加载到 SRAM
+ */
 MEMORY 
 	{
 	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
