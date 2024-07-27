@@ -26,6 +26,7 @@ SECTIONS {
 		_text_end = .;
   } > sram AT> flash 
 
+  . = ORIGIN(sram) + SIZEOF(.text);
 	.rodata : 
 	{
 		. = ALIGN(0x8);
@@ -36,6 +37,7 @@ SECTIONS {
 		_rodata_end   = . ;
   } > sram AT> flash
 
+  . = ORIGIN(sram) + SIZEOF(.text) + SIZEOF(.rodata);
   .data : 
 	{
 		. = ALIGN(0x8);
