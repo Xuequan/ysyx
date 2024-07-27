@@ -58,7 +58,8 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-  } > sram 
+  }
+
 }
 
 _data_size = SIZEOF(.data);
