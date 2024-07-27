@@ -45,7 +45,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > psram 
+  }
 
   .bss (NOLOAD) :  
 	{
