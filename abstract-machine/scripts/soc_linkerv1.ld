@@ -58,7 +58,7 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-  }
+  } 
 
 }
 
