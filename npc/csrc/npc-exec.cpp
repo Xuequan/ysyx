@@ -121,7 +121,7 @@ void exec_once() {
 	memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 
 	if (sim_ret == 3) { 
-		printf("after reach ebreak, to see if flash, mem change\n");
+		//printf("after reach ebreak, to see if flash, mem change\n");
 		//print_flash();
 		//print_mem();
 		printf("\nReach ebreak instruction, stop sim.\n\n");

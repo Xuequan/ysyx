@@ -1,3 +1,6 @@
+/* all .text, .rodata, .data will be in flash
+ * stack, heap in sram 
+ */
 MEMORY 
 	{
 	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
