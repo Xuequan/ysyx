@@ -1,6 +1,6 @@
 /* all .text, .rodata, .data will be in flash
  * stack, heap in sram 
- * THis script can be ok for cpu-tests/tests/hello.c , but for others such as add-longlong.c failed
+ * this version is revised based on soc_lonker.ld
  */
 MEMORY 
 	{
@@ -13,18 +13,19 @@ MEMORY
 ENTRY(_start)
 SECTIONS {
   . = _pmem_start + _entry_offset; 
-  .text : AT (ORIGIN(flash)) 
+  .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
     *(entry)
     *(.text*)
-		*(.copy_to_sram)
+		KEEP(*(.copy_to_sram))
+		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
-  }  
+  } > flash AT> flash 
 
-	.rodata : AT (ORIGIN(flash) + SIZEOF(.text))  
+	.rodata : 
 	{
 		. = ALIGN(0x8);
 		_rodata_start = . ;
@@ -32,11 +33,10 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } 
+  } > flash AT> flash
 
-  .data : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata))
+  .data : 
 	{
-		. = ORIGIN(psram);
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data)
@@ -46,16 +46,18 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  }
+  } > flash AT> flash
 
   .bss (NOLOAD) :  
 	{
 		. = ALIGN(0x8);
+		_sbss = . ;
     *(.bss*)
     *(.sbss*)
     *(.scommon)
 		. = ALIGN(0x8);
-  } 
+		_ebss = . ;
+  } > sram 
 }
 
 _data_size = SIZEOF(.data);
@@ -64,9 +66,6 @@ _data_load_addr = LOADADDR(.data);
 _text_load_addr = LOADADDR(.text);
 
 _rodata_load_addr = LOADADDR(.rodata);
-
-_bss_start = ADDR(.bss);
-_bss_end = _bss_start + SIZEOF(.bss);
 
 _heap_start = ALIGN(0x8) ;
 _heap_start = ORIGIN (sram);

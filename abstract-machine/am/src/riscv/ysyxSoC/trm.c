@@ -51,14 +51,8 @@ void halt(int code) {
 	}
 }
 
-void _trm_init() {
 
-	init_uart();
-
-  int ret = main(mainargs);
-  halt(ret);
-}
-
+/*
 extern char _data_start[];
 extern char _data_end[];
 extern char _data_load_addr[];
@@ -92,23 +86,23 @@ void __attribute__  ((section (".copy_to_sram"))) _data_init() {
 
 	_trm_init();
 }
-
-/*
-extern char _bss_start[];
-extern char _bss_end[];
- * copy .data to sram
- *
-void __attribute__  ((section (".first_init"))) _data_init() {
-	char *dst;
-	// Zero bss
-	for (dst = _bss_start; dst < _bss_end; dst++)
-		*dst = 0;
-
-	char *src = _data_load_addr;
-	dst = _data_start;
-	// copy '.data' srction to sram  
-	while (dst < _data_end)
-		*dst++ = *src++;
-	_trm_init();
-}
 */
+/* zero bss  */
+extern char _sbss[];
+extern char _ebss[];
+void __attribute__ ((section(".zero_bss"))) _zero_bss() {
+	char *dst;
+	for (dst = _sbss; dst < _ebss; dst++)
+		*dst = 0;
+}
+
+void _trm_init() {
+
+	_zero_bss();
+
+	init_uart();
+
+  int ret = main(mainargs);
+  halt(ret);
+}
+
