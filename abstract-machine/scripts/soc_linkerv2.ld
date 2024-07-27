@@ -74,7 +74,7 @@ _rodata_load_addr = LOADADDR(.rodata);
 
 _heap_start = ALIGN(0x8) ;
 _heap_start = ORIGIN (sram);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x8000 ;
+_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x100;
 
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;
