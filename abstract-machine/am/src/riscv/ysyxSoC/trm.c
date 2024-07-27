@@ -72,6 +72,7 @@ void __attribute__  ((section (".copy_to_psram"))) _data_init() {
 	dst = _data_start;
 	while (dst < _data_end)
 		*dst++ = *src++;
+    /*
 	// copy '.text' section to sram
 	src = _text_load_addr;
 	dst = _text_start;
@@ -82,6 +83,7 @@ void __attribute__  ((section (".copy_to_psram"))) _data_init() {
 	dst = _rodata_start;
 	while (dst < _rodata_end)
 		*dst++ = *src++;
+  */
 }
 
 /* zero bss  */
