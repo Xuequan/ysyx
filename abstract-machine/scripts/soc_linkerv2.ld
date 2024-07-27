@@ -4,6 +4,7 @@
  * this version is revised based on soc_lonkerv2.ld
  * soc_linkerv1.ld generated cpu-tests/string.c hello-str.c  .bss too big
  * v2 try to solve this problem
+ * 似乎 要尽量保证 LMA 地址连续
  */
 MEMORY 
 	{
