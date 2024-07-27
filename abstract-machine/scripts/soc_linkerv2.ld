@@ -51,7 +51,7 @@ SECTIONS {
 		_data_end = .;
   } > psram AT> flash
 
-  .bss (NOLOAD) :  
+  .bss (NOLOAD) :
 	{
 		. = ALIGN(0x8);
 		_sbss = . ;
@@ -60,7 +60,7 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-	} AT> flash
+	} > sram AT> flash
 
 }
 
