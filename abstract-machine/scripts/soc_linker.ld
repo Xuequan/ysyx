@@ -47,7 +47,7 @@ SECTIONS {
 		_data_end = .;
   }
 
-  .bss : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data)) 
+  .bss (NOLOAD) :  
 	{
 		. = ALIGN(0x8);
     *(.bss*)
