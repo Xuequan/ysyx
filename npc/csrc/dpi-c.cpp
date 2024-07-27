@@ -16,7 +16,7 @@ void vaddr_write(vaddr_t addr, int len, word_t data);
 
 extern "C" void psram_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x80000000, 4);
-	printf("NPC: read address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
+	printf("NPC psram_read(): read address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
 	
 }
 
