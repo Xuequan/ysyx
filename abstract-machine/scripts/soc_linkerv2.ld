@@ -1,7 +1,9 @@
 /* .text, .rodata will be in flash
  * stack, heap in sram 
  * .data will be in psram
- * this version is revised based on soc_lonker.ld
+ * this version is revised based on soc_lonkerv2.ld
+ * soc_linkerv1.ld generated cpu-tests/string.c hello-str.c  .bss too big
+ * v2 try to solve this problem
  */
 MEMORY 
 	{
@@ -58,7 +60,7 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-	} 
+	} AT> flash
 
 }
 
