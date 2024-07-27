@@ -483,6 +483,11 @@ assign exu_to_ifu_bus = {exu_nextpc_taken, exu_nextpc};
 assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 
 /* =======clint ============================== */
+wire [31:0] addr_raw;
+assign addr_raw = alu_result;
+
+
+
 wire [31:0] clint_addr_min; 
 wire [31:0] clint_addr_max;
 assign clint_addr_min = 32'h0200_0000;
@@ -550,8 +555,6 @@ assign is_psram_addr = (alu_result >= psram_addr_min)
 /* ======= AXI commom ========================================================
  * =========================================================================
  */
-wire [31:0] addr_raw;
-assign addr_raw = alu_result;
 
 always @(*) begin
 	if ( exu_valid && (|load_inst || |store_inst) && 
