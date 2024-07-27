@@ -101,12 +101,10 @@ always @(id_equal or state or ifu_allowin or isram_arready or isram_rvalid) begi
       else
         next = WAIT_ARREADY;
     SHAKED_AR:
-      if (!isram_rvalid)
-        next = WAIT_RVALID;
-      else if (id_equal) 
+      if (isram_rvalid && id_equal)
         next = SHAKED_R;
 			else 
-				next = SHAKED_AR;
+				next = WAIT_RVALID;
     WAIT_RVALID:
       if (isram_rvalid && id_equal)
         next = SHAKED_R;
@@ -208,6 +206,7 @@ end
 */
 assign ifu_to_idu_bus = {isram_araddr, 
 			(isram_araddr[2:0] == 3'b100 ? isram_rdata[63:32] : isram_rdata[31:0])};
+//assign ifu_to_idu_bus = {isram_araddr, (isram_araddr[2] ? inst_r[63:32] : inst_r[31:0]) };
 assign ifu_ready_go = (next == SHAKED_R);
 
 assign ifu_done = (state == SHAKED_R);

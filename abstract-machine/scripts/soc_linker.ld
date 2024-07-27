@@ -1,73 +1,75 @@
+/* all .text, .rodata, .data will be in flash
+ * stack, heap in sram 
+ * THis script can be ok for cpu-tests/tests/hello.c , but for others such as add-longlong.c failed
+ */
 MEMORY 
 	{
-	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 sram : ORIGIN = 0x0f000000, LENGTH = 8K
+	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 flash : ORIGIN = 0x30000000, LENGTH = 256M
+	 psram : ORIGIN = 0x80000000, LENGTH = 4M
 	}
 
 ENTRY(_start)
-PHDRS { 
-				text PT_LOAD ; 
-				data PT_LOAD ; 
-			} 
-
 SECTIONS {
-	/* . = SIZEOF_HEADERS; */
-  /* _pmem_start and _entry_offset are defined in LDFLAGS */
-  . = _pmem_start + _entry_offset;
-  .text : 
+  . = _pmem_start + _entry_offset; 
+  .text : AT (ORIGIN(flash)) 
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
     *(entry)
     *(.text*)
+		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash AT> flash :text
+  }  
 
-	.rodata : {
-		. = ALIGN(0x8);
-		_rodata_start = . ;
-    *(.rodata*)
-		*(.srodata.mainargs)
-		. = ALIGN(0x8);
-		_rodata_end   = . ;
-  } > flash 
-	/*
-	.rodata (NOLOAD): {
-		. = ALIGN(0x8);
-		_rodata_start = . ;
-    *(.rodata*)
-		*(.srodata.mainargs)
-		. = ALIGN(0x8);
-		_rodata_end   = . ;
-  } > mrom AT> mrom 
-	*/
-	.data  : 
+	.rodata : AT (ORIGIN(flash) + SIZEOF(.text))  
 	{
+		. = ALIGN(0x8);
+		_rodata_start = . ;
+    *(.rodata*)
+		*(.srodata.mainargs)
+		. = ALIGN(0x8);
+		_rodata_end   = . ;
+  } 
+
+  .data : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata))
+	{
+		. = ORIGIN(psram);
 		. = ALIGN(0x8);
 		_data_start = .;
+    *(.data)
     *(.data*)
+		*(.data.*)
+		*(.sdata)
+		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > sram AT> flash :data
+  }
 
-  .bss : 
+  .bss (NOLOAD) :  
 	{
+		. = ALIGN(0x8);
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sram
+		. = ALIGN(0x8);
+  } 
 }
 
 _data_size = SIZEOF(.data);
-_data_Load_addr = LOADADDR(.data);
+_data_load_addr = LOADADDR(.data);
+
+_text_load_addr = LOADADDR(.text);
+
+_rodata_load_addr = LOADADDR(.rodata);
 
 _bss_start = ADDR(.bss);
 _bss_end = _bss_start + SIZEOF(.bss);
 
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram) + SIZEOF (.data) ;
+_heap_start = ORIGIN (sram);
 _heap_end = ORIGIN (sram) + LENGTH (sram) - 0x8000 ;
 
 _stack_point = ALIGN(0x8) ;

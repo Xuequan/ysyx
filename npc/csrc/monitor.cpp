@@ -30,6 +30,8 @@ void init_disasm(const char *triple);
 void init_elf();
 void init_flash();
 
+//void print_flash();
+
 void init_rand() {
 	srand(time(0) );
 }
@@ -82,8 +84,8 @@ static long load_test() {
 	fclose(fp);
 	return size;	
 }
-// load_img() 将 img 文件装载到内存中某处；
-// 只是方便在初始化 DiffTest 时，将其复制给 NMEU 对应的取指起始处
+
+// load img to flash
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
@@ -105,11 +107,11 @@ static long load_img() {
 	// 处，即 pflash 处；
   int ret = fread(flash_guest_to_host(FLASH_BASE), size, 1, fp);
   assert(ret == 1);
+
 	/*
 	for(int i = 0; i < size/4; i++)
-		printf("%d: %#x\n", i, *(uint32_t *)(guest_to_host(RESET_VECTOR) + i));
+		printf("%d: %#x\n", i, *(uint32_t *)(flash_guest_to_host(FLASH_BASE) + i));
 	*/
-
   fclose(fp);
 	return size;
 }
@@ -173,6 +175,8 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
+	//printf("after load_img() \n");
+	//print_flash();
 
 	/* load test program to flash */
 	//long test_size = load_test();

@@ -18,6 +18,7 @@ Area heap = RANGE(&_heap_start, &_heap_end);
 #endif
 static const char mainargs[] = MAINARGS;
 
+/* initial uart  */
 void init_uart() {
 	// set lcr[7] 1
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(volatile uint8_t *)(UART_BASE + UART_LC) | 0x80; 
@@ -35,10 +36,8 @@ void putch(char ch) {
 	int i = 0;
 	while (lsr6 == 0) {
 	  // wait
-		if ( i == 100) 
-			i = 0;
-		else
-			i++;
+		if ( i == 100) i = 0;
+		else 					 i++;
 
 		lsr6 = *(volatile uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	}
@@ -52,7 +51,54 @@ void halt(int code) {
 	}
 }
 
+
+extern char _data_start[];
+extern char _data_end[];
+extern char _data_load_addr[];
+
+extern char _text_load_addr[];
+extern char _text_start[];
+extern char _text_end[];
+
+extern char _rodata_load_addr[];
+extern char _rodata_start[];
+extern char _rodata_end[];
+
+void __attribute__  ((section (".copy_to_psram"))) _data_init() {
+	char *dst;
+	char *src; 
+	// copy '.data' section to psram
+	src = _data_load_addr;
+	dst = _data_start;
+	while (dst < _data_end)
+		*dst++ = *src++;
+    /*
+	// copy '.text' section to sram
+	src = _text_load_addr;
+	dst = _text_start;
+	while (dst < _text_end)
+		*dst++ = *src++;
+	// copy '.rodata' section to sram
+	src = _rodata_load_addr;
+	dst = _rodata_start;
+	while (dst < _rodata_end)
+		*dst++ = *src++;
+  */
+}
+
+/* zero bss  */
+extern char _sbss[];
+extern char _ebss[];
+void __attribute__ ((section(".zero_bss"))) _zero_bss() {
+	char *dst;
+	for (dst = _sbss; dst < _ebss; dst++)
+		*dst = 0;
+}
+
 void _trm_init() {
+
+	_zero_bss();
+	_data_init();
 
 	init_uart();
 
@@ -60,23 +106,3 @@ void _trm_init() {
   halt(ret);
 }
 
-extern char _data_start[];
-extern char _data_Load_addr[];
-extern char _data_end[];
-extern char _bss_start[];
-extern char _bss_end[];
-
-void __attribute__  ((section (".first_init"))) _data_init() {
-	char *dst;
-	/* Zero bss */
-	for (dst = _bss_start; dst < _bss_end; dst++)
-		*dst = 0;
-
-	char *src = _data_Load_addr;
-	dst = _data_start;
-	/* copy '.data' srction to sram  */
-	while (dst < _data_end)
-		*dst++ = *src++;
-
-	_trm_init();
-}

@@ -1,6 +1,8 @@
 #include <am.h>
 #include <klib-macros.h>
 
+#include <klib.h>
+
 void __am_timer_init();
 
 void __am_timer_rtc(AM_TIMER_RTC_T *);
@@ -24,8 +26,12 @@ static void *lut[128] = {
 static void fail(void *buf) { panic("access nonexist register"); }
 
 bool ioe_init() {
-  for (int i = 0; i < LENGTH(lut); i++)
-    if (!lut[i]) lut[i] = fail;
+  for (int i = 0; i < LENGTH(lut); i++) {
+    if (!lut[i]) { 
+			lut[i] = fail;
+		} else
+			printf("%d: not fail()\n", i);
+	}
   __am_timer_init();
   return true;
 }

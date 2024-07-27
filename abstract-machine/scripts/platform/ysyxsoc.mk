@@ -1,6 +1,6 @@
 AM_SRCS := riscv/ysyxSoC/start.S \
-           riscv/ysyxSoC/trm.c \
-           #riscv/ysyxSoC/ioe.c \
+           riscv/ysyxSoC/trm.c  \
+           riscv/ysyxSoC/ioe.c  \
            riscv/ysyxSoC/timer.c \
            riscv/ysyxSoC/input.c \
            riscv/ysyxSoC/cte.c \
@@ -9,14 +9,16 @@ AM_SRCS := riscv/ysyxSoC/start.S \
            platform/dummy/mpe.c
 
 CFLAGS    += -fdata-sections -ffunction-sections
-LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker.ld \
-						 --defsym=_pmem_start=0x30000000 --defsym=_entry_offset=0x0  --print-map > map.txt
+LDFLAGS   += -T $(AM_HOME)/scripts/soc_linkerv2.ld  \
+						--print-map > map.txt  \
+						--defsym=_pmem_start=0x30000000 --defsym=_entry_offset=0x0  
 						#--defsym=_stack_pointer=0x0f001fff  \
 						 --defsym=_heap_end=0x0eff9fff  
 						 #--defsym=_heap_start=0x0f000000  \
 						# --defsym=_stack_pointer=0x0fff1000 
 
 LDFLAGS   += --gc-sections -e _start
+#LDFLAGS   += --nmagic --pic-executable
 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I/$(AM_HOME)/am/src/riscv/ysyxSoC/include
@@ -32,6 +34,7 @@ image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
+	#@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents  --remove-section=.bss -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: image
 	@$(MAKE) -s -C $(NPC_HOME) sim ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin

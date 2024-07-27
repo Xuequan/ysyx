@@ -482,6 +482,19 @@ assign exu_nextpc_taken = (branch_taken || csr_nextpc_taken) && exu_valid;
 assign exu_to_ifu_bus = {exu_nextpc_taken, exu_nextpc};
 assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 
+/* =======clint ============================== */
+wire [31:0] addr_raw;
+assign addr_raw = alu_result;
+
+
+
+wire [31:0] clint_addr_min; 
+wire [31:0] clint_addr_max;
+assign clint_addr_min = 32'h0200_0000;
+assign clint_addr_max  = 32'h0200_ffff;
+wire is_clint_addr;
+assign is_clint_addr = (addr_raw >= clint_addr_min) &&
+								 (addr_raw <= clint_addr_max);
 /* =======uart ============================== */
 wire [31:0] uart_addr_min; 
 wire [31:0] uart_addr_max;
@@ -542,8 +555,16 @@ assign is_psram_addr = (alu_result >= psram_addr_min)
 /* ======= AXI commom ========================================================
  * =========================================================================
  */
-wire [31:0] addr_raw;
-assign addr_raw = alu_result;
+
+always @(*) begin
+	if ( exu_valid && (|load_inst || |store_inst) && 
+			!(is_clint_addr || is_uart_addr || is_sram_addr 
+				|| is_mrom_addr || is_flash_addr
+				|| is_spi_master_addr || is_psram_addr) ) begin
+		$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
+		$fatal;
+	end
+end
 
 wire [2:0] addr_sel;
 assign addr_sel = addr_raw[2:0];
@@ -856,10 +877,7 @@ endtask
 // clint
 export "DPI-C" task clint_addr_check;
 task clint_addr_check (output bit o);
-	o = |load_inst && (
-			(axi_araddr >= 32'h0200_0000)
-			&& (axi_araddr <= 32'h0200_ffff)
-			);
+	o = |load_inst && is_clint_addr;
 endtask
 
 // serial 

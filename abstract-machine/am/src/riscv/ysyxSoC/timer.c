@@ -1,19 +1,21 @@
 #include <am.h>
 #include <ysyxsoc.h>
+#include <klib.h>
 
 void __am_timer_init() {
-	/*
+		/*
 	outl(RTC_ADDR, 0);
 	outl(RTC_ADDR + 4, 0);
 	*/
+	return;
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
-	/*
-  uptime->us = inl(RTC_ADDR + 4) * 2/1000;
+	printf("here in __am_timer_uptime\n");
+  uptime->us = inl(RTC_ADDR + 4) ;
 	uptime->us <<= 32;
-	uptime->us += inl(RTC_ADDR) * 2/1000;
-	*/
+	uptime->us += inl(RTC_ADDR);
+	printf("here in __am_timer_uptime, end\n");
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {

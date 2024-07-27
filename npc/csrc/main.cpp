@@ -6,6 +6,9 @@ void sdb_mainloop();
 void sim_init();
 void sim_exit();
 
+void print_flash();
+void print_mem();
+
 int main(int argc, char *argv[]) {
 
 	Verilated::commandArgs(argc, argv);
@@ -17,6 +20,10 @@ int main(int argc, char *argv[]) {
 
 	init_monitor(argc, argv);
 	
+	/* for test only */
+	print_flash();
+	print_mem();
+
 	sdb_mainloop(); 
 
 	sim_exit();

@@ -101,10 +101,12 @@ CFLAGS   += -O2 -MMD -Wall -Werror $(INCFLAGS) \
             -D__PLATFORM__=$(PLATFORM) -D__PLATFORM_$(shell echo $(PLATFORM) | tr a-z A-Z | tr - _) \
             -DARCH_H=\"$(ARCH_H)\" \
             -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector \
-            -Wno-main -U_FORTIFY_SOURCE -fvisibility=hidden
+            -Wno-main -U_FORTIFY_SOURCE -fvisibility=hidden 
 # 试试
-CFLAGS += -g
+CFLAGS += -g -Os
 CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
+CXXFLASS += -Os
+
 ASFLAGS  += -MMD $(INCFLAGS)
 LDFLAGS  += -z noexecstack
 #LDFLAGS  += -z nodefaultlib
