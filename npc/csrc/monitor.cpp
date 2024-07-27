@@ -30,7 +30,7 @@ void init_disasm(const char *triple);
 void init_elf();
 void init_flash();
 
-void print_flash();
+//void print_flash();
 
 void init_rand() {
 	srand(time(0) );
@@ -175,8 +175,8 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
-	printf("after load_img() \n");
-	print_flash();
+	//printf("after load_img() \n");
+	//print_flash();
 
 	/* load test program to flash */
 	//long test_size = load_test();

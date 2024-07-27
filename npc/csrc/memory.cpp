@@ -76,7 +76,7 @@ void init_mem() {
 void print_mem() {
 	uint32_t *p = (uint32_t *)pmem;
 	printf("data in psram(pmem) :\n");
-	for(int i = 0; i < 528/4; i ++){
+	for(int i = 0; i < 10; i ++){
 		printf("%d : %#x\n", i, p[i]);
 	}
 }
