@@ -31,7 +31,7 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > flash
+  } 
 
   .data : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata))
 	{
