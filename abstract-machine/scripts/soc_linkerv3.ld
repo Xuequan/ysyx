@@ -47,7 +47,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > psram AT> flash
+  } > sram AT> flash
 
   .bss (NOLOAD) :
 	{
