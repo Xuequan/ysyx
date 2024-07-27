@@ -18,6 +18,7 @@ Area heap = RANGE(&_heap_start, &_heap_end);
 #endif
 static const char mainargs[] = MAINARGS;
 
+/* initial uart  */
 void init_uart() {
 	// set lcr[7] 1
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(volatile uint8_t *)(UART_BASE + UART_LC) | 0x80; 
@@ -35,10 +36,8 @@ void putch(char ch) {
 	int i = 0;
 	while (lsr6 == 0) {
 	  // wait
-		if ( i == 100) 
-			i = 0;
-		else
-			i++;
+		if ( i == 100) i = 0;
+		else 					 i++;
 
 		lsr6 = *(volatile uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	}
