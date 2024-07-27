@@ -1,10 +1,7 @@
-/* .text, .rodata will be in flash
- * stack, heap in sram 
- * .data will be in psram
- * this version is revised based on soc_lonkerv2.ld
- * soc_linkerv1.ld generated cpu-tests/string.c hello-str.c  .bss too big
- * v2 try to solve this problem
- * 似乎 要尽量保证 LMA 地址连续
+/* in order to finish "完整测试 PSRAM 的访问”
+ * put mem-test all in SRAM;
+ * also need to put .rodata in SRAM
+ * This verison is based on soc_linkerv2.ld
  */
 MEMORY 
 	{
@@ -27,7 +24,7 @@ SECTIONS {
 		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > flash AT> flash 
+  } > sram AT> flash 
 
 	.rodata : 
 	{
@@ -37,7 +34,7 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > flash AT> flash
+  } > sram AT> flash
 
   .data : 
 	{
