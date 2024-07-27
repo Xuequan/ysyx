@@ -52,7 +52,6 @@ void halt(int code) {
 }
 
 
-/*
 extern char _data_start[];
 extern char _data_end[];
 extern char _data_load_addr[];
@@ -65,14 +64,15 @@ extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
 
-void __attribute__  ((section (".copy_to_sram"))) _data_init() {
+void __attribute__  ((section (".copy_to_psram"))) _data_init() {
 	char *dst;
 	char *src; 
-	// copy '.data' section to sram  
+	// copy '.data' section to psram  
 	src = _data_load_addr;
 	dst = _data_start;
 	while (dst < _data_end)
 		*dst++ = *src++;
+	/*
 	// copy '.text' section to sram
 	src = _text_load_addr;
 	dst = _text_start;
@@ -83,10 +83,9 @@ void __attribute__  ((section (".copy_to_sram"))) _data_init() {
 	dst = _rodata_start;
 	while (dst < _rodata_end)
 		*dst++ = *src++;
-
-	_trm_init();
+	*/
 }
-*/
+
 /* zero bss  */
 extern char _sbss[];
 extern char _ebss[];
@@ -99,6 +98,7 @@ void __attribute__ ((section(".zero_bss"))) _zero_bss() {
 void _trm_init() {
 
 	_zero_bss();
+	_data_init();
 
 	init_uart();
 

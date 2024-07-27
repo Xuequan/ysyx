@@ -1,5 +1,6 @@
-/* all .text, .rodata, .data will be in flash
+/* .text, .rodata will be in flash
  * stack, heap in sram 
+ * .data will be in psram
  * this version is revised based on soc_lonker.ld
  */
 MEMORY 
@@ -19,7 +20,7 @@ SECTIONS {
 		_text_start = .;
     *(entry)
     *(.text*)
-		KEEP(*(.copy_to_sram))
+		KEEP(*(.copy_to_psram))
 		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
@@ -46,7 +47,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > flash AT> flash
+  } > psram AT> flash
 
   .bss (NOLOAD) :  
 	{
