@@ -48,6 +48,7 @@ SECTIONS {
 		_rodata_start = . ;
     *(.rodata*)
 		*(.srodata.mainargs)
+		*(.srodata*)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
   } > psram AT> flash
