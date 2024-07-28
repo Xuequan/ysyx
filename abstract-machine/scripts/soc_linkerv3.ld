@@ -1,6 +1,5 @@
-/* in order to finish "完整测试 PSRAM 的访问”
- * put mem-test all in SRAM;
- * also need to put .rodata in SRAM
+/* in order to finish "在ysyxsoc 上运行 microbench”
+ * need to put .data & heap in psram
  * This verison is based on soc_linkerv2.ld
  */
 MEMORY 
@@ -24,7 +23,7 @@ SECTIONS {
 		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > sram AT> flash 
+  } > flash AT> flash 
 
   . = ORIGIN(sram) + SIZEOF(.text);
 	.rodata : 
@@ -35,9 +34,8 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > sram AT> flash
+  } > flash AT> flash
 
-  . = ORIGIN(sram) + SIZEOF(.text) + SIZEOF(.rodata);
   .data : 
 	{
 		. = ALIGN(0x8);
@@ -49,7 +47,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > sram AT> flash
+  } > psram AT> flash
 
   .bss (NOLOAD) :
 	{
@@ -72,8 +70,8 @@ _text_load_addr = LOADADDR(.text);
 _rodata_load_addr = LOADADDR(.rodata);
 
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x100 ;
+_heap_start = ORIGIN (psram) + SIZEOF(.data);
+_heap_end = ORIGIN (psram) + LENGTH (psram);
 
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;
