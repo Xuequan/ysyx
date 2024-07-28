@@ -1,3 +1,4 @@
+// 本文件对应于 soc_linkerv4.ld , 为了“完整测试PSRAM 的访问”
 #include <am.h>
 #include <ysyxsoc.h>
 
@@ -25,7 +26,6 @@ void init_uart() {
 	// set divisor latch register 
 	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x60;
 	*(volatile uint8_t *)(UART_BASE + UART_DL2) = (uint8_t)0x00;
-
 	// set lcr[7] 0
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(volatile uint8_t *)(UART_BASE + UART_LC) & 0x7f; 
 }
@@ -38,7 +38,6 @@ void putch(char ch) {
 	  // wait
 		if ( i == 100) i = 0;
 		else 					 i++;
-
 		lsr6 = *(volatile uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	}
 	*(volatile char *)(UART_BASE + UART_TX) = ch;
@@ -46,12 +45,19 @@ void putch(char ch) {
 
 void halt(int code) {
 	ysyxsoc_trap(code);
-
   while (1) {
 	}
 }
+void _trm_init() {
+	init_uart();
+  int ret = main(mainargs);
+  halt(ret);
+}
 
 
+// first bootloader, load .text & .rodata & .data from flash to sram
+extern char _sbss[];
+extern char _ebss[];
 extern char _data_start[];
 extern char _data_end[];
 extern char _data_load_addr[];
@@ -63,16 +69,12 @@ extern char _text_end[];
 extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
-
-void __attribute__  ((section (".copy_to_psram"))) _data_init() {
+void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
 	char *dst;
-	char *src; 
-	// copy '.data' section to psram
-	src = _data_load_addr;
-	dst = _data_start;
-	while (dst < _data_end)
-		*dst++ = *src++;
-    /*
+	char *src;
+  // zero bss
+	for (dst = _sbss; dst < _ebss; dst++)
+		*dst = 0;
 	// copy '.text' section to sram
 	src = _text_load_addr;
 	dst = _text_start;
@@ -83,26 +85,12 @@ void __attribute__  ((section (".copy_to_psram"))) _data_init() {
 	dst = _rodata_start;
 	while (dst < _rodata_end)
 		*dst++ = *src++;
-  */
-}
+	// copy '.data' section to sram
+	src = _data_load_addr;
+	dst = _data_start;
+	while (dst < _data_end)
+		*dst++ = *src++;
 
-/* zero bss  */
-extern char _sbss[];
-extern char _ebss[];
-void __attribute__ ((section(".zero_bss"))) _zero_bss() {
-	char *dst;
-	for (dst = _sbss; dst < _ebss; dst++)
-		*dst = 0;
-}
-
-void _trm_init() {
-
-	_zero_bss();
-	_data_init();
-
-	init_uart();
-
-  int ret = main(mainargs);
-  halt(ret);
+  _trm_init();  
 }
 

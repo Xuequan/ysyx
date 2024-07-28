@@ -11,7 +11,7 @@ static VerilatedVcdC* tfp;
 
 static void step_and_dump_wave() {
 	top->eval();
-	contextp->timeInc(1);
+	//contextp->timeInc(1);
 	
 	// generate wave file
 	//tfp->dump(contextp->time());
@@ -71,8 +71,8 @@ void sim_init() {
 	top = new VysyxSoCFull;
 
 	contextp->traceEverOn(true);
-	top->trace(tfp, 0);
-	tfp->open("dump.vcd");
+	//top->trace(tfp, 0);
+  tfp->open("dump.vcd");
 
 	// initial reset
 	int i = -1;
@@ -97,13 +97,10 @@ void sim_exit() {
 uint32_t get_clock_from_top(){
 	return top->clock;
 }
-
 // from arch.cpp
 extern const char *regs[];
-
 // npc regs
 extern uint32_t npc_regs[16];
-
 extern uint32_t update_reg_no();
 extern uint32_t update_reg_data();
 void get_npc_regs() {
@@ -112,14 +109,6 @@ void get_npc_regs() {
 	for(int i = 0; i < 16; i++){
 		npc_regs[i] = ptr[i];
 	}
-	/*
-	// 这是下周期要更新的 regfile 数据，本周期要拿来difftest_step
-	// 寄存器的更新要在下一周期
-	uint32_t no = update_reg_no();
-	if ( no != 0) {
-		npc_regs[no] = update_reg_data();
-	}
-	*/
 }
 
 void isa_reg_display() {
