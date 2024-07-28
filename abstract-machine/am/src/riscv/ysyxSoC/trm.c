@@ -1,3 +1,4 @@
+// 本文件对应于 soc_linkerv4.ld , 为了“完整测试PSRAM 的访问”
 #include <am.h>
 #include <ysyxsoc.h>
 
@@ -64,15 +65,14 @@ extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
 
-void __attribute__  ((section (".copy_to_psram"))) _data_init() {
+void __attribute__  ((section (".copy_data"))) _data_init() {
 	char *dst;
 	char *src; 
-	// copy '.data' section to psram
+	// copy '.data' section to sram
 	src = _data_load_addr;
 	dst = _data_start;
 	while (dst < _data_end)
 		*dst++ = *src++;
-    /*
 	// copy '.text' section to sram
 	src = _text_load_addr;
 	dst = _text_start;
@@ -83,7 +83,6 @@ void __attribute__  ((section (".copy_to_psram"))) _data_init() {
 	dst = _rodata_start;
 	while (dst < _rodata_end)
 		*dst++ = *src++;
-  */
 }
 
 /* zero bss  */
@@ -97,7 +96,8 @@ void __attribute__ ((section(".zero_bss"))) _zero_bss() {
 
 void _trm_init() {
 
-	_zero_bss();
+	_zero_bss(); // this one should be first 
+
 	_data_init();
 
 	init_uart();

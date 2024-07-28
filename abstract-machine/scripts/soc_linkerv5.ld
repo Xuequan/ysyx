@@ -1,7 +1,7 @@
-/* in order to finish "完整测试 PSRAM 的访问”
- * load mem-test into sram
- * load .rodata into sram
- * This verison is based on soc_linkerv3.ld
+/* in order to finish "实现bootloader的二级加载过程”
+ * initial start, fsbl(first stage bootloader), ssbl(second stage bootloader) 都位于 flash
+ * first execute fsbl, which loading ssbl from flash to sram;
+ * then, execute ssbl, which loading program from flash to psram
  */
 MEMORY 
 	{
@@ -14,17 +14,30 @@ MEMORY
 ENTRY(_start)
 SECTIONS {
   . = _pmem_start + _entry_offset; 
+  .fsbl :
+  {
+    *(.fsbl*)
+  } > flash AT> flash
+
+  .ssbl :
+  {
+    . = ALIGN(0x8) ;
+    . = _sssbl ;
+    *(.ssbl*)
+    . = ALIGN(0x8) ;
+    . = _essbl ;
+  } > sram AT> flash
+
   .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
     *(entry)
     *(.text*)
-		KEEP(*(.copy_data))
 		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > sram AT> flash 
+  } > psram AT> flash 
 
   . = ORIGIN(sram) + SIZEOF(.text);
 	.rodata : 
@@ -35,7 +48,7 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > sram AT> flash
+  } > psram AT> flash
 
   . = ORIGIN(sram) + SIZEOF(.text) + SIZEOF(.rodata);
   .data : 
@@ -49,7 +62,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > sram AT> flash
+  } > psram AT> flash
 
   .bss (NOLOAD) :
 	{
@@ -71,9 +84,11 @@ _text_load_addr = LOADADDR(.text);
 
 _rodata_load_addr = LOADADDR(.rodata);
 
+_ssbl_load_addr = LOADADDR(.ssbl);
+
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x80;
+_heap_start = ORIGIN (sram);
+_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x100;
 
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;

@@ -65,7 +65,44 @@ extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
 
-void __attribute__  ((section (".copy_data"))) _data_init() {
+/* zero bss  */
+extern char _sbss[];
+extern char _ebss[];
+void __attribute__ ((section(".zero_bss"))) _zero_bss() {
+	char *dst;
+	for (dst = _sbss; dst < _ebss; dst++)
+		*dst = 0;
+}
+
+void _trm_init() {
+
+	_zero_bss(); // this one should be first 
+
+	_data_init();
+
+	init_uart();
+
+  int ret = main(mainargs);
+  halt(ret);
+}
+
+// fsbl loads ssbl code from flash to sram
+extern _ssbl_load_addr[];
+extern _sssbl[];
+extern _essbl[];
+
+void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
+	char *dst;
+	char *src; 
+	src = _ssbl_load_addr;
+	dst = _sssbl;
+	while (dst < _essbl)
+		*dst++ = *src++;
+
+  _ss_bootloader();
+}
+
+void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 	char *dst;
 	char *src; 
 	// copy '.data' section to psram
@@ -83,25 +120,7 @@ void __attribute__  ((section (".copy_data"))) _data_init() {
 	dst = _rodata_start;
 	while (dst < _rodata_end)
 		*dst++ = *src++;
-}
 
-/* zero bss  */
-extern char _sbss[];
-extern char _ebss[];
-void __attribute__ ((section(".zero_bss"))) _zero_bss() {
-	char *dst;
-	for (dst = _sbss; dst < _ebss; dst++)
-		*dst = 0;
-}
-
-void _trm_init() {
-
-	_zero_bss();
-	_data_init();
-
-	init_uart();
-
-  int ret = main(mainargs);
-  halt(ret);
+  _trm_init();
 }
 
