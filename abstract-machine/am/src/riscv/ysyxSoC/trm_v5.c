@@ -55,7 +55,6 @@ void _trm_init() {
   halt(ret);
 }
 
-
 extern char _sbss[];
 extern char _ebss[];
 extern char _data_start[];
