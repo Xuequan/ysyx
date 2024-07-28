@@ -11,7 +11,7 @@ static VerilatedVcdC* tfp;
 
 static void step_and_dump_wave() {
 	top->eval();
-	contextp->timeInc(1);
+	//contextp->timeInc(1);
 	
 	// generate wave file
 	//tfp->dump(contextp->time());
