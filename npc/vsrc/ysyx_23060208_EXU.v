@@ -555,14 +555,20 @@ assign is_psram_addr = (alu_result >= psram_addr_min)
 /* ======= AXI commom ========================================================
  * =========================================================================
  */
-
+/* assertion: invalid address of load or store */
 always @(*) begin
-	if ( exu_valid && (|load_inst || |store_inst) && 
+	if ( exu_valid && 
 			!(is_clint_addr || is_uart_addr || is_sram_addr 
 				|| is_mrom_addr || is_flash_addr
 				|| is_spi_master_addr || is_psram_addr) ) begin
-		$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
-		$fatal;
+		if (|load_inst) begin
+			$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
+			$fatal;
+		end
+		if (|store_inst) begin
+			$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
+			$fatal;
+		end
 	end
 end
 
