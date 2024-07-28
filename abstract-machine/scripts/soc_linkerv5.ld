@@ -75,7 +75,7 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-	} > sram AT> flash
+	} > psram AT> flash
 }
 _data_size = SIZEOF(.data);
 _data_load_addr = LOADADDR(.data);
@@ -84,6 +84,6 @@ _rodata_load_addr = LOADADDR(.rodata);
 _ssbl_load_addr = LOADADDR(.ssbl);
 _heap_start = ALIGN(0x8) ;
 _heap_start = ORIGIN (sram) + SIZEOF(.ssbl);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x80;
+_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x800;
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;
