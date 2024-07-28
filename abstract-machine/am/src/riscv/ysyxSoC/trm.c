@@ -71,7 +71,6 @@ extern char _rodata_start[];
 extern char _rodata_end[];
 
 void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
- putch('k');
 	char *dst;
 	char *src; 
   // zero .bss
@@ -109,6 +108,5 @@ void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
 	while (dst < _essbl)
 		*dst++ = *src++;
 
- putch('o');
   _ss_bootloader();
 }
