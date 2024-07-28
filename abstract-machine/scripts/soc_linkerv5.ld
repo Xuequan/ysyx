@@ -75,7 +75,7 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-	} > psram AT> flash
+	} > sram AT> flash
 }
 _data_size = SIZEOF(.data);
 _data_load_addr = LOADADDR(.data);
