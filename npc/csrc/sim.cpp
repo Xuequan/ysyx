@@ -14,7 +14,7 @@ static void step_and_dump_wave() {
 	contextp->timeInc(1);
 	
 	// generate wave file
-	tfp->dump(contextp->time());
+	//tfp->dump(contextp->time());
 }
 
 // execute one cycle
