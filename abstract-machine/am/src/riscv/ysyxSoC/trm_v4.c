@@ -65,7 +65,7 @@ extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
 
-void __attribute__  ((section (".copy_to_psram"))) _data_init() {
+void __attribute__  ((section (".copy_data"))) _data_init() {
 	char *dst;
 	char *src; 
 	// copy '.data' section to psram

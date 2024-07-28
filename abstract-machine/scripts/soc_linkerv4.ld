@@ -20,7 +20,7 @@ SECTIONS {
 		_text_start = .;
     *(entry)
     *(.text*)
-		KEEP(*(.copy_to_psram))
+		KEEP(*(.copy_data))
 		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
