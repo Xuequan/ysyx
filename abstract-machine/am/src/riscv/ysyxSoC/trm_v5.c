@@ -95,9 +95,9 @@ void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 }
 
 // fsbl loads ssbl code from flash to sram
-extern _ssbl_load_addr[];
-extern _sssbl[];
-extern _essbl[];
+extern char _ssbl_load_addr[];
+extern char _sssbl[];
+extern char _essbl[];
 
 void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
 	char *dst;

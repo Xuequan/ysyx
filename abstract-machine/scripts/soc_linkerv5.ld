@@ -25,10 +25,10 @@ SECTIONS {
   .ssbl :
   {
     . = ALIGN(0x8) ;
-    . = _sssbl ;
+    _sssbl = .  ;
     *(.ssbl*)
     . = ALIGN(0x8) ;
-    . = _essbl ;
+    _essbl = . ;
   } > sram AT> flash
 
   . = ORIGIN(psram) ;
