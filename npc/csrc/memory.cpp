@@ -102,7 +102,7 @@ uint32_t nextpc();
 word_t paddr_read(paddr_t addr, int len) {
 	if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
-		printf("NPC paddr_read() :read at address = %#x, get data = %#x, len = %d, pc = %#x\n", addr,num, len, get_pc());
+		//printf("NPC paddr_read() :read at address = %#x, get data = %#x, len = %d, pc = %#x\n", addr,num, len, get_pc());
 		if (nextpc() != addr) { // 过滤掉读指令
 			log_write("		NPC: Read mem at address = %#x, data = %#x, now PC = %#x\n", addr, num, get_pc()); 
 		}

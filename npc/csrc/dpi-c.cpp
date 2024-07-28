@@ -16,7 +16,7 @@ void vaddr_write(vaddr_t addr, int len, word_t data);
 
 extern "C" void psram_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x80000000, 4);
-	printf("NPC psram_read(): read address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
+	//printf("NPC psram_read(): read address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
 	
 }
 
@@ -30,7 +30,7 @@ extern "C" void psram_write(int addr, int data, char mask) {
 		printf("psram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
-	printf("NPC: write address = %#x, write data = %#x, len = %d, pc = %#x\n", adr + 0x80000000, data, len, get_pc());
+	//printf("NPC: write address = %#x, write data = %#x, len = %d, pc = %#x\n", adr + 0x80000000, data, len, get_pc());
 	vaddr_write(adr + 0x80000000, len, data);
 }
 
