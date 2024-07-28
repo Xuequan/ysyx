@@ -71,8 +71,8 @@ void sim_init() {
 	top = new VysyxSoCFull;
 
 	contextp->traceEverOn(true);
-	top->trace(tfp, 0);
-	tfp->open("dump.vcd");
+	//top->trace(tfp, 0);
+  tfp->open("dump.vcd");
 
 	// initial reset
 	int i = -1;
