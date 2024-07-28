@@ -16,7 +16,10 @@ SECTIONS {
   . = _pmem_start + _entry_offset; 
   .fsbl :
   {
+		. = ALIGN(0x8);
+    *(entry)
     *(.fsbl*)
+		. = ALIGN(0x8);
   } > flash AT> flash
 
   .ssbl :
@@ -28,18 +31,17 @@ SECTIONS {
     . = _essbl ;
   } > sram AT> flash
 
+  . = ORIGIN(psram) ;
   .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
-    *(entry)
     *(.text*)
-		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
   } > psram AT> flash 
 
-  . = ORIGIN(sram) + SIZEOF(.text);
+  . = ORIGIN(psram) + SIZEOF(.text);
 	.rodata : 
 	{
 		. = ALIGN(0x8);
@@ -50,7 +52,7 @@ SECTIONS {
 		_rodata_end   = . ;
   } > psram AT> flash
 
-  . = ORIGIN(sram) + SIZEOF(.text) + SIZEOF(.rodata);
+  . = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata);
   .data : 
 	{
 		. = ALIGN(0x8);
@@ -74,21 +76,14 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_ebss = . ;
 	} > sram AT> flash
-
 }
-
 _data_size = SIZEOF(.data);
 _data_load_addr = LOADADDR(.data);
-
 _text_load_addr = LOADADDR(.text);
-
 _rodata_load_addr = LOADADDR(.rodata);
-
 _ssbl_load_addr = LOADADDR(.ssbl);
-
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram);
+_heap_start = ORIGIN (sram) + SIZEOF(.ssbl);
 _heap_end = ORIGIN (sram) + LENGTH (sram) - 0x100;
-
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;

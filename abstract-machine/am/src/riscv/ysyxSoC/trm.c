@@ -26,7 +26,6 @@ void init_uart() {
 	// set divisor latch register 
 	*(volatile uint8_t *)(UART_BASE + UART_DL1) = (uint8_t)0x60;
 	*(volatile uint8_t *)(UART_BASE + UART_DL2) = (uint8_t)0x00;
-
 	// set lcr[7] 0
 	*(volatile uint8_t *)(UART_BASE + UART_LC) = *(volatile uint8_t *)(UART_BASE + UART_LC) & 0x7f; 
 }
@@ -39,7 +38,6 @@ void putch(char ch) {
 	  // wait
 		if ( i == 100) i = 0;
 		else 					 i++;
-
 		lsr6 = *(volatile uint8_t *)(UART_BASE + UART_LS) & 0b01000000;  
 	}
 	*(volatile char *)(UART_BASE + UART_TX) = ch;
@@ -47,30 +45,11 @@ void putch(char ch) {
 
 void halt(int code) {
 	ysyxsoc_trap(code);
-
   while (1) {
 	}
 }
-
-
-
-/* zero bss  */
-/*
-extern char _sbss[];
-extern char _ebss[];
-void __attribute__ ((section(".zero_bss"))) _zero_bss() {
-	char *dst;
-	for (dst = _sbss; dst < _ebss; dst++)
-		*dst = 0;
-}
-*/
-
 void _trm_init() {
-
-//	_zero_bss(); // this one should be first 
-
 	init_uart();
-
   int ret = main(mainargs);
   halt(ret);
 }

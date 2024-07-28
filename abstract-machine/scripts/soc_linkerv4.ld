@@ -22,6 +22,7 @@ SECTIONS {
 		. = ALIGN(0x8);
   } > flash 
 
+	. = ORIGIN(sram) ;
   .text :
 	{
 		. = ALIGN(0x8);
@@ -66,19 +67,13 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_ebss = . ;
 	} > sram AT> flash
-
 }
-
 _data_size = SIZEOF(.data);
 _data_load_addr = LOADADDR(.data);
-
 _text_load_addr = LOADADDR(.text);
-
 _rodata_load_addr = LOADADDR(.rodata);
-
 _heap_start = ALIGN(0x8) ;
 _heap_start = ORIGIN (sram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
 _heap_end = ORIGIN (sram) + LENGTH (sram) - 0x80;
-
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;
