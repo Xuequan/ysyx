@@ -59,6 +59,7 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data)
+		*(.data.extra*)
     *(.data*)
 		*(.data.*)
 		*(.sdata)
@@ -72,6 +73,7 @@ SECTIONS {
 		. = ALIGN(0x8);
 		_sbss = . ;
     *(.bss*)
+		*(.bss.extra*)
     *(.sbss*)
     *(.scommon)
 		. = ALIGN(0x8);
