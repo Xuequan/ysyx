@@ -89,7 +89,7 @@ _heap_end = ORIGIN (sram) + LENGTH (sram) - 0x80;
 */
 _heap_start = ALIGN(0x8) ;
 _heap_start = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
-_heap_end = ORIGIN (pram) + LENGTH (psram);
+_heap_end = ORIGIN (psram) + LENGTH (psram) ;
 
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;
