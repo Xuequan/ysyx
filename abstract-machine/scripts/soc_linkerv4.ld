@@ -14,14 +14,19 @@ MEMORY
 ENTRY(_start)
 SECTIONS {
   . = _pmem_start + _entry_offset; 
+  .fsbl :
+  {
+	  . = ALIGN(0x8);
+    *(entry)
+    *(.fsbl*)    
+		. = ALIGN(0x8);
+  } > flash 
+
   .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
-    *(entry)
     *(.text*)
-		KEEP(*(.copy_data))
-		KEEP(*(.zero_bss))
 		. = ALIGN(0x8);
 		_text_end = .;
   } > sram AT> flash 

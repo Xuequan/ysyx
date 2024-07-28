@@ -53,6 +53,32 @@ void halt(int code) {
 }
 
 
+
+/* zero bss  */
+/*
+extern char _sbss[];
+extern char _ebss[];
+void __attribute__ ((section(".zero_bss"))) _zero_bss() {
+	char *dst;
+	for (dst = _sbss; dst < _ebss; dst++)
+		*dst = 0;
+}
+*/
+
+void _trm_init() {
+
+//	_zero_bss(); // this one should be first 
+
+	init_uart();
+
+  int ret = main(mainargs);
+  halt(ret);
+}
+
+
+// first bootloader, load .text & .rodata & .data from flash to sram
+extern char _sbss[];
+extern char _ebss[];
 extern char _data_start[];
 extern char _data_end[];
 extern char _data_load_addr[];
@@ -64,15 +90,12 @@ extern char _text_end[];
 extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
-
-void __attribute__  ((section (".copy_data"))) _data_init() {
+void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
 	char *dst;
-	char *src; 
-	// copy '.data' section to sram
-	src = _data_load_addr;
-	dst = _data_start;
-	while (dst < _data_end)
-		*dst++ = *src++;
+	char *src;
+  // zero bss
+	for (dst = _sbss; dst < _ebss; dst++)
+		*dst = 0;
 	// copy '.text' section to sram
 	src = _text_load_addr;
 	dst = _text_start;
@@ -83,26 +106,12 @@ void __attribute__  ((section (".copy_data"))) _data_init() {
 	dst = _rodata_start;
 	while (dst < _rodata_end)
 		*dst++ = *src++;
-}
+	// copy '.data' section to sram
+	src = _data_load_addr;
+	dst = _data_start;
+	while (dst < _data_end)
+		*dst++ = *src++;
 
-/* zero bss  */
-extern char _sbss[];
-extern char _ebss[];
-void __attribute__ ((section(".zero_bss"))) _zero_bss() {
-	char *dst;
-	for (dst = _sbss; dst < _ebss; dst++)
-		*dst = 0;
-}
-
-void _trm_init() {
-
-	_zero_bss(); // this one should be first 
-
-	_data_init();
-
-	init_uart();
-
-  int ret = main(mainargs);
-  halt(ret);
+  _trm_init();  
 }
 
