@@ -41,7 +41,6 @@ SECTIONS {
 		_text_end = .;
   } > psram AT> flash 
 
-  . = ORIGIN(psram) + SIZEOF(.text);
 	.rodata : 
 	{
 		. = ALIGN(0x8);
@@ -53,13 +52,10 @@ SECTIONS {
 		_rodata_end   = . ;
   } > psram AT> flash
 
-  . = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata);
   .data : 
 	{
 		. = ALIGN(0x8);
 		_data_start = .;
-    *(.data)
-		*(.data.extra)
 		*(.data.extra*)
     *(.data*)
 		*(.data.*)
@@ -69,13 +65,11 @@ SECTIONS {
 		_data_end = .;
   } > psram AT> flash
 
-  . = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
   .bss (NOLOAD) :
 	{
 		. = ALIGN(0x8);
 		_sbss = . ;
     *(.bss*)
-		*(.bss.extra)
 		*(.bss.extra*)
     *(.sbss*)
     *(.scommon)
