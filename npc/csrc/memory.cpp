@@ -139,6 +139,7 @@ word_t paddr_read(paddr_t addr, int len) {
 	}
 
 	printf("read out of bound--");	
+	printf("NPC flash base = %#x, flash_up = %#x\n", FLASH_BASE, FLASH_BASE+ FLASH_SIZE);
 	out_of_bound(addr);
 	return 0;
 }
