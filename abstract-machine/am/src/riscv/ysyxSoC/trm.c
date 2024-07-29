@@ -70,6 +70,10 @@ extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
 
+// from rt-thred-am/bsp/abstract-machine/extra.ld
+extern char __fsymtab_start[];
+extern char __am_apps_data_end[];
+extern char __data_extra_load_addr[];
 void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 	char *dst;
 	char *src; 
@@ -90,6 +94,11 @@ void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 	src = _rodata_load_addr;
 	dst = _rodata_start;
 	while (dst < _rodata_end)
+		*dst++ = *src++;
+
+	src = __data_extra_load_addr;
+	dst = __fsymtab_start;
+	while (dst < __am_apps_data_end)
 		*dst++ = *src++;
 
   _trm_init();
