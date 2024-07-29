@@ -48,7 +48,7 @@ typedef word_t vaddr_t;
 #define CONFIG_PC_RESET_OFFSET 0x0
 
 #define FLASH_BASE 0x30000000
-#define FLASH_SIZE (0x3000ffff - 0x30000000)
+#define FLASH_SIZE (0x300fffff - 0x30000000)
 //#define FLASH_SIZE (0x30000fff - 0x30000000)
 #define PSRAM_BASE 0x80000000
 #define PSRAM_SIZE (0x9fffffff - 0x80000000)
