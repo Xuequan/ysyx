@@ -181,16 +181,10 @@ word_t paddr_read(paddr_t addr, int len) {
 	  }
   }
 	// read from flash
-	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
+  if (likely(in_pflash(addr))) {
 		word_t num = pflash_read(addr, len); 
 		//printf("NPC flash read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
 		return num;		
-	}
-	// read for mrom
-	if (addr >= 0x20000000 && addr <= 0x20000fff) {
-		int idx = (addr - 0x20000000)/4;
-		// 因为实际上load_img() 是将其读到 pmem 处存着的
-		return *((uint32_t *)psram + idx);		
 	}
 
 	printf("read out of bound--");	
