@@ -546,7 +546,7 @@ assign is_spi_master_addr = (alu_result >= spi_master_addr_min)
 wire [31:0] psram_addr_min; 
 wire [31:0] psram_addr_max;
 assign psram_addr_min = 32'h8000_0000;
-assign psram_addr_max  = 32'h9fff_ffff;
+assign psram_addr_max = 32'h9fff_ffff;
 wire is_psram_addr; 
 assign is_psram_addr = (alu_result >= psram_addr_min) 
 									&& (alu_result <= psram_addr_max);
@@ -555,12 +555,13 @@ assign is_psram_addr = (alu_result >= psram_addr_min)
 wire [31:0] sdram_addr_min; 
 wire [31:0] sdram_addr_max;
 assign sdram_addr_min = 32'ha000_0000;
-assign sdram_addr_max  = 32'hbfff_ffff;
+assign sdram_addr_max = 32'hbfff_ffff;
 wire is_sdram_addr; 
 assign is_sdram_addr = (alu_result >= sdram_addr_min) 
 									&& (alu_result <= psram_addr_max);
+
 /* =========================================================================
-/* ======= AXI commom ========================================================
+/* ======= some checks ========================================================
  * =========================================================================
  */
 /* assertion: invalid address of load or store */
@@ -571,16 +572,20 @@ always @(*) begin
 				|| is_spi_master_addr || is_psram_addr	
 				|| is_sdram_addr) ) begin
 		if (|load_inst) begin
-			$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
+			$fwrite(32'h8000_0002, "Assertion, EXU module, load addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
 		if (|store_inst) begin
-			$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
+			$fwrite(32'h8000_0002, "Assertion, EXU module, write addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
 	end
 end
 
+/* =========================================================================
+/* ======= AXI commom ========================================================
+ * =========================================================================
+ */
 wire [2:0] addr_sel;
 assign addr_sel = addr_raw[2:0];
 
