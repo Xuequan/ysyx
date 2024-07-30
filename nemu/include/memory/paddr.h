@@ -25,6 +25,9 @@
 #define MROM_SIZE (0x20000fff - 0x20000000)
 #define MROM_BASE 0x20000000
 
+#define SDRAM_SIZE (0xbfffffff - 0xa0000000)
+#define SDRAM_BASE 0xa0000000
+
 #define FLASH_SIZE (0x3fffffff - 0x30000000)
 #define FLASH_BASE 0x30000000
 
@@ -43,11 +46,15 @@ static inline bool in_flash(paddr_t addr) {
   return addr - FLASH_BASE < FLASH_SIZE;
 }
 static inline bool in_mrom(paddr_t addr) {
-  return addr - 0x20000000 < 0xfff;
+  return addr - MROM_BASE < MROM_SIZE;
 }
 
 static inline bool in_sram(paddr_t addr) {
-  return addr - 0x0f000000 < 0x1fff;
+  return addr - SRAM_BASE < SRAM_SIZE;
+}
+
+static inline bool in_sdram(paddr_t addr) {
+  return addr - SDRAM_BASE < SDRAM_SIZE;
 }
 
 word_t paddr_read(paddr_t addr, int len);
@@ -58,5 +65,10 @@ uint8_t* mrom_guest_to_host(paddr_t paddr);
 uint8_t* flash_guest_to_host(paddr_t paddr);
 
 uint8_t* sram_guest_to_host(paddr_t paddr);
+
+uint8_t* sdram_guest_to_host(paddr_t paddr);
+
 paddr_t host_to_guest_sram(uint8_t *haddr);
+
+paddr_t host_to_guest_sdram(uint8_t *haddr);
 #endif

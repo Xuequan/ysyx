@@ -17,15 +17,35 @@
 #include "memory.h"
 #include <ctime>
 
-uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
-uint8_t* flash_guest_to_host(paddr_t paddr) { 
-	return pflash + paddr - FLASH_BASE; 
-	//return pflash + paddr; 
+extern uint32_t get_pc();
+extern uint32_t nextpc();
+
+//=========================================================================
+// address memory space translated to host memory space
+// ========================================================================
+// psram
+uint8_t* guest_to_host(paddr_t paddr) { 
+  return psram + paddr - CONFIG_MBASE; 
 }
-paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
-void difftest_skip_ref();
+// flash
+uint8_t* flash_guest_to_host(paddr_t paddr) {
+	return pflash + paddr - FLASH_BASE; 
+}
 
+// sdram
+uint8_t* sdram_guest_to_host(paddr_t paddr) { 
+	return psdram + paddr - SDRAM_BASE; 
+}
+
+// to be deleted
+paddr_t host_to_guest(uint8_t *haddr) { 
+  return haddr - psram + CONFIG_MBASE; 
+}
+
+//=========================================================================
+// host read and write 
+// ========================================================================
 static inline word_t host_read(void *addr, int len) {
   switch (len) {
     case 1: return *(uint8_t  *)addr;
@@ -44,42 +64,80 @@ static inline void host_write(void *addr, int len, word_t data) {
   }
 }
 
+//=========================================================================
+// all sorts of memory space read and write 
+// ========================================================================
+// psram read
 static word_t pmem_read(paddr_t addr, int len) {
   word_t ret = host_read(guest_to_host(addr), len);
   return ret;
 }
+
+// flash read (no write)
 static word_t pflash_read(paddr_t addr, int len) {
   word_t ret = host_read(flash_guest_to_host(addr), len);
   return ret;
 }
 
+// psdram read
+static word_t psdram_read(paddr_t addr, int len) {
+  word_t ret = host_read(sdram_guest_to_host(addr), len);
+  return ret;
+}
+
+// psdram write
+static void psdram_write(paddr_t addr, int len, word_t data) {
+  host_write(psdram_guest_to_host(addr), len, data);
+}
+
+// psram write
 static void pmem_write(paddr_t addr, int len, word_t data) {
   host_write(guest_to_host(addr), len, data);
 }
 
-uint32_t get_pc();
+
+//=========================================================================
+// check if addr is out of bound 
+// ========================================================================
 static void out_of_bound(paddr_t addr) {
-  panic("NPC: address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
-      addr, PMEM_LEFT, PMEM_RIGHT, get_pc());
+  panic("NPC: address = " FMT_PADDR " is out of bound of psram [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
+      addr, PSRAM_BASE, PSRAM_SIZE + PSRAM_BASE, get_pc());
 }
 
-void init_mem() {
-	uint32_t *p = (uint32_t *)pmem;
-	int i;
-	for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
-		p[i] = 0;
-	}
-	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
-	return;
-}
 
+//=========================================================================
+// debug helper function
+// ========================================================================
 void print_mem() {
-	uint32_t *p = (uint32_t *)pmem;
-	printf("data in psram(pmem) :\n");
+	uint32_t *p = (uint32_t *)psram;
+	printf("data in psram :\n");
 	for(int i = 0; i < 10; i ++){
 		printf("%d : %#x\n", i, p[i]);
 	}
 }
+
+void print_flash() {
+	uint32_t *p = (uint32_t *)pflash;
+	printf("data in flash :\n");
+	for(int i = 0; i < 10; i ++){
+		printf("%d : %#x\n", i, p[i]);
+	}
+}
+//=========================================================================
+// initial memory space
+// ========================================================================
+// initial psram
+void init_mem() {
+	uint32_t *p = (uint32_t *)psram;
+	int i;
+	for (i = 0; i < (int) (PSRAM_SIZE / sizeof(p[0])); i ++) {
+		p[i] = 0;
+	}
+	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", 
+      PSRAM_BASE, PSRAM_BASE + PSRAM_SIZE);
+	return;
+}
+
 void init_flash() {
 	uint32_t *p = (uint32_t *)pflash;
 	int i;
@@ -90,17 +148,23 @@ void init_flash() {
 	return;
 }
 
-void print_flash() {
-	uint32_t *p = (uint32_t *)pflash;
-	printf("data in flash :\n");
-	for(int i = 0; i < 10; i ++){
-		printf("%d : %#x\n", i, p[i]);
+void init_sdram() {
+	uint32_t *p = (uint32_t *)psdram;
+	int i;
+	for (i = 0; i < (int) (SDRAM_SIZE / sizeof(p[0])); i ++) {
+			p[i] = 0;
 	}
+	Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", SDRAM_BASE, SDRAM_BASE + SDRAM_SIZE);
+	return;
 }
-uint32_t nextpc();
 
+
+//=========================================================================
+// physical memory addr read and write
+// ========================================================================
 word_t paddr_read(paddr_t addr, int len) {
-	if (likely(in_pmem(addr))) {
+  // read from psram
+	if (likely(in_psram(addr))) {
 		word_t num = pmem_read(addr, len); 
 		//printf("NPC paddr_read() :read at address = %#x, get data = %#x, len = %d, pc = %#x\n", addr,num, len, get_pc());
 		if (nextpc() != addr) { // 过滤掉读指令
@@ -108,84 +172,57 @@ word_t paddr_read(paddr_t addr, int len) {
 		}
 		return num;
 	}
-
-	if (addr == (uint32_t)(RTC_ADDR) || 
-			addr == (uint32_t)(RTC_ADDR + 4) ) {
-		printf("should not be here\n");
-		uint64_t timer = get_time();
-		if (addr == (uint32_t)(RTC_ADDR) ) {	
-			return (word_t)timer;
-		}else{
-			return (word_t)(timer >> 32);
-		}
-	}
-	
+	// read from sdram
+  if (likely(in_psdram(addr))) {
+	  if (addr >= SDRAM_BASE && addr <= SDRAM_BASE + SDRAM_SIZE) {
+		  word_t num = psdram_read(addr, len); 
+		  //printf("NPC sdram read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
+		  return num;		
+	  }
+  }
 	// read from flash
 	if (addr >= FLASH_BASE && addr <= FLASH_BASE + FLASH_SIZE) {
 		word_t num = pflash_read(addr, len); 
 		//printf("NPC flash read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
 		return num;		
 	}
-	// just for mrom
+	// read for mrom
 	if (addr >= 0x20000000 && addr <= 0x20000fff) {
 		int idx = (addr - 0x20000000)/4;
 		// 因为实际上load_img() 是将其读到 pmem 处存着的
-		return *((uint32_t *)pmem + idx);		
-	}
-	// for uart
-	if (addr >= 0x10000000 && addr <= 0x10000fff) {
-		printf("read from uart '%#x'\n", addr);
-		return 0;
+		return *((uint32_t *)psram + idx);		
 	}
 
 	printf("read out of bound--");	
-	printf("NPC flash base = %#x, flash_up = %#x\n", FLASH_BASE, FLASH_BASE+ FLASH_SIZE);
 	out_of_bound(addr);
 	return 0;
 }
 
-word_t vaddr_ifetch(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-}
-
-word_t vaddr_read(vaddr_t addr, int len) {
-  return paddr_read(addr, len);
-}
-
+// write
 void paddr_write(paddr_t addr, int len, word_t data) {
-  if (likely(in_pmem(addr))) { 
+  // write to psram
+  if (likely(in_psram(addr))) { 
 		//printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
-
 		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc()); 
 		pmem_write(addr, len, data); 
 		return; 
 	}
-
-	if (addr == (uint32_t)(SERIAL_PORT) ) {
-		if (len == 1) { 
-			putchar(data);
-			return;
-		} else if(len == 2) {
-			putchar((char)(data & 0xff) );
-			return;
-		} else if (len == 4) {
-			putchar((char)data);
-			return;
-		} else {
-			printf("paddr_write(): len = %d is wrong\n", len);
-			return;
-		}
-	}
-
-	if (addr == (uint32_t)(RTC_ADDR) || 
-			addr == (uint32_t)(RTC_ADDR + 4) ) {
-		difftest_skip_ref();
-		//pmem_write(addr, len, data); 
-		//关于时钟，__am_time_init() 要写入内存，NPC就直接跳过了，不写了
-		return;
+  // write to sdram
+  if (likely(in_psdram(addr))) { 
+		//printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
+		log_write("		NPC: Write mem at address = %#x, data = %#x, now PC = %#x\n", addr, data, get_pc()); 
+		psdram_write(addr, len, data); 
+		return; 
 	}
 	printf("write out of bound--");	
   out_of_bound(addr);
+}
+
+//=========================================================================
+// vaddr read and write 
+// ========================================================================
+word_t vaddr_read(vaddr_t addr, int len) {
+  return paddr_read(addr, len);
 }
 
 void vaddr_write(vaddr_t addr, int len, word_t data) {
