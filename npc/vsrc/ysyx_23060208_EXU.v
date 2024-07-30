@@ -575,7 +575,7 @@ always @(*) begin
 			$fwrite(32'h8000_0002, "Assertion, EXU module, load addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
-		if (|store_inst) begin
+		if (|store_inst && is_sdram_addr) begin
 			$fwrite(32'h8000_0002, "Assertion, EXU module, write addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
