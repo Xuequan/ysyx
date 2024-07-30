@@ -551,6 +551,14 @@ wire is_psram_addr;
 assign is_psram_addr = (alu_result >= psram_addr_min) 
 									&& (alu_result <= psram_addr_max);
 
+/* ======= sdram ============================== */
+wire [31:0] sdram_addr_min; 
+wire [31:0] sdram_addr_max;
+assign sdram_addr_min = 32'ha000_0000;
+assign sdram_addr_max  = 32'hbfff_ffff;
+wire is_sdram_addr; 
+assign is_sdram_addr = (alu_result >= sdram_addr_min) 
+									&& (alu_result <= psram_addr_max);
 /* =========================================================================
 /* ======= AXI commom ========================================================
  * =========================================================================
@@ -560,7 +568,8 @@ always @(*) begin
 	if ( exu_valid && 
 			!(is_clint_addr || is_uart_addr || is_sram_addr 
 				|| is_mrom_addr || is_flash_addr
-				|| is_spi_master_addr || is_psram_addr) ) begin
+				|| is_spi_master_addr || is_psram_addr	
+				|| is_sdram_addr) ) begin
 		if (|load_inst) begin
 			$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
 			$fatal;
