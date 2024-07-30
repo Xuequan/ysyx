@@ -558,7 +558,7 @@ assign sdram_addr_min = 32'ha000_0000;
 assign sdram_addr_max = 32'hbfff_ffff;
 wire is_sdram_addr; 
 assign is_sdram_addr = (alu_result >= sdram_addr_min) 
-									&& (alu_result <= psram_addr_max);
+									&& (alu_result <= sdram_addr_max);
 
 /* =========================================================================
 /* ======= some checks ========================================================
@@ -575,7 +575,7 @@ always @(*) begin
 			$fwrite(32'h8000_0002, "Assertion, EXU module, load addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
-		if (|store_inst && is_sdram_addr) begin
+		if (|store_inst) begin
 			$fwrite(32'h8000_0002, "Assertion, EXU module, write addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
