@@ -29,6 +29,7 @@ void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
 void init_flash();
+void init_sdram();
 
 //void print_flash();
 
@@ -172,6 +173,9 @@ void init_monitor(int argc, char *argv[]) {
 
 	/* init flash */
 	init_flash();
+
+  /* init sdram */
+  init_sdram();
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
