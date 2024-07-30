@@ -40,8 +40,8 @@ typedef word_t vaddr_t;
 #define PAGE_MASK         (PAGE_SIZE - 1)
 
 #define SDRAM_BASE 0xa0000000
-//#define SDRAM_SIZE (0xbfffffff - 0xa0000000)
-#define SDRAM_SIZE (0xa001ffff - 0xa0000000)
+#define SDRAM_SIZE (0xbfffffff - 0xa0000000)
+//#define SDRAM_SIZE (0xa001ffff - 0xa0000000)
 
 #define FLASH_BASE 0x30000000
 #define FLASH_SIZE (0x300fffff - 0x30000000)
