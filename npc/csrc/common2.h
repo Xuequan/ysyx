@@ -40,13 +40,15 @@ typedef word_t vaddr_t;
 #define PAGE_MASK         (PAGE_SIZE - 1)
 
 #define SDRAM_BASE 0xa0000000
-#define SDRAM_SIZE (0xbfffffff - 0xa0000000)
+//#define SDRAM_SIZE (0xbfffffff - 0xa0000000)
+#define SDRAM_SIZE (0xa001ffff - 0xa0000000)
 
 #define FLASH_BASE 0x30000000
 #define FLASH_SIZE (0x300fffff - 0x30000000)
-//#define FLASH_SIZE (0x30000fff - 0x30000000)
+
 #define PSRAM_BASE 0x80000000
-#define PSRAM_SIZE (0x9fffffff - 0x80000000)
+//#define PSRAM_SIZE (0x9fffffff - 0x80000000)
+#define PSRAM_SIZE (0x8000ffff - 0x80000000)
 
 static uint8_t psram[PSRAM_SIZE] PG_ALIGN = {};
 
@@ -57,6 +59,7 @@ static uint8_t psdram[SDRAM_SIZE] PG_ALIGN = {};
 static inline bool in_psram(paddr_t addr) {
   return addr - PSRAM_BASE < PSRAM_SIZE;
 }
+
 static inline bool in_pflash(paddr_t addr) {
   return addr - FLASH_BASE < FLASH_SIZE;
 }

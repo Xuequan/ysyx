@@ -1,4 +1,4 @@
-/* in order to finish "实现bootloader的二级加载过程” 和 跑 RT-Thread
+/* 
  * initial start, fsbl(first stage bootloader), ssbl(second stage bootloader) 都位于 flash
  * first execute fsbl, which loading ssbl from flash to sram;
  * then, execute ssbl, which loading program from flash to psram
@@ -54,7 +54,7 @@ SECTIONS {
 		_rodata_end   = . ;
   } > psram AT> flash
 
-  . = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data.extra);
+  . = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata);
   .data : 
 	{
 		. = ALIGN(0x8);

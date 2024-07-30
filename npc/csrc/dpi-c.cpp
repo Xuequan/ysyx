@@ -12,7 +12,9 @@ uint32_t get_pc(){
 	return o.aval;
 }
 
-
+// ------------------------------------------------------------------------------------------
+// sdram write and read DPI-C 
+// ------------------------------------------------------------------------------------------
 extern "C" void sdram_write(int addr, int data, char mask) {    
 	uint32_t waddr = (uint32_t)addr + 0xa0000000;
 	int len = 0;
@@ -32,6 +34,9 @@ extern "C" void sdram_read(int32_t addr, int32_t *data) {
 	printf("NPC sdram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
 }
 
+// ------------------------------------------------------------------------------------------
+// psram write and read DPI-C 
+// ------------------------------------------------------------------------------------------
 extern "C" void psram_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x80000000, 4);
 	//printf("NPC psram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
@@ -51,6 +56,9 @@ extern "C" void psram_write(int addr, int data, char mask) {
 	vaddr_write(waddr + 0x80000000, len, data);
 }
 
+// ------------------------------------------------------------------------------------------
+// flash write and read DPI-C 
+// ------------------------------------------------------------------------------------------
 extern "C" void flash_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x30000000, 4);
 }
@@ -58,6 +66,9 @@ extern "C" void mrom_read(int32_t addr, int32_t *data) {
 	*data = vaddr_read(addr, 4);
 }
 
+// ------------------------------------------------------------------------------------------
+// some check DPI-C
+// ------------------------------------------------------------------------------------------
 //extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak() {
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");

@@ -25,7 +25,7 @@ extern uint32_t nextpc();
 // ========================================================================
 // psram
 uint8_t* guest_to_host(paddr_t paddr) { 
-  return psram + paddr - CONFIG_MBASE; 
+  return psram + paddr - PSRAM_BASE; 
 }
 
 // flash
@@ -40,7 +40,7 @@ uint8_t* sdram_guest_to_host(paddr_t paddr) {
 
 // to be deleted
 paddr_t host_to_guest(uint8_t *haddr) { 
-  return haddr - psram + CONFIG_MBASE; 
+  return haddr - psram + PSRAM_BASE; 
 }
 
 //=========================================================================
@@ -79,15 +79,15 @@ static word_t pflash_read(paddr_t addr, int len) {
   return ret;
 }
 
-// psdram read
+// sdram read
 static word_t psdram_read(paddr_t addr, int len) {
   word_t ret = host_read(sdram_guest_to_host(addr), len);
   return ret;
 }
 
-// psdram write
+// sdram write
 static void psdram_write(paddr_t addr, int len, word_t data) {
-  host_write(psdram_guest_to_host(addr), len, data);
+  host_write(sdram_guest_to_host(addr), len, data);
 }
 
 // psram write
