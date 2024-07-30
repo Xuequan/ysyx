@@ -30,8 +30,9 @@ extern "C" void sdram_write(int addr, int data, char mask) {
 }
 
 extern "C" void sdram_read(int32_t addr, int32_t *data) {    
-	*data = vaddr_read(addr + 0xa0000000, 4);
-	printf("NPC sdram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
+	uint32_t raddr = (uint32_t)addr + 0xa0000000;
+	*data = vaddr_read(raddr, 4);
+	printf("NPC sdram_read(): address = %#x, read data = %#x, pc = %#x\n", raddr, *data, get_pc());
 }
 
 // ------------------------------------------------------------------------------------------
