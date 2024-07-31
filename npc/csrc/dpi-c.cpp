@@ -106,8 +106,8 @@ extern "C" void psram_write(int addr, int data, char len) {
 		printf("psram_write(): wrong, len is '%#x'\n", len);
 		return;
 	}
-	printf("NPC: psram_write() address = %#x, write data = %#x, len = %d, pc = %#x\n", 
-        waddr + offset + 0x80000000, wdata, len, get_pc());
+	printf("NPC: psram_write() initial addr = %#x, address = %#x, write data = %#x, len = %d, pc = %#x\n", 
+        addr, waddr + offset + 0x80000000, wdata, len, get_pc());
 	vaddr_write(waddr + offset + 0x80000000, length, wdata);
 }
 
