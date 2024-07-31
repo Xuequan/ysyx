@@ -47,8 +47,8 @@ typedef word_t vaddr_t;
 #define FLASH_SIZE (0x300fffff - 0x30000000)
 
 #define PSRAM_BASE 0x80000000
-//#define PSRAM_SIZE (0x9fffffff - 0x80000000)
-#define PSRAM_SIZE (0x8000ffff - 0x80000000)
+#define PSRAM_SIZE (0x9fffffff - 0x80000000)
+//#define PSRAM_SIZE (0x8000ffff - 0x80000000)
 
 static uint8_t psram[PSRAM_SIZE] PG_ALIGN = {};
 
