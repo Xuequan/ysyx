@@ -1,5 +1,7 @@
 #include "dpi-c.h"
 
+//#define DO_PRINT 
+
 extern word_t vaddr_read(vaddr_t addr, int len);
 extern void vaddr_write(vaddr_t addr, int len, word_t data);
 
@@ -58,15 +60,19 @@ extern "C" void sdram_write(int addr, int data, char mask) {
 		printf("sdram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
+#ifdef DO_PRINT
 	printf("NPC: sdram_write(),initial addr = %#x, address = %#x, data = %#x, len = %d, pc = %#x\n", 
         waddr, waddr + offset, wdata, len, get_pc());
+#endif
 	vaddr_write(waddr + offset, len, wdata);
 }
 
 extern "C" void sdram_read(int32_t addr, int32_t *data) {    
 	uint32_t raddr = (uint32_t)addr + 0xa0000000;
 	*data = vaddr_read(raddr, 4);
+#ifdef DO_PRINT
 	printf("NPC sdram_read(): address = %#x, read data = %#x, pc = %#x\n", raddr, *data, get_pc());
+#endif
 }
 
 // ------------------------------------------------------------------------------------------
@@ -74,7 +80,9 @@ extern "C" void sdram_read(int32_t addr, int32_t *data) {
 // ------------------------------------------------------------------------------------------
 extern "C" void psram_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x80000000, 4);
-	//printf("NPC psram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
+#ifdef DO_PRINT
+	printf("NPC psram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
+#endif
 }
 
 extern "C" void psram_write(int addr, int data, char len) {    
@@ -96,8 +104,11 @@ extern "C" void psram_write(int addr, int data, char len) {
 		printf("psram_write(): wrong, len is '%#x'\n", len);
 		return;
 	}
+
+#ifdef DO_PRINT
 	printf("NPC: psram_write() initial addr = %#x, address = %#x, write data = %#x, len = %d, pc = %#x\n", 
         addr, waddr + 0x80000000, wdata, len, get_pc());
+#endif
 	vaddr_write(waddr + 0x80000000, length, wdata);
 }
 
