@@ -725,6 +725,7 @@ reg [63:0] cal_wdata;
 //------------------------------------
 // get wsize
 // ------------------------------------
+/*
 wire [2:0] first_size;
 wire [2:0] second_size;
 
@@ -736,6 +737,7 @@ assign second_size = rw_word ? ({1'b0, addr_raw[1:0]})
 									: rw_half ? 3'd1 
 									: 3'd0;
 
+*/
 /* =========================================================================
 /* ======= store  ==========================================================
  * =========================================================================
@@ -747,8 +749,8 @@ wire rw_byte = inst_sb | inst_lb | inst_lbu;
 */
 /* axi_awsize */
 assign axi_awsize = is_uart_addr ? 3'b000 : 
-                    (second_w | second_r) ? second_size :
-                    first_size; 
+                    rw_word ? 3'b010 :
+                    rw_half ? 3'b001 : 3'b000;
 
 /* axi_awaddr */
 assign axi_awaddr  = second_w ? second_addr : addr_raw;
@@ -767,7 +769,9 @@ assign axi_wdata = cal_wdata;
 assign axi_araddr  = second_r ? second_addr : addr_raw;
 
 /* axi_arsize */
-assign axi_arsize = is_uart_addr ? 3'b000 : 3'b010; 
+assign axi_arsize = is_uart_addr ? 3'b000 : 
+                    rw_word ? 3'b010 :
+                    rw_half ? 3'b001 : 3'b000;
 
 /* load_data 是最后写入到寄存器中的数据 */
 wire [DATA_WIDTH-1:0] load_data;
