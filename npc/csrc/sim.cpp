@@ -12,8 +12,10 @@ static VerilatedVcdC* tfp;
 static void step_and_dump_wave() {
 	top->eval();
 	// generate wave file
+  /*
 	contextp->timeInc(1);
 	tfp->dump(contextp->time());
+  */
 }
 
 // execute one cycle
@@ -70,7 +72,7 @@ void sim_init() {
 	top = new VysyxSoCFull;
 
 	contextp->traceEverOn(true);
-	top->trace(tfp, 0);
+	//top->trace(tfp, 0);
   tfp->open("dump.vcd");
 
 	// initial reset
