@@ -79,17 +79,36 @@ extern "C" void psram_read(int32_t addr, int32_t *data) {
 extern "C" void psram_write(int addr, int data, char len) {    
   // psram 是将要写入的字节挪到了开头的字节
   // 故只需要搞清楚究竟要写入几个字节就好了
-	uint32_t waddr = (uint32_t)addr + 0x80000000;
+	uint32_t waddr = (uint32_t)addr;
 	int length = 0;
-	if      ((uint8_t)len == 0xf)  length = 4;
-	else if ((uint8_t)len == 0b11) length = 2;
-	else if ((uint8_t)len == 0b1)  length = 1;
-	else {
+  int offset = 0;
+  int wdata = data;
+  // addr[1:0]
+  uint32_t last_two_bits = (uint32_t)addr & 0x3;
+
+	if      ((uint8_t)len == 0xf) { 
+    length = 4;
+  } else if ((uint8_t)len == 0b11) {
+    length = 2;
+    wdata = data & 0xffff;
+    if (last_two_bits)   // addr[1:0] == 2'b10;
+      offset = 2;
+  } else if ((uint8_t)len == 0b1) {
+    length = 1;
+    wdata = data & 0xff;
+    if (last_two_bits == 0x1)
+      offset = 1;
+    else if (last_two_bits == 0x2) 
+      offset = 2;
+    else if (last_two_bits == 0x3) 
+      offset = 3;
+  } else {
 		printf("psram_write(): wrong, len is '%#x'\n", len);
 		return;
 	}
-	printf("NPC: psram_write() address = %#x, write data = %#x, len = %d, pc = %#x\n", waddr, data, len, get_pc());
-	vaddr_write(waddr, length, data);
+	printf("NPC: psram_write() address = %#x, write data = %#x, len = %d, pc = %#x\n", 
+        waddr + offset + 0x80000000, wdata, len, get_pc());
+	vaddr_write(waddr + offset + 0x80000000, length, wdata);
 }
 
 // ------------------------------------------------------------------------------------------
