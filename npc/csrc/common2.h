@@ -50,6 +50,7 @@ typedef word_t vaddr_t;
 #define PSRAM_SIZE (0x9fffffff - 0x80000000)
 //#define PSRAM_SIZE (0x8000ffff - 0x80000000)
 
+/*
 static uint8_t psram[PSRAM_SIZE] PG_ALIGN = {};
 
 static uint8_t pflash[FLASH_SIZE] PG_ALIGN = {};
@@ -67,7 +68,7 @@ static inline bool in_pflash(paddr_t addr) {
 static inline bool in_psdram(paddr_t addr) {
   return addr - SDRAM_BASE < SDRAM_SIZE;
 }
-
+*/
 #define Log(format, ...) \
     _Log(ANSI_FMT("[%s:%d %s] " format, ANSI_FG_BLUE) "\n", \
         __FILE__, __LINE__, __func__, ## __VA_ARGS__)

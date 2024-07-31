@@ -5,6 +5,7 @@ void init_monitor(int argc, char *argv[]);
 void sdb_mainloop();
 void sim_init();
 void sim_exit();
+void destory_mem();
 
 void print_flash();
 void print_mem();
@@ -27,5 +28,7 @@ int main(int argc, char *argv[]) {
 	sdb_mainloop(); 
 
 	sim_exit();
+	
+	destory_mem();
 	return 0;
 }

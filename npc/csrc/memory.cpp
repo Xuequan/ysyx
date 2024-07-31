@@ -21,6 +21,32 @@ extern uint32_t get_pc();
 extern uint32_t nextpc();
 
 //=========================================================================
+// malloc memory space to flash, sram, sdram
+// ========================================================================
+static uint8_t *psram = new uint8_t [PSRAM_SIZE];
+static uint8_t *pflash = new uint8_t [FLASH_SIZE];
+static uint8_t *psdram = new uint8_t [SDRAM_SIZE];
+
+static inline bool in_psram(paddr_t addr) {       
+  return addr - PSRAM_BASE < PSRAM_SIZE;          
+}                                                 
+                                                  
+static inline bool in_pflash(paddr_t addr) {      
+  return addr - FLASH_BASE < FLASH_SIZE;          
+}                                                 
+                                                  
+static inline bool in_psdram(paddr_t addr) {      
+  return addr - SDRAM_BASE < SDRAM_SIZE;          
+}                                                 
+//=========================================================================
+// destory
+// ========================================================================
+void destory_mem() {
+	delete[] psram;
+	delete[] pflash;
+	delete[] psdram;
+}
+//=========================================================================
 // address memory space translated to host memory space
 // ========================================================================
 // psram
