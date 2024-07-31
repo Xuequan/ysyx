@@ -725,18 +725,16 @@ reg [63:0] cal_wdata;
 //------------------------------------
 // get wsize
 // ------------------------------------
-/*
 wire [2:0] first_size;
 wire [2:0] second_size;
 
 assign first_size = rw_word ? (3'd4 - {1'b0, addr_raw[1:0]}) 
-									: rw_half ? (addr[1:0]  == 2'd3 ? 3'd1 : 3'd2)
-									: 3'd1;
+									: rw_half ? (addr_raw[1:0]  == 2'd3 ? 3'd1 : 3'd2)
+									: 3'd0;
 
-assign second_size = rw_word ? ({1'b0, addr[1:0]})
+assign second_size = rw_word ? ({1'b0, addr_raw[1:0]})
 									: rw_half ? 3'd1 
 									: 3'd0;
-*/
 
 /* =========================================================================
 /* ======= store  ==========================================================
@@ -748,7 +746,9 @@ wire rw_half = inst_sh | inst_lh | inst_lhu;
 wire rw_byte = inst_sb | inst_lb | inst_lbu;
 */
 /* axi_awsize */
-assign axi_awsize = is_uart_addr ? 3'b000 : 3'b010; 
+assign axi_awsize = is_uart_addr ? 3'b000 : 
+                    (second_w | second_r) ? second_size :
+                    first_size; 
 
 /* axi_awaddr */
 assign axi_awaddr  = second_w ? second_addr : addr_raw;
