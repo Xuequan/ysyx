@@ -21,9 +21,9 @@ extern uint32_t get_pc();
 extern uint32_t nextpc();
 
 //=========================================================================
-// malloc memory space to flash, sram, sdram
+// alloc memory for flash, sram, sdram
 // ========================================================================
-static uint8_t *psram = new uint8_t [PSRAM_SIZE];
+static uint8_t *psram  = new uint8_t [PSRAM_SIZE];
 static uint8_t *pflash = new uint8_t [FLASH_SIZE];
 static uint8_t *psdram = new uint8_t [SDRAM_SIZE];
 
