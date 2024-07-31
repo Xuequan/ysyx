@@ -63,18 +63,18 @@ extern "C" void psram_read(int32_t addr, int32_t *data) {
 	//printf("NPC psram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
 }
 
-extern "C" void psram_write(int addr, int data, char mask) {    
+extern "C" void psram_write(int addr, int data, char len) {    
 	uint32_t waddr = (uint32_t)addr;
-	int len = 0;
-	if ((uint8_t)mask == 0xff) len = 4;
-	else if ((uint8_t)mask == 0b1111) len = 2;
-	else if ((uint8_t)mask == 0b11) len = 1;
+	int length = 0;
+	if      ((uint8_t)len == 0xf)  length = 4;
+	else if ((uint8_t)len == 0b11) length = 2;
+	else if ((uint8_t)len == 0b1)  length = 1;
 	else {
-		printf("psram_write(): wrong, mask is '%#x'\n", mask);
+		printf("psram_write(): wrong, len is '%#x'\n", len);
 		return;
 	}
 	//printf("NPC: write address = %#x, write data = %#x, len = %d, pc = %#x\n", waddr + 0x80000000, data, len, get_pc());
-	vaddr_write(waddr + 0x80000000, len, data);
+	vaddr_write(waddr + 0x80000000, length, data);
 }
 
 // ------------------------------------------------------------------------------------------
