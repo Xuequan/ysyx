@@ -656,7 +656,7 @@ always @(addr_raw)  begin
 end
 
 //------------------------------------
-// get strb
+// get strb, read and write are the same
 // ------------------------------------
 
 wire [7:0] first_strb;
