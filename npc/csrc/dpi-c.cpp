@@ -23,43 +23,35 @@ extern "C" void sdram_write(int addr, int data, char mask) {
 	uint32_t waddr = (uint32_t)addr + 0xa0000000;
 	int len = 0;
   uint8_t msk = (uint8_t)mask;
-  int offset = 0;
   int wdata = 0;
   // sw
 	if (msk == 0xf) {
     len = 4;
-    offset = 0;
     wdata = data;
   } else if (msk == 0b0011) {   // sh
     len = 2;
-    offset = 0;
     wdata = data & 0xffff;
   } else if (msk == 0b1100) {    // sh  
     len = 2;
-    offset = 2;
     wdata = (data & 0xffff0000) >> 16;
   } else if (msk == 0b1 ) {   // sb
     len = 1;
-    offset = 0;
     wdata = data & 0xff;
   } else if (msk == 0b10 ) {   // sb
     len = 1;
-    offset = 1;
     wdata = (data & 0xff00) >> 8;
   } else if (msk == 0b100 ) {   // sb
     len = 1;
-    offset = 2;
     wdata = (data & 0xff0000) >> 16;
   } else if (msk == 0b1000 ) {  // sb
     len = 1;
-    offset = 3;
     wdata = (data & 0xff000000) >> 24;
   } else {
 		printf("sdram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
-	printf("NPC: sdram write address = %#x, data = %#x, len = %d, pc = %#x\n", waddr + offset, wdata, len, get_pc());
-	vaddr_write(waddr + offset, len, wdata);
+	printf("NPC: sdram write address = %#x, data = %#x, len = %d, pc = %#x\n", waddr, wdata, len, get_pc());
+	vaddr_write(waddr, len, wdata);
 }
 
 extern "C" void sdram_read(int32_t addr, int32_t *data) {    
@@ -81,31 +73,16 @@ extern "C" void psram_write(int addr, int data, char len) {
   // 故只需要搞清楚究竟要写入几个字节就好了
 	uint32_t waddr = (uint32_t)addr;
 	int length = 0;
-  //int offset = 0;
   int wdata = data;
-  // addr[1:0]
-  //uint32_t last_two_bits = (uint32_t)addr & 0x3;
 
 	if      ((uint8_t)len == 0xf) { 
     length = 4;
   } else if ((uint8_t)len == 0b11) {
     length = 2;
     wdata = data & 0xffff;
-      /*
-    if (last_two_bits)   // addr[1:0] == 2'b10;
-      offset = 2;
-        */
   } else if ((uint8_t)len == 0b1) {
     length = 1;
     wdata = data & 0xff;
-    /*
-    if (last_two_bits == 0x1)
-      offset = 1;
-    else if (last_two_bits == 0x2) 
-      offset = 2;
-    else if (last_two_bits == 0x3) 
-      offset = 3;
-      */
   } else {
 		printf("psram_write(): wrong, len is '%#x'\n", len);
 		return;
