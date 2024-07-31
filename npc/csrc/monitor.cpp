@@ -22,14 +22,15 @@ uint8_t* guest_to_host(paddr_t);
 uint8_t* flash_guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
-void init_mem();
 void init_difftest(char *ref_so_file, long img_size, long test_size, int port);
-void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
 void init_flash();
 void init_sdram();
+void init_mem();
+
+void alloc_mem();
 
 //void print_flash();
 
@@ -164,12 +165,12 @@ void init_monitor(int argc, char *argv[]) {
 	/* Read ELF file and get strtab & symtab. */
   init_elf();
 
+  /* alloc memory for psram , flash, sdram */
+  alloc_mem();
+
   /* Initialize memory. */
 	// for test;
   init_mem();
-
-  /* Initialize devices. */
-  //IFDEF(CONFIG_DEVICE, init_device());
 
 	/* init flash */
 	init_flash();

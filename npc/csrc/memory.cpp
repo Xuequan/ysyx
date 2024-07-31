@@ -16,6 +16,8 @@
 #include "arch.h"
 #include "memory.h"
 #include <ctime>
+#include <new>
+using namespace std;
 
 extern uint32_t get_pc();
 extern uint32_t nextpc();
@@ -23,9 +25,29 @@ extern uint32_t nextpc();
 //=========================================================================
 // alloc memory for flash, sram, sdram
 // ========================================================================
-static uint8_t *psram  = new uint8_t [PSRAM_SIZE];
-static uint8_t *pflash = new uint8_t [FLASH_SIZE];
-static uint8_t *psdram = new uint8_t [SDRAM_SIZE];
+static uint8_t *psram;
+static uint8_t *pflash;
+static uint8_t *psdram;
+
+void alloc_mem() {
+  psram  = new uint8_t [PSRAM_SIZE];
+  if (psram == nullptr) {
+	  printf("NPC: memory.cpp() allocate memory for psram failed\n");
+	  assert(0);
+  }
+
+  pflash = new uint8_t [FLASH_SIZE];
+  if (pflash == nullptr) {
+	  printf("NPC: memory.cpp() allocate memory for flash failed\n");
+	  assert(0);
+  }
+
+  psdram = new uint8_t [SDRAM_SIZE];
+  if (psdram == nullptr) {
+	  printf("NPC: memory.cpp() allocate memory for pdram failed\n");
+	  assert(0);
+  }
+}
 
 static inline bool in_psram(paddr_t addr) {       
   return addr - PSRAM_BASE < PSRAM_SIZE;          
