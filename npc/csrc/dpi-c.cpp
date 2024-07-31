@@ -16,37 +16,50 @@ uint32_t get_pc(){
 // sdram write and read DPI-C 
 // ------------------------------------------------------------------------------------------
 extern "C" void sdram_write(int addr, int data, char mask) {    
+  /* sdram.v 传入的地址是4字节对齐的（后两位为0）
+   * 而传入的数据就是要写入的数据，并没有做处理
+   * 因此，这里用 mask 合理
+   */
 	uint32_t waddr = (uint32_t)addr + 0xa0000000;
 	int len = 0;
   uint8_t msk = (uint8_t)mask;
   int offset = 0;
+  int wdata = 0;
+  // sw
 	if (msk == 0xf) {
     len = 4;
     offset = 0;
-  } else if (msk == 0b0011) {
+    wdata = data;
+  } else if (msk == 0b0011) {   // sh
     len = 2;
     offset = 0;
-  } else if (msk == 0b1100) {
+    wdata = data & 0xffff;
+  } else if (msk == 0b1100) {    // sh  
     len = 2;
     offset = 2;
-  } else if (msk == 0b1 ) {
+    wdata = (data & 0xffff0000) >> 16;
+  } else if (msk == 0b1 ) {   // sb
     len = 1;
     offset = 0;
-  } else if (msk == 0b10 ) {
+    wdata = data & 0xff;
+  } else if (msk == 0b10 ) {   // sb
     len = 1;
     offset = 1;
-  } else if (msk == 0b100 ) {
+    wdata = (data & 0xff00) >> 8;
+  } else if (msk == 0b100 ) {   // sb
     len = 1;
     offset = 2;
-  } else if (msk == 0b1000 ) {
+    wdata = (data & 0xff0000) >> 16;
+  } else if (msk == 0b1000 ) {  // sb
     len = 1;
     offset = 3;
+    wdata = (data & 0xff000000) >> 24;
   } else {
 		printf("sdram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
-	printf("NPC: sdram write address = %#x, data = %#x, len = %d, pc = %#x\n", waddr + offset, data, len, get_pc());
-	vaddr_write(waddr + offset, len, data);
+	printf("NPC: sdram write address = %#x, data = %#x, len = %d, pc = %#x\n", waddr + offset, wdata, len, get_pc());
+	vaddr_write(waddr + offset, len, wdata);
 }
 
 extern "C" void sdram_read(int32_t addr, int32_t *data) {    
@@ -64,6 +77,8 @@ extern "C" void psram_read(int32_t addr, int32_t *data) {
 }
 
 extern "C" void psram_write(int addr, int data, char len) {    
+  // psram 是将要写入的字节挪到了开头的字节
+  // 故只需要搞清楚究竟要写入几个字节就好了
 	uint32_t waddr = (uint32_t)addr + 0x80000000;
 	int length = 0;
 	if      ((uint8_t)len == 0xf)  length = 4;
