@@ -23,35 +23,44 @@ extern "C" void sdram_write(int addr, int data, char mask) {
 	uint32_t waddr = (uint32_t)addr + 0xa0000000;
 	int len = 0;
   uint8_t msk = (uint8_t)mask;
+  int offset = 0;
   int wdata = 0;
   // sw
 	if (msk == 0xf) {
     len = 4;
+    offset = 0;
     wdata = data;
   } else if (msk == 0b0011) {   // sh
     len = 2;
+    offset = 0;
     wdata = data & 0xffff;
   } else if (msk == 0b1100) {    // sh  
     len = 2;
+    offset = 2;
     wdata = (data & 0xffff0000) >> 16;
   } else if (msk == 0b1 ) {   // sb
     len = 1;
+    offset = 0;
     wdata = data & 0xff;
   } else if (msk == 0b10 ) {   // sb
     len = 1;
+    offset = 1;
     wdata = (data & 0xff00) >> 8;
   } else if (msk == 0b100 ) {   // sb
     len = 1;
+    offset = 2;
     wdata = (data & 0xff0000) >> 16;
   } else if (msk == 0b1000 ) {  // sb
     len = 1;
+    offset = 3;
     wdata = (data & 0xff000000) >> 24;
   } else {
 		printf("sdram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
-	printf("NPC: sdram write address = %#x, data = %#x, len = %d, pc = %#x\n", waddr, wdata, len, get_pc());
-	vaddr_write(waddr, len, wdata);
+	printf("NPC: sdram_write(),initial addr = %#x, address = %#x, data = %#x, len = %d, pc = %#x\n", 
+        waddr, waddr + offset, wdata, len, get_pc());
+	vaddr_write(waddr + offset, len, wdata);
 }
 
 extern "C" void sdram_read(int32_t addr, int32_t *data) {    
