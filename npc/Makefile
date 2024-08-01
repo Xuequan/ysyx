@@ -4,20 +4,15 @@ VERILATOR = verilator
 PERIP_DIR = /home/chuan/ysyx-workbench/ysyxSoC/perip
 SOC_DIR = /home/chuan/ysyx-workbench/ysyxSoC/build
 NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
-
 INC_PATH ?=
-
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
-	
 VERILATOR_CFLAGS += -fno-table  \
-
 # 最后打开这个检查全面
 # VERILATOR_CFLAGS += --Wall 
 #
 VERILATOR_CFLAGS += --autoflush
-
 # 若出现 active region did not converge, 下面可以辅助debug
 # VERILATOR_CFLAGS += -prof-cfuncs -CFLAGS -DVL_DEBUG
 
@@ -43,25 +38,26 @@ CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*
 VSRCS = $(shell find $(NPC_VSRC_DIR) -name "*.v")
 VSRCS += $(shell find $(PERIP_DIR) -name "*.v")
 VSRCS += $(shell find $(SOC_DIR) -name "*.v")
+# nvboard
+NXDC_FILES = nvboard/top.nxdc
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 # rules for NVboard
-# include $(NVBOARD_HOME)/scripts/nvboard.mk
-
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+CSRCS += $(SRC_AUTO_BIND)
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
-
-
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
 LIBS += $(shell llvm-config-14 --libs)
-
 LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
-
 LDFLAGS += $(shell llvm-config-14 --ldflags)
 
-$(TOP_BIN): $(VSRCS) $(CSRCS) 
+$(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@echo "==== inside verilator makefile ========"
 	@echo INC_PATH=$(INC_PATH)
 	@echo INCFLAGS=$(INCFLAGS)
