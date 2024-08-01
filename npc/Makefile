@@ -9,13 +9,10 @@ INC_PATH ?=
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
-VERILATOR_CFLAGS += -fno-table  \
+#VERILATOR_CFLAGS += -fno-table  \
 # 最后打开这个检查全面
 # VERILATOR_CFLAGS += --Wall 
-#
 VERILATOR_CFLAGS += --autoflush
-# 若出现 active region did not converge, 下面可以辅助debug
-# VERILATOR_CFLAGS += -prof-cfuncs -CFLAGS -DVL_DEBUG
 
 # in order to '`include "ysyx_23060208_npc.h" '
 VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
@@ -48,7 +45,8 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
-CXXFLAGS += $(shell llvm-config-14 --cxxflags)
+# CXXFLAGS += $(shell llvm-config-14 --cxxflags)
+CXXFLAGS += -I/usr/lib/llvm-14/include -std=c++14   -fno-exceptions
 LIBS += $(shell llvm-config-14 --libs)
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
