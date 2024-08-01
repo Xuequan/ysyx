@@ -164,13 +164,13 @@ image-dep: $(OBJS) $(LIBS)
 .PHONY: image image-dep archive run $(LIBS)
 
 ### Clean a single project (remove `build/`)
-clean-html:
+clean:
 	rm -rf Makefile.html $(WORK_DIR)/build/
 .PHONY: clean
 
 ### Clean all sub-projects within depth 2 (and ignore errors)
-CLEAN_ALL = $(dir $(shell find . -mindepth 4 -name Makefile))
-clean: $(CLEAN_ALL) clean-html
+CLEAN_ALL = $(dir $(shell find . -mindepth 2 -name Makefile))
+clean-all: $(CLEAN_ALL) clean
 $(CLEAN_ALL):
 	-@$(MAKE) -s -C $@ clean
 .PHONY: clean-all $(CLEAN_ALL)

@@ -18,11 +18,11 @@
 #include "common2.h"
 #include <cstdlib>
 
+//#define DIFFTEST 1
 uint8_t* guest_to_host(paddr_t);
 uint8_t* flash_guest_to_host(paddr_t);
 void init_rand();
 void init_log(const char *log_file);
-void init_difftest(char *ref_so_file, long img_size, long test_size, int port);
 void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
@@ -186,9 +186,11 @@ void init_monitor(int argc, char *argv[]) {
 	/* load test program to flash */
 	//long test_size = load_test();
 	long test_size = 0;
-
+#ifdef DIFFTEST
   /* Initialize differential testing. */
+  void init_difftest(char *ref_so_file, long img_size, long test_size, int port);
  	init_difftest(diff_so_file, img_size, test_size, difftest_port);
+#endif
 
   /* Initialize the simple debugger. */
   init_sdb();
