@@ -45,11 +45,12 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
+CXXFLAGS += -asan
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
 LIBS += $(shell llvm-config-14 --libs)
-LDFLAGS += -lasan
+#LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 LDFLAGS += $(shell llvm-config-14 --ldflags)
