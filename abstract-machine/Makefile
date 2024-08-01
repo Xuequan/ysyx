@@ -169,7 +169,7 @@ clean-html:
 .PHONY: clean
 
 ### Clean all sub-projects within depth 2 (and ignore errors)
-CLEAN_ALL = $(dir $(shell find . -mindepth 2 -name Makefile))
+CLEAN_ALL = $(dir $(shell find . -mindepth 4 -name Makefile))
 clean: $(CLEAN_ALL) clean-html
 $(CLEAN_ALL):
 	-@$(MAKE) -s -C $@ clean
