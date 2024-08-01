@@ -5,6 +5,7 @@
 #include "VysyxSoCFull___024root.h"
 #include "dpi-c.h"
 
+
 static VysyxSoCFull* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
@@ -12,8 +13,10 @@ static VerilatedVcdC* tfp;
 static void step_and_dump_wave() {
 	top->eval();
 	// generate wave file
+#ifdef WAVE_FILE
 	contextp->timeInc(1);
 	tfp->dump(contextp->time());
+#endif
 }
 
 // execute one cycle
@@ -70,8 +73,10 @@ void sim_init() {
 	top = new VysyxSoCFull;
 
 	contextp->traceEverOn(true);
+#ifdef WAVE_FILE
 	top->trace(tfp, 0);
   tfp->open("dump.vcd");
+#endif
 
 	// initial reset
 	int i = -1;
@@ -87,8 +92,10 @@ void sim_init() {
 }
 
 void sim_exit() {
+#ifdef WAVE_FILE
 	tfp->close();
 	delete tfp;
+#endif
 	delete top;
 	delete contextp;
 }
