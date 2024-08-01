@@ -43,9 +43,6 @@ NXDC_FILES = nvboard/top.nxdc
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
-# rules for NVboard
-include $(NVBOARD_HOME)/scripts/nvboard.mk
-CSRCS += $(SRC_AUTO_BIND)
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
@@ -56,6 +53,9 @@ LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 LDFLAGS += $(shell llvm-config-14 --ldflags)
+# rules for NVboard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+CSRCS += $(SRC_AUTO_BIND)
 
 $(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@echo "==== inside verilator makefile ========"
