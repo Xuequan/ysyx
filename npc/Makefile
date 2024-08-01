@@ -87,8 +87,11 @@ sim: $(TOP_BIN)
 	@echo "Write this Makefile by your self."
 	@echo ========inside npc/makefile ==========
 	@echo ARGS=$(ARGS)
+	@echo '------------------'
 	@echo NPC_EXEC=$(NPC_EXEC)
+	@echo '------------------'
 	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo '------------------'
 	@echo LDFLASGS=$(LDFLAGS)
 	@echo =======================================
 	@echo here $(VERILATOR) $(VERILATOR_CFLAGS) \
