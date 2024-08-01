@@ -7,18 +7,12 @@ NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
 INC_PATH ?=
 #VERILATOR_CFLAGS += -fsanitize=address 
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
-	--x-assign fast --x-initial fast --noassert
-VERILATOR_CFLAGS += --trace
-#VERILATOR_CFLAGS += -fno-table  \
-# 最后打开这个检查全面
-# VERILATOR_CFLAGS += --Wall 
-VERILATOR_CFLAGS += --autoflush
+	--x-assign fast --x-initial fast --noassert --trace --autoflush
 
 # in order to '`include "ysyx_23060208_npc.h" '
-VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
-
-VERILATOR_CFLAGS += -I$(PERIP_DIR)/uart16550/rtl
-VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
+#VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
+#VERILATOR_CFLAGS += -I$(PERIP_DIR)/uart16550/rtl
+#VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -32,7 +26,6 @@ override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 
 # project source
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
-
 VSRCS = $(shell find $(NPC_VSRC_DIR) -name "*.v")
 VSRCS += $(shell find $(PERIP_DIR) -name "*.v")
 VSRCS += $(shell find $(SOC_DIR) -name "*.v")
