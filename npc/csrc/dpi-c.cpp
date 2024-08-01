@@ -2,6 +2,7 @@
 
 #define FULL_SIZE ((0xbfffffff - 0xa0000000)/4)
 #define DO_PRINT 1
+//#define DO_PRINTPSRAM
 
 extern word_t vaddr_read(vaddr_t addr, int len);
 extern void vaddr_write(vaddr_t addr, int len, word_t data);
@@ -100,7 +101,7 @@ extern "C" void sdram_read(int32_t addr, int32_t *data) {
 // ------------------------------------------------------------------------------------------
 extern "C" void psram_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x80000000, 4);
-#ifdef DO_PRINT
+#ifdef DO_PRINT_PSRAM
 	printf("NPC psram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
 #endif
 }
@@ -125,7 +126,7 @@ extern "C" void psram_write(int addr, int data, char len) {
 		return;
 	}
 
-#ifdef DO_PRINT
+#ifdef DO_PRINTPSRAM
 	printf("NPC: psram_write() initial addr = %#x, address = %#x, write data = %#x, len = %d, pc = %#x\n", 
         addr, waddr + 0x80000000, wdata, len, get_pc());
 #endif
