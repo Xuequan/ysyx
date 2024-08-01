@@ -49,7 +49,7 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
 LIBS += $(shell llvm-config-14 --libs)
-LDFLAGS += -fsanitize=address -static-libasan
+LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 LDFLAGS += $(shell llvm-config-14 --ldflags)
