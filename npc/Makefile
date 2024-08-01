@@ -5,6 +5,7 @@ PERIP_DIR = /home/chuan/ysyx-workbench/ysyxSoC/perip
 SOC_DIR = /home/chuan/ysyx-workbench/ysyxSoC/build
 NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
 INC_PATH ?=
+VERILATOR_CFLAGS += -asan
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
@@ -45,7 +46,7 @@ $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += -asan
+#CXXFLAGS += -asan
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
