@@ -11,6 +11,7 @@ static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
 void nvboard_bind_all_pins(VysyxSoCFull* top);
+void nvboard_quit();
 
 static void step_and_dump_wave() {
 	top->eval();
@@ -104,6 +105,8 @@ void sim_exit() {
 #endif
 	delete top;
 	delete contextp;
+
+  nvboard_quit();
 }
 
 uint32_t get_clock_from_top(){

@@ -24,16 +24,6 @@ extern "C" void sdram_write(int addr, int data, char mask) {
    * 而传入的数据就是要写入的数据，并没有做处理
    * 因此，这里用 mask 合理
    */
-  /*
-  if (addr == FULL_SIZE/16) printf("1/16 has finished \n");
-  if (addr == FULL_SIZE/8)  printf("1/8 has finished \n");
-  if (addr == FULL_SIZE/4)  printf("1/4 has finished \n");
-  if (addr == FULL_SIZE/2)  printf("1/2 has finished \n");
-  if (addr == FULL_SIZE/2 + FULL_SIZE/16)  printf("1/2 + 1/16 has finished \n");
-  if (addr == FULL_SIZE/2 + FULL_SIZE/8)  printf("1/2 + 1/8 has finished \n");
-  if (addr == FULL_SIZE/2 + FULL_SIZE/4)  printf("1/2 + 1/4 has finished \n");
-  */
-
 	uint32_t waddr = (uint32_t)addr + 0xa0000000;
 	int len = 0;
   uint8_t msk = (uint8_t)mask;
