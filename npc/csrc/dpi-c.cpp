@@ -1,5 +1,10 @@
 #include "dpi-c.h"
 
+//#define DO_PRINT 
+
+extern word_t vaddr_read(vaddr_t addr, int len);
+extern void vaddr_write(vaddr_t addr, int len, word_t data);
+
 uint32_t get_pc(){
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
 	assert(scope);
@@ -9,31 +14,107 @@ uint32_t get_pc(){
 	return o.aval;
 }
 
-word_t vaddr_ifetch(vaddr_t addr, int len);
-word_t vaddr_read(vaddr_t addr, int len);
-
-void vaddr_write(vaddr_t addr, int len, word_t data);
-
-extern "C" void psram_read(int32_t addr, int32_t *data) {    
-	*data = vaddr_read(addr + 0x80000000, 4);
-	//printf("NPC psram_read(): read address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
-	
-}
-
-extern "C" void psram_write(int addr, int data, char mask) {    
-	uint32_t adr = (uint32_t)addr;
+// ------------------------------------------------------------------------------------------
+// sdram write and read DPI-C 
+// ------------------------------------------------------------------------------------------
+extern "C" void sdram_write(int addr, int data, char mask) {    
+  /* sdram.v 传入的地址是4字节对齐的（后两位为0）
+   * 而传入的数据就是要写入的数据，并没有做处理
+   * 因此，这里用 mask 合理
+   */
+	uint32_t waddr = (uint32_t)addr + 0xa0000000;
 	int len = 0;
-	if ((uint8_t)mask == 0xff) len = 4;
-	else if ((uint8_t)mask == 0b1111) len = 2;
-	else if ((uint8_t)mask == 0b11) len = 1;
-	else {
-		printf("psram_write(): wrong, mask is '%#x'\n", mask);
+  uint8_t msk = (uint8_t)mask;
+  int offset = 0;
+  int wdata = 0;
+  // sw
+	if (msk == 0xf) {
+    len = 4;
+    offset = 0;
+    wdata = data;
+  } else if (msk == 0b0011) {   // sh
+    len = 2;
+    offset = 0;
+    wdata = data & 0xffff;
+  } else if (msk == 0b1100) {    // sh  
+    len = 2;
+    offset = 2;
+    wdata = (data & 0xffff0000) >> 16;
+  } else if (msk == 0b1 ) {   // sb
+    len = 1;
+    offset = 0;
+    wdata = data & 0xff;
+  } else if (msk == 0b10 ) {   // sb
+    len = 1;
+    offset = 1;
+    wdata = (data & 0xff00) >> 8;
+  } else if (msk == 0b100 ) {   // sb
+    len = 1;
+    offset = 2;
+    wdata = (data & 0xff0000) >> 16;
+  } else if (msk == 0b1000 ) {  // sb
+    len = 1;
+    offset = 3;
+    wdata = (data & 0xff000000) >> 24;
+  } else {
+		printf("sdram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
-	//printf("NPC: write address = %#x, write data = %#x, len = %d, pc = %#x\n", adr + 0x80000000, data, len, get_pc());
-	vaddr_write(adr + 0x80000000, len, data);
+#ifdef DO_PRINT
+	printf("NPC: sdram_write(),initial addr = %#x, address = %#x, data = %#x, len = %d, pc = %#x\n", 
+        waddr, waddr + offset, wdata, len, get_pc());
+#endif
+	vaddr_write(waddr + offset, len, wdata);
 }
 
+extern "C" void sdram_read(int32_t addr, int32_t *data) {    
+	uint32_t raddr = (uint32_t)addr + 0xa0000000;
+	*data = vaddr_read(raddr, 4);
+#ifdef DO_PRINT
+	printf("NPC sdram_read(): address = %#x, read data = %#x, pc = %#x\n", raddr, *data, get_pc());
+#endif
+}
+
+// ------------------------------------------------------------------------------------------
+// psram write and read DPI-C 
+// ------------------------------------------------------------------------------------------
+extern "C" void psram_read(int32_t addr, int32_t *data) {    
+	*data = vaddr_read(addr + 0x80000000, 4);
+#ifdef DO_PRINT
+	printf("NPC psram_read(): address = %#x, read data = %#x, pc = %#x\n", addr + 0x80000000, *data, get_pc());
+#endif
+}
+
+extern "C" void psram_write(int addr, int data, char len) {    
+  // psram 是将要写入的字节挪到了开头的字节
+  // 故只需要搞清楚究竟要写入几个字节就好了
+	uint32_t waddr = (uint32_t)addr;
+	int length = 0;
+  int wdata = data;
+
+	if      ((uint8_t)len == 0xf) { 
+    length = 4;
+  } else if ((uint8_t)len == 0b11) {
+    length = 2;
+    wdata = data & 0xffff;
+  } else if ((uint8_t)len == 0b1) {
+    length = 1;
+    wdata = data & 0xff;
+  } else {
+		printf("psram_write(): wrong, len is '%#x'\n", len);
+		return;
+	}
+
+#ifdef DO_PRINT
+	printf("NPC: psram_write() initial addr = %#x, address = %#x, write data = %#x, len = %d, pc = %#x\n", 
+        addr, waddr + 0x80000000, wdata, len, get_pc());
+#endif
+	vaddr_write(waddr + 0x80000000, length, wdata);
+}
+
+// ------------------------------------------------------------------------------------------
+// flash write and read DPI-C 
+// ------------------------------------------------------------------------------------------
 extern "C" void flash_read(int32_t addr, int32_t *data) {    
 	*data = vaddr_read(addr + 0x30000000, 4);
 }
@@ -41,6 +122,9 @@ extern "C" void mrom_read(int32_t addr, int32_t *data) {
 	*data = vaddr_read(addr, 4);
 }
 
+// ------------------------------------------------------------------------------------------
+// some check DPI-C
+// ------------------------------------------------------------------------------------------
 //extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak() {
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
@@ -102,7 +186,6 @@ uint32_t nextpc(){
 	get_nextPC(&o);
 	return o.aval;
 }
-
 
 uint32_t get_inst(){
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");

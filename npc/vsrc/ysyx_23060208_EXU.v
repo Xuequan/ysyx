@@ -546,13 +546,22 @@ assign is_spi_master_addr = (alu_result >= spi_master_addr_min)
 wire [31:0] psram_addr_min; 
 wire [31:0] psram_addr_max;
 assign psram_addr_min = 32'h8000_0000;
-assign psram_addr_max  = 32'h9fff_ffff;
+assign psram_addr_max = 32'h9fff_ffff;
 wire is_psram_addr; 
 assign is_psram_addr = (alu_result >= psram_addr_min) 
 									&& (alu_result <= psram_addr_max);
 
+/* ======= sdram ============================== */
+wire [31:0] sdram_addr_min; 
+wire [31:0] sdram_addr_max;
+assign sdram_addr_min = 32'ha000_0000;
+assign sdram_addr_max = 32'hbfff_ffff;
+wire is_sdram_addr; 
+assign is_sdram_addr = (alu_result >= sdram_addr_min) 
+									&& (alu_result <= sdram_addr_max);
+
 /* =========================================================================
-/* ======= AXI commom ========================================================
+/* ======= some checks ========================================================
  * =========================================================================
  */
 /* assertion: invalid address of load or store */
@@ -560,18 +569,23 @@ always @(*) begin
 	if ( exu_valid && 
 			!(is_clint_addr || is_uart_addr || is_sram_addr 
 				|| is_mrom_addr || is_flash_addr
-				|| is_spi_master_addr || is_psram_addr) ) begin
+				|| is_spi_master_addr || is_psram_addr	
+				|| is_sdram_addr) ) begin
 		if (|load_inst) begin
-			$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
+			$fwrite(32'h8000_0002, "Assertion, EXU module, load addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
 		if (|store_inst) begin
-			$fwrite(32'h8000_0002, "Assertion, EXU module, write or load addr '%h' is not valid\n", addr_raw);
+			$fwrite(32'h8000_0002, "Assertion, EXU module, write addr '%h' is not valid\n", addr_raw);
 			$fatal;
 		end
 	end
 end
 
+/* =========================================================================
+/* ======= AXI commom ========================================================
+ * =========================================================================
+ */
 wire [2:0] addr_sel;
 assign addr_sel = addr_raw[2:0];
 
@@ -642,7 +656,7 @@ always @(addr_raw)  begin
 end
 
 //------------------------------------
-// get strb
+// get strb, read and write are the same
 // ------------------------------------
 
 wire [7:0] first_strb;
@@ -716,14 +730,14 @@ wire [2:0] first_size;
 wire [2:0] second_size;
 
 assign first_size = rw_word ? (3'd4 - {1'b0, addr_raw[1:0]}) 
-									: rw_half ? (addr[1:0]  == 2'd3 ? 3'd1 : 3'd2)
-									: 3'd1;
+									: rw_half ? (addr_raw[1:0]  == 2'd3 ? 3'd1 : 3'd2)
+									: 3'd0;
 
-assign second_size = rw_word ? ({1'b0, addr[1:0]})
+assign second_size = rw_word ? ({1'b0, addr_raw[1:0]})
 									: rw_half ? 3'd1 
 									: 3'd0;
-*/
 
+*/
 /* =========================================================================
 /* ======= store  ==========================================================
  * =========================================================================
@@ -734,7 +748,9 @@ wire rw_half = inst_sh | inst_lh | inst_lhu;
 wire rw_byte = inst_sb | inst_lb | inst_lbu;
 */
 /* axi_awsize */
-assign axi_awsize = is_uart_addr ? 3'b000 : 3'b010; 
+assign axi_awsize = is_uart_addr ? 3'b000 : 
+                    rw_word ? 3'b010 :
+                    rw_half ? 3'b001 : 3'b000;
 
 /* axi_awaddr */
 assign axi_awaddr  = second_w ? second_addr : addr_raw;
@@ -753,7 +769,9 @@ assign axi_wdata = cal_wdata;
 assign axi_araddr  = second_r ? second_addr : addr_raw;
 
 /* axi_arsize */
-assign axi_arsize = is_uart_addr ? 3'b000 : 3'b010; 
+assign axi_arsize = is_uart_addr ? 3'b000 : 
+                    rw_word ? 3'b010 :
+                    rw_half ? 3'b001 : 3'b000;
 
 /* load_data 是最后写入到寄存器中的数据 */
 wire [DATA_WIDTH-1:0] load_data;

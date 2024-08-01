@@ -28,6 +28,8 @@ extern word_t pflash_read(paddr_t addr, int len);
 extern word_t pmrom_read(paddr_t addr, int len);
 extern word_t psram_read(paddr_t addr, int len);
 extern void psram_write(paddr_t addr, int len, word_t data);
+extern word_t psdram_read(paddr_t addr, int len);
+extern void psdram_write(paddr_t addr, int len, word_t data);
 
  // 在 nemu 中运行的程序称为 "guest 程序”
  // guest_to_host() 将 paddr 转化为 nemu 模拟的计算机地址在
@@ -107,6 +109,16 @@ word_t paddr_read(paddr_t addr, int len) {
 		return num; 
 	}
 
+	// sram
+  if (likely(in_sdram(addr))) { 
+		word_t num = psdram_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from sdram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
 	// 若是NEMU作为NPC的 ref，那么 CONFIG_DEVICE 也没有，那么对于I/O 就会执行到这里
 	// 进而在NPC显示里报错
@@ -138,6 +150,14 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 		log_write("Write to sram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
 #endif
 		psram_write(addr, len, data); 
+		return; 
+	}
+	// sdram
+  if (likely(in_sdram(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to sdram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		psdram_write(addr, len, data); 
 		return; 
 	}
 

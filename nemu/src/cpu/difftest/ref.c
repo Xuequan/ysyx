@@ -27,6 +27,8 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 			memcpy(guest_to_host(RESET_VECTOR), buf, n);
 		else if (addr == FLASH_BASE)
 			memcpy(flash_guest_to_host(FLASH_BASE), buf, n);
+		else if (addr == SDRAM_BASE)
+			memcpy(sdram_guest_to_host(SDRAM_BASE), buf, n);
 	} else {
   	assert(0);
 	}	
@@ -56,10 +58,12 @@ __EXPORT void difftest_init(int port) {
 	void init_sram();
 	void init_mrom();
 	void init_flash();
+	void init_sdram();
 	init_mrom();
 	init_sram();
 	init_flash();
   /* Perform ISA dependent initialization. */
   init_isa();
   init_mem();
+  init_sdram();
 }
