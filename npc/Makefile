@@ -5,7 +5,7 @@ PERIP_DIR = /home/chuan/ysyx-workbench/ysyxSoC/perip
 SOC_DIR = /home/chuan/ysyx-workbench/ysyxSoC/build
 NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
 INC_PATH ?=
-VERILATOR_CFLAGS += -fsanitize=address 
+#VERILATOR_CFLAGS += -fsanitize=address 
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
@@ -50,19 +50,18 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -g 
 CXXFLAGS += $(shell llvm-config-14 --cxxflags)
 LIBS += $(shell llvm-config-14 --libs)
-#LDFLAGS += -lasan
+LDFLAGS += -lasan
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 LDFLAGS += $(shell llvm-config-14 --ldflags)
 
 # rules for NVboard
-#include $(NVBOARD_HOME)/scripts/nvboard.mk
-#CSRCS += $(SRC_AUTO_BIND)
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+CSRCS += $(SRC_AUTO_BIND)
 
 
 
-#$(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
-$(TOP_BIN): $(VSRCS) $(CSRCS) 
+$(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@echo "==== inside verilator makefile ========"
 	@echo INC_PATH=$(INC_PATH)
 	@echo '------------------'
