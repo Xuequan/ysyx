@@ -10,9 +10,9 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert --trace --autoflush
 
 # in order to '`include "ysyx_23060208_npc.h" '
-#VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
-#VERILATOR_CFLAGS += -I$(PERIP_DIR)/uart16550/rtl
-#VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
+VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
+VERILATOR_CFLAGS += -I$(PERIP_DIR)/uart16550/rtl
+VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
 
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
