@@ -83,11 +83,13 @@ sim: $(TOP_BIN)
 	@echo ========inside npc/makefile ==========
 	@echo ARGS=$(ARGS)
 	@echo NPC_EXEC=$(NPC_EXEC)
+	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo LDFLASGS=$(LDFLAGS)
+	@echo =======================================
 	@echo here $(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(TOP_BIN)) 
-	@echo =======================================
 	$(NPC_EXEC)
 	
 include ../Makefile
