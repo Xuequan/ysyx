@@ -18,7 +18,7 @@
 #include "common2.h"
 #include <cstdlib>
 
-//#define DIFFTEST 1
+#define DIFFTEST 1
 uint8_t* guest_to_host(paddr_t);
 uint8_t* flash_guest_to_host(paddr_t);
 void init_rand();
