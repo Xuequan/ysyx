@@ -34,12 +34,11 @@ NXDC_FILES = nvboard/top.nxdc
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
-# rules for verilator
+
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-CXXFLAGS += -g 
-# CXXFLAGS += $(shell llvm-config-14 --cxxflags)
-CXXFLAGS += -I/usr/lib/llvm-14/include -std=c++14   -fno-exceptions
+#CXXFLAGS += -g 
+CXXFLAGS += -I/usr/lib/llvm-14/include -std=c++14 -fno-exceptions
 LIBS += $(shell llvm-config-14 --libs)
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
