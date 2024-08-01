@@ -1,7 +1,7 @@
 #include "dpi-c.h"
 
 #define FULL_SIZE ((0xbfffffff - 0xa0000000)/4)
-//#define DO_PRINT 1
+#define DO_PRINT 1
 
 extern word_t vaddr_read(vaddr_t addr, int len);
 extern void vaddr_write(vaddr_t addr, int len, word_t data);
@@ -23,6 +23,7 @@ extern "C" void sdram_write(int addr, int data, char mask) {
    * 而传入的数据就是要写入的数据，并没有做处理
    * 因此，这里用 mask 合理
    */
+  /*
   if (addr == FULL_SIZE/16) printf("1/16 has finished \n");
   if (addr == FULL_SIZE/8)  printf("1/8 has finished \n");
   if (addr == FULL_SIZE/4)  printf("1/4 has finished \n");
@@ -30,6 +31,7 @@ extern "C" void sdram_write(int addr, int data, char mask) {
   if (addr == FULL_SIZE/2 + FULL_SIZE/16)  printf("1/2 + 1/16 has finished \n");
   if (addr == FULL_SIZE/2 + FULL_SIZE/8)  printf("1/2 + 1/8 has finished \n");
   if (addr == FULL_SIZE/2 + FULL_SIZE/4)  printf("1/2 + 1/4 has finished \n");
+  */
 
 	uint32_t waddr = (uint32_t)addr + 0xa0000000;
 	int len = 0;
@@ -77,6 +79,7 @@ extern "C" void sdram_write(int addr, int data, char mask) {
 }
 
 extern "C" void sdram_read(int32_t addr, int32_t *data) {    
+  /*
   if (addr == FULL_SIZE/16) printf("1/16 has finished \n");
   if (addr == FULL_SIZE/8)  printf("1/8 has finished \n");
   if (addr == FULL_SIZE/4)  printf("1/4 has finished \n");
@@ -84,6 +87,7 @@ extern "C" void sdram_read(int32_t addr, int32_t *data) {
   if (addr == FULL_SIZE/2 + FULL_SIZE/16)  printf("1/2 + 1/16 has finished \n");
   if (addr == FULL_SIZE/2 + FULL_SIZE/8)  printf("1/2 + 1/8 has finished \n");
   if (addr == FULL_SIZE/2 + FULL_SIZE/4)  printf("1/2 + 1/4 has finished \n");
+  */
 	uint32_t raddr = (uint32_t)addr + 0xa0000000;
 	*data = vaddr_read(raddr, 4);
 #ifdef DO_PRINT
