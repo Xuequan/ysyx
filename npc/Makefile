@@ -54,11 +54,15 @@ LIBS += $(shell llvm-config-14 --libs)
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
 LDFLAGS += $(shell llvm-config-14 --ldflags)
-# rules for NVboard
-include $(NVBOARD_HOME)/scripts/nvboard.mk
-CSRCS += $(SRC_AUTO_BIND)
 
-$(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+# rules for NVboard
+#include $(NVBOARD_HOME)/scripts/nvboard.mk
+#CSRCS += $(SRC_AUTO_BIND)
+
+
+
+#$(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+$(TOP_BIN): $(VSRCS) $(CSRCS) 
 	@echo "==== inside verilator makefile ========"
 	@echo INC_PATH=$(INC_PATH)
 	@echo '------------------'
