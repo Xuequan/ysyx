@@ -5,7 +5,7 @@ PERIP_DIR = /home/chuan/ysyx-workbench/ysyxSoC/perip
 SOC_DIR = /home/chuan/ysyx-workbench/ysyxSoC/build
 NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
 INC_PATH ?=
-VERILATOR_CFLAGS += --asan
+#VERILATOR_CFLAGS += --asan
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert
 VERILATOR_CFLAGS += --trace
