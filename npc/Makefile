@@ -4,7 +4,10 @@ VERILATOR = verilator
 PERIP_DIR = /home/chuan/ysyx-workbench/ysyxSoC/perip
 SOC_DIR = /home/chuan/ysyx-workbench/ysyxSoC/build
 NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
-INC_PATH ?=
+VCD_FILE = dump.vcd
+BUILD_DIR = ./build
+$(shell mkdir -p $(BUILD_DIR))
+
 VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert --trace --autoflush
 
@@ -13,13 +16,8 @@ VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
 VERILATOR_CFLAGS += -I$(PERIP_DIR)/uart16550/rtl
 VERILATOR_CFLAGS += -I$(PERIP_DIR)/spi/rtl
 
-BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 TOP_BIN = $(BUILD_DIR)/$(TOPNAME)
-
-VCD_FILE = dump.vcd
-
-$(shell mkdir -p $(BUILD_DIR))
 
 override ARGS ?= --log=$(BUILD_DIR)/npc-log.txt
 
@@ -31,12 +29,9 @@ VSRCS += $(shell find $(SOC_DIR) -name "*.v")
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-#CXXFLAGS += -g 
 CXXFLAGS += -I/usr/lib/llvm-14/include -std=c++14 -fno-exceptions
-LIBS += $(shell llvm-config-14 --libs)
 LDFLAGS += -lreadline
-LDFLAGS += $(LIBS)
-LDFLAGS += $(shell llvm-config-14 --ldflags)
+LDFLAGS += $(shell llvm-config-14 --libs) $(shell llvm-config-14 --ldflags)
 
 $(TOP_BIN): $(VSRCS) $(CSRCS) 
 	@echo "==== inside verilator makefile ========"
@@ -51,7 +46,7 @@ $(TOP_BIN): $(VSRCS) $(CSRCS)
 	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo '------------------'
 	@echo LDFLASGS=$(LDFLAGS)
-	@echo "==== inside verilator makefile ========"
+	@echo "==== inside verilator makefile end ========"
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		--timescale "1ns/1ns"  --no-timing  \
@@ -74,11 +69,12 @@ sim: $(TOP_BIN)
 	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo '------------------'
 	@echo LDFLASGS=$(LDFLAGS)
-	@echo =======================================
-	@echo here $(VERILATOR) $(VERILATOR_CFLAGS) \
+	@echo '------------------'
+	@echo $(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(TOP_BIN)) 
+	@echo =============end =======================
 	$(NPC_EXEC)
 	
 include ../Makefile
