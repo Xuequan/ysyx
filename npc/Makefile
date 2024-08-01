@@ -59,8 +59,6 @@ LDFLAGS += $(shell llvm-config-14 --ldflags)
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 CSRCS += $(SRC_AUTO_BIND)
 
-
-
 $(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@echo "==== inside verilator makefile ========"
 	@echo INC_PATH=$(INC_PATH)
