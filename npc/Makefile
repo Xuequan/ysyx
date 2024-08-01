@@ -60,10 +60,15 @@ CSRCS += $(SRC_AUTO_BIND)
 $(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@echo "==== inside verilator makefile ========"
 	@echo INC_PATH=$(INC_PATH)
+	@echo '------------------'
 	@echo INCFLAGS=$(INCFLAGS)
+	@echo '------------------'
 	@echo VSRCS=$(VSRCS)
+	@echo '------------------'
 	@echo CSRCS=$(CSRCS)
+	@echo '------------------'
 	@echo CXXFLAGS=$(CXXFLAGS)
+	@echo '------------------'
 	@echo LDFLASGS=$(LDFLAGS)
 	@echo "==== inside verilator makefile ========"
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
