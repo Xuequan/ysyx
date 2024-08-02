@@ -95,7 +95,7 @@ void difftest_step();
 
 static void trace_and_difftest(){
 #ifdef LOG_WRITE_ENABLE
-	log_write("%s\n", logbuf);
+	//log_write("%s\n", logbuf);
 #endif
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
 		|| check_spi_master_read() || check_spi_master_write() )
