@@ -124,9 +124,7 @@ uint64_t get_time();
 #define _Log(...) \
   do { \
     printf(__VA_ARGS__); \
-#ifdef LOG_WRITE_ENABLE
     log_write(__VA_ARGS__); \
-#endif
   } while (0)
 
 // macro stringizing
