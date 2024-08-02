@@ -18,6 +18,7 @@
 #include "sim.h"
 #include "dpi-c.h"
 #include <clocale>
+#include "ctrl.h"
 
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us

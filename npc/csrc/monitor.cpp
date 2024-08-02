@@ -17,8 +17,9 @@
 #include <time.h>
 #include "common2.h"
 #include <cstdlib>
+#include "ctrl.h"
 
-#define DIFFTEST 1
+
 uint8_t* guest_to_host(paddr_t);
 uint8_t* flash_guest_to_host(paddr_t);
 void init_rand();

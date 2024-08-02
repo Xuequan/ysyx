@@ -32,8 +32,6 @@ image: $(IMAGE).elf
 run: image
 	@$(MAKE) -s -C $(NPC_HOME) sim ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
-gdb: image
-	@$(MAKE) -s -C $(NPC_HOME) gdb  IMG=$(IMAGE).bin
 print: image
 	@$(MAKE) -s -C $(NPC_HOME) print ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 	
