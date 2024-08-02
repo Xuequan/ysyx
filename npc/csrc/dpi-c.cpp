@@ -106,7 +106,7 @@ extern "C" void psram_write(int addr, int data, char len) {
 
 #ifdef DO_PRINTPSRAM
 	printf("NPC: psram_write() initial addr = %#x, address = %#x, write data = %#x, len = %d, pc = %#x\n", 
-        addr, waddr + 0x80000000, wdata, len, get_pc());
+        addr, waddr + 0x80000000, wdata, length, get_pc());
 #endif
 	vaddr_write(waddr + 0x80000000, length, wdata);
 }
