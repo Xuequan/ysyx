@@ -78,6 +78,8 @@ $(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo '------------------'
 	@echo LDFLASGS=$(LDFLAGS)
+	@echo '------------------'
+	@echo NVBOARD_ARCHIVE=$(NVBOARD_ARCHIVE)
 	@echo "==== inside verilator makefile ========"
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^  \
@@ -89,7 +91,7 @@ $(TOP_BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 default: sim
 
 # execute file, plus args, img file from AM 
-NPC_EXEC : $(TOP_BIN) $(ARGS) $(IMG)
+NPC_EXEC := $(TOP_BIN) $(ARGS) $(IMG)
 
 sim: $(TOP_BIN) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
