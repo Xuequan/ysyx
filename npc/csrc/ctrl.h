@@ -11,7 +11,7 @@
 //#define DO_PRINT_PSRAM 
 
 /* control log_wirte */
-//#define LOG_WRITE_ENABLE
+#define LOG_WRITE_ENABLE 1
 
 
 
