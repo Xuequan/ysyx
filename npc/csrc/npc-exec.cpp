@@ -18,6 +18,7 @@
 #include "sim.h"
 #include "dpi-c.h"
 #include <clocale>
+#include "ctrl.h"
 
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us
@@ -40,14 +41,18 @@ static void ftrace(int ident) {
     vaddr2func(nextpc(), &success1, 1, func_name, len); 
     if (success1){ // double check, if next_pc is a function, then a function call
       space++;
+#ifdef LOG_WRITE_ENABLE
       log_write("%#x:%*s [%s@%#x]\n", get_pc(), space, "call", func_name, nextpc());  
+#endif
     }
   }else if(2 == ident){ // ret
       // call vaddr2func just for function name only
     vaddr2func(get_pc(), &success2, 0, func_name, len); 
     if (success2){
       space--;
+#ifdef LOG_WRITE_ENABLE
       log_write("%#x:%*s [%s]\n", get_pc(), space, "ret ", func_name);
+#endif
     }else{  // should never be here
       log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc(), get_inst());
     }     
@@ -93,7 +98,9 @@ void scan_wp_pool();
 void difftest_step();
 
 static void trace_and_difftest(){
+#ifdef LOG_WRITE_ENABLE
 	log_write("%s\n", logbuf);
+#endif
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
 		|| check_spi_master_read() || check_spi_master_write() )
 		difftest_skip_ref();	
@@ -139,7 +146,9 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-		trace_and_difftest();
+#ifdef DIFFTEST
+	  trace_and_difftest();
+#endif
 		// breakpoint 
 		scan_wp_pool();
 		if (npc_state.state != NPC_RUNNING) 

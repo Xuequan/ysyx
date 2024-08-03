@@ -565,6 +565,7 @@ assign is_sdram_addr = (alu_result >= sdram_addr_min)
  * =========================================================================
  */
 /* assertion: invalid address of load or store */
+/* 1-assertion: address beyond the memory space  */
 always @(*) begin
 	if ( exu_valid && 
 			!(is_clint_addr || is_uart_addr || is_sram_addr 
@@ -581,6 +582,16 @@ always @(*) begin
 		end
 	end
 end
+
+/* 2-assertion: load and store address unaligned  */
+/*
+always @(*) begin
+	if ( exu_valid && (|load_inst || |store_inst) && (addr_raw[1:0] != 2'b00) ) begin
+		$fwrite(32'h8000_0002, "Assertion, EXU module, load/store addr '%h' unaligned.\n", addr_raw);
+		$fatal;
+	end
+end
+*/
 
 /* =========================================================================
 /* ======= AXI commom ========================================================
