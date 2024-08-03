@@ -504,6 +504,33 @@ wire is_uart_addr;
 assign is_uart_addr = (addr_raw >= uart_addr_min) &&
 								 (addr_raw <= uart_addr_max);
 
+/* =======gpio ============================== */
+wire [31:0] gpio_addr_min; 
+wire [31:0] gpio_addr_max;
+assign gpio_addr_min = 32'h1000_2000;
+assign gpio_addr_max  = 32'h1000_200f;
+wire is_gpio_addr;
+assign is_gpio_addr = (addr_raw >= gpio_addr_min) &&
+								 (addr_raw <= gpio_addr_max);
+
+/* =======ps2 ============================== */
+wire [31:0] ps2_addr_min; 
+wire [31:0] ps2_addr_max;
+assign ps2_addr_min = 32'h1001_1000;
+assign ps2_addr_max  = 32'h1001_1007;
+wire is_ps2_addr;
+assign is_ps2_addr = (addr_raw >= ps2_addr_min) &&
+								 (addr_raw <= ps2_addr_max);
+
+/* =======vga ============================== */
+wire [31:0] vga_addr_min; 
+wire [31:0] vga_addr_max;
+assign vga_addr_min = 32'h2100_0000;
+assign vga_addr_max  = 32'h211f_ffff;
+wire is_vga_addr;
+assign is_vga_addr = (addr_raw >= vga_addr_min) &&
+								 (addr_raw <= vga_addr_max);
+
 /* ======= sram ============================== */
 wire [31:0] sram_addr_min; 
 wire [31:0] sram_addr_max;
@@ -571,7 +598,9 @@ always @(*) begin
 			!(is_clint_addr || is_uart_addr || is_sram_addr 
 				|| is_mrom_addr || is_flash_addr
 				|| is_spi_master_addr || is_psram_addr	
-				|| is_sdram_addr) ) begin
+				|| is_sdram_addr || is_gpio_addr
+        || is_ps2_addr   || is_vga_addr)  
+    ) begin
 		if (|load_inst) begin
 			$fwrite(32'h8000_0002, "Assertion, EXU module, load addr '%h' is not valid\n", addr_raw);
 			$fatal;
