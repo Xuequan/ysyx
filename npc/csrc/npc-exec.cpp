@@ -18,7 +18,6 @@
 #include "sim.h"
 #include "dpi-c.h"
 #include <clocale>
-#include "ctrl.h"
 
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us
@@ -94,9 +93,7 @@ void scan_wp_pool();
 void difftest_step();
 
 static void trace_and_difftest(){
-#ifdef LOG_WRITE_ENABLE
-	//log_write("%s\n", logbuf);
-#endif
+	log_write("%s\n", logbuf);
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
 		|| check_spi_master_read() || check_spi_master_write() )
 		difftest_skip_ref();	
@@ -142,9 +139,7 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-#ifdef DIFFTEST
-	  trace_and_difftest();
-#endif
+		trace_and_difftest();
 		// breakpoint 
 		scan_wp_pool();
 		if (npc_state.state != NPC_RUNNING) 
