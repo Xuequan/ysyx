@@ -4,11 +4,13 @@
 #include "VysyxSoCFull__Dpi.h"
 #include "VysyxSoCFull___024root.h"
 #include "dpi-c.h"
-/*
+#include "ctrl.h"
+
+#ifdef CONNECT_NVBOARD
 #include "nvboard.h"
 void nvboard_bind_all_pins(VysyxSoCFull* top);
 void nvboard_quit();
-*/
+#endif
 
 static VysyxSoCFull* top;
 static VerilatedContext* contextp;
@@ -29,7 +31,10 @@ static void sim_one_cycle() {
 	for(int i = 0; i < 2; i++) {
 		top->clock ^= 1;
 		step_and_dump_wave();
-    //nvboard_update();
+
+#ifdef CONNECT_NVBOARD
+    nvboard_update();
+#endif
 	}
 }
 
@@ -78,12 +83,13 @@ void sim_init() {
 	tfp = new VerilatedVcdC;
 	top = new VysyxSoCFull;
 
-  /*
+#ifdef CONNECT_NVBOARD
   nvboard_bind_all_pins(top);
   nvboard_init();
-  */
+#endif
 
 	contextp->traceEverOn(true);
+
 #ifdef WAVE_FILE
 	top->trace(tfp, 0);
   tfp->open("dump.vcd");
@@ -110,7 +116,9 @@ void sim_exit() {
 	delete top;
 	delete contextp;
 
-  //nvboard_quit();
+#ifdef CONNECT_NVBOARD
+  nvboard_quit();
+#endif
 }
 
 uint32_t get_clock_from_top(){

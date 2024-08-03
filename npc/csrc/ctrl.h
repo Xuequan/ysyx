@@ -13,6 +13,8 @@
 /* control log_wirte */
 //#define LOG_WRITE_ENABLE 1
 
+/* connect NVBoard */
+#define CONNECT_NVBOARD 1
 
 
 #endif
