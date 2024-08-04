@@ -212,7 +212,7 @@ uint32_t update_reg_data(){
 	return data.aval;
 }
 
-bool check_exu_ready_go() {
+bool check_inst_executed_already() {
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
 	svSetScope(scope);

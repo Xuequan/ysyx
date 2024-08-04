@@ -81,6 +81,9 @@ void get_assemble_code() {
 	uint32_t pc 				 = get_pc();
 	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
+  if (pc == 0xa0003fa0) 
+    printf("here, inst = %#\n", inst);
+
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
@@ -101,6 +104,7 @@ static void trace_and_difftest(){
 #ifdef LOG_WRITE_ENABLE
 	log_write("%s\n", logbuf);
 #endif
+
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
 		|| check_spi_master_read() || check_spi_master_write()  
     || check_gpio() || check_ps2()  ) {
@@ -110,10 +114,6 @@ static void trace_and_difftest(){
 
 	difftest_step();
 }
-
-bool inst_is_ebreak();
-bool inst_is_jal();
-bool inst_is_jalr();
 
 void exec_once() {
 	int sim_ret = sim_once();

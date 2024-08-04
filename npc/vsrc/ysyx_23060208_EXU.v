@@ -171,6 +171,9 @@ assign store_ready_go = need_second_w ?
 								(next_w == SHAKED_B && second_w)
 							: (next_w == SHAKED_B);
 
+/* 这里是有点问题的。我的愿意是若不是 load/store inst, 那么当周期就完成
+* 但NPC 仿真环境中用到了这个信号，因此得额外注意 
+*/
 assign exu_ready_go = |store_inst ? store_ready_go :
 											|load_inst  ? load_ready_go :
 																		1'b1;
@@ -482,12 +485,14 @@ assign exu_nextpc_taken = (branch_taken || csr_nextpc_taken) && exu_valid;
 assign exu_to_ifu_bus = {exu_nextpc_taken, exu_nextpc};
 assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 
-/* =======clint ============================== */
+
+/* load or store inst origin address 
+** (no aligned handled, just a ALU result, maybe not aligned) 
+*/
 wire [31:0] addr_raw;
 assign addr_raw = alu_result;
 
-
-
+/* =======clint ============================== */
 wire [31:0] clint_addr_min; 
 wire [31:0] clint_addr_max;
 assign clint_addr_min = 32'h0200_0000;
@@ -949,6 +954,7 @@ export "DPI-C" task uart_write_check;
 task uart_write_check (output bit o);
 	o = |store_inst && is_uart_addr; 
 endtask
+
 export "DPI-C" task uart_read_check;
 task uart_read_check (output bit o);
 	o = |load_inst && is_uart_addr; 
