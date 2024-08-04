@@ -276,6 +276,27 @@ bool check_spi_master_read() {
 	if (a == 1) return true;
 	else				return false;
 }
+
+bool check_gpio() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	gpio_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+
+bool check_ps2() {
+	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
+	assert(scope);
+	svSetScope(scope);
+	svBit a;
+	ps2_check(&a);
+	if (a == 1) return true;
+	else				return false;
+}
+
 bool check_access_fault_exu() {
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);

@@ -963,6 +963,19 @@ export "DPI-C" task spi_master_read_check;
 task spi_master_read_check (output bit o);
 	o = |load_inst && is_spi_master_addr; 
 endtask
+
+
+export "DPI-C" task gpio_check;
+task  gpio_check (output bit o);
+	o = (|load_inst || |store_inst) && is_gpio_addr; 
+endtask
+
+export "DPI-C" task ps2_check;
+task  ps2_check (output bit o);
+	o = (|load_inst || |store_inst) && is_ps2_addr; 
+endtask
+
+
 // 初步的 access fault
 export "DPI-C" task check_if_access_fault;
 task check_if_access_fault (output bit o);
