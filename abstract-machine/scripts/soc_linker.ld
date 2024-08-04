@@ -1,6 +1,8 @@
-/* all .text, .rodata, .data will be in flash
- * stack, heap in sram 
- * THis script can be ok for cpu-tests/tests/hello.c , but for others such as add-longlong.c failed
+/* 
+ * initial start, fsbl(first stage bootloader), ssbl(second stage bootloader) 都位于 flash
+ * first execute fsbl, which loading ssbl from flash to sram;
+ * then, execute ssbl, which loading program from flash to psram
+ * 将程序加载到 sdram 中运行；注意，此时只有一个SDRAM 颗粒，因此其容量是 32M
  */
 MEMORY 
 	{
@@ -8,69 +10,90 @@ MEMORY
 	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 flash : ORIGIN = 0x30000000, LENGTH = 256M
 	 psram : ORIGIN = 0x80000000, LENGTH = 4M
+   sdram : ORIGIN = 0Xa0000000, LENGTH = 32M
 	}
 
 ENTRY(_start)
 SECTIONS {
   . = _pmem_start + _entry_offset; 
-  .text : AT (ORIGIN(flash)) 
+  .fsbl :
+  {
+		. = ALIGN(0x8);
+    *(entry)
+    *(.fsbl*)
+		. = ALIGN(0x8);
+  } > flash AT> flash
+
+  .ssbl :
+  {
+    . = ALIGN(0x8) ;
+    _sssbl = .  ;
+    *(.ssbl*)
+    . = ALIGN(0x8) ;
+    _essbl = . ;
+  } > sram AT> flash
+
+  . = ORIGIN(sdram);
+  .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
-    *(entry)
     *(.text*)
-		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  }  
+  } > sdram AT> flash 
 
-	.rodata : AT (ORIGIN(flash) + SIZEOF(.text))  
+  . = ORIGIN(sdram) + SIZEOF(.text);
+	.rodata : 
 	{
 		. = ALIGN(0x8);
 		_rodata_start = . ;
     *(.rodata*)
 		*(.srodata.mainargs)
+		*(.srodata*)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } 
+  } > sdram AT> flash
 
-  .data : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata))
+  . = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata);
+  .data : 
 	{
-		. = ORIGIN(psram);
 		. = ALIGN(0x8);
 		_data_start = .;
-    *(.data)
+		*(.data.extra*)
     *(.data*)
 		*(.data.*)
 		*(.sdata)
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  }
+  } > sdram AT> flash
 
-  .bss (NOLOAD) :  
+  .bss (NOLOAD) :
 	{
 		. = ALIGN(0x8);
+		_sbss = . ;
     *(.bss*)
+		*(.bss.extra*)
     *(.sbss*)
     *(.scommon)
 		. = ALIGN(0x8);
-  } 
+		_ebss = . ;
+	} > sdram AT> flash
 }
 
+/* some extern address for date moving */
 _data_size = SIZEOF(.data);
 _data_load_addr = LOADADDR(.data);
-
 _text_load_addr = LOADADDR(.text);
-
 _rodata_load_addr = LOADADDR(.rodata);
+_ssbl_load_addr = LOADADDR(.ssbl);
 
-_bss_start = ADDR(.bss);
-_bss_end = _bss_start + SIZEOF(.bss);
-
+/* heap memory space */
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x8000 ;
+_heap_start = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
+_heap_end = ORIGIN (sdram) + LENGTH (sdram) ;
 
+/* stack space */
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;
