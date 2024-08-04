@@ -27,6 +27,7 @@ void init_disasm(const char *triple);
 void init_elf();
 void init_mrom();
 void init_sram();
+void init_sdram();
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -126,6 +127,9 @@ void init_monitor(int argc, char *argv[]) {
 
 	/* Initialize sram */
 	init_sram();
+
+  /* Initialize sdram */
+  init_sdram();
 
   /* Initialize devices. */
   IFDEF(CONFIG_DEVICE, init_device());
