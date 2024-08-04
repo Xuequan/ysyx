@@ -83,7 +83,7 @@ void get_assemble_code() {
 	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
   if (pc == 0xa0003fa0) 
-    printf("here, inst = %#x, p = %s\n", inst, p);
+    printf("here, inst = %#x, p = %s\n", instruction, p);
 
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
