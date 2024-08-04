@@ -17,4 +17,7 @@
 //#define CONNECT_NVBOARD 1
 
 
+/* print flash memory and other memory space at the beging of program */  
+// #define PRINT_FLASH_MEM 1
+
 #endif
