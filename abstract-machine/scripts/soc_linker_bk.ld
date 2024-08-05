@@ -91,8 +91,8 @@ _rodata_load_addr = LOADADDR(.rodata);
 _ssbl_load_addr = LOADADDR(.ssbl);
 
 /* heap memory space */
-_heap_start = ALIGN(0x1000) ;
 _heap_start = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
+_heap_start = ALIGN(0x1000) ;
 _heap_end = ORIGIN (sdram) + LENGTH (sdram) ;
 /*
 _heap_start = ALIGN(0x1000) ;
