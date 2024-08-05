@@ -5,7 +5,7 @@
 #define DIFFTEST 1
 
 /* control switch which will print sdram write/read information. dpi-c.cpp*/
-#define DO_PRINT 1
+//#define DO_PRINT 1
 
 /* control switch which will print psram write/read information. dpi-c.cpp*/
 //#define DO_PRINT_PSRAM 
@@ -21,7 +21,7 @@
 // #define PRINT_FLASH_MEM 1
 
 /* control whether generating wave file */
-#define WAVE_FILE 1
+//#define WAVE_FILE 1
 
 
 #endif
