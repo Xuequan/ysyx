@@ -80,7 +80,7 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-	} 
+	} > sdram AT> flash 
 }
 
 /* some extern address for date moving */
