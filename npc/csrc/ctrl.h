@@ -25,7 +25,7 @@
 // #define PRINT_FLASH_MEM 1
 
 /* control whether generating wave file */
-//#define WAVE_FILE 1
+#define WAVE_FILE 1
 
 
 #endif
