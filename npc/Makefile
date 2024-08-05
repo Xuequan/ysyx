@@ -9,7 +9,7 @@ NPC_VSRC_DIR = /home/chuan/ysyx-workbench/npc/vsrc
 INC_PATH ?=
 
 # define verilator flags
-VERILATOR_CFLAGS += --Wall -MMD --build -cc -O3 \
+VERILATOR_CFLAGS += -MMD --build -cc -O3 \
 	--x-assign fast --x-initial fast --noassert --trace --autoflush
 # in order to '`include "ysyx_23060208_npc.h" '
 VERILATOR_CFLAGS += -I$(NPC_VSRC_DIR)
