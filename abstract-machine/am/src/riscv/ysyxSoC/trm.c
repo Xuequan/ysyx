@@ -84,11 +84,11 @@ void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
   // zero .bss
 	for (dst = _sbss; dst < _ebss; dst++)
 		*dst = 0;
-  /*
+	/*
   // zero .bss.extra
   for (dst = __am_apps_bss_start; dst < __am_apps_data_end; dst++)
     *dst = 0;
-    */
+	*/
 
 	// copy '.data' section to psram
 	src = _data_load_addr;
@@ -106,12 +106,12 @@ void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 	while (dst < _rodata_end)
 		*dst++ = *src++;
 
-  /*
+	/*
 	src = __data_extra_load_addr;
 	dst = __fsymtab_start;
 	while (dst < __am_apps_data_end)
 		*dst++ = *src++;
-  */
+	*/
 
   _trm_init();
 }

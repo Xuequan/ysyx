@@ -1,6 +1,7 @@
-/* all .text, .rodata, .data will be in flash
- * stack, heap in sram 
- * THis script can be ok for cpu-tests/tests/hello.c , but for others such as add-longlong.c failed
+/* in order to finish "完整测试 PSRAM 的访问”
+ * load mem-test into sram
+ * load .rodata into sram
+ * This verison is based on soc_linkerv3.ld
  */
 MEMORY 
 	{
@@ -13,18 +14,26 @@ MEMORY
 ENTRY(_start)
 SECTIONS {
   . = _pmem_start + _entry_offset; 
-  .text : AT (ORIGIN(flash)) 
+  .fsbl :
+  {
+	  . = ALIGN(0x8);
+    *(entry)
+    *(.fsbl*)    
+		. = ALIGN(0x8);
+  } > flash 
+
+	. = ORIGIN(sram) ;
+  .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
-    *(entry)
     *(.text*)
-		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  }  
+  } > sram AT> flash 
 
-	.rodata : AT (ORIGIN(flash) + SIZEOF(.text))  
+  . = ORIGIN(sram) + SIZEOF(.text);
+	.rodata : 
 	{
 		. = ALIGN(0x8);
 		_rodata_start = . ;
@@ -32,11 +41,11 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } 
+  } > sram AT> flash
 
-  .data : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata))
+  . = ORIGIN(sram) + SIZEOF(.text) + SIZEOF(.rodata);
+  .data : 
 	{
-		. = ORIGIN(psram);
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data)
@@ -46,31 +55,25 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  }
+  } > sram AT> flash
 
-  .bss (NOLOAD) :  
+  .bss (NOLOAD) :
 	{
 		. = ALIGN(0x8);
+		_sbss = . ;
     *(.bss*)
     *(.sbss*)
     *(.scommon)
 		. = ALIGN(0x8);
-  } 
+		_ebss = . ;
+	} > sram AT> flash
 }
-
 _data_size = SIZEOF(.data);
 _data_load_addr = LOADADDR(.data);
-
 _text_load_addr = LOADADDR(.text);
-
 _rodata_load_addr = LOADADDR(.rodata);
-
-_bss_start = ADDR(.bss);
-_bss_end = _bss_start + SIZEOF(.bss);
-
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x8000 ;
-
+_heap_start = ORIGIN (sram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
+_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x80;
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;

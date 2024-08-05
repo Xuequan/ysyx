@@ -18,7 +18,6 @@
 #include "sim.h"
 #include "dpi-c.h"
 #include <clocale>
-#include "ctrl.h"
 
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us
@@ -41,18 +40,14 @@ static void ftrace(int ident) {
     vaddr2func(nextpc(), &success1, 1, func_name, len); 
     if (success1){ // double check, if next_pc is a function, then a function call
       space++;
-#ifdef LOG_WRITE_ENABLE
       log_write("%#x:%*s [%s@%#x]\n", get_pc(), space, "call", func_name, nextpc());  
-#endif
     }
   }else if(2 == ident){ // ret
       // call vaddr2func just for function name only
     vaddr2func(get_pc(), &success2, 0, func_name, len); 
     if (success2){
       space--;
-#ifdef LOG_WRITE_ENABLE
       log_write("%#x:%*s [%s]\n", get_pc(), space, "ret ", func_name);
-#endif
     }else{  // should never be here
       log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc(), get_inst());
     }     
@@ -74,7 +69,6 @@ static void print_iringbuf(void) {
 	}
 }
 void disassemble(char *str, int size, uint64_t pc, uint8_t* code, int nbyte);
-
 static char logbuf[128];
 
 void get_assemble_code() {
@@ -82,7 +76,6 @@ void get_assemble_code() {
 	uint32_t pc 				 = get_pc();
 	uint32_t instruction = get_inst();
 	uint8_t* inst = (uint8_t *)&instruction;
-
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
@@ -100,21 +93,22 @@ void scan_wp_pool();
 void difftest_step();
 
 static void trace_and_difftest(){
-#ifdef LOG_WRITE_ENABLE
-#ifdef WRITE_EVERY_INST
 	log_write("%s\n", logbuf);
-#endif
-#endif
-
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
-		|| check_spi_master_read() || check_spi_master_write()  
-    || check_gpio() || check_ps2()  ) {
-
+		|| check_spi_master_read() || check_spi_master_write() )
 		difftest_skip_ref();	
-  }
 
 	difftest_step();
 }
+
+bool inst_is_ebreak();
+bool inst_is_jal();
+bool inst_is_jalr();
+
+/*
+void print_flash();
+void print_mem();
+*/
 
 void exec_once() {
 	int sim_ret = sim_once();
@@ -127,14 +121,9 @@ void exec_once() {
 	memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
 
 	if (sim_ret == 3) { 
-#ifdef PRINT_FLASH_MEM
-    void print_flash();
-    void print_mem();
-		printf("after reach ebreak, to see if flash, mem change\n");
-		print_flash();
-		print_mem();
-#endif
-
+		//printf("after reach ebreak, to see if flash, mem change\n");
+		//print_flash();
+		//print_mem();
 		printf("\nReach ebreak instruction, stop sim.\n\n");
 		npc_state.state = NPC_END;
 		npc_state.halt_pc = get_pc();
@@ -150,9 +139,7 @@ void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
-#ifdef DIFFTEST
-	  trace_and_difftest();
-#endif
+		trace_and_difftest();
 		// breakpoint 
 		scan_wp_pool();
 		if (npc_state.state != NPC_RUNNING) 
