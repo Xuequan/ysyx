@@ -68,6 +68,16 @@ LINKAGE   = $(OBJS) \
 
 ### Print build info message
 $(info #0 MAKECMDGOALS=$(MAKECMDGOALS))
+$(info #1 WORK_DIR:$(WORK_DIR))
+$(info #2 ARCHIVE:$(ARCHIVE))
+$(info #3 DST_DIR:$(DST_DIR))
+$(info #4 IMAGE:$(IMAGE))
+$(info #5 IMAGE_REL:$(IMAGE_REL))
+$(info #6 LIBS:$(LIBS))
+$(info #7 OBJS:$(OBJS))
+$(info #8 ARCH:$(ARCH))
+$(info #9 LINKAGE:$(LINKAGE))
+
 ## 3. General Compilation Flags
 
 ### (Cross) compilers, e.g., mips-linux-gnu-g++
@@ -100,6 +110,12 @@ CXXFLASS += -Os
 ASFLAGS  += -MMD $(INCFLAGS)
 LDFLAGS  += -z noexecstack
 #LDFLAGS  += -z nodefaultlib
+
+$(info #10 INC_PATH:$(INC_PATH))
+$(info #11 INCFLAGS:$(INCFLAGS))
+$(info #12 CFLAGS:$(CFLAGS))
+$(info #13 LDFLAGS:$(LDFLAGS))
+$(info #14 SRCS:$(SRCS))
 
 ## 4. Arch-Specific Configurations
 

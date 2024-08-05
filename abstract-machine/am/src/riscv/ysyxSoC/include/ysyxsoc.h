@@ -5,6 +5,7 @@
 
 #include "riscv/riscv.h"
 
+// 实际上 npc_trap 还未实现，只不过现在只是遇到 ebreak 就停止仿真
 #define ysyxsoc_trap(code) asm volatile("ebreak")
 
 #define UART_BASE     0x10000000L
@@ -16,13 +17,6 @@ extern char _pmem_start;
 
 // timer 映射到 clint
 #define RTC_ADDR 0x02000000L
-
-// uart 
-#define UART_BASE 0x10000000L
-#define UART_RX   0
-
-// ps2-keyboard
-#define PS2_KEYBOARD 0x10011000L
 /*
 #define DEVICE_BASE 0xa0000000
 
