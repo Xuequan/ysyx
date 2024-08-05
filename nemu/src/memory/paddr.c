@@ -109,7 +109,7 @@ word_t paddr_read(paddr_t addr, int len) {
 		return num; 
 	}
 
-	// sram
+	// sdram
   if (likely(in_sdram(addr))) { 
 		word_t num = psdram_read(addr, len); 
 #ifdef CONFIG_MTRACE
