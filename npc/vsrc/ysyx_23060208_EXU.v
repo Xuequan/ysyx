@@ -171,6 +171,9 @@ assign store_ready_go = need_second_w ?
 								(next_w == SHAKED_B && second_w)
 							: (next_w == SHAKED_B);
 
+/* 这里是有点问题的。我的愿意是若不是 load/store inst, 那么当周期就完成
+* 但NPC 仿真环境中用到了这个信号，因此得额外注意 
+*/
 assign exu_ready_go = |store_inst ? store_ready_go :
 											|load_inst  ? load_ready_go :
 																		1'b1;
@@ -482,12 +485,14 @@ assign exu_nextpc_taken = (branch_taken || csr_nextpc_taken) && exu_valid;
 assign exu_to_ifu_bus = {exu_nextpc_taken, exu_nextpc};
 assign exu_to_ifu_valid = exu_valid && exu_ready_go;
 
-/* =======clint ============================== */
+
+/* load or store inst origin address 
+** (no aligned handled, just a ALU result, maybe not aligned) 
+*/
 wire [31:0] addr_raw;
 assign addr_raw = alu_result;
 
-
-
+/* =======clint ============================== */
 wire [31:0] clint_addr_min; 
 wire [31:0] clint_addr_max;
 assign clint_addr_min = 32'h0200_0000;
@@ -503,6 +508,33 @@ assign uart_addr_max  = 32'h1000_0fff;
 wire is_uart_addr;
 assign is_uart_addr = (addr_raw >= uart_addr_min) &&
 								 (addr_raw <= uart_addr_max);
+
+/* =======gpio ============================== */
+wire [31:0] gpio_addr_min; 
+wire [31:0] gpio_addr_max;
+assign gpio_addr_min = 32'h1000_2000;
+assign gpio_addr_max  = 32'h1000_200f;
+wire is_gpio_addr;
+assign is_gpio_addr = (addr_raw >= gpio_addr_min) &&
+								 (addr_raw <= gpio_addr_max);
+
+/* =======ps2 ============================== */
+wire [31:0] ps2_addr_min; 
+wire [31:0] ps2_addr_max;
+assign ps2_addr_min = 32'h1001_1000;
+assign ps2_addr_max  = 32'h1001_1007;
+wire is_ps2_addr;
+assign is_ps2_addr = (addr_raw >= ps2_addr_min) &&
+								 (addr_raw <= ps2_addr_max);
+
+/* =======vga ============================== */
+wire [31:0] vga_addr_min; 
+wire [31:0] vga_addr_max;
+assign vga_addr_min = 32'h2100_0000;
+assign vga_addr_max  = 32'h211f_ffff;
+wire is_vga_addr;
+assign is_vga_addr = (addr_raw >= vga_addr_min) &&
+								 (addr_raw <= vga_addr_max);
 
 /* ======= sram ============================== */
 wire [31:0] sram_addr_min; 
@@ -565,22 +597,35 @@ assign is_sdram_addr = (alu_result >= sdram_addr_min)
  * =========================================================================
  */
 /* assertion: invalid address of load or store */
+/* 1-assertion: address beyond the memory space  */
 always @(*) begin
 	if ( exu_valid && 
 			!(is_clint_addr || is_uart_addr || is_sram_addr 
 				|| is_mrom_addr || is_flash_addr
 				|| is_spi_master_addr || is_psram_addr	
-				|| is_sdram_addr) ) begin
+				|| is_sdram_addr || is_gpio_addr
+        || is_ps2_addr   || is_vga_addr)  
+    ) begin
 		if (|load_inst) begin
-			$fwrite(32'h8000_0002, "Assertion, EXU module, load addr '%h' is not valid\n", addr_raw);
+			$fwrite(32'h8000_0002, "Assertion, EXU module, invalid load addr '%h', pc = %xh\n", addr_raw, exu_pc);
 			$fatal;
 		end
 		if (|store_inst) begin
-			$fwrite(32'h8000_0002, "Assertion, EXU module, write addr '%h' is not valid\n", addr_raw);
+			$fwrite(32'h8000_0002, "Assertion, EXU module, invalid write addr '%h', pc = %xh\n", addr_raw, exu_pc);
 			$fatal;
 		end
 	end
 end
+
+/* 2-assertion: load and store address unaligned  */
+/*
+always @(*) begin
+	if ( exu_valid && (|load_inst || |store_inst) && (addr_raw[1:0] != 2'b00) ) begin
+		$fwrite(32'h8000_0002, "Assertion, EXU module, load/store addr '%h' unaligned.\n", addr_raw);
+		$fatal;
+	end
+end
+*/
 
 /* =========================================================================
 /* ======= AXI commom ========================================================
@@ -909,6 +954,7 @@ export "DPI-C" task uart_write_check;
 task uart_write_check (output bit o);
 	o = |store_inst && is_uart_addr; 
 endtask
+
 export "DPI-C" task uart_read_check;
 task uart_read_check (output bit o);
 	o = |load_inst && is_uart_addr; 
@@ -923,6 +969,19 @@ export "DPI-C" task spi_master_read_check;
 task spi_master_read_check (output bit o);
 	o = |load_inst && is_spi_master_addr; 
 endtask
+
+
+export "DPI-C" task gpio_check;
+task  gpio_check (output bit o);
+	o = (|load_inst || |store_inst) && is_gpio_addr; 
+endtask
+
+export "DPI-C" task ps2_check;
+task  ps2_check (output bit o);
+	o = (|load_inst || |store_inst) && is_ps2_addr; 
+endtask
+
+
 // 初步的 access fault
 export "DPI-C" task check_if_access_fault;
 task check_if_access_fault (output bit o);
