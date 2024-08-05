@@ -13,6 +13,10 @@
 /* control log_wirte */
 #define LOG_WRITE_ENABLE 1
 
+/* control write every instruction into log */  
+//#define WRITE_EVERY_INST 1
+
+
 /* connect NVBoard */
 //#define CONNECT_NVBOARD 1
 
