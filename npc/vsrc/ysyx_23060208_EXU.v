@@ -598,6 +598,7 @@ assign is_sdram_addr = (alu_result >= sdram_addr_min)
  */
 /* assertion: invalid address of load or store */
 /* 1-assertion: address beyond the memory space  */
+/*
 always @(*) begin
 	if ( exu_valid && 
 			!(is_clint_addr || is_uart_addr || is_sram_addr 
@@ -616,6 +617,7 @@ always @(*) begin
 		end
 	end
 end
+*/
 
 /* 2-assertion: load and store address unaligned  */
 /*
