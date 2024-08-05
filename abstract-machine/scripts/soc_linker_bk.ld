@@ -80,7 +80,7 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-	} > sdram AT> flash
+	} 
 }
 
 /* some extern address for date moving */
@@ -94,11 +94,6 @@ _ssbl_load_addr = LOADADDR(.ssbl);
 _heap_start = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data) + SIZEOF(.data.extra) ;
 _heap_start = ALIGN(0x1000) ;
 _heap_end = ORIGIN (sdram) + LENGTH (sdram) ;
-/*
-_heap_start = ALIGN(0x1000) ;
-_heap_start = ORIGIN(psram);
-_heap_end = ORIGIN (psram) + LENGTH (psram) ;
-*/
 
 /* stack space */
 _stack_point = ALIGN(0x1000) ;
