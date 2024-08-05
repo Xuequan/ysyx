@@ -38,7 +38,7 @@ uint32_t update_reg_no();
 //extern void update_regfile_data(svLogicVecVal* din);
 uint32_t update_reg_data();
 
-bool check_inst_executed_already();
+bool check_exu_ready_go();
 
 uint32_t get_pc();
 
@@ -51,15 +51,10 @@ bool check_clint_read();
 bool check_uart_write();
 bool check_uart_read();
 
-bool check_gpio();
-
-bool check_ps2();
-
 bool check_spi_master_write();
 bool check_spi_master_read();
 
 bool check_access_fault_ifu();
 bool check_access_fault_exu();
-
 
 #endif

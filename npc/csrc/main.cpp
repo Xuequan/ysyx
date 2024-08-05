@@ -1,6 +1,5 @@
 #include <cstdio>
 #include "VysyxSoCFull.h"
-#include "ctrl.h"
 
 void init_monitor(int argc, char *argv[]);
 void sdb_mainloop();
@@ -8,6 +7,8 @@ void sim_init();
 void sim_exit();
 void destory_mem();
 
+void print_flash();
+void print_mem();
 
 int main(int argc, char *argv[]) {
 
@@ -20,13 +21,9 @@ int main(int argc, char *argv[]) {
 
 	init_monitor(argc, argv);
 	
-#ifdef PRINT_FLASH_MEM 
 	/* for test only */
-  void print_flash();
-  void print_mem();
 	print_flash();
 	print_mem();
-#endif
 
 	sdb_mainloop(); 
 

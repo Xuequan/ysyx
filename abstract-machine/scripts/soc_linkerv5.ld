@@ -2,7 +2,6 @@
  * initial start, fsbl(first stage bootloader), ssbl(second stage bootloader) 都位于 flash
  * first execute fsbl, which loading ssbl from flash to sram;
  * then, execute ssbl, which loading program from flash to psram
- * 将程序加载到 sdram 中运行；注意，此时只有一个SDRAM 颗粒，因此其容量是 32M
  */
 MEMORY 
 	{
@@ -10,7 +9,6 @@ MEMORY
 	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 flash : ORIGIN = 0x30000000, LENGTH = 256M
 	 psram : ORIGIN = 0x80000000, LENGTH = 4M
-   sdram : ORIGIN = 0Xa0000000, LENGTH = 32M
 	}
 
 ENTRY(_start)
@@ -33,17 +31,18 @@ SECTIONS {
     _essbl = . ;
   } > sram AT> flash
 
-  . = ORIGIN(sdram);
+  . = ORIGIN(psram);
   .text :
 	{
 		. = ALIGN(0x8);
+  	. = ORIGIN(psram) ;
 		_text_start = .;
     *(.text*)
 		. = ALIGN(0x8);
 		_text_end = .;
-  } > sdram AT> flash 
+  } > psram AT> flash 
 
-  . = ORIGIN(sdram) + SIZEOF(.text);
+  . = ORIGIN(psram) + SIZEOF(.text);
 	.rodata : 
 	{
 		. = ALIGN(0x8);
@@ -53,9 +52,9 @@ SECTIONS {
 		*(.srodata*)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } > sdram AT> flash
+  } > psram AT> flash
 
-  . = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata);
+  . = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata);
   .data : 
 	{
 		. = ALIGN(0x8);
@@ -67,7 +66,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  } > sdram AT> flash
+  } > psram AT> flash
 
   .bss (NOLOAD) :
 	{
@@ -79,26 +78,21 @@ SECTIONS {
     *(.scommon)
 		. = ALIGN(0x8);
 		_ebss = . ;
-	} > sdram AT> flash
+	} > psram AT> flash
 }
-
-/* some extern address for date moving */
 _data_size = SIZEOF(.data);
 _data_load_addr = LOADADDR(.data);
 _text_load_addr = LOADADDR(.text);
 _rodata_load_addr = LOADADDR(.rodata);
 _ssbl_load_addr = LOADADDR(.ssbl);
-
-/* heap memory space */
 /*
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
-_heap_end = ORIGIN (sdram) + LENGTH (sdram) ;
+_heap_start = ORIGIN (sram) + SIZEOF(.ssbl);
+_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x80;
 */
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN(psram);
+_heap_start = ORIGIN(psram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
 _heap_end = ORIGIN (psram) + LENGTH (psram) ;
 
-/* stack space */
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;
