@@ -1,17 +1,9 @@
-// 本文件对应于 soc_linkerv5.ld 
-// 实现二级 bootloader
 #include <am.h>
 #include <ysyxsoc.h>
 
-#define UART_BASE 0x10000000L
-#define UART_TX 0    
-#define UART_LC 3   // line control register
-#define UART_DL1 0  // divisor latch low byte
-#define UART_DL2 1  // divisor latch high byte
-#define UART_LS 5   // line status register 
+/* control run rt-thred-am */
+//#deinfe RUN_RTT 1
 
-extern char _heap_start;
-extern char _heap_end;
 int main(const char *args);
 
 Area heap = RANGE(&_heap_start, &_heap_end);
@@ -56,39 +48,18 @@ void _trm_init() {
   halt(ret);
 }
 
-extern char _sbss[];
-extern char _ebss[];
-extern char _data_start[];
-extern char _data_end[];
-extern char _data_load_addr[];
-
-extern char _text_load_addr[];
-extern char _text_start[];
-extern char _text_end[];
-
-extern char _rodata_load_addr[];
-extern char _rodata_start[];
-extern char _rodata_end[];
-
-/*
-// from rt-thred-am/bsp/abstract-machine/extra.ld
-extern char __fsymtab_start[];
-extern char __am_apps_data_end[];
-extern char __data_extra_load_addr[];
-extern char __am_apps_bss_start[];
-extern char __am_apps_bss_end[];
-*/
 void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 	char *dst;
 	char *src; 
   // zero .bss
 	for (dst = _sbss; dst < _ebss; dst++)
 		*dst = 0;
-	/*
+
+#ifdef RUN_RTT
   // zero .bss.extra
   for (dst = __am_apps_bss_start; dst < __am_apps_data_end; dst++)
     *dst = 0;
-	*/
+#endif
 
 	// copy '.data' section to psram
 	src = _data_load_addr;
@@ -106,21 +77,17 @@ void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 	while (dst < _rodata_end)
 		*dst++ = *src++;
 
-	/*
+#ifdef RUN_RTT
 	src = __data_extra_load_addr;
 	dst = __fsymtab_start;
 	while (dst < __am_apps_data_end)
 		*dst++ = *src++;
-	*/
+#endif
 
   _trm_init();
 }
 
 // fsbl loads ssbl code from flash to sram
-extern char _ssbl_load_addr[];
-extern char _sssbl[];
-extern char _essbl[];
-
 void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
 	char *dst;
 	char *src; 

@@ -4,14 +4,18 @@
 #include "VysyxSoCFull__Dpi.h"
 #include "VysyxSoCFull___024root.h"
 #include "dpi-c.h"
+#include "ctrl.h"
+
+#ifdef CONNECT_NVBOARD
 #include "nvboard.h"
+void nvboard_bind_all_pins(VysyxSoCFull* top);
+void nvboard_quit();
+#endif
 
 static VysyxSoCFull* top;
 static VerilatedContext* contextp;
 static VerilatedVcdC* tfp;
 
-void nvboard_bind_all_pins(VysyxSoCFull* top);
-void nvboard_quit();
 
 static void step_and_dump_wave() {
 	top->eval();
@@ -22,29 +26,33 @@ static void step_and_dump_wave() {
 #endif
 }
 
-// execute one cycle
+// execute one clock cycle
 static void sim_one_cycle() {
 	for(int i = 0; i < 2; i++) {
 		top->clock ^= 1;
 		step_and_dump_wave();
+
+#ifdef CONNECT_NVBOARD
     nvboard_update();
+#endif
 	}
 }
 
-// execute one inst
+// execute one inst, until EXU ready_go is 1
 // return 0 --- no sepcial
 // return 1 ---> function call 
 // return 2 ---> function ret
 // return 3 ---> ebreak_inst
 int sim_once() {
 	int ret = 0;
-	while ( check_exu_ready_go() != true ) {
+  // EXU is ready to go;
+	while ( check_inst_executed_already() != true ) {
 
 		if (check_access_fault_ifu() ) {
 			printf("IFU 'pc' = '%#x' Access fault! Please check!\n", get_pc() );
 			return 0;
 		}
-
+    /* check if inst is ebreak, jal, jalr ... */
 		if (inst_is_ebreak()){
 			ret = 3;
 		}else if (inst_is_jal()){
@@ -59,6 +67,7 @@ int sim_once() {
 			else 
 				ret = 1;
 		}
+    
 		sim_one_cycle();
 	} // end-while
 
@@ -66,21 +75,26 @@ int sim_once() {
 		printf("EXU 'pc' = '%#x' Access fault! Please check!\n", get_pc() );
 		return 0;
 	}
-		
+	
+  // wait one more cycle to let write to regfile
 	sim_one_cycle();
+
 	return ret; 
 }
 
 void sim_init() {
+
  	contextp = new VerilatedContext;
 	tfp = new VerilatedVcdC;
 	top = new VysyxSoCFull;
 
+#ifdef CONNECT_NVBOARD
   nvboard_bind_all_pins(top);
   nvboard_init();
+#endif
 
-	contextp->traceEverOn(true);
 #ifdef WAVE_FILE
+	contextp->traceEverOn(true);
 	top->trace(tfp, 0);
   tfp->open("dump.vcd");
 #endif
@@ -106,7 +120,9 @@ void sim_exit() {
 	delete top;
 	delete contextp;
 
+#ifdef CONNECT_NVBOARD
   nvboard_quit();
+#endif
 }
 
 uint32_t get_clock_from_top(){
