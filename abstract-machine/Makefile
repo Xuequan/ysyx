@@ -68,6 +68,7 @@ LINKAGE   = $(OBJS) \
 
 ### Print build info message
 $(info #0 MAKECMDGOALS=$(MAKECMDGOALS))
+<<<<<<< HEAD
 $(info #1 WORK_DIR:$(WORK_DIR))
 $(info #2 ARCHIVE:$(ARCHIVE))
 $(info #3 DST_DIR:$(DST_DIR))
@@ -78,6 +79,8 @@ $(info #7 OBJS:$(OBJS))
 $(info #8 ARCH:$(ARCH))
 $(info #9 LINKAGE:$(LINKAGE))
 
+=======
+>>>>>>> tracer-ysyx
 ## 3. General Compilation Flags
 
 ### (Cross) compilers, e.g., mips-linux-gnu-g++
@@ -101,20 +104,32 @@ CFLAGS   += -O2 -MMD -Wall -Werror $(INCFLAGS) \
             -D__PLATFORM__=$(PLATFORM) -D__PLATFORM_$(shell echo $(PLATFORM) | tr a-z A-Z | tr - _) \
             -DARCH_H=\"$(ARCH_H)\" \
             -fno-asynchronous-unwind-tables -fno-builtin -fno-stack-protector \
+<<<<<<< HEAD
             -Wno-main -U_FORTIFY_SOURCE -fvisibility=hidden
 # 试试
 CFLAGS += -g
 CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
+=======
+            -Wno-main -U_FORTIFY_SOURCE -fvisibility=hidden 
+# 试试
+CFLAGS += -g -Os
+CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
+CXXFLASS += -Os
+
+>>>>>>> tracer-ysyx
 ASFLAGS  += -MMD $(INCFLAGS)
 LDFLAGS  += -z noexecstack
 #LDFLAGS  += -z nodefaultlib
 
+<<<<<<< HEAD
 $(info #10 INC_PATH:$(INC_PATH))
 $(info #11 INCFLAGS:$(INCFLAGS))
 $(info #12 CFLAGS:$(CFLAGS))
 $(info #13 LDFLAGS:$(LDFLAGS))
 $(info #14 SRCS---$(SRCS))
 
+=======
+>>>>>>> tracer-ysyx
 ## 4. Arch-Specific Configurations
 
 ### Paste in arch-specific configurations (e.g., from `scripts/x86_64-qemu.mk`)
@@ -131,18 +146,31 @@ endif
 ### Rule (compile): a single `.c` -> `.o` (gcc)
 $(DST_DIR)/%.o: %.c
 	@mkdir -p $(dir $@) && echo + CC $<
+<<<<<<< HEAD
 	@$(CC) -std=gnu11 $(CFLAGS) -c -o $@ $(realpath $<)
+=======
+	$(CC) -std=gnu11 $(CFLAGS) -c -o $@ $(realpath $<)
+
+>>>>>>> tracer-ysyx
 
 ### Rule (compile): a single `.cc` -> `.o` (g++)
 $(DST_DIR)/%.o: %.cc
 	@mkdir -p $(dir $@) && echo + CXX $<
 	@$(CXX) -std=c++17 $(CXXFLAGS) -c -o $@ $(realpath $<)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> tracer-ysyx
 ### Rule (compile): a single `.cpp` -> `.o` (g++)
 $(DST_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@) && echo + CXX $<
 	@$(CXX) -std=c++17 $(CXXFLAGS) -c -o $@ $(realpath $<)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> tracer-ysyx
 ### Rule (compile): a single `.S` -> `.o` (gcc, which preprocesses and calls as)
 $(DST_DIR)/%.o: %.S
 	@mkdir -p $(dir $@) && echo + AS $<

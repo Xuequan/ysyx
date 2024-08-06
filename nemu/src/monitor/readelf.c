@@ -306,7 +306,11 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 				cond = (addr == sym[i]->st_value);
 			} else {
 				cond = (addr >= sym[i]->st_value) && 
+<<<<<<< HEAD
 					(addr <= sym[i]->st_value + sym[i]->st_size);
+=======
+					(addr < sym[i]->st_value + sym[i]->st_size);
+>>>>>>> tracer-ysyx
 			}
 
 			if (cond) {
@@ -322,7 +326,12 @@ void vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int le
 				func_name[k] = '\0';
 
 				*success = true;
+<<<<<<< HEAD
 				break;
+=======
+				return;
+				//break;
+>>>>>>> tracer-ysyx
 			}
 		}
 	}//end-for

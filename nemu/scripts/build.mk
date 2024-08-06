@@ -27,6 +27,9 @@ LDFLAGS := -O2 $(LDFLAGS)
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o) $(CXXSRC:%.cc=$(OBJ_DIR)/%.o)
 
+LLVM_LIB_DIR = /usr/lib/llvm-19/lib
+LLVM_LIB = $(addprefix -L, $(LLVM_LIB_DIR))
+
 # Compilation patterns
 $(OBJ_DIR)/%.o: %.c
 	@echo $(CC) $(CFLAGS) -c -o $@ $<
@@ -59,9 +62,15 @@ $(BINARY): $(OBJS) $(ARCHIVES)
 	@echo BINARY=$(BINARY)
 	@echo OBJS=$(OBJS)
 	@echo ARCHIVES=$(ARCHIVES)
+<<<<<<< HEAD
+=======
+	@echo INC_PATH=$(INC_PATH)
+	@echo INCLUDES=$(INCLUDES)
+>>>>>>> tracer-ysyx
 	@echo $(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 	@echo ======================inside scripts/build.mk===========
 	@$(LD) -o $@ $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
+	#@$(LD) -o $@ $(LLVM_LIB) $(OBJS) $(LDFLAGS) $(ARCHIVES) $(LIBS)
 
 clean:
 	-rm -rf $(BUILD_DIR)

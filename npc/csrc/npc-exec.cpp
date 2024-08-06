@@ -17,12 +17,18 @@
 #include <cstdio>
 #include "sim.h"
 #include "dpi-c.h"
+<<<<<<< HEAD
+=======
+#include <clocale>
+#include "ctrl.h"
+>>>>>>> tracer-ysyx
 
 #define MAX_INST_TO_PRINT 10
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 uint64_t g_nr_guest_inst = 0;
 
+<<<<<<< HEAD
 /* return 1 if function call
 ** return 2 if function ret
 ** else return 0
@@ -44,21 +50,33 @@ static int identify_inst() {
 	}
 }
 
+=======
+void difftest_skip_ref();	
+>>>>>>> tracer-ysyx
 static int space = 4;
 char *vaddr2func(vaddr_t addr, bool *success, int choose, char* func_name, int len);
 
 #define FUNC_NAME_LEN 102
+<<<<<<< HEAD
 static void ftrace() {
+=======
+static void ftrace(int ident) {
+>>>>>>> tracer-ysyx
   bool success1 = false;
   bool success2 = false;
 	char func_name[FUNC_NAME_LEN];
 	int len = FUNC_NAME_LEN;
 
+<<<<<<< HEAD
   int ident = identify_inst();
+=======
+  //int ident = identify_inst();
+>>>>>>> tracer-ysyx
   if (1 == ident){ // maybe a function call, should double check
     vaddr2func(nextpc(), &success1, 1, func_name, len); 
     if (success1){ // double check, if next_pc is a function, then a function call
       space++;
+<<<<<<< HEAD
       log_write("%#x:%*s [%s@%#x]\n", get_pc_from_top(), space, "call", func_name, nextpc());  
     }
   }else if(2 == ident){ // ret
@@ -69,6 +87,22 @@ static void ftrace() {
       log_write("%#x:%*s [%s]\n", get_pc_from_top(), space, "ret ", func_name);
     }else{  // should never be here
       log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc_from_top(), get_inst_from_top());
+=======
+#ifdef LOG_WRITE_ENABLE
+      log_write("%#x:%*s [%s@%#x]\n", get_pc(), space, "call", func_name, nextpc());  
+#endif
+    }
+  }else if(2 == ident){ // ret
+      // call vaddr2func just for function name only
+    vaddr2func(get_pc(), &success2, 0, func_name, len); 
+    if (success2){
+      space--;
+#ifdef LOG_WRITE_ENABLE
+      log_write("%#x:%*s [%s]\n", get_pc(), space, "ret ", func_name);
+#endif
+    }else{  // should never be here
+      log_write("NPC--Should check! %s pc = '%#x': inst = '%#x' is not a function entry!\n", func_name, get_pc(), get_inst());
+>>>>>>> tracer-ysyx
     }     
   }
 }
@@ -88,6 +122,7 @@ static void print_iringbuf(void) {
 	}
 }
 void disassemble(char *str, int size, uint64_t pc, uint8_t* code, int nbyte);
+<<<<<<< HEAD
 static char logbuf[128];
 
 void get_assemble() {
@@ -95,6 +130,17 @@ void get_assemble() {
 	uint32_t pc 				 = get_pc_from_top();
 	uint32_t instruction = get_inst_from_top();
 	uint8_t* inst = (uint8_t *)&instruction;
+=======
+
+static char logbuf[128];
+
+void get_assemble_code() {
+	char *p = logbuf;
+	uint32_t pc 				 = get_pc();
+	uint32_t instruction = get_inst();
+	uint8_t* inst = (uint8_t *)&instruction;
+
+>>>>>>> tracer-ysyx
 	p += snprintf(p, sizeof(logbuf), FMT_WORD ":", pc);
 	for(int k = 3; k >= 0; k--) {
 		p += snprintf(p, 4, " %02x", inst[k]);
@@ -102,13 +148,21 @@ void get_assemble() {
 	memset(p, ' ', 1);
 	p += 1;
 	disassemble(p, logbuf + sizeof(logbuf) - p, pc, inst, 4);
+<<<<<<< HEAD
 	//printf("%#08x:%s %s\n",pc, logbuf, p);
+=======
+	/* printf each executed instruction in NPC */
+	if (g_print_step){
+		printf("%s\n",logbuf);
+	}
+>>>>>>> tracer-ysyx
 }
 
 void scan_wp_pool();
 void difftest_step();
 
 static void trace_and_difftest(){
+<<<<<<< HEAD
 	log_write("%s\n", logbuf);
 	if (g_print_step){
 		printf("%s\n",logbuf);
@@ -139,10 +193,59 @@ void exec_once() {
 }
 
 
+=======
+#ifdef LOG_WRITE_ENABLE
+#ifdef WRITE_EVERY_INST
+	log_write("%s\n", logbuf);
+#endif
+#endif
+
+	if (check_clint_read() || check_uart_write() || check_uart_read() 
+		|| check_spi_master_read() || check_spi_master_write()  
+    || check_gpio() || check_ps2()  ) {
+
+		difftest_skip_ref();	
+  }
+
+	difftest_step();
+}
+
+void exec_once() {
+	int sim_ret = sim_once();
+
+	get_assemble_code();
+
+	if (iindex == IRINGBUF_LEN) 
+		iindex = 0;
+	memset(iringbuf[iindex], 0, sizeof(iringbuf[iindex]));
+	memcpy(iringbuf[iindex++], logbuf, strlen(logbuf));
+
+	if (sim_ret == 3) { 
+#ifdef PRINT_FLASH_MEM
+    void print_flash();
+    void print_mem();
+		printf("after reach ebreak, to see if flash, mem change\n");
+		print_flash();
+		print_mem();
+#endif
+
+		printf("\nReach ebreak instruction, stop sim.\n\n");
+		npc_state.state = NPC_END;
+		npc_state.halt_pc = get_pc();
+		npc_state.halt_ret = 0;
+		return;
+	}
+
+	if (sim_ret == 1 || sim_ret == 2) 
+		ftrace(sim_ret);
+}
+
+>>>>>>> tracer-ysyx
 void execute(uint64_t n) {
 	for( ; n > 0; n--) {
 		g_nr_guest_inst ++;
 		exec_once();
+<<<<<<< HEAD
 		//trace_and_difftest();
 		if (npc_state.state != NPC_RUNNING) 
 			return;
@@ -153,6 +256,15 @@ void execute(uint64_t n) {
 			npc_state.halt_ret = 0;
 			return;
 		}
+=======
+#ifdef DIFFTEST
+	  trace_and_difftest();
+#endif
+		// breakpoint 
+		scan_wp_pool();
+		if (npc_state.state != NPC_RUNNING) 
+			return;
+>>>>>>> tracer-ysyx
 	}
 }
 
@@ -173,7 +285,11 @@ void npc_exec(uint64_t n) {
 			printf("Program execution has ended. To restart the program, please exit and restart\n");
 			return;
 		default: 
+<<<<<<< HEAD
 				npc_state.state = NPC_RUNNING;
+=======
+			npc_state.state = NPC_RUNNING;
+>>>>>>> tracer-ysyx
 	}
 	
 	uint64_t timer_start = get_time();

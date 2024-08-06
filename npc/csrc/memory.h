@@ -36,8 +36,11 @@ void init_mem();
 
 word_t paddr_read(paddr_t addr, int len);
 
+<<<<<<< HEAD
 word_t vaddr_ifetch(vaddr_t addr, int len);
 
+=======
+>>>>>>> tracer-ysyx
 word_t vaddr_read(vaddr_t addr, int len);
 
 void paddr_write(paddr_t addr, int len, word_t data);

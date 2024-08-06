@@ -7,9 +7,15 @@ void __am_timer_init() {
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
+<<<<<<< HEAD
   uptime->us = inl(RTC_ADDR + 4);
 	uptime->us <<= 32;
 	uptime->us += inl(RTC_ADDR);
+=======
+  uptime->us = inl(RTC_ADDR + 4) * 2/1000;
+	uptime->us <<= 32;
+	uptime->us += inl(RTC_ADDR) * 2/1000;
+>>>>>>> tracer-ysyx
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {

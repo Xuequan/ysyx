@@ -25,6 +25,12 @@ void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
+<<<<<<< HEAD
+=======
+void init_mrom();
+void init_sram();
+void init_sdram();
+>>>>>>> tracer-ysyx
 
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
@@ -118,6 +124,15 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize memory. */
   init_mem();
+	
+	/* Initialize mrom */
+	init_mrom();
+
+	/* Initialize sram */
+	init_sram();
+
+  /* Initialize sdram */
+  init_sdram();
 
   /* Initialize devices. */
   IFDEF(CONFIG_DEVICE, init_device());
@@ -127,7 +142,7 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Load the image to memory. This will overwrite the built-in image. */
   long img_size = load_img();
-
+	//long img_size = 0;
   /* Initialize differential testing. */
   init_difftest(diff_so_file, img_size, difftest_port);
 

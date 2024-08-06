@@ -7,6 +7,7 @@
 #define NR_REGS 32
 #endif
 
+<<<<<<< HEAD
 struct Context {
   // TODO: fix the order of these members to match trap.S
   //uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;
@@ -16,6 +17,12 @@ struct Context {
 	uint32_t gpr[13], gpr[14], gpr[15];
 	uint32_t mcause, mstatus, mepc;
 	*/
+=======
+#define NR_PARAMS 3
+struct Context {
+  // TODO: fix the order of these members to match trap.S
+  //uintptr_t mepc, mcause, gpr[NR_REGS], mstatus;
+>>>>>>> tracer-ysyx
 	uintptr_t gpr[NR_REGS], mcause, mstatus, mepc;
   void *pdir;
 };

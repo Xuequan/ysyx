@@ -42,7 +42,12 @@ void device_update();
 
 static void print_iringbuf(void) {
 	for( int i = 0; i < IRINGBUF_LEN; i++) {
+<<<<<<< HEAD
 		if (strlen(iringbuf[i]) != 0) {
+=======
+		//if (strlen(iringbuf[i]) != '\0') {
+		if (iringbuf[i][0] != '\0') {
+>>>>>>> tracer-ysyx
 			if ( i == iindex - 1)
 				printf("--> ");
 			printf("%s\n", iringbuf[i]);
@@ -57,6 +62,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 	
 #endif
+
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 	// check if reach breakpoint
@@ -162,7 +168,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	/* ftrace end */
 #endif
 
+<<<<<<< HEAD
   cpu.pc = s->dnpc;
+=======
+  cpu.pc = s->dnpc;   // note: until now update cpu.pc
+>>>>>>> tracer-ysyx
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -190,6 +200,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	
 	if (iindex == IRINGBUF_LEN) 
 	{	iindex = 0;	}
+<<<<<<< HEAD
+=======
+	memset(iringbuf[iindex], '\0', 128);
+>>>>>>> tracer-ysyx
 	memcpy(iringbuf[iindex], s->logbuf, strlen(s->logbuf));
 	iindex++; 
 

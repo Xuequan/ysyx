@@ -65,6 +65,10 @@ void *malloc(size_t size) {
 void free(void *ptr) {
 }
 
+<<<<<<< HEAD
+=======
+/*
+>>>>>>> tracer-ysyx
 static void reverse(char s[]) {
 	char c;
 	int i, j;
@@ -91,4 +95,8 @@ void itoa(int n, char s[]) {
 	s[i] = '\0';
 	reverse(s);
 }
+<<<<<<< HEAD
+=======
+*/
+>>>>>>> tracer-ysyx
 #endif

@@ -28,12 +28,18 @@ static const uint32_t img [] = {
 
 static void restart() {
   /* Set the initial program counter. */
-  cpu.pc = RESET_VECTOR;
+  //cpu.pc = RESET_VECTOR;
+  /* set pc to FLASH */
+  cpu.pc = 0x30000000;
 
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
 
+<<<<<<< HEAD
 	/* for Difftest, set mstatus to 0x1800 */
+=======
+	/* for Difftest, riscv32, set mstatus to 0x1800 */
+>>>>>>> tracer-ysyx
 	cpu.mstatus = 0x1800;
 }
 

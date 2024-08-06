@@ -24,6 +24,16 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+<<<<<<< HEAD
+=======
+extern word_t pflash_read(paddr_t addr, int len);
+extern word_t pmrom_read(paddr_t addr, int len);
+extern word_t psram_read(paddr_t addr, int len);
+extern void psram_write(paddr_t addr, int len, word_t data);
+extern word_t psdram_read(paddr_t addr, int len);
+extern void psdram_write(paddr_t addr, int len, word_t data);
+
+>>>>>>> tracer-ysyx
  // 在 nemu 中运行的程序称为 "guest 程序”
  // guest_to_host() 将 paddr 转化为 nemu 模拟的计算机地址在
  // 本电脑上的地址
@@ -56,21 +66,70 @@ void init_mem() {
   uint32_t *p = (uint32_t *)pmem;
   int i;
   for (i = 0; i < (int) (CONFIG_MSIZE / sizeof(p[0])); i ++) {
-    p[i] = rand();
+  	p[i] = 0;
   }
 #endif
   Log("physical memory area [" FMT_PADDR ", " FMT_PADDR "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
 word_t paddr_read(paddr_t addr, int len) {
+<<<<<<< HEAD
   if (likely(in_pmem(addr))) {
 		word_t num = pmem_read(addr, len); 
+=======
+	// mrom
+  if (likely(in_mrom(addr))) { 
+		word_t num = pmrom_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from mrom: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+	// flash
+  if (likely(in_flash(addr))) { 
+		word_t num = pflash_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from flash: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+	// mem
+  if (likely(in_pmem(addr))) {
+		word_t num = pmem_read(addr, len); 
+		//printf("NEMU: read address = %#x, get data = %#x, len = %d, pc = %#x\n\n", addr, num, len, cpu.pc); 
+		log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+>>>>>>> tracer-ysyx
 #ifdef CONFIG_MTRACE
 		if (cpu.pc != addr)  // fliter instruction fetch
 			log_write("Read from mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
 #endif
 		return num;
 	}
+<<<<<<< HEAD
+=======
+	// sram
+  if (likely(in_sram(addr))) { 
+		word_t num = psram_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from sram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+
+	// sdram
+  if (likely(in_sdram(addr))) { 
+		word_t num = psdram_read(addr, len); 
+#ifdef CONFIG_MTRACE
+		if (cpu.pc != addr)  // fliter instruction fetch
+			log_write("Read from sdram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, num, cpu.pc); 
+#endif
+		return num; 
+	}
+
+>>>>>>> tracer-ysyx
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
 	// 若是NEMU作为NPC的 ref，那么 CONFIG_DEVICE 也没有，那么对于I/O 就会执行到这里
 	// 进而在NPC显示里报错
@@ -80,12 +139,45 @@ word_t paddr_read(paddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { 
+<<<<<<< HEAD
+=======
+		//printf("NEMU: write address = %#x, write data = %#x, len = %d, pc = %#x\n\n", addr, data, len, cpu.pc); 
+>>>>>>> tracer-ysyx
 #ifdef CONFIG_MTRACE
 		log_write("Write to mem: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
 #endif
 		pmem_write(addr, len, data); 
 		return; 
 	}
+<<<<<<< HEAD
+=======
+	// mrom 
+  if (likely(in_mrom(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to mrom: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		printf("NEMU: please check, mrom cannot write after init\n");
+		return; 
+	}
+	
+	// sram
+  if (likely(in_sram(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to sram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		psram_write(addr, len, data); 
+		return; 
+	}
+	// sdram
+  if (likely(in_sdram(addr))) { 
+#ifdef CONFIG_MTRACE
+		log_write("Write to sdram: address = %#x, length = %d, data = %#x, pc = %#x\n", addr, len, data, cpu.pc); 
+#endif
+		psdram_write(addr, len, data); 
+		return; 
+	}
+
+>>>>>>> tracer-ysyx
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }

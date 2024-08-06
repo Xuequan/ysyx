@@ -1,4 +1,5 @@
 // IDU 模块
+<<<<<<< HEAD
 module ysyx_23060208_IDU
 	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
 	input clk,
@@ -8,10 +9,27 @@ module ysyx_23060208_IDU
 	input [DATA_WIDTH-1:0]  pc_i,
 	
 	// from EXU 
+=======
+`include "ysyx_23060208_npc.h"    
+module ysyx_23060208_IDU
+	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
+	input clock,
+	input reset,
+	/* connect with IFU   */
+	input [`IFU_TO_IDU_BUS-1:0] ifu_to_idu_bus,
+	input 											ifu_to_idu_valid,
+	
+	/* connect with CSR, read from CSR */
+	output [11:0] 					csr_raddr,
+	input [DATA_WIDTH-1:0]  csr_rdata,
+
+	/* update regfile, from EXU */
+>>>>>>> tracer-ysyx
 	input [DATA_WIDTH-1:0]  regfile_wdata,
 	input [REG_WIDTH-1 :0]  regfile_waddr,
 	input										regfile_wen,
 
+<<<<<<< HEAD
 	// to EXU (for ALU)
 	output [DATA_WIDTH-1:0] pc_o,
 	output [DATA_WIDTH-1:0] src1,
@@ -34,12 +52,128 @@ module ysyx_23060208_IDU
 	output [DATA_WIDTH-1:0] store_data_raw
 );
 
+=======
+	/* connect with EXU */
+	output [`IDU_TO_EXU_ALU_BUS-1:0] idu_to_exu_alu_bus,
+	output [`IDU_TO_EXU_BUS-1    :0] idu_to_exu_bus,
+	// CSR for nextpc
+	output [`IDU_TO_EXU_CSR_BUS-1:0] idu_to_exu_csr_bus,
+
+	output 								 idu_to_exu_valid,
+	input									 exu_allowin,
+
+	output											idu_valid_o,
+	output								 			idu_allowin
+);
+wire [DATA_WIDTH-1:0] src1;
+wire [DATA_WIDTH-1:0] src2;
+wire [REG_WIDTH-1 :0] rd; 
+wire [17          :0] op; 
+assign idu_to_exu_alu_bus = {src1, src2, rd, op};
+
+wire [1           :0] regfile_mem_mux;
+wire [2           :0] store_inst;
+wire [4           :0] load_inst;
+wire [DATA_WIDTH-1:0] store_data_raw; 
+	// unconditional jump (jal & jalr)
+wire [1           :0] uncond_jump_inst;
+	// conditional branch 
+wire [DATA_WIDTH-1:0] cond_branch_target;
+wire                 cond_branch_inst;
+wire [DATA_WIDTH-1:0] idu_pc; 
+wire [DATA_WIDTH-1:0] idu_inst;
+wire [DATA_WIDTH-1:0] inst;
+assign idu_to_exu_bus = 
+			 {regfile_mem_mux,  // 0-1
+        store_inst,       // 2-4
+        load_inst,        // 5-9
+        store_data_raw,		// 10-41
+        uncond_jump_inst, // 42-43
+        cond_branch_target, // 44-75
+        cond_branch_inst,   // 76
+        idu_pc,							// 77-108
+				idu_inst 						// 109-140
+        };
+
+wire [11          :0] csr_idx;
+wire [2           :0] csr_inst;
+wire [DATA_WIDTH-1:0] csr_nextpc; 
+wire                  csr_nextpc_taken;
+assign idu_to_exu_csr_bus = 
+			 {csr_idx,
+        csr_inst,
+        csr_nextpc,
+        csr_nextpc_taken
+        };
+
+
+reg idu_valid;
+assign idu_valid_o = idu_valid;
+wire idu_ready_go;
+
+// 由于现在IDU是一个周期可以完成任务，因此将ready_go 设为1 
+assign idu_ready_go = 1'b1;
+assign idu_to_exu_valid = idu_valid && idu_ready_go;
+assign idu_allowin = !idu_valid || (idu_ready_go  && exu_allowin);
+
+always @(posedge clock) begin
+	if (reset) 
+		idu_valid <= 1'b0;
+	else if(idu_allowin)
+		idu_valid <= ifu_to_idu_valid;
+end
+
+reg [DATA_WIDTH*2-1:0] ifu_to_idu_bus_r;
+// 从 IFU 得到数据
+assign {idu_pc, idu_inst} = ifu_to_idu_bus_r;
+assign inst = idu_inst;
+
+always @(posedge clock) begin
+	if (reset) 
+		ifu_to_idu_bus_r <= 0;
+	else if (idu_allowin)
+		ifu_to_idu_bus_r <= ifu_to_idu_bus;
+end
+/*
+//======================= FSM ==================================
+parameter [1:0] IDLE = 2'b00, WAIT_ALLOWIN = 2'b01, SENT = 2'b10;
+reg [1:0] state, next;
+always @(posedge clock) begin
+	if (reset) state <= IDLE;
+	else     state <= next;
+end
+
+always @(state or idu_to_exu_valid or exu_allowin) begin
+	next = IDLE;
+	case (state)
+		IDLE:
+			if 			(!idu_to_exu_valid)		next <= IDLE;
+			else if (!exu_allowin) 	next <= WAIT_ALLOWIN;
+			else													next <= SENT;
+		WAIT_ALLOWIN:
+			if 			(exu_allowin)    next <= SENT;
+			else													next <= WAIT_ALLOWIN;
+		SENT:
+			if (idu_to_exu_valid && exu_allowin) next <= SENT;
+			else if(idu_to_exu_valid && !exu_allowin) next <= WAIT_ALLOWIN;
+			else 																					 next <= IDLE;
+		default:;
+	endcase
+end
+*/
+//==========================================================================
+>>>>>>> tracer-ysyx
 // 解析指令
 wire [6:0] opcode;
 wire [2:0] funct3;
 wire [6:0] funct7;
+<<<<<<< HEAD
 wire [REG_WIDTH-1:0] rs1;
 wire [REG_WIDTH-1:0] rs2;
+=======
+wire [REG_WIDTH-1:0 ] rs1;
+wire [REG_WIDTH-1:0 ] rs2;
+>>>>>>> tracer-ysyx
 wire [DATA_WIDTH-1:0] imm;
 wire [DATA_WIDTH-1:0] immI;
 wire [DATA_WIDTH-1:0] immU;
@@ -48,12 +182,17 @@ wire [DATA_WIDTH-1:0] immS;
 wire [DATA_WIDTH-1:0] immB;
 wire [DATA_WIDTH-1:0] src1_from_reg;
 wire [DATA_WIDTH-1:0] src2_from_reg;
+<<<<<<< HEAD
+=======
+wire [11					:0] csr;
+>>>>>>> tracer-ysyx
 
 assign opcode = inst[6:0];
 assign funct3 = inst[14:12];
 assign funct7 = inst[31:25];
 assign rs1 = inst[19:15];
 assign rs2 = inst[24:20];
+<<<<<<< HEAD
 assign rd  = inst[11:7];
 
 /* ================ 判断alu src1, src2 来源 ========= */
@@ -62,6 +201,18 @@ wire 									src2_from_imm;
 // 判断 src1 的来源
 wire 									src1_from_pc;
 wire									src1_is_zero;
+=======
+assign rd  = inst[11: 7];
+assign csr = inst[31:20]; 
+/* ================ 判断alu src1, src2 来源 ========= */
+// 判断 src2 的来源
+wire 									src2_from_imm;
+wire									src2_from_csr;
+// 判断 src1 的来源
+wire 									src1_from_pc;
+   // src1_is_zero 和 src1_is_none 可以弄成一个
+wire									src1_is_zero; // like csrrw, no need src1 for ALU
+>>>>>>> tracer-ysyx
 wire									src1_is_none; // like lui, no need src1
 
 /*========== 判断inst 最终是写入 register or mem ====== */
@@ -124,9 +275,39 @@ wire inst_sb;
 wire inst_sh;
 
 // environment call and breakpoints
+<<<<<<< HEAD
 //wire inst_ecall;
 wire inst_ebreak;
 
+=======
+wire inst_ecall;
+wire inst_ebreak;
+
+// Machine-mode privileged instructions
+wire inst_mret;
+// 'Zicsr', CSR instructions
+wire inst_csrrw;   // rd <-csr;  csr <- src1
+
+			// 利用 alu 来计算csr <- src1 | csr
+wire inst_csrrs;   // rd <- csr; csr <- src1 | csr
+
+wire valid_inst = inst_addi | inst_slti | inst_sltiu | inst_andi | inst_ori | inst_xori
+	| inst_slli | inst_srli | inst_srai | inst_lui | inst_auipc 
+	| inst_add  | inst_slt  | inst_sltu | inst_and | inst_or 
+	| inst_xor  | inst_sll  | inst_srl  | inst_sub | inst_sra
+	| inst_jal  | inst_jalr | inst_beq  | inst_bne | inst_blt
+	| inst_bltu | inst_bge  | inst_bgeu | inst_lw	 | inst_lb
+	| inst_lh   | inst_lbu  | inst_lhu  | inst_sw  | inst_sb
+	| inst_sh   | inst_ecall | inst_ebreak | inst_mret | inst_csrrw
+	| inst_csrrs; 
+ 
+always @(*) begin
+	if (!valid_inst && idu_valid && !reset) begin
+		$fwrite(32'h8000_0002, "Assertion, IDU invalid instruction. pc = '%h', inst = '%h', idu_valid = '%d'\n", idu_pc, idu_inst, idu_valid);
+		$fatal;
+	end
+end
+>>>>>>> tracer-ysyx
 
 // integer register-immediate instructions
 assign inst_addi   = (opcode == 7'b001_0011) && (funct3 == 3'b0);
@@ -190,8 +371,22 @@ assign inst_sw  = (opcode == 7'b010_0011) && (funct3 == 3'b010);
 assign inst_sb  = (opcode == 7'b010_0011) && (funct3 == 3'b000);
 assign inst_sh  = (opcode == 7'b010_0011) && (funct3 == 3'b001);
 
+<<<<<<< HEAD
 assign inst_ebreak = (inst == 32'b1_00000_000_00000_111_0011); 
 
+=======
+// environment call and breakpoints
+assign inst_ecall  = (inst == 32'b0_00000_000_00000_111_0011); 
+assign inst_ebreak = (inst == 32'b1_00000_000_00000_111_0011); 
+
+// Machine-mode privileged instructions
+assign inst_mret   = (inst == 32'b0011000_00010_00000_000_00000_1110011); 
+
+// 'Zicsr', CSR instructions
+assign inst_csrrw = (opcode == 7'b111_0011) && (funct3 == 3'b001);
+assign inst_csrrs = (opcode == 7'b111_0011) && (funct3 == 3'b010);
+
+>>>>>>> tracer-ysyx
 /*============== 不同类型指令对应的 Imm ============ */
 assign immI = { {20{inst[31]}}, inst[31:20]};
 assign immJ = { {12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0 };
@@ -201,8 +396,13 @@ assign immB = { {20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0 };
 
 
 ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
+<<<<<<< HEAD
 	.clk(clk),
 	.rst(rst),
+=======
+	.clock(clock),
+	.reset(reset),
+>>>>>>> tracer-ysyx
 	.wdata(regfile_wdata),
 	.waddr(regfile_waddr), 
 	.rdata1(src1_from_reg),
@@ -216,7 +416,11 @@ ysyx_23060208_regfile #(.REG_WIDTH(REG_WIDTH), .DATA_WIDTH(DATA_WIDTH)) regfile(
 assign src1_from_pc = inst_jal || inst_auipc;
 assign src1_is_zero = 0;
 assign src1_is_none = inst_lui;
+<<<<<<< HEAD
 assign src1 = src1_from_pc ? pc_i : 
+=======
+assign src1 = src1_from_pc ? idu_pc : 
+>>>>>>> tracer-ysyx
 							src1_is_zero ? 0 : 
 							src1_is_none ? 0 : 
 														src1_from_reg;
@@ -241,12 +445,23 @@ assign src2_from_imm = imm_is_Itype || imm_is_Utype
 										|| imm_is_Jtype 
 										|| imm_is_Stype;
 
+<<<<<<< HEAD
+=======
+assign src2_from_csr = inst_csrrw | inst_csrrs;
+
+>>>>>>> tracer-ysyx
 assign imm = ( {32{imm_is_Itype}} & immI) |
 						 ( {32{imm_is_Utype}} & immU) |
 						 ( {32{imm_is_Jtype}} & immJ)	|
 						 ( {32{imm_is_Stype}} & immS);
 
+<<<<<<< HEAD
 assign src2 = src2_from_imm ? imm : src2_from_reg;
+=======
+assign src2 = src2_from_imm ? imm 
+						: src2_from_csr ? csr_rdata 
+						: src2_from_reg;
+>>>>>>> tracer-ysyx
 
 /* ================ get op ====================== */
 wire op_add;   //加法操作
@@ -280,7 +495,12 @@ assign op_sub = inst_sub;
 assign op_slt = inst_slti | inst_slt;
 assign op_sltu = inst_sltiu | inst_sltu;
 assign op_and = inst_andi | inst_and;
+<<<<<<< HEAD
 assign op_or = inst_ori | inst_or;
+=======
+assign op_or = inst_ori | inst_or 
+							| inst_csrrs;
+>>>>>>> tracer-ysyx
 assign op_xor = inst_xori | inst_xor;
 assign op_sll = inst_slli | inst_sll;
 assign op_srl = inst_srli | inst_srl;
@@ -312,12 +532,30 @@ assign op[15] = op_bltu;
 assign op[16] = op_bge;
 assign op[17] = op_bgeu;
 
+<<<<<<< HEAD
 
 /* ================= assign output ============= */
 assign pc_o = pc_i;
 
 // 判断指令最终目的: write to regfile or store to memory
 assign write_to_mem = inst_sw | inst_sh | inst_sb;
+=======
+/* ================ read from CSR ====================== */
+assign csr_raddr = inst_ecall ? 12'h305 
+									: inst_mret  ? 12'h341 
+									: (inst_csrrw || inst_csrrs) ? csr 
+									: 0;
+/* ================ write to CSRs ============= */
+assign csr_idx = csr;
+
+assign csr_nextpc = ({DATA_WIDTH{inst_ecall || inst_mret}} & csr_rdata); 
+assign csr_nextpc_taken = inst_ecall | inst_mret;
+
+// 判断指令最终目的: write to regfile or store to memory
+assign write_to_mem = inst_sw | inst_sh | inst_sb;
+	// instruction write to regfile or memory or no both
+	// to memory: regfile_mem_mux = 2'b10; to register: 2'b01
+>>>>>>> tracer-ysyx
 assign regfile_mem_mux[1] = write_to_mem;
 assign regfile_mem_mux[0] = ~(write_to_mem | cond_branch_inst);
 
@@ -332,8 +570,13 @@ assign uncond_jump_inst[1] = inst_jalr;
 
 // conditional branch 是否跳转由比较 src1, src2 两寄存器决定
 // 该部分交给 alu
+<<<<<<< HEAD
 // 跳转地址 B + pc_i
 assign cond_branch_target = immB + pc_i;
+=======
+// 跳转地址 B + idu_pc
+assign cond_branch_target = immB + idu_pc;
+>>>>>>> tracer-ysyx
 assign cond_branch_inst = inst_beq | inst_bne
 										| inst_blt | inst_bltu
 										| inst_bge | inst_bgeu;
@@ -345,28 +588,57 @@ assign load_inst[2] = inst_lhu;
 assign load_inst[3] = inst_lb;
 assign load_inst[4] = inst_lbu;
 
+<<<<<<< HEAD
 //======================== DPI-C ================================
 export "DPI-C" task check_if_ebreak;
 task check_if_ebreak (output bit o);
 	o = inst_ebreak;
+=======
+assign csr_inst[0] = inst_csrrw;
+assign csr_inst[1] = inst_csrrs;
+assign csr_inst[2] = inst_ecall;
+
+
+
+//======================== DPI-C ================================
+export "DPI-C" task check_if_ebreak;
+task check_if_ebreak (output bit o);
+	o = inst_ebreak && idu_valid;
+>>>>>>> tracer-ysyx
 endtask
 
 export "DPI-C" task check_if_jal;
 task check_if_jal (output bit o);
+<<<<<<< HEAD
 	o = inst_jal;
+=======
+	o = inst_jal & idu_valid;
+>>>>>>> tracer-ysyx
 endtask
 
 export "DPI-C" task check_if_jalr;
 task check_if_jalr (output bit o);
+<<<<<<< HEAD
 	o = inst_jalr;
+=======
+	o = inst_jalr & idu_valid;
+>>>>>>> tracer-ysyx
 endtask
 
 export "DPI-C" task rs1_reg;
 task rs1_reg (output [4:0] o);
+<<<<<<< HEAD
 	o = rs1;
 endtask
 export "DPI-C" task rd_reg;
 task rd_reg (output [4:0] o);
 	o = rd;
+=======
+	o = rs1 & {5{idu_valid}};
+endtask
+export "DPI-C" task rd_reg;
+task rd_reg (output [4:0] o);
+	o = rd & {5{idu_valid}};
+>>>>>>> tracer-ysyx
 endtask
 endmodule

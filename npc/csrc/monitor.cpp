@@ -12,12 +12,16 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> tracer-ysyx
 #include <elf.h>
 #include <getopt.h>
 #include <time.h>
 #include "common2.h"
 #include <cstdlib>
+<<<<<<< HEAD
 
 uint8_t* guest_to_host(paddr_t);
 void init_rand();
@@ -28,6 +32,25 @@ void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 void init_elf();
+=======
+#include "ctrl.h"
+
+
+uint8_t* guest_to_host(paddr_t);
+uint8_t* flash_guest_to_host(paddr_t);
+void init_rand();
+void init_log(const char *log_file);
+void init_sdb();
+void init_disasm(const char *triple);
+void init_elf();
+void init_flash();
+void init_sdram();
+void init_mem();
+
+void alloc_mem();
+
+//void print_flash();
+>>>>>>> tracer-ysyx
 
 void init_rand() {
 	srand(time(0) );
@@ -63,12 +86,40 @@ static char *img_file = NULL;
 static int difftest_port = 1234;
 char *elf_file = NULL;
 
+<<<<<<< HEAD
+=======
+// load npc/tests/char-test.bin to flash space
+static long load_test() {
+	char *test_file = "/home/chuan/ysyx-workbench/npc/tests/char-test.bin";
+	FILE *fp = fopen(test_file, "rb");
+	Assert(fp, "load_test(): Can not open '%s'", test_file);
+
+	fseek(fp, 0, SEEK_END);
+	long size = ftell(fp);
+
+	Log("The test file is %s, size = %ld", test_file, size);
+	
+	fseek(fp, 0, SEEK_SET);
+	int ret = fread(flash_guest_to_host(FLASH_BASE), size, 1, fp);
+	assert(ret == 1);
+
+	fclose(fp);
+	return size;	
+}
+
+// load img to flash
+>>>>>>> tracer-ysyx
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
     return 4096; // built-in image size
   }
 
+<<<<<<< HEAD
+=======
+	printf("image file : %s\n", img_file);
+
+>>>>>>> tracer-ysyx
   FILE *fp = fopen(img_file, "rb");
   Assert(fp, "load_img(): Can not open '%s'", img_file);
 
@@ -78,9 +129,21 @@ static long load_img() {
   Log("The image is %s, size = %ld", img_file, size);
 
   fseek(fp, 0, SEEK_SET);
+<<<<<<< HEAD
   int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
   assert(ret == 1);
 
+=======
+	// 将 image 读到 FLASH对应的电脑的内存
+	// 处，即 pflash 处；
+  int ret = fread(flash_guest_to_host(FLASH_BASE), size, 1, fp);
+  assert(ret == 1);
+
+	/*
+	for(int i = 0; i < size/4; i++)
+		printf("%d: %#x\n", i, *(uint32_t *)(flash_guest_to_host(FLASH_BASE) + i));
+	*/
+>>>>>>> tracer-ysyx
   fclose(fp);
 	return size;
 }
@@ -132,6 +195,7 @@ void init_monitor(int argc, char *argv[]) {
 	/* Read ELF file and get strtab & symtab. */
   init_elf();
 
+<<<<<<< HEAD
   /* Initialize memory. */
   init_mem();
 
@@ -143,6 +207,34 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Initialize differential testing. */
  	init_difftest(diff_so_file, img_size, difftest_port);
+=======
+  /* alloc memory for psram , flash, sdram */
+  alloc_mem();
+
+  /* Initialize memory. */
+	// for test;
+  init_mem();
+
+	/* init flash */
+	init_flash();
+
+  /* init sdram */
+  init_sdram();
+
+  /* Load the image to memory. This will overwrite the built-in image. */
+  long img_size = load_img();
+	//printf("after load_img() \n");
+	//print_flash();
+
+	/* load test program to flash */
+	//long test_size = load_test();
+	long test_size = 0;
+#ifdef DIFFTEST
+  /* Initialize differential testing. */
+  void init_difftest(char *ref_so_file, long img_size, long test_size, int port);
+ 	init_difftest(diff_so_file, img_size, test_size, difftest_port);
+#endif
+>>>>>>> tracer-ysyx
 
   /* Initialize the simple debugger. */
   init_sdb();

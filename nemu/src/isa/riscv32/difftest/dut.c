@@ -24,11 +24,15 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 	int cnt = 0;
 	for( ; i < MUXDEF(CONFIG_RVE, 16, 32); i++) {
 		if (gpr(i) != ref_r->gpr[i]) {
+<<<<<<< HEAD
 			printf("Registers of NEMU and REF are different, PC = %#x\n", pc);
+=======
+>>>>>>> tracer-ysyx
 			error[cnt++] = i;
 		}
 	}
 	if (cnt != 0) {
+<<<<<<< HEAD
 		for(i = 0; i < cnt; i++) {
 			printf("Different register: '%s', '%#x' in NEMU, '%#x' in REF\n", reg_name(error[i]), gpr(error[i]), ref_r->gpr[error[i]]);
 		}
@@ -36,6 +40,17 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
 	}
   return true;
 	
+=======
+		printf("\nRegisters of NEMU and REF are different, PC = %#x\n", pc);
+
+		for(i = 0; i < cnt; i++) {
+			printf("Different register: '%s', '%#x' in NEMU, '%#x' in REF\n", reg_name(error[i]), gpr(error[i]), ref_r->gpr[error[i]]);
+		}
+
+		return false;
+	}
+  return true;
+>>>>>>> tracer-ysyx
 }
 
 void isa_difftest_attach() {

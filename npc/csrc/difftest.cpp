@@ -21,14 +21,27 @@
 
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
+<<<<<<< HEAD
+=======
+#define MROM_BASE 0x20000000
+extern char *img_file;
+
+>>>>>>> tracer-ysyx
 static bool is_skip_ref = false;
 
 extern uint32_t npc_regs[16];
 void isa_reg_display();
 void get_npc_regs();
+<<<<<<< HEAD
 uint32_t get_pc_from_top();
 
 uint8_t* guest_to_host(paddr_t paddr);
+=======
+uint32_t get_pc();
+
+uint8_t* guest_to_host(paddr_t paddr);
+uint8_t* flash_guest_to_host(paddr_t paddr);
+>>>>>>> tracer-ysyx
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -36,9 +49,19 @@ void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(word_t NO) = NULL;
 void (*ref_difftest_init)(int port) = NULL;
 
+<<<<<<< HEAD
 void init_difftest(char *ref_so_file, long img_size, int port) {
 	
   assert(ref_so_file != NULL);
+=======
+
+void init_difftest(char *ref_so_file, long img_size, long test_size, int port) {
+	
+  if (ref_so_file == NULL) {
+		printf("no input ref_so_file\n");
+		return;
+	}
+>>>>>>> tracer-ysyx
 
   void *handle = NULL;
   handle = dlopen(ref_so_file, RTLD_LAZY);
@@ -65,7 +88,12 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
       "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
 
   ref_difftest_init(port);
+<<<<<<< HEAD
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
+=======
+  // copy flash memory to nemu
+  ref_difftest_memcpy(FLASH_BASE, flash_guest_to_host(FLASH_BASE), img_size, DIFFTEST_TO_REF);
+>>>>>>> tracer-ysyx
 
 	get_npc_regs();
 	uint32_t buf[16] = {0};
@@ -115,6 +143,7 @@ void difftest_step() {
 	}
 	if (error_cnt != 0) {
     npc_state.state = NPC_ABORT;
+<<<<<<< HEAD
     npc_state.halt_pc = get_pc_from_top();
 		npc_state.halt_ret = 1;
     //isa_reg_display();
@@ -131,5 +160,23 @@ void difftest_step() {
 			for(int k = 0; k < 16; k++)
 				printf("%s: %#x\n", reg_name(k), ref_regs[k]);
 			*/
+=======
+    npc_state.halt_pc = get_pc();
+		npc_state.halt_ret = 1;
+
+		printf("\n");
+		for( int j = 0; j < error_cnt; j++){
+			index = error[j];
+			printf("PC = '%#x', Register '%s' in NPC is '%#x', should be '%#x'\n", 
+				get_pc(), reg_name(index), npc_regs[index], ref_regs[index]);
+		}
+
+		printf("\n");
+			// print REF registers
+			printf("ref registers: \n");
+			for(int k = 0; k < 16; k++)
+				printf("%s: %#x\n", reg_name(k), ref_regs[k]);
+	}
+>>>>>>> tracer-ysyx
 	return;
 }

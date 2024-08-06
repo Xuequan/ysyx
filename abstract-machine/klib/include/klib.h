@@ -30,7 +30,11 @@ void  *malloc    (size_t size);
 void   free      (void *ptr);
 int    abs       (int x);
 int    atoi      (const char *nptr);
+<<<<<<< HEAD
 void   itoa      (int n, char s[]);
+=======
+//void   itoa      (int n, char s[]);
+>>>>>>> tracer-ysyx
 
 // stdio.h
 int    printf    (const char *format, ...);
