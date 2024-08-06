@@ -1,6 +1,6 @@
-/* all .text, .rodata, .data will be in flash
- * stack, heap in sram 
- * THis script can be ok for cpu-tests/tests/hello.c , but for others such as add-longlong.c failed
+/* 这个对应"完整测试 PSRAM的访问" 
+ * 将 mem-test 完全加载到 SRAM
+ * 将 只读数据段一起加载到 SRAM
  */
 MEMORY 
 	{
@@ -11,9 +11,14 @@ MEMORY
 	}
 
 ENTRY(_start)
+PHDRS { 
+				text PT_LOAD ; 
+				data PT_LOAD ; 
+			} 
+
 SECTIONS {
   . = _pmem_start + _entry_offset; 
-  .text : AT (ORIGIN(flash)) 
+  .text :
 	{
 		. = ALIGN(0x8);
 		_text_start = .;
@@ -22,9 +27,9 @@ SECTIONS {
 		*(.copy_to_sram)
 		. = ALIGN(0x8);
 		_text_end = .;
-  }  
+  } > sram AT> flash :text
 
-	.rodata : AT (ORIGIN(flash) + SIZEOF(.text))  
+	.rodata : 
 	{
 		. = ALIGN(0x8);
 		_rodata_start = . ;
@@ -32,11 +37,10 @@ SECTIONS {
 		*(.srodata.mainargs)
 		. = ALIGN(0x8);
 		_rodata_end   = . ;
-  } 
+  } > sram AT> flash
 
-  .data : AT (ORIGIN(flash) + SIZEOF(.text) + SIZEOF(.rodata))
+  .data :  
 	{
-		. = ORIGIN(psram);
 		. = ALIGN(0x8);
 		_data_start = .;
     *(.data)
@@ -46,7 +50,7 @@ SECTIONS {
 		*(.sdata.*)
 		. = ALIGN(0x8);
 		_data_end = .;
-  }
+  } > sram AT> flash : data
 
   .bss (NOLOAD) :  
 	{
@@ -69,8 +73,8 @@ _bss_start = ADDR(.bss);
 _bss_end = _bss_start + SIZEOF(.bss);
 
 _heap_start = ALIGN(0x8) ;
-_heap_start = ORIGIN (sram);
-_heap_end = ORIGIN (sram) + LENGTH (sram) - 0x8000 ;
+_heap_start = ORIGIN (sram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data);
+_heap_end = ORIGIN (sram) + LENGTH(sram) - 0x800;
 
 _stack_point = ALIGN(0x8) ;
 _stack_pointer = ORIGIN (sram) + LENGTH (sram) ;

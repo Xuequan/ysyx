@@ -1,5 +1,4 @@
-// 本文件对应于 soc_linkerv5.ld 
-// 实现二级 bootloader
+// 本文件对应于 soc_linkerv4.ld , 为了“完整测试PSRAM 的访问”
 #include <am.h>
 #include <ysyxsoc.h>
 
@@ -49,13 +48,14 @@ void halt(int code) {
   while (1) {
 	}
 }
-
 void _trm_init() {
 	init_uart();
   int ret = main(mainargs);
   halt(ret);
 }
 
+
+// first bootloader, load .text & .rodata & .data from flash to sram
 extern char _sbss[];
 extern char _ebss[];
 extern char _data_start[];
@@ -69,32 +69,12 @@ extern char _text_end[];
 extern char _rodata_load_addr[];
 extern char _rodata_start[];
 extern char _rodata_end[];
-
-/*
-// from rt-thred-am/bsp/abstract-machine/extra.ld
-extern char __fsymtab_start[];
-extern char __am_apps_data_end[];
-extern char __data_extra_load_addr[];
-extern char __am_apps_bss_start[];
-extern char __am_apps_bss_end[];
-*/
-void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
+void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
 	char *dst;
-	char *src; 
-  // zero .bss
+	char *src;
+  // zero bss
 	for (dst = _sbss; dst < _ebss; dst++)
 		*dst = 0;
-	/*
-  // zero .bss.extra
-  for (dst = __am_apps_bss_start; dst < __am_apps_data_end; dst++)
-    *dst = 0;
-	*/
-
-	// copy '.data' section to psram
-	src = _data_load_addr;
-	dst = _data_start;
-	while (dst < _data_end)
-		*dst++ = *src++;
 	// copy '.text' section to sram
 	src = _text_load_addr;
 	dst = _text_start;
@@ -105,29 +85,12 @@ void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
 	dst = _rodata_start;
 	while (dst < _rodata_end)
 		*dst++ = *src++;
-
-	/*
-	src = __data_extra_load_addr;
-	dst = __fsymtab_start;
-	while (dst < __am_apps_data_end)
-		*dst++ = *src++;
-	*/
-
-  _trm_init();
-}
-
-// fsbl loads ssbl code from flash to sram
-extern char _ssbl_load_addr[];
-extern char _sssbl[];
-extern char _essbl[];
-
-void __attribute__  ((section (".fsbl"))) _fs_bootloader() {
-	char *dst;
-	char *src; 
-	src = _ssbl_load_addr;
-	dst = _sssbl;
-	while (dst < _essbl)
+	// copy '.data' section to sram
+	src = _data_load_addr;
+	dst = _data_start;
+	while (dst < _data_end)
 		*dst++ = *src++;
 
-  _ss_bootloader();
+  _trm_init();  
 }
+
