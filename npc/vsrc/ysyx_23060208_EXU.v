@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-// EXU 模块
-module ysyx_23060208_EXU
-	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
-	input clk,
-	input rst,
-
-	input [1           :0] uncond_jump_inst,
-	input [DATA_WIDTH-1:0] pc,
-	input [DATA_WIDTH-1:0] src1,
-	input [DATA_WIDTH-1:0] src2,
-	input [REG_WIDTH-1 :0] rd,
-	input [17					 :0] op,
-
-	// regfile_mem_mux == 2'b01, need updating regfile
-	// == 2'b10, write to mem; 
-	// == 2'b00, no need update both
-	input [1					 :0] regfile_mem_mux,
-
-	input [DATA_WIDTH-1:0] cond_branch_target,
-	input 								 cond_branch_inst,
-	input [4					 :0] load_inst,
-	//output [DATA_WIDTH-1:0] nextpc_from_jal_jalr,
-
-	// to IFU for gen nextPC
-	output [DATA_WIDTH-1:0] branch_target,
-	output									branch_taken,
-	
-	// output to register file
-=======
 `include "ysyx_23060208_npc.h"    
 module ysyx_23060208_EXU
 	#(DATA_WIDTH = 32, REG_WIDTH = 5) (
@@ -39,26 +9,10 @@ module ysyx_23060208_EXU
 	output									     exu_to_ifu_valid,
 
 	/* update regfile */
->>>>>>> tracer-ysyx
 	output [DATA_WIDTH-1:0] regfile_wdata,
 	output [REG_WIDTH-1 :0] regfile_waddr,
 	output								  regfile_wen,
 
-<<<<<<< HEAD
-	/* store -- output to sram  */
-	input  [2						:0] store_inst,
-	output [DATA_WIDTH-1:0] store_address,
-	output									store_en,
-	input  [DATA_WIDTH-1:0] store_data_raw, 
-	output [DATA_WIDTH-1:0] store_data, 
-	output [2						:0] store_bytes_num,
-		// load
-	input  [DATA_WIDTH-1:0] rdata,  // from dsram
-	output [DATA_WIDTH-1:0] raddr,
-	output									valid  // to dsram
-);
-
-=======
 	/* connect with intercom*/
 	output [1							:0]	exu_done,
 
@@ -494,7 +448,6 @@ always @(posedge clock) begin
 end
 
 /*=========================================================*/
->>>>>>> tracer-ysyx
 wire [DATA_WIDTH-1:0] alu_result;
 wire overflow;
 
@@ -512,41 +465,13 @@ wire cond_branch_taken;
 assign cond_branch_taken = cond_branch_inst && alu_result[0];
 
 // 注意：若是 jalr, 还需要将相加得来的地址LSB 设为 0；
-<<<<<<< HEAD
-=======
 wire [DATA_WIDTH-1:0] branch_target;
->>>>>>> tracer-ysyx
 assign branch_target = 
 			({DATA_WIDTH{uncond_jump_inst[0]}} & alu_result)
 		| ({DATA_WIDTH{uncond_jump_inst[1]}} & {alu_result[DATA_WIDTH-1:1], 1'b0})
 		| ({DATA_WIDTH{cond_branch_taken}} & cond_branch_target);
 
 // 判断是否是 branch
-<<<<<<< HEAD
-assign branch_taken = |uncond_jump_inst || cond_branch_taken;
-/* =======store instruction ============================== */
-assign store_address = alu_result; 
-assign store_en = regfile_mem_mux[1];
-assign store_data = store_data_raw; 
-assign store_bytes_num = ( {3{store_inst[0]}} & 3'b100 )
-											| ( {3{store_inst[1]}} & 3'b010 )
-											| ( {3{store_inst[2]}} & 3'b001 );
-
-/* =======load instruction ============================== */
-assign valid = |load_inst;
-assign raddr = alu_result;
-wire [DATA_WIDTH-1:0] load_data;
-assign load_data = ({DATA_WIDTH{load_inst[0]}} & rdata)
-| ({DATA_WIDTH{load_inst[1]}} & {{16{rdata[15]}}, rdata[15:0]})
-| ({DATA_WIDTH{load_inst[2]}} & { 16'b0, rdata[15:0]})
-| ({DATA_WIDTH{load_inst[3]}} & {{24{rdata[7]}}, rdata[7:0]})
-| ({DATA_WIDTH{load_inst[4]}} & { 24'b0, rdata[7:0]});
-
-/* ============ to regfile ============================== */
-// 若是 jal, jalr, 那么将 rd <- pc + 4
-assign regfile_wdata = |uncond_jump_inst ? pc + 4 : 
-											 |load_inst     ? load_data :
-=======
 wire branch_taken;
 assign branch_taken = |uncond_jump_inst || cond_branch_taken;
 
@@ -966,16 +891,10 @@ assign load_data = ({32{inst_lw }} & lw_data)
 assign regfile_wdata = |uncond_jump_inst ? exu_pc + 4 : 
 											 |load_inst     ? load_data :
 											 (csr_inst[0] || csr_inst[1]) ? src2 : // csrrw, csrrs
->>>>>>> tracer-ysyx
 																				alu_result;
 
 assign regfile_waddr = rd;
 	// regfile 写使能
-<<<<<<< HEAD
-assign regfile_wen = regfile_mem_mux[0];
-
-/* =============== DPI-C ========================= */
-=======
 wire exu_to_regfile_valid; 
 assign exu_to_regfile_valid = exu_valid && exu_ready_go;
 assign regfile_wen = regfile_mem_mux[0] && exu_to_regfile_valid;
@@ -1009,7 +928,6 @@ task exu_will_go_next_clock_signal (output bit o);
 	o = exu_to_ifu_valid;
 endtask
 
->>>>>>> tracer-ysyx
 export "DPI-C" task update_regfile_no;
 task update_regfile_no (output [REG_WIDTH-1:0] reg_no);
 	reg_no = regfile_wen ? regfile_waddr : 'b0;
@@ -1020,10 +938,6 @@ task update_regfile_data (output [DATA_WIDTH-1:0] din);
 	din    = regfile_wdata;
 endtask
 
-<<<<<<< HEAD
-endmodule
-
-=======
 export "DPI-C" task get_inst_from_exu;
 task get_inst_from_exu (output [DATA_WIDTH-1:0] din);
 	din    = exu_inst;
@@ -1077,4 +991,3 @@ task check_if_access_fault (output bit o);
 			(axi_rresp == 2'b11) : 1'b0;
 endtask
 endmodule
->>>>>>> tracer-ysyx

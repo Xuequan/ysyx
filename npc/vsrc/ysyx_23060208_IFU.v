@@ -1,38 +1,4 @@
 // IFU 模块
-<<<<<<< HEAD
-module ysyx_23060208_IFU 
-	#(DATA_WIDTH = 32) (
-	input clk,
-	input rst,
-	input [DATA_WIDTH-1:0]  inst_i,  // from inst ram
-
-	// from EXU
-	input [DATA_WIDTH-1:0]  branch_target,
-	input 									branch_taken,
-
-	output reg 							valid, // to isram						
-	output [DATA_WIDTH-1:0] pc,  // to IDU
-	output [DATA_WIDTH-1:0] nextPC    // to inst ram
-);
-
-assign nextPC = branch_taken ? branch_target :
-													pc + 4;
-
-ysyx_23060208_PC #(.DATA_WIDTH(DATA_WIDTH)) PC_i0(
-	.clk(clk),
-	.rst(rst),
-	.wen(1'b1),
-	.next_pc(nextPC),
-	.pc(pc)
-);
-
-assign valid = 1'b1;
-
-/* ==================== DPI-C ====================== */
-export "DPI-C" task get_nextPC;
-task get_nextPC (output [DATA_WIDTH-1:0] o);
-	o = nextPC;
-=======
 `include "ysyx_23060208_npc.h"    
 module ysyx_23060208_IFU 
 	#(DATA_WIDTH = 32) (
@@ -280,6 +246,5 @@ export "DPI-C" task check_if_access_fault_ifu;
 task check_if_access_fault_ifu (output bit o);
 	o = (isram_rready && isram_rvalid) ? 
 				(isram_rresp == 2'b11) : 1'b0;
->>>>>>> tracer-ysyx
 endtask
 endmodule

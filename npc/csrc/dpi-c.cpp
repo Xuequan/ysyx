@@ -1,37 +1,4 @@
 #include "dpi-c.h"
-<<<<<<< HEAD
-
-word_t vaddr_ifetch(vaddr_t addr, int len);
-word_t vaddr_read(vaddr_t addr, int len);
-void vaddr_write(vaddr_t addr, int len, word_t data);
-
-/* 总是读取地址为 raddr & ~0x3u 的4字节返回  */
-extern "C" int isram_read(int raddr) {
-  return vaddr_ifetch(raddr, 4);
-}
-
-extern "C" int dsram_read(int raddr) {
-  return vaddr_read(raddr, 4);
-}
-
-extern "C" void dsram_write(int waddr, int wdata, char wmask) {
-	uint32_t addr = (uint32_t)waddr;
-	if ((uint8_t)wmask == 1 )
-  	return vaddr_write(addr, 1, wdata);
-	else if ((uint8_t)wmask == 2) 
-  	return vaddr_write(addr, 2, wdata);
-	else if ((uint8_t)wmask == 4) 
-  	return vaddr_write(addr, 4, wdata);
-	else {
-		printf("Error, wmask = %#x error\n", (uint8_t)wmask);
-		return;
-	}
-}
-
-//extern void check_if_ebreak(svBit* o);
-bool inst_is_ebreak() {
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
-=======
 #include "ctrl.h"
 
 extern word_t vaddr_read(vaddr_t addr, int len);
@@ -160,7 +127,6 @@ extern "C" void mrom_read(int32_t addr, int32_t *data) {
 //extern void check_if_ebreak(svBit* o);
 bool inst_is_ebreak() {
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -171,11 +137,7 @@ bool inst_is_ebreak() {
 
 //extern void check_if_jal(svBit* o);
 bool inst_is_jal() {
-<<<<<<< HEAD
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
-=======
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -186,11 +148,7 @@ bool inst_is_jal() {
 
 //extern void check_if_jalr(svBit* o);
 bool inst_is_jalr() {
-<<<<<<< HEAD
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
-=======
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svBit a;
@@ -201,11 +159,7 @@ bool inst_is_jalr() {
 
 //extern void rs1_reg(svLogicVecVal* o);
 uint32_t rs1(){
-<<<<<<< HEAD
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
-=======
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -214,11 +168,7 @@ uint32_t rs1(){
 }
 //extern void rd_reg(svLogicVecVal* o);
 uint32_t rd(){
-<<<<<<< HEAD
-	const svScope scope = svGetScopeFromName("TOP.top.idu");
-=======
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.idu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -228,11 +178,7 @@ uint32_t rd(){
 
 //extern void get_nextPC(svLogicVecVal* o);
 uint32_t nextpc(){
-<<<<<<< HEAD
-	const svScope scope = svGetScopeFromName("TOP.top.ifu");
-=======
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.ifu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal o;
@@ -240,10 +186,6 @@ uint32_t nextpc(){
 	return o.aval;
 }
 
-<<<<<<< HEAD
-uint32_t update_reg_no(){
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
-=======
 uint32_t get_inst(){
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
 	assert(scope);
@@ -255,7 +197,6 @@ uint32_t get_inst(){
 
 uint32_t update_reg_no(){
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal no;
@@ -263,19 +204,13 @@ uint32_t update_reg_no(){
 	return no.aval;
 }
 uint32_t update_reg_data(){
-<<<<<<< HEAD
-	const svScope scope = svGetScopeFromName("TOP.top.exu");
-=======
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
->>>>>>> tracer-ysyx
 	assert(scope);
 	svSetScope(scope);
 	svLogicVecVal data;
 	update_regfile_data(&data);
 	return data.aval;
 }
-<<<<<<< HEAD
-=======
 
 bool check_inst_executed_already() {
 	const svScope scope = svGetScopeFromName("TOP.ysyxSoCFull.asic.cpu.cpu.exu");
@@ -380,4 +315,3 @@ bool check_access_fault_ifu() {
 	if (a == 1) return true;
 	else				return false;
 }
->>>>>>> tracer-ysyx

@@ -94,11 +94,7 @@ int strcmp(const char *s1, const char *s2) {
 	else 
 		return -1;
 }
-<<<<<<< HEAD
 
-int strncmp(const char *s1, const char *s2, size_t n) {
-  panic("Not implemented");
-=======
 /* strncmp() is similar with strcmp(), except is compares only the first (at most) n bytes of s1 and s2 */
 int strncmp(const char *s1, const char *s2, size_t n) {
 	char *ptr1 = (char *) s1;
@@ -124,7 +120,6 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 		return 1;
 	else 
 		return -1;
->>>>>>> tracer-ysyx
 }
 
 /* memset() function fills the first n bytes of the memory area
