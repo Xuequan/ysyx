@@ -100,11 +100,11 @@ void scan_wp_pool();
 void difftest_step();
 
 static void trace_and_difftest(){
-#ifdef LOG_WRITE_ENABLE
+//#ifdef LOG_WRITE_ENABLE
 #ifdef WRITE_EVERY_INST
 	log_write("%s\n", logbuf);
 #endif
-#endif
+//#endif
 
 	if (check_clint_read() || check_uart_write() || check_uart_read() 
 		|| check_spi_master_read() || check_spi_master_write()  

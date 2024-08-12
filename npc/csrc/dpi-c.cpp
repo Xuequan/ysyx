@@ -55,6 +55,8 @@ extern "C" void sdram_write(int addr, int data, char mask) {
     len = 1;
     offset = 3;
     wdata = (data & 0xff000000) >> 24;
+  } else if (msk == 0) {
+    return;
   } else {
 		printf("sdram_write(): wrong, mask is '%#x'\n", mask);
 		return;

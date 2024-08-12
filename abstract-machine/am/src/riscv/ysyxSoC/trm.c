@@ -61,17 +61,17 @@ void __attribute__  ((section (".ssbl"))) _ss_bootloader() {
     *dst = 0;
 #endif
 
-	// copy '.data' section to psram
+	// copy '.data'
 	src = _data_load_addr;
 	dst = _data_start;
 	while (dst < _data_end)
 		*dst++ = *src++;
-	// copy '.text' section to sram
+	// copy '.text' 
 	src = _text_load_addr;
 	dst = _text_start;
 	while (dst < _text_end)
 		*dst++ = *src++;
-	// copy '.rodata' section to sram
+	// copy '.rodata'
 	src = _rodata_load_addr;
 	dst = _rodata_start;
 	while (dst < _rodata_end)

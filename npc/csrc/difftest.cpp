@@ -138,7 +138,7 @@ void difftest_step() {
 			// print REF registers
 			printf("ref registers: \n");
 			for(int k = 0; k < 16; k++)
-				printf("%s: %#x\n", reg_name(k), ref_regs[k]);
+				printf("(x%02d)%s: %#x\n", k, reg_name(k), ref_regs[k]);
 	}
 	return;
 }
