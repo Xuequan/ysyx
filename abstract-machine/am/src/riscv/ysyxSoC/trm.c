@@ -2,7 +2,7 @@
 #include <ysyxsoc.h>
 
 /* control run rt-thred-am */
-//#deinfe RUN_RTT 1
+//#define RUN_RTT 1
 
 int main(const char *args);
 

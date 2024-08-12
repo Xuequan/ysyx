@@ -35,4 +35,7 @@ run: image
 
 print: image
 	@$(MAKE) -s -C $(NPC_HOME) print ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
+
+clean: 
+	-@$(MAKE) -s -C $(NPC_HOME)/ Makefile clean
 	

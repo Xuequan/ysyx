@@ -177,6 +177,7 @@ image-dep: $(OBJS) $(LIBS)
 ### Clean a single project (remove `build/`)
 clean:
 	rm -rf Makefile.html $(WORK_DIR)/build/
+	-@$(MAKE) -s -C $(NPC_HOME)/ Makefile clean
 .PHONY: clean
 
 ### Clean all sub-projects within depth 2 (and ignore errors)

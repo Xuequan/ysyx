@@ -17,6 +17,7 @@
 #include "memory.h"
 #include <ctime>
 #include <new>
+#include "ctrl.h"
 using namespace std;
 
 extern uint32_t get_pc();
@@ -216,21 +217,28 @@ word_t paddr_read(paddr_t addr, int len) {
 		word_t num = pmem_read(addr, len); 
 		//printf("NPC paddr_read() :read at address = %#x, get data = %#x, len = %d, pc = %#x\n", addr,num, len, get_pc());
 		if (nextpc() != addr) { // 过滤掉读指令
+#ifdef LOG_WRITE_ENABLE
 			log_write("		NPC: Read mem at address = %#x, data = %#x, len = %d, now PC = %#x\n", addr, num, len, get_pc()); 
+#endif
 		}
 		return num;
 	}
 	// read from sdram
   if (likely(in_psdram(addr))) {
 		word_t num = psdram_read(addr, len); 
+#ifdef LOG_WRITE_ENABLE
 		log_write("		NPC: Read mem at address = %#x, data = %#x, len = %d, now PC = %#x\n", addr, num, len, get_pc()); 
+#endif
 		  //printf("NPC sdram read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
 		return num;		
   }
 	// read from flash
   if (likely(in_pflash(addr))) {
 		word_t num = pflash_read(addr, len); 
+
+#ifdef LOG_WRITE_ENABLE
 		log_write("		NPC: Read mem at address = %#x, data = %#x, len = %d, now PC = %#x\n", addr, num, len, get_pc()); 
+#endif
 		//printf("NPC flash read, address = %#x, return num = %#x, pc = %#x\n", addr, num, get_pc());
 		return num;		
 	}
@@ -245,14 +253,18 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   // write to psram
   if (likely(in_psram(addr))) { 
 		//printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
+#ifdef LOG_WRITE_ENABLE
 		log_write("		NPC: Write mem at address = %#x, data = %#x, len = %d, now PC = %#x\n", addr, data, len, get_pc()); 
+#endif
 		pmem_write(addr, len, data); 
 		return; 
 	}
   // write to sdram
   if (likely(in_psdram(addr))) { 
 		//printf("NPC: write at address = %#x, write data = %#x, pc = %#x\n", addr, data, get_pc());
+#ifdef LOG_WRITE_ENABLE
 		log_write("		NPC: Write mem at address = %#x, data = %#x, len = %d, now PC = %#x\n", addr, data, len, get_pc()); 
+#endif
 		psdram_write(addr, len, data); 
 		return; 
 	}

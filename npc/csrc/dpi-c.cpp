@@ -61,7 +61,7 @@ extern "C" void sdram_write(int addr, int data, char mask) {
 		printf("sdram_write(): wrong, mask is '%#x'\n", mask);
 		return;
 	}
-#ifdef DO_PRINT
+#ifdef DO_PRINT_SDRAM
 	printf("NPC: sdram_write(),initial addr = %#x, address = %#x, data = %#x, len = %d, pc = %#x\n", 
         waddr, waddr + offset, wdata, len, get_pc());
 #endif
@@ -71,7 +71,7 @@ extern "C" void sdram_write(int addr, int data, char mask) {
 extern "C" void sdram_read(int32_t addr, int32_t *data) {    
 	uint32_t raddr = (uint32_t)addr + 0xa0000000;
 	*data = vaddr_read(raddr, 4);
-#ifdef DO_PRINT
+#ifdef DO_PRINT_SDRAM
 	printf("NPC sdram_read(): address = %#x, read data = %#x, pc = %#x\n", raddr, *data, get_pc());
 #endif
 }
