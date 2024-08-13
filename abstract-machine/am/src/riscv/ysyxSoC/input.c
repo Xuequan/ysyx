@@ -1,7 +1,16 @@
 #include <am.h>
 #include <ysyxsoc.h>
 
-static uint8_t scan2ascii[][2] = {
+static uint8_t scan2ascii[][2];
+
+void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
+  uint8_t scan_code = inb( (uintptr_t)(PS2_KEYBOARD) );
+
+  kbd->keydown = 0;
+  kbd->keycode = (int)scan2ascii[scan_code];
+}
+
+scan2ascii[][2] = {
 {0x76,0x1b},
 {0x05,0x70},
 {0x06,0x71},
@@ -73,11 +82,4 @@ static uint8_t scan2ascii[][2] = {
 {0x29,0x20},
 };
 
-//static scan2ascii[][2] = {0x
-void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
-  uint8_t scan_code = inb( (uintptr_t)(PS2_KEYBOARD) );
-
-  kbd->keydown = 0;
-  kbd->keycode = (int)scan2ascii[scan_code];
-}
 

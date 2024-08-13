@@ -5,7 +5,7 @@
 #define DIFFTEST 1
 
 /* control switch which will print sdram write/read information. dpi-c.cpp*/
-//#define DO_PRINT_SDRAM 1
+#define DO_PRINT_SDRAM 1
 
 /* control switch which will print psram write/read information. dpi-c.cpp*/
 //#define DO_PRINT_PSRAM 
