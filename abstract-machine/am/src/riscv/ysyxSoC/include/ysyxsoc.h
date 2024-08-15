@@ -55,6 +55,8 @@ extern char _ssbl_load_addr[];
 extern char _sssbl[];
 extern char _essbl[];
 
+#define RUN_RTT  1
+
 #ifdef RUN_RTT
 // from rt-thred-am/bsp/abstract-machine/extra.ld
 extern char __fsymtab_start[];

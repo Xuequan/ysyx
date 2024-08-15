@@ -1,6 +1,9 @@
 #include <am.h>
 #include <ysyxsoc.h>
 
+void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
+}
+/*
 static uint8_t scan2ascii[][2];
 
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
@@ -10,7 +13,7 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
   kbd->keycode = (int)scan2ascii[scan_code];
 }
 
-scan2ascii[][2] = {
+scan2ascii = {
 {0x76,0x1b},
 {0x05,0x70},
 {0x06,0x71},
@@ -82,4 +85,4 @@ scan2ascii[][2] = {
 {0x29,0x20},
 };
 
-
+*/

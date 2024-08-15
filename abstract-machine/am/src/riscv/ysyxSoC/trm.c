@@ -1,9 +1,6 @@
 #include <am.h>
 #include <ysyxsoc.h>
 
-/* control run rt-thred-am */
-//#define RUN_RTT 1
-
 int main(const char *args);
 
 Area heap = RANGE(&_heap_start, &_heap_end);

@@ -53,7 +53,6 @@ SECTIONS {
   } > sdram AT> flash
 
   . = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata) + SIZEOF(.data.extra); 
- /* . = ORIGIN(sdram) + SIZEOF(.text) + SIZEOF(.rodata); */
   .data : 
 	{
 		. = ALIGN(0x8);
