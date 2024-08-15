@@ -7,7 +7,7 @@ MEMORY
 	 mrom : ORIGIN = 0x20000000, LENGTH = 4K
 	 flash : ORIGIN = 0x30000000, LENGTH = 256M
 	 psram : ORIGIN = 0x80000000, LENGTH = 4M
-   sdram : ORIGIN = 0Xa0000000, LENGTH = 32M
+   /* sdram : ORIGIN = 0Xa0000000, LENGTH = 32M */
 	}
 
 ENTRY(_start)

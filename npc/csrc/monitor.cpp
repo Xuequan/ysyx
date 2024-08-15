@@ -70,6 +70,7 @@ static int difftest_port = 1234;
 char *elf_file = NULL;
 
 // load npc/tests/char-test.bin to flash space
+/*
 static long load_test() {
 	char *test_file = "/home/chuan/ysyx-workbench/npc/tests/char-test.bin";
 	FILE *fp = fopen(test_file, "rb");
@@ -87,6 +88,7 @@ static long load_test() {
 	fclose(fp);
 	return size;	
 }
+*/
 
 // load img to flash
 static long load_img() {
