@@ -1,16 +1,17 @@
 AM_SRCS := riscv/ysyxSoC/start.S \
            riscv/ysyxSoC/trm.c  \
+           riscv/ysyxSoC/uart.c \
+           riscv/ysyxSoC/gpu.c \
            riscv/ysyxSoC/ioe.c  \
            riscv/ysyxSoC/timer.c \
            riscv/ysyxSoC/input.c \
            riscv/ysyxSoC/cte.c \
-           riscv/ysyxSoC/trap.S \
-           riscv/ysyxSoC/uart.c \
-           platform/dummy/vme.c \
+           riscv/ysyxSoC/trap.S 
+           #platform/dummy/vme.c \
            platform/dummy/mpe.c
 
 CFLAGS    += -fdata-sections -ffunction-sections
-LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker_rtt.ld  \
+LDFLAGS   += -T $(AM_HOME)/scripts/soc_linker_sdram.ld  \
 						--defsym=_pmem_start=0x30000000 --defsym=_entry_offset=0x0
 						# --print-map > map.txt  \
 
@@ -37,5 +38,5 @@ print: image
 	@$(MAKE) -s -C $(NPC_HOME) print ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
 
 #clean: 
-	#-@$(MAKE) -s -C $(NPC_HOME)/ Makefile clean
+#	-@$(MAKE) -s -C $(NPC_HOME)/ Makefile clean
 	

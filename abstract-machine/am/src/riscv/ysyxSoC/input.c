@@ -1,19 +1,14 @@
 #include <am.h>
 #include <ysyxsoc.h>
+#include "klib.h"
 
-void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
-}
-/*
-static uint8_t scan2ascii[][2];
+typedef struct scan_ascii {
+  uint8_t scan;
+  uint8_t ascii;
+} san_asciiPair;
 
-void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
-  uint8_t scan_code = inb( (uintptr_t)(PS2_KEYBOARD) );
-
-  kbd->keydown = 0;
-  kbd->keycode = (int)scan2ascii[scan_code];
-}
-
-scan2ascii = {
+// scan code  --- ascII code
+static san_asciiPair scan2ascii[] = {
 {0x76,0x1b},
 {0x05,0x70},
 {0x06,0x71},
@@ -51,7 +46,7 @@ scan2ascii = {
 {0x3C,0x55},
 {0x43,0x49},
 {0x44,0x4f},
-{0x4D,0x5a},
+{0x4D,0x50},
 {0x54,0xdb},
 {0x5B,0xdd},
 {0x5D,0xdc},
@@ -83,6 +78,26 @@ scan2ascii = {
 {0x14,0x11},
 {0x11,0x12},
 {0x29,0x20},
+{0, 0},
 };
 
-*/
+static uint8_t find_ascii(uint8_t scan_code) {
+  for (int i = 0; scan2ascii[i].scan != 0; i++) {
+    if (scan2ascii[i].scan == scan_code)
+      return scan2ascii[i].ascii;
+  }
+  return 0;
+}
+void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
+  uint8_t scan_code = inb( (uintptr_t)(PS2_KEYBOARD) );
+  printf("\nget scan_code = %#x\n", scan_code); 
+
+  uint8_t ascii_code = find_ascii(scan_code);
+  /*
+  if (ascii_code == 0) {
+    printf("scan code '%#x' is not implemented.\n", scan_code);
+  }
+  */
+  kbd->keydown = 0;
+  kbd->keycode = (int)ascii_code;
+}

@@ -7,27 +7,32 @@
 
 #define ysyxsoc_trap(code) asm volatile("ebreak")
 
-// SRAM 只有 8kb 
-#define PMEM_SIZE (8 * 1024 * 8)
-#define PMEM_END  ((uintptr_t)&_pmem_start + PMEM_SIZE)
-
 // -----------------------------------------------
-// some peril address space 
+// timer 映射到 clint 
 // ------------------------------------------------
-// timer 映射到 clint
 #define RTC_ADDR 0x02000000L
 
+// -----------------------------------------------
 // ps2-keyboard
+// ------------------------------------------------
 #define PS2_KEYBOARD 0x10011000L
 
+// -----------------------------------------------
 // uart 
-#define UART_RX   0
+// ------------------------------------------------
 #define UART_BASE 0x10000000L
+#define UART_RX   0
 #define UART_TX 0    
 #define UART_LC 3   // line control register
 #define UART_DL1 0  // divisor latch low byte
 #define UART_DL2 1  // divisor latch high byte
 #define UART_LS 5   // line status register 
+                    
+// -----------------------------------------------
+// vga
+// ------------------------------------------------
+#define VGA_BASE 0x21000000L
+
 
 // -----------------------------------------------
 // extern val from linker scripts
@@ -55,7 +60,12 @@ extern char _ssbl_load_addr[];
 extern char _sssbl[];
 extern char _essbl[];
 
-#define RUN_RTT  1
+
+// -----------------------------------------------
+// extern val from rt-thread/bsp/abstract-machine/extra.ld
+// ------------------------------------------------
+/* control variables from rtt/extra.ld */
+//#define RUN_RTT  1
 
 #ifdef RUN_RTT
 // from rt-thred-am/bsp/abstract-machine/extra.ld

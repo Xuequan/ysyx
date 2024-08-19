@@ -18,7 +18,7 @@
 
 
 /* connect NVBoard */
-//#define CONNECT_NVBOARD 1
+#define CONNECT_NVBOARD 1
 
 
 /* print flash memory and other memory space at the beging of program */  

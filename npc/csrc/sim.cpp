@@ -31,11 +31,10 @@ static void sim_one_cycle() {
 	for(int i = 0; i < 2; i++) {
 		top->clock ^= 1;
 		step_and_dump_wave();
-
+	}
 #ifdef CONNECT_NVBOARD
     nvboard_update();
 #endif
-	}
 }
 
 // execute one inst, until EXU ready_go is 1

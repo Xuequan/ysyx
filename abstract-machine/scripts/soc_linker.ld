@@ -1,8 +1,5 @@
 /* 
- * initial start, fsbl(first stage bootloader), ssbl(second stage bootloader) 都位于 flash
- * first execute fsbl, which loading ssbl from flash to sram;
- * then, execute ssbl, which loading program from flash to psram
- * 测试 sdram 空间
+ * 测试 sdram 地址空间, 程序在 psram 中跑
  * cannot run RTT
  */
 MEMORY 

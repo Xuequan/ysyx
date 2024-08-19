@@ -39,8 +39,12 @@ void halt(int code) {
 	}
 }
 
+#define putstr(s) \
+  ({ for (const char *p = s; *p; p++) putch(*p); })
+
 void _trm_init() {
 	init_uart();
+  putstr("Hello, AM\n");
   int ret = main(mainargs);
   halt(ret);
 }
